@@ -66,7 +66,8 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
   affected users and automation, observable assurance outcome, and exact completion evidence.
 - Record the canonical command and aliases, Architecture-owned semantic contract, Interface-owned expression
   contract, exact source or artifact, runtime and target tuple, delivery form and consumer entry, current
-  Platform facts, changed and reviewed paths, existing evidence identities, and evidence dates.
+  Platform facts, changed and reviewed paths, existing evidence identities, evidence dates, and any shipped
+  Bash, Zsh, Fish, or PowerShell completion path.
 - Classify every requested write, process execution, network access, credential use, package action, delivery,
   publication, installation, update, telemetry action, or destructive probe. This operation performs none of
   those effects merely because it reviews them; name the separate owner and current authority when required.
@@ -83,7 +84,8 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
 - Trace each input from source and representation to parsing, canonicalization, validation, authorization,
   first side effect, output, persistence, cleanup, and recovery. Include arguments and option-shaped operands,
   stdin, environment, configuration, current directory, paths and links, process output, network data, update
-  metadata, dependency scripts, and terminal-bound text when they exist.
+  metadata, dependency scripts, partial shell-completion input, local completion-lookup data, and terminal-bound
+  text when they exist. Treat both completion inputs as untrusted even when they originate on the local system.
 - Mark trust changes across parser, filesystem, process, shell, terminal, network, credential, package,
   update, telemetry, privilege, and consumer-entry boundaries. Record an absent class as not applicable with
   an exact reason; an unexplained omission returns to this step.
@@ -107,6 +109,13 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
 - Treat the current [Bun Shell](https://bun.com/docs/runtime/shell) escaping contract as one bounded mechanism
   fact. It does not establish nested-shell safety, executable identity, target-program option handling,
   authorization, filesystem safety, or recovery.
+- For shipped completion, analyze command and option injection from partial input and candidates, secret
+  dependency and disclosure, unintended mutation, prompts, and default network access. Require candidate
+  escaping for the exact requesting Bash, Zsh, Fish, or PowerShell grammar; escaping for one shell is not
+  evidence for another, and no candidate is evaluated to prove that it is safe.
+- Treat local dynamic completion lookup as a separate trust crossing. Accept it only with declared cost,
+  failure, and privacy bounds; model denial, dependency failure, timeout, and cancellation so every path stays
+  inert, secret-free, and bounded and has explicit cleanup and recovery behavior.
 - For displayed untrusted text, analyze terminal escape and control sequences, OSC links, carriage return and
   line forging, bidirectional controls, invisible characters, confusable Unicode, truncation, and misleading
   quoting. Route readable safe expression to
@@ -168,14 +177,21 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
   evidence limits, retained risk, and reopen trigger. Keep requirement ownership here while mechanisms remain
   with their routed owners.
 - Route semantic command, state, stream, and compatibility changes to
-  [`cli-architecture`](../cli-architecture/SKILL.md); safe wording and rendering to `cli-interface`; and
+  [`cli-architecture`](../cli-architecture/SKILL.md); safe wording and rendering to
+  [`cli-interface`](../cli-interface/SKILL.md); and
   current execution-platform facts to [`cli-platform`](../cli-platform/SKILL.md).
 - Route TypeScript realization and external-input modeling to
   [`typescript-development`](../../typescript/typescript-development/SKILL.md) and
   [`typescript-typing`](../../typescript/typescript-typing/SKILL.md); runtime and adversarial proof to
   [`typescript-testing`](../../typescript/typescript-testing/SKILL.md); package-backed supply mechanics to
-  `typescript-packaging`; direct non-archive mechanics to `typescript-cli-delivery`; and compiler or Bun
+  [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md); direct non-archive mechanics to
+  [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md); and compiler or Bun
   mechanism facts to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- For completion, retain threat, control, assurance, stop, recovery, and residual-risk ownership here. Route
+  schema and semantic behavior to Architecture, expression to Interface, generation mechanisms to TypeScript
+  Toolchain, and exact-shell
+  ordinary, adversarial, denial, failure, cancellation, cleanup, and recovery evidence to TypeScript Testing.
+  Require separate evidence for every shipped Bash, Zsh, Fish, and PowerShell path.
 - Stop when one requirement lacks an owner, one owner lacks an exact evidence route, or a proposed control
   merely hides input, adds a warning, relies on escaping outside its bound, or moves enforcement away from the
   authority boundary.
@@ -189,6 +205,10 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
 - Challenge each claimed control with its option-shaped, malformed, oversized, spoofed, hostile-environment,
   shadowed-executable, link-race, terminal-forging, secret-leak, denied-authority, interrupted, partial, and
   recovery cases when those paths apply. Record a case as unproved when exact evidence is absent.
+- Challenge shipped completion with command-shaped and option-shaped partial input, shell metacharacters,
+  secret-bearing lookup data, denied and failed lookup, attempted prompting, mutation, network access,
+  cancellation, cleanup, and recovery in each shipped shell. A safe Bash result does not prove Zsh, Fish, or
+  PowerShell, and a generation-unit result does not replace behavior evidence from the exact consumer path.
 - Keep implementation completion, technical evidence, assurance reconciliation, release readiness, external
   authority, external action, and observed operational effectiveness as separate states. One state never
   supplies another state or authority.
@@ -227,8 +247,11 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
   delivery identities; target tuple; threats and attack paths; requirements and controls; owners; evidence
   identities and states; failures; containment; cleanup; recovery; residual risk; stops; reopen triggers; and
   handoffs.
-- Hand implementation to `typescript-development` and `typescript-typing`, proof to `typescript-testing`,
-  supply and direct-delivery obligations to their TypeScript owners, residual-risk and readiness inputs to
+- Hand implementation to [`typescript-development`](../../typescript/typescript-development/SKILL.md) and
+  [`typescript-typing`](../../typescript/typescript-typing/SKILL.md), proof to
+  [`typescript-testing`](../../typescript/typescript-testing/SKILL.md), supply obligations to
+  [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), direct-delivery obligations to
+  [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md), residual-risk and readiness inputs to
   [`cli-release`](../cli-release/SKILL.md), and multi-owner state to
   [`cli-development`](../cli-development/SKILL.md).
 - State external mutation, credential use, artifact production, delivery, publication, and release action as

@@ -1,9 +1,10 @@
 # CLI Security Checklist
 
 This reusable unchecked source evaluates one assurance contract for an exact line-oriented CLI change governed
-by [`cli-security`](SKILL.md). It is bound to that operation's subject, trust and authority map, threat and
-control record, owner and evidence routes, stop states, recovery duties, and residual risk. Its stable owner
-prefix is `CLISEC`.
+by [`cli-security`](SKILL.md), frozen for this source at SHA-256
+`526e109ba08b4774dc0a762b48e40de84190406c6df919d0dda66b697d1f18d7`. It is bound to that operation's
+subject, trust and authority map, threat and control record, owner and evidence routes, stop states, recovery
+duties, and residual risk. Its stable owner prefix is `CLISEC`.
 
 The source evaluates CLI-specific assurance only. TypeScript implementation and narrowing, test mechanics or
 execution, package and direct-unit production, credential use, external action, release acceptance, generic
@@ -26,7 +27,7 @@ records only the observable requirement for its leaf scenario.
 ### Development lifecycle
 
 - **Threat analysis:** model ordinary, invalid, malicious, spoofed, hostile-environment, denied, interrupted,
-  partial, and recovery paths for the frozen assurance subject.
+  partial, completion, local-lookup, and recovery paths for the frozen assurance subject.
 - **Owner routing:** keep requirements with CLI Security while routing semantics, expression, facts,
   implementation, proof, supply, direct delivery, readiness, and coordination to their exact owners.
 - **Evidence reconciliation:** bind evidence to the exact control, implementation or unit, consumer entry,
@@ -36,8 +37,8 @@ records only the observable requirement for its leaf scenario.
 
 ### Product lifecycle
 
-- **Use and denial:** preserve user and automation authority, secret safety, readable safe expression, and
-  non-interactive behavior across accepted command paths.
+- **Use and denial:** preserve user and automation authority, secret safety, inert completion, readable safe
+  expression, and non-interactive behavior across accepted command paths.
 - **Effects and recovery:** keep destructive scope, cancellation, containment, cleanup, partial state, retry,
   resume, and recovery explicit through the consumer lifecycle.
 - **External relationships:** constrain networks, credentials, updates, telemetry, dependency scripts,
@@ -75,6 +76,16 @@ records only the observable requirement for its leaf scenario.
 - Threat analysis
   - Option-shaped and passthrough input
     - `CLISEC-SC-DEVELOP-ARGUMENT-01` — Argument-array and option-terminator controls cover target-program interpretation.
+  - Untrusted shell-completion input and candidate data
+    - `CLISEC-SC-DEVELOP-COMPLETION-01` — Partial input and lookup data cannot become executable syntax, options, or secret sinks.
+  - Exact-shell completion assurance
+    - `CLISEC-SC-DEVELOP-COMPLETION-02` — Every shipped shell has separate behavior evidence for its exact escaping and inertness contract.
+  - Accepted local completion lookup
+    - `CLISEC-SC-DEVELOP-COMPLETION-03` — A local lookup stays within declared cost, failure, and privacy boundaries.
+  - Denied local completion lookup
+    - `CLISEC-SC-DEVELOP-COMPLETION-04` — Lookup denial remains inert, secret-free, bounded, and recoverable.
+  - Failed local completion lookup
+    - `CLISEC-SC-DEVELOP-COMPLETION-05` — Lookup failure remains inert, secret-free, bounded, and recoverable.
   - Hostile stdin, environment, configuration, or current directory
     - `CLISEC-SC-DEVELOP-AMBIENT-01` — Ambient and discovered inputs cannot silently change identity, authority, or effect.
   - Executable, subprocess, or shell confusion
@@ -94,6 +105,8 @@ records only the observable requirement for its leaf scenario.
 - Owner routing
   - Security requirement crosses into a specialist mechanism
     - `CLISEC-SC-DEVELOP-OWNER-01` — Security retains the requirement while the exact specialist owns realization or proof.
+  - Completion owner handoff
+    - `CLISEC-SC-DEVELOP-COMPLETION-06` — Security assurance preserves Architecture, Interface, and TypeScript owner seams.
 - Evidence reconciliation
   - Exact current evidence
     - `CLISEC-SC-DEVELOP-EVIDENCE-01` — Evidence establishes only its named control, subject, tuple, method, date, and limits.
@@ -110,6 +123,12 @@ records only the observable requirement for its leaf scenario.
     - `CLISEC-SC-PRODUCT-DENIAL-01` — Denial preserves current state, redacts sensitive data, and exposes a safe next action.
   - Non-interactive automation
     - `CLISEC-SC-PRODUCT-AUTOMATION-01` — Automation never hangs for authority or secret input and never infers consent.
+  - Shipped shell completion
+    - `CLISEC-SC-PRODUCT-COMPLETION-01` — Completion candidates remain exact-shell safe and inert for the consumer.
+  - Completion lookup denial
+    - `CLISEC-SC-PRODUCT-COMPLETION-02` — A denied lookup returns safely without an effect or secret disclosure.
+  - Completion lookup failure
+    - `CLISEC-SC-PRODUCT-COMPLETION-03` — A failed lookup returns safely without an effect or secret disclosure.
 - Effects and recovery
   - Destructive or partial consumer outcome
     - `CLISEC-SC-PRODUCT-RECOVERY-01` — The consumer can distinguish complete, denied, interrupted, partial, and recovered states.
@@ -131,10 +150,21 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-DESIGN-SUBJECT-01-01 — The contract names the exact canonical command path and every accepted alias in scope.
 - [ ] CLISEC-CK-DESIGN-SUBJECT-01-02 — The contract identifies the exact Architecture semantic contract.
 - [ ] CLISEC-CK-DESIGN-SUBJECT-01-03 — The contract identifies the exact Interface expression contract.
-- [ ] CLISEC-CK-DESIGN-SUBJECT-01-04 — The contract identifies the exact source, artifact, runtime, target tuple, delivery form, and consumer entry in scope.
-- [ ] CLISEC-CK-DESIGN-SUBJECT-01-05 — The contract records the reviewed paths and evidence identities with their dates.
-- [ ] CLISEC-CK-DESIGN-SUBJECT-01-06 — The contract states the affected users, automation, reviewer, decision owner, and observable assurance outcome.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-04 — The contract identifies the exact source in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-05 — The contract records the reviewed paths.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-06 — The contract states the affected users.
 - [ ] CLISEC-CK-DESIGN-SUBJECT-01-07 — A nearby runtime, target, shell, environment, artifact, or entry is not included without its own evidence subject.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-08 — The contract identifies the exact artifact in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-09 — The contract identifies the exact runtime in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-10 — The contract identifies the exact target tuple in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-11 — The contract identifies the exact delivery form in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-12 — The contract identifies the exact consumer entry in scope.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-13 — The contract records the evidence identities.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-14 — The contract records each evidence identity's date.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-15 — The contract states the affected automation.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-16 — The contract names the reviewer.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-17 — The contract names the decision owner.
+- [ ] CLISEC-CK-DESIGN-SUBJECT-01-18 — The contract states the observable assurance outcome.
 
 ### Design lifecycle > Subject and authority > Separate effect authority > CLISEC-SC-DESIGN-AUTHORITY-01
 
@@ -167,11 +197,21 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-DESIGN-CONTROL-01-01 — Every material attack path maps to a distinct security requirement.
 - [ ] CLISEC-CK-DESIGN-CONTROL-01-02 — Every control states the exact attack-path step it changes.
 - [ ] CLISEC-CK-DESIGN-CONTROL-01-03 — Every control states its expected observable behavior.
-- [ ] CLISEC-CK-DESIGN-CONTROL-01-04 — Every control states its deny or failure behavior.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-04 — Every control states its deny behavior.
 - [ ] CLISEC-CK-DESIGN-CONTROL-01-05 — Every control names one implementation owner.
-- [ ] CLISEC-CK-DESIGN-CONTROL-01-06 — Every control names one evidence owner and exact evidence subject.
-- [ ] CLISEC-CK-DESIGN-CONTROL-01-07 — Every control records its evidence limits and reopen trigger.
-- [ ] CLISEC-CK-DESIGN-CONTROL-01-08 — Prevention, containment, disclosure, detection, redaction, cancellation, cleanup, and recovery obligations are present when the threat requires them.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-06 — Every control names one evidence owner.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-07 — Every control records its evidence limits.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-08 — A prevention obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-09 — A containment obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-10 — A disclosure obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-11 — A detection obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-12 — A redaction obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-13 — A cancellation obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-14 — A cleanup obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-15 — A recovery obligation is present when the threat requires it.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-16 — Every control states its failure behavior.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-17 — Every control names its exact evidence subject.
+- [ ] CLISEC-CK-DESIGN-CONTROL-01-18 — Every control records its reopen trigger.
 
 ### Design lifecycle > Control and evidence contract > Cosmetic compliance > CLISEC-SC-DESIGN-CONTROL-02
 
@@ -185,18 +225,32 @@ records only the observable requirement for its leaf scenario.
 ### Design lifecycle > Stop and recovery design > Missing assurance prerequisite > CLISEC-SC-DESIGN-STOP-01
 
 - [ ] CLISEC-CK-DESIGN-STOP-01-01 — A missing answer-changing trust fact yields an exact stop.
-- [ ] CLISEC-CK-DESIGN-STOP-01-02 — A missing control, implementation owner, or evidence owner yields an exact stop.
+- [ ] CLISEC-CK-DESIGN-STOP-01-02 — A missing control yields an exact stop.
 - [ ] CLISEC-CK-DESIGN-STOP-01-03 — Missing current authority for a required effect yields an exact stop.
-- [ ] CLISEC-CK-DESIGN-STOP-01-04 — An uncontained partial effect or unsafe recovery path yields an exact stop.
-- [ ] CLISEC-CK-DESIGN-STOP-01-05 — The stop records the affected threat, asset, safe state, retained effects, risk, owner, first non-mutating recovery action, and resume condition.
+- [ ] CLISEC-CK-DESIGN-STOP-01-04 — An uncontained partial effect yields an exact stop.
+- [ ] CLISEC-CK-DESIGN-STOP-01-05 — The stop records the affected threat.
+- [ ] CLISEC-CK-DESIGN-STOP-01-06 — A missing implementation owner yields an exact stop.
+- [ ] CLISEC-CK-DESIGN-STOP-01-07 — A missing evidence owner yields an exact stop.
+- [ ] CLISEC-CK-DESIGN-STOP-01-08 — An unsafe recovery path yields an exact stop.
+- [ ] CLISEC-CK-DESIGN-STOP-01-09 — The stop records the affected asset.
+- [ ] CLISEC-CK-DESIGN-STOP-01-10 — The stop records the current safe state.
+- [ ] CLISEC-CK-DESIGN-STOP-01-11 — The stop records the retained effects.
+- [ ] CLISEC-CK-DESIGN-STOP-01-12 — The stop records the residual risk.
+- [ ] CLISEC-CK-DESIGN-STOP-01-13 — The stop records the recovery owner.
+- [ ] CLISEC-CK-DESIGN-STOP-01-14 — The stop records the first non-mutating recovery action.
+- [ ] CLISEC-CK-DESIGN-STOP-01-15 — The stop records the resume condition.
 
 ### Design lifecycle > Stop and recovery design > Residual uncertainty > CLISEC-SC-DESIGN-RISK-01
 
 - [ ] CLISEC-CK-DESIGN-RISK-01-01 — Every untested, unavailable, stale, or conflicting path remains visible.
 - [ ] CLISEC-CK-DESIGN-RISK-01-02 — Every residual risk records its remaining attack path and affected asset.
 - [ ] CLISEC-CK-DESIGN-RISK-01-03 — Every residual risk records its consequence and evidence limit.
-- [ ] CLISEC-CK-DESIGN-RISK-01-04 — Every residual risk records its control owner, decision owner, acceptance authority, recovery owner, and review trigger.
+- [ ] CLISEC-CK-DESIGN-RISK-01-04 — Every residual risk records its control owner.
 - [ ] CLISEC-CK-DESIGN-RISK-01-05 — The assurance author does not accept residual risk for another owner.
+- [ ] CLISEC-CK-DESIGN-RISK-01-06 — Every residual risk records its decision owner.
+- [ ] CLISEC-CK-DESIGN-RISK-01-07 — Every residual risk records its acceptance authority.
+- [ ] CLISEC-CK-DESIGN-RISK-01-08 — Every residual risk records its recovery owner.
+- [ ] CLISEC-CK-DESIGN-RISK-01-09 — Every residual risk records its review trigger.
 
 ### Development lifecycle > Threat analysis > Option-shaped and passthrough input > CLISEC-SC-DEVELOP-ARGUMENT-01
 
@@ -204,6 +258,85 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-DEVELOP-ARGUMENT-01-02 — Option-shaped operands have an explicit `--` or equivalent accepted interpretation boundary.
 - [ ] CLISEC-CK-DEVELOP-ARGUMENT-01-03 — Target-program option injection remains modeled after shell tokenization is removed.
 - [ ] CLISEC-CK-DEVELOP-ARGUMENT-01-04 — Control characters, oversized work, malformed values, and duplicate values have bounded failure behavior.
+
+### Development lifecycle > Threat analysis > Untrusted shell-completion input and candidate data > CLISEC-SC-DEVELOP-COMPLETION-01
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-01 — Partial shell input remains untrusted through completion.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-02 — Local completion-lookup data remains untrusted through completion.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-03 — Command-shaped partial input cannot execute through completion.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-04 — Option-shaped partial input cannot become an accepted command option through completion.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-05 — Option-shaped candidate data remains data through completion.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-06 — Completion does not evaluate a candidate to establish safety.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-07 — Completion depends on no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-08 — Completion discloses no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-09 — Completion performs no product-state mutation.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-10 — Completion emits no prompt.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-01-11 — Completion performs no default network access.
+
+### Development lifecycle > Threat analysis > Exact-shell completion assurance > CLISEC-SC-DEVELOP-COMPLETION-02
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-01 — Shipped Bash candidates are escaped for Bash.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-02 — Shipped Bash behavior evidence covers the exact consumer completion path.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-03 — Shipped Zsh candidates are escaped for Zsh.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-04 — Shipped Zsh behavior evidence covers the exact consumer completion path.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-05 — Shipped Fish candidates are escaped for Fish.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-06 — Shipped Fish behavior evidence covers the exact consumer completion path.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-07 — Shipped PowerShell candidates are escaped for PowerShell.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-08 — Shipped PowerShell behavior evidence covers the exact consumer completion path.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-09 — Evidence for one shell is not widened to another shell.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-02-10 — Generation-unit evidence is not substituted for exact consumer-path behavior evidence.
+
+### Development lifecycle > Threat analysis > Accepted local completion lookup > CLISEC-SC-DEVELOP-COMPLETION-03
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-01 — Local completion lookup has a declared cost bound.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-02 — Local completion lookup has a declared failure behavior.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-03 — Local completion lookup has a declared privacy boundary.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-04 — Local completion lookup has a declared cancellation boundary.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-05 — Local completion lookup has a declared cleanup duty.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-06 — Local completion lookup has a declared recovery route.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-03-07 — Accepted lookup data cannot bypass exact-shell candidate escaping.
+
+### Development lifecycle > Threat analysis > Denied local completion lookup > CLISEC-SC-DEVELOP-COMPLETION-04
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-01 — Lookup denial follows its declared failure behavior.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-02 — Lookup denial stays within the declared cost bound.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-03 — Lookup denial stays within the declared privacy boundary.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-04 — Lookup denial emits no prompt.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-05 — Lookup denial performs no product-state mutation.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-06 — Lookup denial performs no default network access.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-07 — Lookup denial depends on no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-08 — Lookup denial discloses no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-09 — Lookup denial preserves the current authoritative state.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-10 — Lookup denial performs its declared cleanup.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-04-11 — Lookup denial exposes its declared safe recovery route.
+
+### Development lifecycle > Threat analysis > Failed local completion lookup > CLISEC-SC-DEVELOP-COMPLETION-05
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-01 — Lookup failure follows its declared failure behavior.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-02 — Lookup failure stays within the declared cost bound.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-03 — Lookup failure stays within the declared privacy boundary.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-04 — Lookup failure emits no prompt.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-05 — Lookup failure performs no product-state mutation.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-06 — Lookup failure performs no default network access.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-07 — Lookup failure depends on no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-08 — Lookup failure discloses no secret value.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-09 — Lookup failure preserves the current authoritative state.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-10 — Lookup failure performs its declared cleanup.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-05-11 — Lookup failure exposes its declared safe recovery route.
+
+### Development lifecycle > Owner routing > Completion owner handoff > CLISEC-SC-DEVELOP-COMPLETION-06
+
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-01 — Completion schema and semantic behavior remain with [`cli-architecture`](../cli-architecture/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-02 — Completion expression remains with [`cli-interface`](../cli-interface/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-03 — Completion threats remain with Security.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-04 — Completion control requirements remain with Security.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-05 — Completion assurance results remain with Security.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-06 — Completion generation mechanisms route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-07 — Exact-shell behavior evidence routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-08 — Package-backed completion shipping routes to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-09 — Package-backed completion installation routes to TypeScript Packaging.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-10 — Direct non-archive completion shipping routes to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-11 — Direct non-archive completion installation routes to TypeScript CLI Delivery.
 
 ### Development lifecycle > Threat analysis > Hostile stdin, environment, configuration, or current directory > CLISEC-SC-DEVELOP-AMBIENT-01
 
@@ -278,25 +411,41 @@ records only the observable requirement for its leaf scenario.
 
 ### Development lifecycle > Owner routing > Security requirement crosses into a specialist mechanism > CLISEC-SC-DEVELOP-OWNER-01
 
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-01 — Semantic commands, states, streams, and compatibility route to `cli-architecture`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-02 — Safe wording and terminal rendering route to `cli-interface`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-03 — Current execution-platform facts route to `cli-platform`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-04 — TypeScript realization and external-input modeling route to `typescript-development` and `typescript-typing`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-05 — Runtime and adversarial proof routes to `typescript-testing`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-06 — Package and direct-delivery mechanisms route to `typescript-packaging` and `typescript-cli-delivery`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-07 — Compiler and Bun mechanism facts route to `typescript-toolchain`.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-08 — Residual-risk and readiness inputs route to `cli-release` without transferring acceptance authority.
-- [ ] CLISEC-CK-DEVELOP-OWNER-01-09 — Multi-owner state, blockers, and handoff route to `cli-development`.
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-01 — Semantic commands, states, streams, and compatibility route to [`cli-architecture`](../cli-architecture/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-02 — Safe wording and terminal rendering route to [`cli-interface`](../cli-interface/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-03 — Current execution-platform facts route to [`cli-platform`](../cli-platform/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-04 — TypeScript realization routes to [`typescript-development`](../../typescript/typescript-development/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-05 — Runtime and adversarial proof routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-06 — Package mechanisms route to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-07 — Compiler and Bun mechanism facts route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-08 — Residual-risk and readiness inputs route to [`cli-release`](../cli-release/SKILL.md) without transferring acceptance authority.
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-09 — Multi-owner state, blockers, and handoff route to [`cli-development`](../cli-development/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-10 — External-input modeling routes to [`typescript-typing`](../../typescript/typescript-typing/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-OWNER-01-11 — Direct-delivery mechanisms route to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
 
 ### Development lifecycle > Evidence reconciliation > Exact current evidence > CLISEC-SC-DEVELOP-EVIDENCE-01
 
 - [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-01 — Each evidence record names the exact requirement and control.
 - [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-02 — Each evidence record names the final implementation or unit identity and consumer entry.
-- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-03 — Each evidence record names the runtime, target tuple, shell, environment, and delivery form that apply.
-- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-04 — Each evidence record names its method, date, result, and first failure signal.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-03 — Each evidence record names the runtime that applies.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-04 — Each evidence record names its method.
 - [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-05 — Each evidence record states its limits and unproved cases.
-- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-06 — Ordinary, adversarial, denied, interrupted, partial, containment, cleanup, and recovery evidence are present when their modeled paths require them.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-06 — Ordinary evidence is present when the modeled path requires it.
 - [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-07 — Security reconciliation does not execute the specialist evidence mechanism.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-08 — Each evidence record names the target tuple that applies.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-09 — Each evidence record names the shell that applies.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-10 — Each evidence record names the environment that applies.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-11 — Each evidence record names the delivery form that applies.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-12 — Each evidence record names its date.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-13 — Each evidence record names its result.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-14 — Each evidence record names its first failure signal.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-15 — Adversarial evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-16 — Denial evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-17 — Interruption evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-18 — Partial-state evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-19 — Containment evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-20 — Cleanup evidence is present when the modeled path requires it.
+- [ ] CLISEC-CK-DEVELOP-EVIDENCE-01-21 — Recovery evidence is present when the modeled path requires it.
 
 ### Development lifecycle > Evidence reconciliation > Failed, stale, absent, or conflicting evidence > CLISEC-SC-DEVELOP-EVIDENCE-02
 
@@ -329,6 +478,39 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-PRODUCT-AUTOMATION-01-03 — Option-shaped data remains data across the accepted automation path.
 - [ ] CLISEC-CK-PRODUCT-AUTOMATION-01-04 — Structured output contains no active terminal control or secret value.
 - [ ] CLISEC-CK-PRODUCT-AUTOMATION-01-05 — Exit state and structured completion do not disguise a denied, failed, interrupted, or partial effect as success.
+
+### Product lifecycle > Use and denial > Shipped shell completion > CLISEC-SC-PRODUCT-COMPLETION-01
+
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-01 — A Bash completion candidate cannot execute partial input.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-02 — A Zsh completion candidate cannot execute partial input.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-03 — A Fish completion candidate cannot execute partial input.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-04 — A PowerShell completion candidate cannot execute partial input.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-05 — Completion performs no product-state mutation.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-06 — Completion emits no prompt.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-07 — Completion performs no default network access.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-08 — Completion depends on no secret value.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-09 — Completion discloses no secret value.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-01-10 — Option-shaped completion data remains data.
+
+### Product lifecycle > Use and denial > Completion lookup denial > CLISEC-SC-PRODUCT-COMPLETION-02
+
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-01 — A denied lookup returns the declared denial result.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-02 — A denied lookup performs no product-state mutation.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-03 — A denied lookup emits no prompt.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-04 — A denied lookup performs no default network access.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-05 — A denied lookup discloses no secret value.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-06 — A denied lookup preserves the current authoritative state.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-02-07 — A denied lookup exposes the declared safe recovery route.
+
+### Product lifecycle > Use and denial > Completion lookup failure > CLISEC-SC-PRODUCT-COMPLETION-03
+
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-01 — A failed lookup returns the declared failure result.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-02 — A failed lookup performs no product-state mutation.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-03 — A failed lookup emits no prompt.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-04 — A failed lookup performs no default network access.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-05 — A failed lookup discloses no secret value.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-06 — A failed lookup preserves the current authoritative state.
+- [ ] CLISEC-CK-PRODUCT-COMPLETION-03-07 — A failed lookup exposes the declared safe recovery route.
 
 ### Product lifecycle > Effects and recovery > Destructive or partial consumer outcome > CLISEC-SC-PRODUCT-RECOVERY-01
 
