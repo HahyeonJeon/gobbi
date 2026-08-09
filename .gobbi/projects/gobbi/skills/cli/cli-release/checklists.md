@@ -183,7 +183,7 @@ answer, score, remediation, or evaluation verdict.
 
 ### Design lifecycle > Policy identity > Complete early policy > CLIRLSE-SC-DESIGN-POLICY-03
 
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-01 — The early policy has one versioned product and policy identity.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-01 — The early policy has one versioned product identity.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-02 — The early policy identifies the accepted Architecture contract.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-03 — The early policy identifies the required Security assurance subject.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-04 — The early policy lists every required Platform fact.
@@ -200,6 +200,7 @@ answer, score, remediation, or evaluation verdict.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-15 — The early policy states each response owner.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-16 — The early policy states each deprecation path.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-17 — The early policy states each retirement condition.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-18 — The early policy has one versioned policy identity.
 
 ### Design lifecycle > Policy identity > Residual-risk boundary > CLIRLSE-SC-DESIGN-RISK-01
 
@@ -239,12 +240,13 @@ answer, score, remediation, or evaluation verdict.
 
 ### Design lifecycle > Delivery separation > Hybrid product > CLIRLSE-SC-DESIGN-IDENTITY-03
 
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-01 — A hybrid retains one package-archive identity and one direct-unit identity.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-01 — A hybrid retains one package-archive identity.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-02 — A hybrid retains separate resolved consumer entries for each form.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-03 — A hybrid retains separate update obligations for each form.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-04 — Shared command semantics do not merge artifact evidence.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-05 — A hybrid retains separate recovery obligations for each form.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-06 — Shared command semantics do not merge consumer evidence.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-07 — A hybrid retains one direct-unit identity.
 
 ### Design lifecycle > Compatibility and recovery > Supported state transition > CLIRLSE-SC-DESIGN-COMPAT-01
 
@@ -325,26 +327,29 @@ answer, score, remediation, or evaluation verdict.
 ### Development lifecycle > Evidence reconciliation > Exact package consumer evidence > CLIRLSE-SC-DEVELOP-EVIDENCE-01
 
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-01 — Package evidence names the exact archive.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-02 — Package evidence names the package manager and installation policy.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-02 — Package evidence names the package manager.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-03 — Package evidence proves the resolved command came from that installed archive.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-04 — Package evidence names the exact runtime and target tuple.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-04 — Package evidence names the exact runtime.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-05 — Package evidence states its date.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-06 — Package evidence names the exact archive digest.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-07 — Package evidence states its result.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-08 — Package evidence states its failure signal.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-09 — Package evidence states its limitations.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-10 — Package evidence names the installation policy.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-11 — Package evidence names the exact target tuple.
 
 ### Development lifecycle > Evidence reconciliation > Exact standalone consumer evidence > CLIRLSE-SC-DEVELOP-EVIDENCE-02
 
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-01 — Direct evidence names the exact unit or revision.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-02 — Direct evidence names the target distribution or installation method.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-03 — Direct evidence proves the resolved command selected that exact unit.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-04 — Direct evidence names the exact runtime and target tuple.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-04 — Direct evidence names the exact runtime.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-05 — Direct evidence states its date.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-06 — Direct evidence names the digest when applicable.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-07 — Direct evidence states its result.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-08 — Direct evidence states its failure signal.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-09 — Direct evidence states its limitations.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-10 — Direct evidence names the exact target tuple.
 
 ### Development lifecycle > Evidence reconciliation > Proxy capability or metadata > CLIRLSE-SC-DEVELOP-EVIDENCE-03
 
@@ -421,56 +426,97 @@ answer, score, remediation, or evaluation verdict.
 ### Development lifecycle > Invalidation and reopen > Readiness input changes > CLIRLSE-SC-DEVELOP-STALE-01
 
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-01 — A policy change invalidates affected readiness.
-- [ ] CLIRLSE-CK-DEVELOP-STALE-01-02 — A Platform fact, Security assurance, compatibility, recovery, or support change invalidates affected readiness.
-- [ ] CLIRLSE-CK-DEVELOP-STALE-01-03 — An evidence date or owner result change reopens only entries that consumed it.
-- [ ] CLIRLSE-CK-DEVELOP-STALE-01-04 — Prior readiness remains historical with its original subject and time.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-02 — A Platform fact change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-03 — An evidence date change reopens only entries that consumed it.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-04 — Prior readiness remains historical with its original subject.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-05 — A tuple change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-06 — A delivery-identity change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-07 — An artifact change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-08 — A revision change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-09 — A consumer-entry change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-10 — A Security assurance change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-11 — A compatibility change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-12 — A recovery change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-13 — A support change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-14 — An owner result change reopens only entries that consumed it.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-15 — Prior readiness remains historical with its original time.
 
 ### Development lifecycle > Invalidation and reopen > Architecture compatibility changes > CLIRLSE-SC-DEVELOP-STALE-02
 
-- [ ] CLIRLSE-CK-DEVELOP-STALE-02-01 — Command grammar, semantic result, stream, schema, code, or exit compatibility returns to `cli-architecture`.
-- [ ] CLIRLSE-CK-DEVELOP-STALE-02-02 — Runtime, target, artifact, installation, data, update, support, deprecation, or retirement compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-01 — Command-grammar compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-02 — Runtime compatibility remains with `cli-release`.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-02-03 — A change spanning both compatibility axes reopens both owners separately.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-04 — Semantic-result compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-05 — Stream compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-06 — Schema compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-07 — Code compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-08 — Exit compatibility returns to `cli-architecture`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-09 — Target compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-10 — Artifact compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-11 — Installation compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-12 — Data compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-13 — Update compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-14 — Support compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-15 — Deprecation compatibility remains with `cli-release`.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-02-16 — Retirement compatibility remains with `cli-release`.
 
 ### Development lifecycle > Authority handoff > Readiness precedes an outward action > CLIRLSE-SC-DEVELOP-AUTHORITY-01
 
 - [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-01 — Readiness is distinct from credential authority.
-- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-02 — Readiness is distinct from publication, installation, promotion, or rollout authority.
-- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-03 — Readiness is distinct from rollback or forward-fix authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-02 — Readiness is distinct from publication authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-03 — Readiness is distinct from rollback authority.
 - [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-04 — Readiness is not reported as proof that an external action occurred.
 - [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-05 — Post-release observation is not inferred from readiness or action authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-06 — Readiness is distinct from installation authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-07 — Readiness is distinct from promotion authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-08 — Readiness is distinct from rollout authority.
+- [ ] CLIRLSE-CK-DEVELOP-AUTHORITY-01-09 — Readiness is distinct from forward-fix authority.
 
 ### Development lifecycle > Authority handoff > Authority is absent > CLIRLSE-SC-DEVELOP-HANDOFF-02
 
-- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-01 — The cold handoff names the exact proposed action, subject, destination, and owner.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-01 — The cold handoff names the exact proposed action.
 - [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-02 — The cold handoff names the separate authority required for that action.
-- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-03 — The cold handoff preserves the current artifact, consumer, target, and readiness state.
-- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-04 — The cold handoff names the first unproved action and exact resume condition.
-- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-05 — No credential, publication, installation, rollout, rollback, forward-fix, or network action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-03 — The cold handoff preserves the current artifact.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-04 — The cold handoff names the first unproved action.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-05 — No credential action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-06 — The cold handoff names the exact subject.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-07 — The cold handoff names the exact destination.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-08 — The cold handoff names the exact owner.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-09 — The cold handoff preserves the current consumer.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-10 — The cold handoff preserves the current target.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-11 — The cold handoff preserves the current readiness state.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-12 — The cold handoff names the exact resume condition.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-13 — No publication action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-14 — No installation action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-15 — No rollout action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-16 — No rollback action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-17 — No forward-fix action is performed by the handoff.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-02-18 — No network action is performed by the handoff.
 
 ### Product lifecycle > Acquisition and invocation > Consumer installs a package-backed command > CLIRLSE-SC-PRODUCT-CONSUME-01
 
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-01 — Package support names the exact installed archive.
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-02 — Package support states the registry or installation update route and its recovery limit.
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-03 — Package support states the applicable support window and response owner.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-02 — Package support states the registry or installation update route.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-03 — Package support states the applicable support window.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-04 — Package support names the package manager.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-05 — Package support names the exact target.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-06 — Package support names the exact runtime.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-07 — Package support names the resolved command.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-08 — Package support states the recovery limit of the registry or installation update route.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-09 — Package support states the response owner.
 
 ### Product lifecycle > Acquisition and invocation > Consumer receives a standalone or direct command > CLIRLSE-SC-PRODUCT-CONSUME-02
 
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-01 — Direct support names the exact unit or revision.
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-02 — Direct support states the update, prior-unit, and recovery route.
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-03 — Direct support states the applicable support window and response owner.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-02 — Direct support states the update route.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-03 — Direct support states the applicable support window.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-04 — Direct support names the exact target.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-05 — Direct support names the exact runtime.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-06 — Direct support names the distribution or installation method.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-07 — Direct support names the resolved command.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-08 — Direct support states the prior unit.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-09 — Direct support states the recovery route.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-10 — Direct support states the response owner.
 
 ### Product lifecycle > Acquisition and invocation > Consumer runs an unpromised tuple > CLIRLSE-SC-PRODUCT-CONSUME-03
 
@@ -480,58 +526,95 @@ answer, score, remediation, or evaluation verdict.
 
 ### Product lifecycle > Update and recovery > Update crosses a persisted-data boundary > CLIRLSE-SC-PRODUCT-UPDATE-01
 
-- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-01 — Every supported update states the prior and intended data and configuration versions.
-- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-02 — Every supported update states its interruption and partial-state behavior.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-01 — Every supported update states the prior data version.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-02 — Every supported update states its interruption behavior.
 - [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-03 — An incompatible consumer refuses without silently rewriting or discarding recoverable state.
-- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-04 — Every accepted recovery preserves data and configuration needed by the resulting supported state.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-04 — Every accepted recovery preserves data needed by the resulting supported state.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-05 — Every supported update states the intended data version.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-06 — Every supported update states the prior configuration version.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-07 — Every supported update states the intended configuration version.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-08 — Every supported update states its partial-state behavior.
+- [ ] CLIRLSE-CK-PRODUCT-UPDATE-01-09 — Every accepted recovery preserves configuration needed by the resulting supported state.
 
 ### Product lifecycle > Update and recovery > Rollback cannot reach or safely run > CLIRLSE-SC-PRODUCT-RECOVERY-01
 
 - [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-01 — Rollback is unsupported when the delivery route cannot reach the exact affected consumers.
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-02 — Rollback is unsupported when runtime, installation, data, configuration, or update compatibility is unproved.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-02 — Rollback is unsupported when runtime compatibility is unproved.
 - [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-03 — Availability of an old artifact alone is not treated as rollback safety.
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-04 — An unavailable rollback preserves the exact current state and next safe route.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-04 — An unavailable rollback preserves the exact current state.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-05 — Rollback is unsupported when installation compatibility is unproved.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-06 — Rollback is unsupported when data compatibility is unproved.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-07 — Rollback is unsupported when configuration compatibility is unproved.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-08 — Rollback is unsupported when update compatibility is unproved.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-01-09 — An unavailable rollback preserves the next safe route.
 
 ### Product lifecycle > Update and recovery > Distribution is withdrawn after acquisition > CLIRLSE-SC-PRODUCT-RECOVERY-02
 
 - [ ] CLIRLSE-CK-PRODUCT-RECOVERY-02-01 — Withdrawal states which later acquisitions it can prevent.
 - [ ] CLIRLSE-CK-PRODUCT-RECOVERY-02-02 — Withdrawal does not claim to change artifacts already installed, cached, mirrored, or retained.
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-02-03 — Existing consumers retain an explicit support and recovery disposition after withdrawal.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-02-03 — Existing consumers retain an explicit support disposition after withdrawal.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-02-04 — Existing consumers retain an explicit recovery disposition after withdrawal.
 
 ### Product lifecycle > Update and recovery > A later compatible correction is selected > CLIRLSE-SC-PRODUCT-RECOVERY-03
 
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-01 — Forward-fix judgment names the faulty artifact and exact affected consumers.
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-02 — Forward-fix judgment names the later artifact's required runtime, installation, data, configuration, and update compatibility.
-- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-03 — Forward-fix judgment states its delivery reach and consumers it cannot reach.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-01 — Forward-fix judgment names the faulty artifact.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-02 — Forward-fix judgment names the later artifact's required runtime compatibility.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-03 — Forward-fix judgment states its delivery reach.
 - [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-04 — Forward-fix judgment does not perform or authorize the corrective release.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-05 — Forward-fix judgment names the exact affected consumers.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-06 — Forward-fix judgment names the later artifact's required installation compatibility.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-07 — Forward-fix judgment names the later artifact's required data compatibility.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-08 — Forward-fix judgment names the later artifact's required configuration compatibility.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-09 — Forward-fix judgment names the later artifact's required update compatibility.
+- [ ] CLIRLSE-CK-PRODUCT-RECOVERY-03-10 — Forward-fix judgment states the consumers it cannot reach.
 
 ### Product lifecycle > Ongoing support > Fact or evidence becomes stale during support > CLIRLSE-SC-PRODUCT-SUPPORT-01
 
 - [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-01 — Every readiness input has an answer-changing refresh trigger.
 - [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-02 — A changed current fact is refreshed before the affected support claim is renewed.
 - [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-03 — A required fact or evidence result that cannot be refreshed changes the affected readiness entry to `blocked`.
-- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-04 — Historical evidence retains its original subject, date, and limits.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-04 — Historical evidence retains its original subject.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-05 — Historical evidence retains its original date.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-01-06 — Historical evidence retains its original limits.
 
 ### Product lifecycle > Ongoing support > One delivery form fails while another remains valid > CLIRLSE-SC-PRODUCT-SUPPORT-02
 
 - [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-01 — A package failure changes only the affected package entries unless shared evidence is independently invalidated.
 - [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-02 — A direct-unit failure changes only the affected direct entries unless shared evidence is independently invalidated.
-- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-03 — Each surviving form retains its own current artifact, consumer, compatibility, recovery, and support evidence.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-03 — Each surviving form retains its own current artifact evidence.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-04 — Each surviving form retains its own current consumer evidence.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-05 — Each surviving form retains its own current compatibility evidence.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-06 — Each surviving form retains its own current recovery evidence.
+- [ ] CLIRLSE-CK-PRODUCT-SUPPORT-02-07 — Each surviving form retains its own current support evidence.
 
 ### Product lifecycle > Deprecation and retirement > Delivery form enters deprecation > CLIRLSE-SC-PRODUCT-DEPRECATE-01
 
-- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-01 — Deprecation names the exact runtime, target, delivery identity, and consumer entry affected.
-- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-02 — Deprecation names the replacement and compatibility window.
-- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-03 — Deprecation states acquisition, update, data, configuration, recovery, and support behavior during the window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-01 — Deprecation names the exact runtime affected.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-02 — Deprecation names the replacement.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-03 — Deprecation states acquisition behavior during the window.
 - [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-04 — Deprecation of one form does not silently deprecate another form.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-05 — Deprecation names the exact target affected.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-06 — Deprecation names the exact delivery identity affected.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-07 — Deprecation names the exact consumer entry affected.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-08 — Deprecation names the compatibility window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-09 — Deprecation states update behavior during the window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-10 — Deprecation states data behavior during the window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-11 — Deprecation states configuration behavior during the window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-12 — Deprecation states recovery behavior during the window.
+- [ ] CLIRLSE-CK-PRODUCT-DEPRECATE-01-13 — Deprecation states support behavior during the window.
 
 ### Product lifecycle > Deprecation and retirement > Delivery form retires > CLIRLSE-SC-PRODUCT-RETIRE-01
 
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-01 — Retirement states whether each artifact remains obtainable.
-- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-02 — Retirement states the fate of retained data, configuration, credentials, and diagnostics.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-02 — Retirement states the fate of retained data.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-03 — Retirement states the uninstall or cessation path.
-- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-04 — Retirement states the remaining recovery route and its limits.
-- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-05 — Retirement states the final support owner and end condition.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-04 — Retirement states the remaining recovery route.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-05 — Retirement states the final support owner.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-06 — Retirement of one delivery form does not silently retire another form.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-07 — Retirement states whether each artifact remains installed.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-08 — Retirement states whether each artifact remains runnable.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-09 — Retirement states the fate of retained configuration.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-10 — Retirement states the fate of retained credentials.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-11 — Retirement states the fate of retained diagnostics.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-12 — Retirement states the limits of the remaining recovery route.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-13 — Retirement states the support end condition.
