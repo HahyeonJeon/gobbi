@@ -420,10 +420,15 @@ answer, score, remediation, or evaluation verdict.
 
 ### Development lifecycle > Invalidation and reopen > Readiness input changes > CLIRLSE-SC-DEVELOP-STALE-01
 
-- [ ] CLIRLSE-CK-DEVELOP-STALE-01-01 — A policy, tuple, delivery identity, artifact, revision, or consumer-entry change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-01 — A policy change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-02 — A Platform fact, Security assurance, compatibility, recovery, or support change invalidates affected readiness.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-03 — An evidence date or owner result change reopens only entries that consumed it.
 - [ ] CLIRLSE-CK-DEVELOP-STALE-01-04 — Prior readiness remains historical with its original subject and time.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-05 — A tuple change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-06 — A delivery-identity change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-07 — An artifact change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-08 — A revision change invalidates affected readiness.
+- [ ] CLIRLSE-CK-DEVELOP-STALE-01-09 — A consumer-entry change invalidates affected readiness.
 
 ### Development lifecycle > Invalidation and reopen > Architecture compatibility changes > CLIRLSE-SC-DEVELOP-STALE-02
 
@@ -449,15 +454,23 @@ answer, score, remediation, or evaluation verdict.
 
 ### Product lifecycle > Acquisition and invocation > Consumer installs a package-backed command > CLIRLSE-SC-PRODUCT-CONSUME-01
 
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-01 — Package support names the exact installed archive, package manager, target, runtime, and resolved command.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-01 — Package support names the exact installed archive.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-02 — Package support states the registry or installation update route and its recovery limit.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-03 — Package support states the applicable support window and response owner.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-04 — Package support names the package manager.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-05 — Package support names the exact target.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-06 — Package support names the exact runtime.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-01-07 — Package support names the resolved command.
 
 ### Product lifecycle > Acquisition and invocation > Consumer receives a standalone or direct command > CLIRLSE-SC-PRODUCT-CONSUME-02
 
-- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-01 — Direct support names the exact unit or revision, target, runtime, distribution or installation method, and resolved command.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-01 — Direct support names the exact unit or revision.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-02 — Direct support states the update, prior-unit, and recovery route.
 - [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-03 — Direct support states the applicable support window and response owner.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-04 — Direct support names the exact target.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-05 — Direct support names the exact runtime.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-06 — Direct support names the distribution or installation method.
+- [ ] CLIRLSE-CK-PRODUCT-CONSUME-02-07 — Direct support names the resolved command.
 
 ### Product lifecycle > Acquisition and invocation > Consumer runs an unpromised tuple > CLIRLSE-SC-PRODUCT-CONSUME-03
 
@@ -514,9 +527,11 @@ answer, score, remediation, or evaluation verdict.
 
 ### Product lifecycle > Deprecation and retirement > Delivery form retires > CLIRLSE-SC-PRODUCT-RETIRE-01
 
-- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-01 — Retirement states whether each artifact remains obtainable, installed, or runnable.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-01 — Retirement states whether each artifact remains obtainable.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-02 — Retirement states the fate of retained data, configuration, credentials, and diagnostics.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-03 — Retirement states the uninstall or cessation path.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-04 — Retirement states the remaining recovery route and its limits.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-05 — Retirement states the final support owner and end condition.
 - [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-06 — Retirement of one delivery form does not silently retire another form.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-07 — Retirement states whether each artifact remains installed.
+- [ ] CLIRLSE-CK-PRODUCT-RETIRE-01-08 — Retirement states whether each artifact remains runnable.
