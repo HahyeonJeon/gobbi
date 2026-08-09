@@ -5,7 +5,7 @@ line-oriented CLI semantic model and its Architecture-assigned stream roles. It 
 `human`, `plain`, `json`, and `jsonl` rendering, diagnostics, prompts, progress, line-oriented visualization,
 accessibility, localization, adaptation, and the independent color, progress, input, ASCII, and screen-reader
 controls governed by [`cli-interface`](SKILL.md), frozen for this source at SHA-256
-`78d55f982c8253ccc4567d19a92cc1b2017988f24866302b8ccda9095645b6d1`. Its stable owner prefix is `CLIINTF`.
+`5c711f4227a7bd7756612eb70ac10e193fb345a05a5e23b5eddd6a45c4d8763c`. Its stable owner prefix is `CLIINTF`.
 
 Command meaning, stream-role assignment, parser and configuration semantics, current platform facts,
 security requirements, TypeScript implementation and process tests, target support, automatic paging, and
@@ -87,7 +87,7 @@ criteria-derived verdict.
   - Shell completion expression
     - `CLIINTF-SC-DESIGN-COMPLETION-01` — Completion expression is inert, deterministic, decoration-free, and exact-shell suitable.
   - Completion owner handoff
-    - `CLIINTF-SC-DESIGN-COMPLETION-02` — Completion expression preserves semantic, assurance, mechanism, evidence, and delivery ownership.
+    - `CLIINTF-SC-DESIGN-COMPLETION-02` — Completion expression preserves semantic, assurance, generator implementation, generator tool mechanism, evidence, and delivery ownership.
 - Profile and control contract
   - Four-profile expression
     - `CLIINTF-SC-DESIGN-PROFILE-01` — Every accepted profile has one complete stream and interaction expression.
@@ -293,7 +293,7 @@ criteria-derived verdict.
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-01 — Completion expression preserves the accepted Architecture-owned command schema.
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-02 — A requested completion semantic change routes to [`cli-architecture`](../cli-architecture/SKILL.md).
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-03 — A completion threat result routes to [`cli-security`](../cli-security/SKILL.md).
-- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-04 — A completion-generation mechanism routes to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-04 — Completion generator implementation and source logic route to [`typescript-development`](../../typescript/typescript-development/SKILL.md).
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-05 — Exact-shell completion behavior evidence routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-06 — Package-backed completion shipping routes to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md).
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-07 — Direct non-archive completion shipping routes to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
@@ -301,6 +301,10 @@ criteria-derived verdict.
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-09 — A completion assurance result routes to `cli-security`.
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-10 — Package-backed completion installation routes to `typescript-packaging`.
 - [ ] CLIINTF-CK-DESIGN-COMPLETION-02-11 — Direct non-archive completion installation routes to `typescript-cli-delivery`.
+- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-12 — Compiler mechanisms used by the completion generator route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-13 — Build mechanisms used by the completion generator route to `typescript-toolchain`.
+- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-14 — Runtime mechanisms used by the completion generator route to `typescript-toolchain`.
+- [ ] CLIINTF-CK-DESIGN-COMPLETION-02-15 — Other tool mechanisms used by the completion generator route to `typescript-toolchain`.
 
 ### Design lifecycle > Profile and control contract > Four-profile expression > CLIINTF-SC-DESIGN-PROFILE-01
 

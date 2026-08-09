@@ -78,8 +78,10 @@ or PowerShell context without a prompt, progress, prose, color, animation, or wi
 
 Interface owns only this expression. Completion schema and semantic behavior remain with Architecture;
 threat, control, and assurance results route to
-[`cli-security`](../cli-security/SKILL.md). Generation mechanisms route to
-[`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md), exact-shell behavior evidence to
+[`cli-security`](../cli-security/SKILL.md). Completion generator implementation and source logic route to
+[`typescript-development`](../../typescript/typescript-development/SKILL.md). Compiler, build, runtime, and
+other tool mechanisms used by the generator route to
+[`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md). Exact-shell behavior evidence routes to
 [`typescript-testing`](../../typescript/typescript-testing/SKILL.md), package-backed shipping and
 installation to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), and direct
 non-archive shipping and installation to
