@@ -288,12 +288,13 @@ this source. Every condition is unchecked and contains no answer, score, remedia
 ### Design lifecycle > Blocker and handoff design > The record looks complete but omits one identity > CLIDEV-SC-DESIGN-COSMETIC-01
 
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-01 — A record without an exact subject remains incomplete.
-- [ ] CLIDEV-CK-DESIGN-COSMETIC-01-02 — A green label or complete-looking summary does not fill the omitted field.
+- [ ] CLIDEV-CK-DESIGN-COSMETIC-01-02 — A green label does not fill the omitted field.
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-03 — A record without an exact owner remains incomplete.
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-04 — A record without exact evidence remains incomplete.
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-05 — A record without an exact limitation remains incomplete.
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-06 — A record without exact authority remains incomplete.
 - [ ] CLIDEV-CK-DESIGN-COSMETIC-01-07 — A record without an exact reopen identity remains incomplete.
+- [ ] CLIDEV-CK-DESIGN-COSMETIC-01-08 — A complete-looking summary does not fill the omitted field.
 
 ### Development lifecycle > Accepted-input reconciliation > Product inputs agree > CLIDEV-SC-DEVELOP-INPUT-01
 
@@ -317,11 +318,12 @@ this source. Every condition is unchecked and contains no answer, score, remedia
 
 ### Development lifecycle > Accepted-input reconciliation > A Platform fact is Unknown > CLIDEV-SC-DEVELOP-INPUT-02
 
-- [ ] CLIDEV-CK-DEVELOP-INPUT-02-01 — Platform retains the Unknown fact with its exact missing answer-changing fields.
+- [ ] CLIDEV-CK-DEVELOP-INPUT-02-01 — Platform retains the Unknown fact.
 - [ ] CLIDEV-CK-DEVELOP-INPUT-02-02 — No product judgment is inferred from the Unknown fact.
 - [ ] CLIDEV-CK-DEVELOP-INPUT-02-03 — The affected decision records the smallest next fact.
 - [ ] CLIDEV-CK-DEVELOP-INPUT-02-04 — The affected decision records the resume condition.
 - [ ] CLIDEV-CK-DEVELOP-INPUT-02-05 — No support judgment is inferred from the Unknown fact.
+- [ ] CLIDEV-CK-DEVELOP-INPUT-02-06 — Platform records the exact missing answer-changing fields.
 
 ### Development lifecycle > Accepted-input reconciliation > Early release policy arrives after realization > CLIDEV-SC-DEVELOP-POLICY-01
 
@@ -522,8 +524,9 @@ this source. Every condition is unchecked and contains no answer, score, remedia
 
 ### Development lifecycle > Observation and maintenance > Report names another version or tuple > CLIDEV-SC-DEVELOP-OBSERVE-02
 
-- [ ] CLIDEV-CK-DEVELOP-OBSERVE-02-01 — The mismatched report remains a lead with its original identity.
+- [ ] CLIDEV-CK-DEVELOP-OBSERVE-02-01 — The mismatched report remains a lead.
 - [ ] CLIDEV-CK-DEVELOP-OBSERVE-02-02 — The report does not change current support without exact subject evidence.
+- [ ] CLIDEV-CK-DEVELOP-OBSERVE-02-03 — The mismatched report retains its original identity.
 
 ### Development lifecycle > Observation and maintenance > A maintenance request changes several owners > CLIDEV-SC-DEVELOP-MAINTAIN-01
 
