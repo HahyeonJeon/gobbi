@@ -41,14 +41,14 @@ defaults never make a machine consumer infer completeness or failure from termin
 ## Rules
 
 - **MUST define expression for all four accepted profiles: `human`, `plain`, `json`, and `jsonl`.** Every
-  profile preserves Architecture-owned meaning, assigned streams, completeness, failure, and recovery.
+  profile preserves `cli-architecture`-owned meaning, assigned streams, completeness, failure, and recovery.
 - **MUST adapt stdout and stderr separately from their exact destination, TTY state, CI context, width,
   locale, encoding, Unicode capability, and explicit assistive controls.** Detection changes presentation
   defaults only and every explicit control overrides its corresponding automatic default.
 - **NEVER make color, symbols, cursor position, rewritten lines, animation, alignment, or localized wording
   the sole carrier of identity, state, severity, change, completeness, or recovery.** Plain and structured
   output contains no ANSI control sequence or layout-dependent meaning.
-- **MUST keep prompts and progress inside their accepted Architecture stream roles and interaction state.** A
+- **MUST keep prompts and progress inside their accepted `cli-architecture` stream roles and interaction state.** A
   non-interactive path never waits for input, and any terminal mode changed for input is restored after every
   success, failure, EOF, timeout, cancellation, and signal path.
 - **NEVER silently truncate requested data or disguise a partial view as a complete result.** A bounded human
@@ -67,7 +67,7 @@ profiles, examples, exits, configuration, effects, recovery, compatibility, and 
 order when each item applies.
 
 Prefer task-shaped examples that show the exact command and the expected kind of result. Keep an invalid
-invocation's diagnostic on stderr and make any suggestion visibly non-executing. Architecture owns whether
+invocation's diagnostic on stderr and make any suggestion visibly non-executing. `cli-architecture` owns whether
 help, version, or an invocation is accepted; Interface owns its wording, hierarchy, and rendering.
 
 ### Prefer inert, exact-shell-suitable completion expression
@@ -76,7 +76,7 @@ help, version, or an invocation is accepted; Interface owns its wording, hierarc
 [`cli-architecture`](../cli-architecture/SKILL.md). Express candidates for the requesting Bash, Zsh, Fish,
 or PowerShell context without a prompt, progress, prose, color, animation, or width-dependent layout.
 
-Interface owns only this expression. Completion schema and semantic behavior remain with Architecture;
+Interface owns only this expression. Completion schema and semantic behavior remain with `cli-architecture`;
 threat, control, and assurance results route to
 [`cli-security`](../cli-security/SKILL.md). Completion generator implementation and source logic route to
 [`typescript-development`](../../typescript/typescript-development/SKILL.md). Compiler, build, runtime, and
@@ -96,12 +96,12 @@ defaults only when no format was requested.
 |---|---|---|---|
 | Explicit `human` | Adaptive line-oriented result | Adaptive diagnostics, prompts, and progress | Input may occur only when accepted and interactive; capability-safe decoration may apply. |
 | Explicit `plain` | Deterministic append-only text | Deterministic append-only diagnostics and milestones | No ANSI, cursor rewrite, spinner, or alignment-dependent meaning. |
-| Explicit `json` | One complete versioned result envelope, or the Architecture-defined failure form | Versioned JSONL diagnostics | Non-interactive and decoration-free. |
+| Explicit `json` | One complete versioned result envelope, or the `cli-architecture`-defined failure form | Versioned JSONL diagnostics | Non-interactive and decoration-free. |
 | Explicit `jsonl` | One versioned record or event per line, including the accepted completion rule | Versioned JSONL diagnostics | Non-interactive and decoration-free. |
 | No explicit format | `human` for a capable TTY, otherwise `plain` | Independently `human` or `plain` from stderr facts | Per-stream defaults never alter semantic data or status. |
 
 Use `jsonl` instead of `json` when an accepted result is unbounded or consumers need records before
-completion. Preserve Architecture's schema version, discriminators, codes, ordering promises, prior-record
+completion. Preserve `cli-architecture`'s schema version, discriminators, codes, ordering promises, prior-record
 validity, and completion rules; a presentation change does not revise them.
 
 After `json` or `jsonl` is selected, stderr contains only accepted versioned records. If an unexpected
