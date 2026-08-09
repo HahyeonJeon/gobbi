@@ -175,11 +175,13 @@ streams, status, signals, failure, cleanup, and exact consumer behavior proof to
 [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
 
 Give package archives, installed package consumers, registry publication, and registry-specific recovery to
-`typescript-packaging`. Give standalone and other direct-unit production, distribution, installation,
-activation, rollback rehearsal, recovery, and consumer entry to `typescript-cli-delivery`. Current terminal
+[`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md). Give standalone and other
+direct-unit production, distribution, installation, activation, rollback rehearsal, recovery, and consumer
+entry to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md). Current terminal
 and execution facts route to [`cli-platform`](../cli-platform/SKILL.md), assurance to
-[`cli-security`](../cli-security/SKILL.md), semantic compatibility to `cli-architecture`, and multi-owner
-state and cold handoff to [`cli-development`](../cli-development/SKILL.md).
+[`cli-security`](../cli-security/SKILL.md), semantic compatibility to
+[`cli-architecture`](../cli-architecture/SKILL.md), and multi-owner state and cold handoff to
+[`cli-development`](../cli-development/SKILL.md).
 
 An operator may perform a separately authorized action through its exact owner. This skill preserves the
 readiness judgment unchanged and records neither the action nor its result as if it had occurred.

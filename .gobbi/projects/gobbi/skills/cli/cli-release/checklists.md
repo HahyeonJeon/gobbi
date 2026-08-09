@@ -2,15 +2,18 @@
 
 This reusable unchecked source evaluates one CLI Release preference subject governed by
 [`cli-release`](SKILL.md), frozen for this source at SHA-256
-`90524a9a253b9355cd2e2ad1d8d56e8e39325209a1198911d08df571fc4136f9`. The subject has two distinct results:
+`181870f1d74bbc909bd2ff2e4421f9fa566ccc2e986da0e7ea44f16e69a245a4`. The subject has two distinct results:
 an early `Release policy accepted` record and a later `Release readiness judgment recorded` entry for each
 exact runtime, target, delivery identity, and consumer entry. Its stable owner prefix is `CLIRLSE`.
 
 The source covers promised tuples, delivery identities, required evidence, runtime, artifact, installation,
 persisted-data and update compatibility, recovery, rollout constraints, support windows, residual-risk
-criteria, readiness, deprecation, and retirement. Command semantics remain with CLI Architecture; current
-facts with CLI Platform; assurance with CLI Security; coordination with CLI Development; and mechanisms and
-consumer proof with the applicable TypeScript owners.
+criteria, readiness, deprecation, and retirement. Command semantics remain with
+[`cli-architecture`](../cli-architecture/SKILL.md); current facts with
+[`cli-platform`](../cli-platform/SKILL.md); assurance with
+[`cli-security`](../cli-security/SKILL.md); coordination with
+[`cli-development`](../cli-development/SKILL.md); and mechanisms and consumer proof with the applicable
+TypeScript owners.
 
 Building, testing, packing, signing, publishing, installing, promotion, rollout execution, rollback
 execution, forward-fix execution, credential use, registry or target mutation, and external action remain
@@ -154,155 +157,266 @@ answer, score, remediation, or evaluation verdict.
 ### Design lifecycle > Promise framing > Early policy for one needed tuple > CLIRLSE-SC-DESIGN-POLICY-01
 
 - [ ] CLIRLSE-CK-DESIGN-POLICY-01-01 — Every promised tuple names the current user or automation need that requires it.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-01-02 — Every promised tuple records exact runtime, OS release, architecture, shell or direct entry, delivery form, install state, and consumer command.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-01-03 — Every applicable promised tuple records its C library and CPU baseline.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-01-04 — Every applicable promised tuple records its terminal or destination, encoding, and locale boundary.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-02 — Every promised tuple records its exact runtime.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-03 — Every applicable promised tuple records its C library.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-04 — Every applicable promised tuple records its terminal or destination.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-01-05 — No broader tuple is promised only because its continuing support cost is convenient to ignore.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-06 — Every promised tuple records its exact OS release.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-07 — Every promised tuple records its exact architecture.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-08 — Every promised tuple records its exact shell or direct entry.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-09 — Every promised tuple records its exact delivery form.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-10 — Every promised tuple records its exact install state.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-11 — Every promised tuple records its exact consumer command.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-12 — Every applicable promised tuple records its encoding boundary.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-13 — Every applicable promised tuple records its locale boundary.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-01-14 — Every applicable promised tuple records its CPU baseline.
 
 ### Design lifecycle > Promise framing > Bun-primary product with an optional Node lane > CLIRLSE-SC-DESIGN-POLICY-02
 
 - [ ] CLIRLSE-CK-DESIGN-POLICY-02-01 — Bun-primary policy names the exact Bun lane it prioritizes.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-02-02 — Every promised Node lane names its exact Node version and consumer entry.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-02-02 — Every promised Node lane names its exact Node version.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-02-03 — Every promised Node lane requires direct process-boundary evidence for that lane.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-02-04 — Bun capability, a Node shebang, or compatibility metadata alone does not create Node support.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-02-04 — Bun capability alone does not create Node support.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-02-05 — Every promised Node lane names its exact consumer entry.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-02-06 — A Node shebang alone does not create Node support.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-02-07 — Compatibility metadata alone does not create Node support.
 
 ### Design lifecycle > Policy identity > Complete early policy > CLIRLSE-SC-DESIGN-POLICY-03
 
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-01 — The early policy has one versioned product and policy identity.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-02 — The early policy identifies the accepted Architecture and Interface contracts.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-02 — The early policy identifies the accepted Architecture contract.
 - [ ] CLIRLSE-CK-DESIGN-POLICY-03-03 — The early policy identifies the required Security assurance subject.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-04 — The early policy lists every required Platform fact and its freshness trigger.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-05 — The early policy lists every required artifact, consumer, compatibility, and recovery evidence class.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-06 — The early policy states rollout constraints, monitoring inputs, and stop conditions.
-- [ ] CLIRLSE-CK-DESIGN-POLICY-03-07 — The early policy states each support window, response owner, deprecation path, and retirement condition.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-04 — The early policy lists every required Platform fact.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-05 — The early policy lists every required artifact evidence class.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-06 — The early policy states rollout constraints.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-07 — The early policy states each support window.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-08 — The early policy identifies the accepted Interface contract.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-09 — The early policy states each required Platform fact's freshness trigger.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-10 — The early policy lists every required consumer evidence class.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-11 — The early policy lists every required compatibility evidence class.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-12 — The early policy lists every required recovery evidence class.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-13 — The early policy states monitoring inputs.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-14 — The early policy states stop conditions.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-15 — The early policy states each response owner.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-16 — The early policy states each deprecation path.
+- [ ] CLIRLSE-CK-DESIGN-POLICY-03-17 — The early policy states each retirement condition.
 
 ### Design lifecycle > Policy identity > Residual-risk boundary > CLIRLSE-SC-DESIGN-RISK-01
 
 - [ ] CLIRLSE-CK-DESIGN-RISK-01-01 — Policy states each residual-risk acceptance criterion before readiness work begins.
 - [ ] CLIRLSE-CK-DESIGN-RISK-01-02 — Each residual-risk criterion names its acceptance authority.
 - [ ] CLIRLSE-CK-DESIGN-RISK-01-03 — The Release author does not accept Security-owned residual risk implicitly.
-- [ ] CLIRLSE-CK-DESIGN-RISK-01-04 — Residual-risk acceptance grants no publication, installation, rollout, rollback, or forward-fix authority.
+- [ ] CLIRLSE-CK-DESIGN-RISK-01-04 — Residual-risk acceptance grants no publication authority.
+- [ ] CLIRLSE-CK-DESIGN-RISK-01-05 — Residual-risk acceptance grants no installation authority.
+- [ ] CLIRLSE-CK-DESIGN-RISK-01-06 — Residual-risk acceptance grants no rollout authority.
+- [ ] CLIRLSE-CK-DESIGN-RISK-01-07 — Residual-risk acceptance grants no rollback authority.
+- [ ] CLIRLSE-CK-DESIGN-RISK-01-08 — Residual-risk acceptance grants no forward-fix authority.
 
 ### Design lifecycle > Delivery separation > Package-backed and standalone first-class forms > CLIRLSE-SC-DESIGN-IDENTITY-01
 
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-01 — Each package-backed entry names its package archive identity and digest.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-02 — Each package-backed entry names its package metadata entry and installed consumer command.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-03 — Each standalone entry names its direct unit identity and digest.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-04 — Each standalone entry names its target-specific distribution or installation method and consumer command.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-05 — Each form has separate compatibility, update, recovery, and evidence requirements.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-01 — Each package-backed entry names its package archive identity.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-02 — Each package-backed entry names its package metadata entry.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-03 — Each standalone entry names its direct unit identity.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-04 — Each standalone entry names its target-specific distribution or installation method.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-05 — Each form has separate compatibility requirements.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-06 — Each package-backed entry names its package archive digest.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-07 — Each package-backed entry names its installed consumer command.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-08 — Each standalone entry names its direct unit digest.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-09 — Each standalone entry names its consumer command.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-10 — Each form has separate update requirements.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-11 — Each form has separate recovery requirements.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-01-12 — Each form has separate evidence requirements.
 
 ### Design lifecycle > Delivery separation > Optional direct form > CLIRLSE-SC-DESIGN-IDENTITY-02
 
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-01 — A selected direct script names its exact file and digest.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-02 — A selected workspace or revision command names its exact revision and command.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-03 — Each optional direct form names its own consumer entry and recovery route.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-01 — A selected direct script names its exact file.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-02 — A selected workspace or revision command names its exact revision.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-03 — Each optional direct form names its own consumer entry.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-04 — An unselected optional direct form is not implied by first-class package or standalone support.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-05 — A selected direct script names its digest.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-06 — A selected workspace or revision command names its exact command.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-02-07 — Each optional direct form names its own recovery route.
 
 ### Design lifecycle > Delivery separation > Hybrid product > CLIRLSE-SC-DESIGN-IDENTITY-03
 
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-01 — A hybrid retains one package-archive identity and one direct-unit identity.
 - [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-02 — A hybrid retains separate resolved consumer entries for each form.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-03 — A hybrid retains separate update and recovery obligations for each form.
-- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-04 — Shared command semantics do not merge artifact or consumer evidence.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-03 — A hybrid retains separate update obligations for each form.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-04 — Shared command semantics do not merge artifact evidence.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-05 — A hybrid retains separate recovery obligations for each form.
+- [ ] CLIRLSE-CK-DESIGN-IDENTITY-03-06 — Shared command semantics do not merge consumer evidence.
 
 ### Design lifecycle > Compatibility and recovery > Supported state transition > CLIRLSE-SC-DESIGN-COMPAT-01
 
 - [ ] CLIRLSE-CK-DESIGN-COMPAT-01-01 — Policy states supported runtime transitions.
-- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-02 — Policy states supported artifact and installation transitions.
-- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-03 — Policy states supported persisted-data and configuration transitions.
-- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-04 — Policy states supported update and recovery transitions.
-- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-05 — An incompatible state has an explicit refusal that preserves recoverable consumer state.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-02 — Policy states supported artifact transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-03 — Policy states supported persisted-data transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-04 — Policy states supported update transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-05 — An incompatible state has an explicit refusal.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-06 — Policy states supported installation transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-07 — Policy states supported configuration transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-08 — Policy states supported recovery transitions.
+- [ ] CLIRLSE-CK-DESIGN-COMPAT-01-09 — Refusal of an incompatible state preserves recoverable consumer state.
 
 ### Design lifecycle > Compatibility and recovery > Faulty artifact may already be held > CLIRLSE-SC-DESIGN-RECOVERY-01
 
 - [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-01 — Policy states the exact consumers that rollback can reach.
-- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-02 — Policy states the runtime, installation, data, configuration, and update compatibility required for rollback.
-- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-03 — Policy states the compatibility and delivery route required for a forward fix.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-02 — Policy states the runtime compatibility required for rollback.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-03 — Policy states the compatibility required for a forward fix.
 - [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-04 — Policy states that withdrawal affects later acquisition rather than artifacts already held.
-- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-05 — Policy states the retained state and support path when neither rollback nor forward fix is available.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-05 — Policy states the retained state when neither rollback nor forward fix is available.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-06 — Policy states the installation compatibility required for rollback.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-07 — Policy states the data compatibility required for rollback.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-08 — Policy states the configuration compatibility required for rollback.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-09 — Policy states the update compatibility required for rollback.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-10 — Policy states the delivery route required for a forward fix.
+- [ ] CLIRLSE-CK-DESIGN-RECOVERY-01-11 — Policy states the support path when neither rollback nor forward fix is available.
 
 ### Design lifecycle > Compatibility and recovery > Rollout channel cannot stage exposure > CLIRLSE-SC-DESIGN-ROLLOUT-01
 
 - [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-01 — Every unstaged policy names the channel constraint that prevents bounded audience growth.
 - [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-02 — Every unstaged policy states its monitoring limitation.
-- [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-03 — Every unstaged policy states its recovery and incident-response consequences.
+- [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-03 — Every unstaged policy states its recovery consequences.
 - [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-04 — A rollout constraint is not presented as an executed rollout.
+- [ ] CLIRLSE-CK-DESIGN-ROLLOUT-01-05 — Every unstaged policy states its incident-response consequences.
 
 ### Design lifecycle > Owner boundary > Mechanism or action appears in policy work > CLIRLSE-SC-DESIGN-OWNER-01
 
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-01 — Current terminal and execution facts route to `cli-platform`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-02 — CLI assurance and residual-risk evidence route to `cli-security`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-03 — Semantic compatibility routes to `cli-architecture`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-04 — Bun, compiler, module, executable-build, and map mechanisms route to `typescript-toolchain`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-05 — Process and exact consumer behavior proof route to `typescript-testing`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-06 — Package archives, installed package consumers, publication, and registry recovery route to `typescript-packaging`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-07 — Direct-unit production, installation, rollout, rollback rehearsal, and recovery route to `typescript-cli-delivery`.
-- [ ] CLIRLSE-CK-DESIGN-OWNER-01-08 — Multi-owner state and cold handoff route to `cli-development`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-01 — Current terminal facts route to [`cli-platform`](../cli-platform/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-02 — CLI assurance routes to [`cli-security`](../cli-security/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-03 — Semantic compatibility routes to [`cli-architecture`](../cli-architecture/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-04 — Bun mechanisms route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-05 — Process-boundary arguments route to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-06 — Package archives route to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-07 — Direct-unit production routes to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-08 — Multi-owner state routes to [`cli-development`](../cli-development/SKILL.md).
 - [ ] CLIRLSE-CK-DESIGN-OWNER-01-09 — Every external action routes to its exact separately authorized operator.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-10 — Current execution facts route to `cli-platform`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-11 — Residual-risk evidence routes to `cli-security`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-12 — Compiler mechanisms route to `typescript-toolchain`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-13 — Module mechanisms route to `typescript-toolchain`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-14 — Executable-build mechanisms route to `typescript-toolchain`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-15 — Map mechanisms route to `typescript-toolchain`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-16 — Process-boundary streams route to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-17 — Process-boundary status routes to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-18 — Process-boundary signals route to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-19 — Process-boundary failure routes to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-20 — Process-boundary cleanup routes to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-21 — Exact consumer behavior proof routes to `typescript-testing`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-22 — Installed package consumers route to `typescript-packaging`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-23 — Registry publication routes to `typescript-packaging`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-24 — Registry-specific recovery routes to `typescript-packaging`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-25 — Direct-unit distribution routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-26 — Direct-unit installation routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-27 — Direct-unit activation routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-28 — Direct-unit rollback rehearsal routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-29 — Direct-unit recovery routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-30 — Direct-unit consumer entry routes to `typescript-cli-delivery`.
+- [ ] CLIRLSE-CK-DESIGN-OWNER-01-31 — Cold handoff routes to `cli-development`.
 
 ### Development lifecycle > Policy handoff > Current policy reaches all owners > CLIRLSE-SC-DEVELOP-HANDOFF-01
 
 - [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-01 — Every owner result names the exact current policy version it serves.
-- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-02 — Every owner result names the exact tuple and delivery identity it serves.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-02 — Every owner result names the exact tuple it serves.
 - [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-03 — Each owner receives only the obligations inside its boundary.
 - [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-04 — A policy change makes every affected owner request and result stale.
+- [ ] CLIRLSE-CK-DEVELOP-HANDOFF-01-05 — Every owner result names the exact delivery identity it serves.
 
 ### Development lifecycle > Evidence reconciliation > Exact package consumer evidence > CLIRLSE-SC-DEVELOP-EVIDENCE-01
 
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-01 — Package evidence names the exact archive and digest.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-01 — Package evidence names the exact archive.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-02 — Package evidence names the package manager and installation policy.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-03 — Package evidence proves the resolved command came from that installed archive.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-04 — Package evidence names the exact runtime and target tuple.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-05 — Package evidence states its date, result, failure signal, and limitations.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-05 — Package evidence states its date.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-06 — Package evidence names the exact archive digest.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-07 — Package evidence states its result.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-08 — Package evidence states its failure signal.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-01-09 — Package evidence states its limitations.
 
 ### Development lifecycle > Evidence reconciliation > Exact standalone consumer evidence > CLIRLSE-SC-DEVELOP-EVIDENCE-02
 
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-01 — Direct evidence names the exact unit or revision and digest when applicable.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-01 — Direct evidence names the exact unit or revision.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-02 — Direct evidence names the target distribution or installation method.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-03 — Direct evidence proves the resolved command selected that exact unit.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-04 — Direct evidence names the exact runtime and target tuple.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-05 — Direct evidence states its date, result, failure signal, and limitations.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-05 — Direct evidence states its date.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-06 — Direct evidence names the digest when applicable.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-07 — Direct evidence states its result.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-08 — Direct evidence states its failure signal.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-02-09 — Direct evidence states its limitations.
 
 ### Development lifecycle > Evidence reconciliation > Proxy capability or metadata > CLIRLSE-SC-DEVELOP-EVIDENCE-03
 
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-01 — A successful source run is not treated as installed package or direct-unit evidence.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-02 — A successful compile or cross-compile is not treated as target consumer evidence.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-03 — Package `bin`, `engines`, `os`, and `cpu` fields are not treated as consumer proof.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-04 — A Bun target name or compatibility register is not treated as support proof.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-03 — A package `bin` field is not treated as consumer proof.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-04 — A Bun target name is not treated as support proof.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-05 — A green summary without exact evidence identities is not treated as readiness.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-06 — A package `engines` field is not treated as consumer proof.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-07 — A package `os` field is not treated as consumer proof.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-08 — A package `cpu` field is not treated as consumer proof.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-03-09 — A compatibility register is not treated as support proof.
 
 ### Development lifecycle > Evidence reconciliation > One form's evidence is borrowed > CLIRLSE-SC-DEVELOP-EVIDENCE-04
 
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-01 — Package evidence is not used to establish a standalone entry.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-02 — Standalone evidence is not used to establish a package-backed entry.
-- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-03 — One OS, architecture, runtime, install state, or consumer entry does not establish another.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-03 — One OS does not establish another.
 - [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-04 — One form's failure does not silently determine another form's judgment.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-05 — One architecture does not establish another.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-06 — One runtime does not establish another.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-07 — One install state does not establish another.
+- [ ] CLIRLSE-CK-DEVELOP-EVIDENCE-04-08 — One consumer entry does not establish another.
 
 ### Development lifecycle > Readiness judgment > Every required input satisfies policy > CLIRLSE-SC-DEVELOP-READY-01
 
 - [ ] CLIRLSE-CK-DEVELOP-READY-01-01 — A `Supported` entry names one exact current policy version.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-02 — A `Supported` entry names one complete runtime, target, delivery, install-state, and consumer tuple.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-03 — A `Supported` entry names the exact artifact or revision and its identity evidence.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-04 — Every policy-required Platform fact is current and retained with its disposition and limits.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-05 — The required Security assurance and residual-risk position match the exact subject.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-06 — Required consumer, compatibility, recovery, support, and risk-acceptance inputs each satisfy policy.
-- [ ] CLIRLSE-CK-DEVELOP-READY-01-07 — The entry records its decision owner, time, limitations, and stale triggers.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-02 — A `Supported` entry names one exact runtime.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-03 — A `Supported` entry names the exact artifact or revision.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-04 — Every policy-required Platform fact is current.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-05 — The required Security assurance matches the exact subject.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-06 — Required consumer inputs each satisfy policy.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-07 — The entry records its decision owner.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-08 — A `Supported` entry names one exact target.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-09 — A `Supported` entry names one exact delivery identity.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-10 — A `Supported` entry names one exact install state.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-11 — A `Supported` entry names one exact consumer entry.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-12 — A `Supported` entry names its artifact or revision identity evidence.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-13 — Every policy-required Platform fact is retained.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-14 — Every policy-required Platform fact retains its disposition.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-15 — Every policy-required Platform fact retains its limits.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-16 — The required residual-risk position matches the exact subject.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-17 — Required compatibility inputs each satisfy policy.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-18 — Required recovery inputs each satisfy policy.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-19 — Required support inputs each satisfy policy.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-20 — Required risk-acceptance inputs each satisfy policy.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-21 — The entry records its decision time.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-22 — The entry records its limitations.
+- [ ] CLIRLSE-CK-DEVELOP-READY-01-23 — The entry records its stale triggers.
 
 ### Development lifecycle > Readiness judgment > Exact evidence disproves or policy excludes support > CLIRLSE-SC-DEVELOP-READY-02
 
-- [ ] CLIRLSE-CK-DEVELOP-READY-02-01 — An `Unsupported` entry names the exact excluded or unmet tuple and delivery identity.
+- [ ] CLIRLSE-CK-DEVELOP-READY-02-01 — An `Unsupported` entry names the exact excluded or unmet tuple.
 - [ ] CLIRLSE-CK-DEVELOP-READY-02-02 — An `Unsupported` entry cites the exact policy boundary or current evidence that establishes the unmet condition.
-- [ ] CLIRLSE-CK-DEVELOP-READY-02-03 — An `Unsupported` entry states its consumer-visible support and recovery limit.
+- [ ] CLIRLSE-CK-DEVELOP-READY-02-03 — An `Unsupported` entry states its consumer-visible support limit.
 - [ ] CLIRLSE-CK-DEVELOP-READY-02-04 — A missing or contradictory answer-changing input is not labeled `Unsupported`.
+- [ ] CLIRLSE-CK-DEVELOP-READY-02-05 — An `Unsupported` entry names the exact delivery identity.
+- [ ] CLIRLSE-CK-DEVELOP-READY-02-06 — An `Unsupported` entry states its consumer-visible recovery limit.
 
 ### Development lifecycle > Readiness judgment > Answer-changing evidence is absent or contradictory > CLIRLSE-SC-DEVELOP-READY-03
 
 - [ ] CLIRLSE-CK-DEVELOP-READY-03-01 — A `blocked` entry names every answer-changing missing, stale, mismatched, inaccessible, or contradictory input.
-- [ ] CLIRLSE-CK-DEVELOP-READY-03-02 — A `blocked` entry preserves the exact tuple, delivery identity, artifact or revision, and evidence received so far.
-- [ ] CLIRLSE-CK-DEVELOP-READY-03-03 — A `blocked` entry states the current safe state and retained consumer effects.
-- [ ] CLIRLSE-CK-DEVELOP-READY-03-04 — A `blocked` entry names the missing input owner and first non-mutating next action.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-02 — A `blocked` entry preserves the exact tuple.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-03 — A `blocked` entry states the current safe state.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-04 — A `blocked` entry names the missing input owner.
 - [ ] CLIRLSE-CK-DEVELOP-READY-03-05 — A `blocked` entry states the exact resume condition.
 - [ ] CLIRLSE-CK-DEVELOP-READY-03-06 — A `blocked` entry is not reported as `Supported` or `Unsupported`.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-07 — A `blocked` entry preserves the exact delivery identity.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-08 — A `blocked` entry preserves the exact artifact or revision.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-09 — A `blocked` entry preserves the evidence received so far.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-10 — A `blocked` entry states retained consumer effects.
+- [ ] CLIRLSE-CK-DEVELOP-READY-03-11 — A `blocked` entry names the first non-mutating next action.
 
 ### Development lifecycle > Invalidation and reopen > Readiness input changes > CLIRLSE-SC-DEVELOP-STALE-01
 
