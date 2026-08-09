@@ -2,7 +2,7 @@
 
 This reusable unchecked source evaluates one mechanism-free semantic command and automation contract governed
 by [`cli-architecture`](SKILL.md), frozen for this source at SHA-256
-`4766ca831066056a8644f27698b9709b8b2f39768d0f5a47e3b2b7edf053018d`. Its stable owner prefix is `CLIARCH`.
+`9f5de3fe9428819fc2183fd34a8a686e86cbcf7af30dee405063299cf21cdd63`. Its stable owner prefix is `CLIARCH`.
 
 The subject includes command hierarchy, command, option, operand, configuration, stdin, semantic events,
 stdout and stderr roles, public modes, result and error models, command states, exit statuses, compatibility,

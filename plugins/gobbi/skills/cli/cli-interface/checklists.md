@@ -5,7 +5,7 @@ line-oriented CLI semantic model and its Architecture-assigned stream roles. It 
 `human`, `plain`, `json`, and `jsonl` rendering, diagnostics, prompts, progress, line-oriented visualization,
 accessibility, localization, adaptation, and the independent color, progress, input, ASCII, and screen-reader
 controls governed by [`cli-interface`](SKILL.md), frozen for this source at SHA-256
-`5c711f4227a7bd7756612eb70ac10e193fb345a05a5e23b5eddd6a45c4d8763c`. Its stable owner prefix is `CLIINTF`.
+`e8fa78dd0ca01cf0725f3f9aa0894345226f01a8881da047a4ae0dfb09f53a54`. Its stable owner prefix is `CLIINTF`.
 
 Command meaning, stream-role assignment, parser and configuration semantics, current platform facts,
 security requirements, TypeScript implementation and process tests, target support, automatic paging, and

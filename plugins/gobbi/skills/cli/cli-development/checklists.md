@@ -2,7 +2,7 @@
 
 This reusable unchecked source evaluates one coordination run governed by
 [`cli-development`](SKILL.md), frozen for this source at SHA-256
-`2d5b38bcb9756bbe0e4d3d8e34081779d0149d6dea501446f4cd01df03f09cd9`. Its stable owner prefix is
+`70c32fba3096389c5abb9d0f500b811a15edbd181b2ed89ee0e247b2add3891b`. Its stable owner prefix is
 `CLIDEV`.
 
 The subject is an exact scoped change across its applicable CLI product results, TypeScript mechanism results,

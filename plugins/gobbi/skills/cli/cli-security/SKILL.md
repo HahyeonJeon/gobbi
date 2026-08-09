@@ -64,9 +64,9 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
 
 - Start from one accepted CLI change or one requested CLI security review. Name the reviewer, decision owner,
   affected users and automation, observable assurance outcome, and exact completion evidence.
-- Record the canonical command and aliases, Architecture-owned semantic contract, Interface-owned expression
+- Record the canonical command and aliases, `cli-architecture`-owned semantic contract, `cli-interface`-owned expression
   contract, exact source or artifact, runtime and target tuple, delivery form and consumer entry, current
-  Platform facts, changed and reviewed paths, existing evidence identities, evidence dates, and any shipped
+  `cli-platform` facts, changed and reviewed paths, existing evidence identities, evidence dates, and any shipped
   Bash, Zsh, Fish, or PowerShell completion path.
 - Classify every requested write, process execution, network access, credential use, package action, delivery,
   publication, installation, update, telemetry action, or destructive probe. This operation performs none of
@@ -151,8 +151,8 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
 #### 2.3 Analyze destructive, interrupted, and partial states
 
 - Classify each command path as read-only, dry-run, mutating, destructive, retryable, idempotent, resumable,
-  cancelled, partial, recovered, or not applicable. Preserve Architecture-owned semantic state and Interface-
-  owned expression while adding the trust, authority, containment, and recovery obligations.
+  cancelled, partial, recovered, or not applicable. Preserve `cli-architecture`-owned semantic state and
+  `cli-interface`-owned expression while adding the trust, authority, containment, and recovery obligations.
 - Bind destructive authority to the canonical scope and exact effect. Interactive confirmation must restate
   that scope and cannot authorize a changed subject; non-interactive execution needs an explicit accepted
   authority source and never infers consent from a missing prompt, TTY, environment, or default.
@@ -188,7 +188,7 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
   [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md); and compiler or Bun
   mechanism facts to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
 - For completion, retain threat, control, assurance, stop, recovery, and residual-risk ownership here. Route
-  schema and semantic behavior to Architecture, expression to Interface, generator implementation and source
+  schema and semantic behavior to `cli-architecture`, expression to `cli-interface`, generator implementation and source
   logic to TypeScript Development, compiler, build, runtime, and other tool mechanisms used by the generator
   to TypeScript Toolchain, and exact-shell
   ordinary, adversarial, denial, failure, cancellation, cleanup, and recovery evidence to TypeScript Testing.

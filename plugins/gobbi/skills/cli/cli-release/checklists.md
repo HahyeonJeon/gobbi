@@ -2,7 +2,7 @@
 
 This reusable unchecked source evaluates one CLI Release preference subject governed by
 [`cli-release`](SKILL.md), frozen for this source at SHA-256
-`181870f1d74bbc909bd2ff2e4421f9fa566ccc2e986da0e7ea44f16e69a245a4`. The subject has two distinct results:
+`22fe5076553bf84b65f5a7a741ed0ffcb3c62e8d7ff9660e3e7b10da1575d5d7`. The subject has two distinct results:
 an early `Release policy accepted` record and a later `Release readiness judgment recorded` entry for each
 exact runtime, target, delivery identity, and consumer entry. Its stable owner prefix is `CLIRLSE`.
 
