@@ -70,6 +70,21 @@ Prefer task-shaped examples that show the exact command and the expected kind of
 invocation's diagnostic on stderr and make any suggestion visibly non-executing. Architecture owns whether
 help, version, or an invocation is accepted; Interface owns its wording, hierarchy, and rendering.
 
+### Prefer inert, exact-shell-suitable completion expression
+
+**PREFER** a non-interactive, deterministic, decoration-free expression for completion accepted by
+[`cli-architecture`](../cli-architecture/SKILL.md). Express candidates for the requesting Bash, Zsh, Fish,
+or PowerShell context without a prompt, progress, prose, color, animation, or width-dependent layout.
+
+Interface owns only this expression. Completion schema and semantic behavior remain with Architecture;
+threat, control, and assurance results route to
+[`cli-security`](../cli-security/SKILL.md). Generation mechanisms route to
+[`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md), exact-shell behavior evidence to
+[`typescript-testing`](../../typescript/typescript-testing/SKILL.md), package-backed shipping and
+installation to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), and direct
+non-archive shipping and installation to
+[`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
+
 ### Prefer an explicit profile matrix
 
 **PREFER** explicit profile selection when a consumer needs stable expression and per-stream automatic
@@ -86,6 +101,12 @@ defaults only when no format was requested.
 Use `jsonl` instead of `json` when an accepted result is unbounded or consumers need records before
 completion. Preserve Architecture's schema version, discriminators, codes, ordering promises, prior-record
 validity, and completion rules; a presentation change does not revise them.
+
+After `json` or `jsonl` is selected, stderr contains only accepted versioned records. If an unexpected
+failure occurs before any profile can be selected, the command may emit at most one minimal safe text
+diagnostic on stderr. That diagnostic contains no secret, decoration, progress, or untrusted control
+sequence. Selection of a structured profile closes this exception; all later stderr expression follows the
+selected structured protocol.
 
 ### Prefer independent controls with visible conflicts
 
@@ -139,7 +160,7 @@ append-only milestones with labels and avoid repeated percentages that add no de
 
 Completion and failure must have stable final expression independent of the last progress frame. If progress
 is unavailable or disabled, the command result and recovery remain complete. Current TTY, cursor, signal,
-pipe, and drain behavior comes from `cli-platform`; process-boundary proof belongs to
+pipe, and drain behavior comes from [`cli-platform`](../cli-platform/SKILL.md); process-boundary proof belongs to
 [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
 
 ### Prefer prompts only for recoverable interactive gaps
@@ -173,7 +194,8 @@ locale, and record that scope so adding another locale reopens the decision.
 Keep structured keys, discriminators, codes, numbers, timestamps, and ordering promises locale-independent.
 Preserve user data exactly in structured protocols and use the accepted safe human representation for
 ambiguous boundaries, bidirectional controls, or invisible characters. Locale and encoding facts route to
-`cli-platform`; spoofing requirements route to `cli-security`.
+[`cli-platform`](../cli-platform/SKILL.md); spoofing requirements route to
+[`cli-security`](../cli-security/SKILL.md).
 
 ### Route realization and claims to their owners
 
@@ -181,10 +203,11 @@ Give the accepted expression contract to
 [`typescript-development`](../../typescript/typescript-development/SKILL.md) and
 [`typescript-typing`](../../typescript/typescript-typing/SKILL.md) for realization. Process behavior,
 redirection, profile/control combinations, signals, prompts, progress, and exact consumer-entry proof route to
-`typescript-testing`.
+[`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
 
-Route current terminal and stream questions to `cli-platform`, semantic or stream changes to
-`cli-architecture`, trust constraints to `cli-security`, multi-owner state to
+Route current terminal and stream questions to [`cli-platform`](../cli-platform/SKILL.md), semantic or stream
+changes to [`cli-architecture`](../cli-architecture/SKILL.md), trust constraints to
+[`cli-security`](../cli-security/SKILL.md), multi-owner state to
 [`cli-development`](../cli-development/SKILL.md), and target or support judgment to
 [`cli-release`](../cli-release/SKILL.md). A user may pipe output to a separately chosen pager, but this skill
 does not launch or manage one.
