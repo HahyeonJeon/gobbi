@@ -39,9 +39,12 @@ leave consumers an observable transition and safe next action.
 ## Rules
 
 - **MUST define each supported command path as one complete semantic contract.** Include actor, purpose,
-  preconditions, inputs, result, events, effects, failure, interruption, partial state, recovery, and compatibility.
+  preconditions, inputs, result, events, effects, failure, interruption, partial state, recovery, compatibility,
+  and, when shipped, one schema-defined inert completion contract for Bash, Zsh, Fish, and PowerShell.
 - **MUST assign one canonical route to each outcome and make command, option, operand, repetition, alias, and
-  `--` behavior unambiguous.** Suggestions never execute or silently correct input.
+  `--` behavior unambiguous.** Suggestions never execute or silently correct input; `--no-name` is valid only
+  for a declared positive Boolean with a declared default, and a negative numeric token is an operand only
+  where the schema expects one.
 - **MUST disclose every configuration source and define deterministic discovery, precedence, merge, conflict,
   origin, and redaction semantics.** Invalid or untrusted configuration fails before product mutation.
 - **MUST assign requested results to stdout and diagnostics, warnings, progress, and prompts to stderr, with
@@ -69,9 +72,13 @@ Prefer lowercase kebab case for canonical commands and long options. Prefer both
 and allow options and operands to intermix only while the schema stays unambiguous.
 
 Prefer short aliases only when familiar and unambiguous. Allow a short-option cluster only when every member
-is Boolean. Declare whether every repeated option rejects, appends, replaces, counts, or merges, and use `--`
-for option-shaped operands or passthrough input. Choose stricter POSIX-oriented ordering when an explicit
-portability requirement outweighs the modern default; the [POSIX utility syntax](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap12.html)
+is Boolean. Permit `--no-name` only when `name` is a declared Boolean with positive meaning and a declared
+default. Treat a negative numeric token as an operand only where the schema expects a numeric operand; `--`
+remains the escape for option-shaped data. Declare whether every repeated option rejects, appends, replaces,
+counts, or merges.
+
+Choose stricter POSIX-oriented ordering when an explicit portability requirement outweighs the modern
+default; the [POSIX utility syntax](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap12.html)
 and [GNU command conventions](https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html)
 are assessed inputs, not claims that one grammar fits every product.
 
@@ -83,8 +90,26 @@ requests, and effect-bearing use of root version should remain invocation errors
 
 Keep command paths, aliases, operands, options, input sources, modes, states, exits, compatibility, and
 deprecation in one semantic schema. [`cli-interface`](../cli-interface/SKILL.md) owns help wording, examples,
-layout, and completion expression. Completion execution must preserve the accepted command schema and be
-inert, while its shell behavior and delivery evidence route to the applicable TypeScript owners.
+and layout.
+
+### Prefer completion from the command schema
+
+When a product ships completion, use the command schema as the sole semantic source for Bash, Zsh, Fish, and
+PowerShell. Treat partial shell input as untrusted, escape each candidate for the exact shell without
+evaluation, and keep generation and execution inert: no prompt, state mutation, default network access,
+secret dependency, or secret disclosure.
+
+Accept local dynamic lookup only when the command contract declares a bounded cost, failure behavior, and
+privacy boundary. A lookup failure does not weaken the inert completion contract or change command meaning.
+
+Architecture owns the completion schema and semantic behavior.
+[`cli-interface`](../cli-interface/SKILL.md) owns completion expression, and
+[`cli-security`](../cli-security/SKILL.md) owns threat, control, and assurance results. Generation mechanisms
+route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md), exact-shell behavior proof
+routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md), package-backed shipping and
+installation route to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), and direct
+non-archive shipping and installation route to
+[`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
 
 ### Prefer explicit configuration precedence and origins
 
