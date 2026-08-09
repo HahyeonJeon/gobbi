@@ -2,13 +2,13 @@
 
 This reusable unchecked source evaluates one assurance contract for an exact line-oriented CLI change governed
 by [`cli-security`](SKILL.md), frozen for this source at SHA-256
-`404dead7adff009accc56d8ab476213147347992e1359b4c4822f5ed6b1f437c`. It is bound to that operation's
+`e4a8e0e8dfdd1e8dc42ed1d819d9ca993a7d560c569652da4f1f8635e8bbd53f`. It is bound to that operation's
 subject, trust and authority map, threat and control record, owner and evidence routes, stop states, recovery
 duties, and residual risk. Its stable owner prefix is `CLISEC`.
 
 The source evaluates CLI-specific assurance only. TypeScript implementation and narrowing, test mechanics or
-execution, package and direct-unit production, credential use, external action, release acceptance, generic
-organizational policy, and release acceptance remain outside its subject. Every condition stays unchecked and
+execution, package and direct-unit production, credential use, external action, release acceptance, and generic
+organizational policy remain outside its subject. Every condition stays unchecked and
 records only the observable requirement for its leaf scenario.
 
 ## Lifecycle Categories
