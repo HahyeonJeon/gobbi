@@ -7,11 +7,13 @@ skill-type: domain
 
 # CLI
 
-CLI covers product structure, interface, current execution-platform facts, security review, release judgment,
-and development coordination for line-oriented TypeScript command-line tools with Bun as the primary runtime.
+CLI covers product structure, terminal expression, development coordination, current execution-platform facts,
+security analysis, and release judgment for line-oriented TypeScript command-line tools with Bun as the primary
+runtime.
 
-This root owns navigation only. Load every child below whose trigger applies; later authoring passes replace
-each nonproduction child skeleton without changing these routes.
+This root owns navigation only. For every task that activates it, load at least one child and every row whose
+trigger applies; one task may require several children. Do not load a child whose trigger does not apply, and
+route work outside this line-oriented product domain to its owning skill.
 
 ## Child Skills
 
