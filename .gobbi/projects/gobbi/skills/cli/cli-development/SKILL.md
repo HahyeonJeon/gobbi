@@ -76,7 +76,7 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 - List every judgment, fact, realization, evidence, artifact, support, action, observation, and maintenance
   owner required by the accepted outcome.
 - Route work that needs one independent owner directly to that owner and stop this operation. Examples include
-  one Bun compiler lookup at `typescript-toolchain` and one unchanged warning-expression choice at
+  one Bun compiler lookup at [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md) and one unchanged warning-expression choice at
   [`cli-interface`](../cli-interface/SKILL.md).
 - Activate this operation when at least two owners must agree or the requested result claims the CLI is
   supported, delivered, released, maintained, deprecated, or retired. Load every applicable owner; never
@@ -89,7 +89,8 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 #### 2.1 Collect product decisions and current facts
 
 - Receive the mechanism-free semantic contract from
-  [`cli-architecture`](../cli-architecture/SKILL.md), expression from `cli-interface`, current execution facts
+  [`cli-architecture`](../cli-architecture/SKILL.md), expression from
+  [`cli-interface`](../cli-interface/SKILL.md), current execution facts
   from [`cli-platform`](../cli-platform/SKILL.md), assurance from
   [`cli-security`](../cli-security/SKILL.md), and early release policy from
   [`cli-release`](../cli-release/SKILL.md) whenever their triggers apply.
@@ -98,12 +99,17 @@ rollout, rollback, forward fix, telemetry, or another external effect.
   their Available, Unavailable, or Unknown vocabulary and never become support judgments here.
 - Compare command, target, delivery, consumer, compatibility, and evidence identities across the returned
   results. Preserve independent package and direct rows even when they share one logical command contract.
-- Continue only with current, agreeing inputs and an accepted early release policy. Return a contradiction to
-  the earliest product owner, or create a blocker when an answer-changing input is missing or Unknown.
+- Continue only with current, agreeing results from every applicable owner. When Release is applicable, also
+  require its accepted early policy before realization; when Release is not applicable, do not request or
+  imply policy, readiness, action, or consumer-verification results. Return a contradiction to the earliest
+  applicable product owner, or create a blocker when an applicable answer-changing input is missing or
+  Unknown.
 
 #### 2.2 Route realization and evidence requests
 
-- Give the accepted command and assurance contracts to
+- Route only realization and evidence work triggered by the accepted scope. If none applies, proceed to
+  Phase 3 with the current product-owner results instead of adding TypeScript, package, or delivery owners.
+- Give the applicable accepted command and assurance contracts to
   [`typescript-development`](../../typescript/typescript-development/SKILL.md) and
   [`typescript-typing`](../../typescript/typescript-typing/SKILL.md). Give type-checking, stripping, module,
   build, Bun, executable-compilation, and final-map questions to
@@ -116,8 +122,9 @@ rollout, rollback, forward fix, telemetry, or another external effect.
   standalone executables and other direct non-archive units, installations, direct consumers, rollback
   rehearsal, and recovery to
   [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
-- Record one dependency chain per artifact and consumer entry. Continue when every in-scope owner accepts the
-  request; otherwise preserve the declined or unavailable obligation as a blocker rather than doing the work.
+- Record one dependency chain per applicable artifact and consumer entry. Continue when every applicable
+  in-scope owner accepts its request; otherwise preserve the declined or unavailable obligation as a blocker
+  rather than doing the work.
 
 ### Phase 3 — Reconcile returned owner results
 
@@ -160,8 +167,14 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 
 #### 4.1 Reconcile late release readiness
 
-- Give `cli-release` the accepted policy plus current Architecture, Interface, Platform, Security,
-  implementation, toolchain, artifact, exact consumer, compatibility, recovery, and risk-acceptance records.
+- Enter this Phase only when the accepted scope triggers Release. A non-release run proceeds from current,
+  agreeing applicable results in Phase 3 to Step 5.4 without creating a readiness, action, verification, or
+  post-release-observation row.
+- Give [`cli-release`](../cli-release/SKILL.md) the accepted policy plus current
+  [`cli-architecture`](../cli-architecture/SKILL.md),
+  [`cli-interface`](../cli-interface/SKILL.md), [`cli-platform`](../cli-platform/SKILL.md),
+  [`cli-security`](../cli-security/SKILL.md), implementation, toolchain, artifact, exact consumer,
+  compatibility, recovery, and risk-acceptance records that apply.
 - Receive one Supported, Unsupported, or blocked judgment per exact promised tuple, delivery identity,
   install state, artifact or revision, and consumer entry. Keep a hybrid's package and direct rows separate.
 - Validate the judgment's policy version, evidence links, decision owner and time, limitations, stale triggers,
@@ -223,9 +236,10 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 - For deprecation, bind the exact command contract, runtime, target, delivery identity, artifact, consumer
   population, replacement, compatibility window, acquisition and update behavior, data and configuration,
   recovery, support owner, and end condition.
-- Keep semantic command deprecation with `cli-architecture` and runtime, target, artifact, installation, data,
-  update, support, or delivery-form deprecation with `cli-release`. Load both when the accepted change crosses
-  both axes; route package and direct mechanisms to their TypeScript owners.
+- Keep semantic command deprecation with [`cli-architecture`](../cli-architecture/SKILL.md) and runtime,
+  target, artifact, installation, data, update, support, or delivery-form deprecation with
+  [`cli-release`](../cli-release/SKILL.md). Load both when the accepted change crosses both axes; route package
+  and direct mechanisms to their TypeScript owners.
 - For retirement, require current owner results for obtainability, installed or runnable state, retained data,
   configuration, credentials and diagnostics, uninstall or cessation, recovery limits, final support, and the
   exact terminal condition.
@@ -236,11 +250,17 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 
 - Reconcile every in-scope row with its current subject, owner, inputs, evidence, limitations, authority,
   dependencies, reopen condition, and next branch. Confirm package and direct identities were never merged.
-- Complete only when each accepted row has a current supported, unsupported, blocked, handed-off, verified,
-  observed, maintained, deprecated, or retired coordination state and no required work is hidden or deferred.
+- For a non-release run, complete the scoped coordination result only when all applicable owner results are
+  current and agree, no answer-changing applicable input is stale or absent, every in-scope row is complete or
+  recoverably blocked, and the result claims no release policy, readiness, outward action, or consumer
+  verification. Untriggered owners remain absent.
+- For a release-bound run, complete only when each accepted row has a current supported, unsupported, blocked,
+  handed-off, verified, observed, maintained, deprecated, or retired coordination state and no required work
+  is hidden or deferred.
 - Return the activation reason, scoped subject, owner and dependency map, current and stale records, blockers,
-  release judgments, action and verification states, observation, maintenance, deprecation or retirement
-  state, safe retained effects, limitations, and exact next action.
+  applicable release judgments, action and verification states, observation, maintenance, deprecation or
+  retirement state, safe retained effects, limitations, and exact next action. Omit inapplicable lifecycle
+  fields instead of fabricating empty or successful states.
 - State every specialist mechanism and external action not performed by this operation. If one in-scope row
   lacks a terminal or recoverable state, return to its earliest responsible step instead of calling the
   coordination complete.
