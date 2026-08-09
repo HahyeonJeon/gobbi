@@ -131,7 +131,7 @@ configuration trust routes to [`cli-security`](../cli-security/SKILL.md).
 
 Prefer explicit events for complete result, declared partial result, error, warning, progress, prompt, and
 requested debug evidence. Define their semantic payload, default stream, persistence, completeness, and
-compatibility before Interface chooses their expression.
+compatibility before `cli-interface` chooses their expression.
 
 Prefer explicit states for applicable read-only, dry-run, mutating, destructive, retryable, idempotent,
 resumable, interrupted, partial, recovered, deprecated, and retired paths. A mutating command should define
