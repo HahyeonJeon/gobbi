@@ -7,9 +7,9 @@ skill-type: domain
 
 # CLI
 
-CLI covers product structure, terminal expression, development coordination, current execution-platform facts,
-security analysis, and release judgment for line-oriented TypeScript command-line tools with Bun as the primary
-runtime.
+CLI covers product structure, terminal expression, current execution-platform facts, and security analysis for
+line-oriented command-line tools. Development coordination and release judgment are TypeScript-scoped; Bun
+applies only when the development trigger names it.
 
 This root owns navigation only. For every task that activates it, load at least one child and every row whose
 trigger applies; one task may require several children. Do not load a child whose trigger does not apply, and
