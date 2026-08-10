@@ -64,6 +64,15 @@ codex plugin add gobbi@gobbi-workspace
 Codex needs no Claude Code Agent Teams or permission configuration. A repository checkout also includes local
 entrypoints, so contributors working in the clone do not need to install the plugin.
 
+## Repository development
+
+The repository checkout includes the local `gobbi-dev` family for Gobbi lifecycle conventions, development,
+testing, review, release, deployment, and toolchain lookup. The native Claude Code and Codex entrypoints route
+applicable maintainer work to its canonical local skill.
+
+This family is intentionally excluded from `plugins/gobbi` and from installed Claude Code and Codex plugin
+caches. Plugin consumers cannot discover or load it.
+
 ## Start your first session
 
 Give Gobbi a concrete objective:

@@ -1,100 +1,96 @@
 ---
 name: claude-plugin
-description: Use when authoring or reviewing the shared Gobbi Claude Code and Codex plugin package, manifests, marketplaces, source topology, or install checks.
+description: "MUST load when authoring or reviewing the shared Gobbi Claude Code and Codex plugin package, manifests, marketplaces, projections, or install checks."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: tool
 ---
 
 # Claude Plugin
 
-Tool manual for the shared Gobbi package at `plugins/gobbi/`. Use it when a change touches either plugin manifest, either marketplace, the package components, runtime discovery mirrors, or the source and installed-cache checks.
+Use this manual for the shared Gobbi package at `plugins/gobbi/`. It covers both plugin manifests, both
+marketplaces, generated package components, repository-local discovery views, source checks, and isolated
+installed-cache checks.
 
-The package serves two runtimes, but it has one canonical source tree. This manual explains the package boundary and the commands that prove it. Workflow behavior, role authority, and release decisions remain with their own owners.
+Canonical skills and agents remain outside the package. The package is a filtered generated projection:
+every included path must match its canonical owner, while registered repository-only skill roots remain
+available in local discovery and absent from shipped and installed plugin trees.
 
 ## Principles
 
-### Keep canonical sources outside the package
+### Keep one editable owner
 
-Canonical skills and agents under `.gobbi/projects/gobbi/` are the only editable owners. The package publishes one generated copy of them that a guard proves byte-equal to canonical; any other duplicate, or a hand edit of a generated file, breaks that single-owner rule.
+Canonical files under `.gobbi/projects/gobbi/` are editable owners. Discovery mirrors, package components,
+and installed caches are derived views whose differences must be explained by an explicit projection rule.
 
-### Keep source topology separate from installed-cache behavior
+### Prove source and installed behavior separately
 
-`scripts/sync-plugin-package.sh --check` proves the checked-out source package, manifests, marketplaces,
-entrypoints, role wrappers, and discovery mirrors. `scripts/check-codex-plugin-smoke.sh` installs the package
-into an isolated Codex home and compares every installed file path and byte with the source package. A source
-pass does not predict installed-cache dereferencing.
+Source topology proves what the checkout intends to ship. Each real runtime install proves what that runtime
+actually copied into its private cache; neither observation substitutes for the other.
 
-### Let each ecosystem own its manifest shape
+### Make exclusions exact and local
 
-The Claude manifest is metadata-only because Claude Code discovers conventional `skills/` and `agents/` directories. The Codex manifest declares the `skills` component explicitly. Native Codex role wrappers remain repo-local and are not a plugin component.
+A registered repository-only skill root is excluded only from the package skills projection and installed
+caches. Canonical skills, repository-local Claude and Codex discovery, agents, and similarly named roots stay
+complete.
 
 ### Fail closed on unsupported components
 
-Gobbi ships no hook component. The package, both manifests, project Claude settings, source checker, sync tests, and installed-cache smoke all enforce that absence. A new component requires a separate user-approved design and current CLI evidence.
+Gobbi ships no hooks. An unknown component, symlinked package entry, missing included path, extra installed
+path, byte difference, or leaked repository-only root is a package failure.
 
 ## Rules
 
-### Must follow
-
-- **CP-1 — Edit canonical owners.** Change skills under `.gobbi/projects/gobbi/skills/` and agents under `.gobbi/projects/gobbi/agents/`. Do not hand-edit their package or discovery views.
-- **CP-2 — Keep the package bounded.** `plugins/gobbi/` contains the two manifests plus the `skills` and `agents` component directories. It contains no project memory or repository-wide documentation.
-- **CP-3 — Keep the Claude manifest metadata-only.** Do not add `skills`, `agents`, or `hooks` keys to `plugins/gobbi/.claude-plugin/plugin.json` for the current conventional layout.
-- **CP-4 — Keep the Codex manifest explicit and supported.** `plugins/gobbi/.codex-plugin/plugin.json` declares `"skills": "./skills/"`. It does not declare agents or hooks.
-- **CP-5 — Keep marketplaces ecosystem-specific.** `.claude-plugin/marketplace.json` uses a string `source`. `.agents/plugins/marketplace.json` uses a local source object with `source.path`.
-- **CP-6 — Preserve the release decision.** Change manifest or marketplace versions only when the user-approved release task requires it. When a version changes, keep both manifests and the Claude marketplace entry equal.
-- **CP-7 — Verify both layers.** Run sync source checks and the isolated Codex smoke. When Claude Code is installed, also run strict Claude plugin validation.
-- **CP-8 — Treat installer omission as package failure.** When an installed cache omits or changes any package
-  file, fail with the installed-tree mismatch instead of hiding it. The generated package copy is the one
-  permitted answer to the Codex installer not following a symlinked component; add no other copy and hand-edit
-  no generated file.
-
-### Must not follow
-
-- Do not add a hook directory, hook manifest field, project hook registration, or development hook link.
-- Do not register `.codex/agents/*.toml` as plugin agents. They are repo-local native Codex entrypoints.
-- Do not hand-edit `.agents/skills/`, `.claude/skills/`, or `plugins/gobbi/{skills,agents}`.
-- Do not use one marketplace schema as the template for the other.
-- Do not infer installation success from source files alone.
-- Do not change a version, reinstall a plugin, or mutate a marketplace merely to make a local source edit visible unless the user authorized that operation.
+- **MUST edit only canonical skill and agent owners.** Reconcile discovery and package views through
+  `scripts/sync-plugin-package.sh`; never hand-edit a derived file or link.
+- **MUST validate every registered repository-only skill owner before any sync-managed mutation.** The owner
+  must satisfy its exact real-directory, root-file, identity, type, navigation, and inventory contract.
+- **MUST keep package skills as a filtered materialized real directory and compare every included file and
+  directory with canonical.** Package agents remain complete and may use only the shapes the generator accepts.
+- **MUST keep both manifests, marketplaces, entrypoints, role wrappers, local discovery, package projections,
+  versions, and hook absence inside the source gate.** A failed preflight changes no owned surface.
+- **MUST run both isolated installed-cache smokes when their accepted release or deployment contract requires
+  them.** Each smoke uses the exact runtime executable and private homes, then compares the full installed tree
+  and bytes with the filtered package.
+- **NEVER treat an intentional registered repository-only omission as missing package content, or treat an
+  unexpected included-path omission as intentional.** The exact projection predicate is the only distinction.
 
 ## Manual
 
-### Package layout and owners
+### Package layout and projections
 
 ```text
 .gobbi/projects/gobbi/
-|-- skills/                         canonical skill owners
-`-- agents/                         canonical role pairs
+|-- skills/                         canonical complete skills
+`-- agents/                         canonical complete agents
 
 plugins/gobbi/
 |-- .claude-plugin/plugin.json      Claude metadata
-|-- .codex-plugin/plugin.json       Codex metadata plus skills component
-|-- skills/                         generated copy of the canonical skills
-`-- agents/                         generated copy of the canonical agents
+|-- .codex-plugin/plugin.json       Codex metadata and skills declaration
+|-- skills/                         filtered generated real directory
+`-- agents/                         complete generated component
 ```
 
-The two component directories hold real files, not symlinks, because the Codex installer does not follow a symlinked component and installs nothing behind one. The sync command generates them from the canonical tree and proves every generated file byte-equal to its owner. A wrong generated file means the canonical owner or the generator is wrong: correct that and regenerate, and never hand-edit the generated file.
+Repository-local views remain complete:
 
-The package has no `hooks` entry. Empty untracked directories are not components, but any file, symlink, manifest field, settings block, or installed-cache directory for hooks is invalid.
+| Surface | Required shape |
+|---|---|
+| `.agents/skills/{name}` | Whole-directory link to the canonical skill |
+| `.claude/skills/{name}/` | Real directory with per-file links to the canonical skill |
+| `plugins/gobbi/skills/` | Filtered real projection; included paths and bytes equal canonical |
+| `plugins/gobbi/agents/` | Complete generated agents projection |
+| `.claude/agents/{role}.md` | Link to the canonical role Markdown |
+| `.codex/agents/{role}.toml` | Repository-local native role wrapper |
 
-Runtime views have different shapes:
+The package skills projection uses a registered exact top-level exclusion. It does not use frontmatter,
+prefixes, globs, substring matching, or a second policy root. Package-side walks stay unfiltered so a forbidden
+stale path, empty directory, or link remains visible as drift.
 
-| Surface | Shape | Owner |
-|---|---|---|
-| `.agents/skills/{name}` | whole-directory symlink to one canonical skill | sync command |
-| `.claude/skills/{name}/` | real directory with per-file symlinks to one canonical skill | sync command |
-| `plugins/gobbi/skills/` | generated real directory, byte-equal to canonical skills | sync command |
-| `plugins/gobbi/agents/` | generated real directory, byte-equal to canonical agents | sync command |
-| `.claude/agents/{role}.md` | hand-owned symlink to the canonical role Markdown | agent-writing contract |
-| `.codex/agents/{role}.toml` | hand-owned symlink to the canonical role wrapper | agent-writing contract |
+### Manifest and marketplace contracts
 
-Claude Code uses the package `agents/` directory. Native Codex uses the five repo-local `.codex/agents/*.toml` wrappers. The wrappers point to the protected canonical Markdown role documents.
+The Claude manifest is metadata-only. Claude Code discovers conventional package directories, so the
+manifest declares no `skills`, `agents`, or `hooks` key.
 
-### Manifest contracts
-
-The Claude manifest at `plugins/gobbi/.claude-plugin/plugin.json` contains package metadata such as `name`, `version`, `description`, `author`, `license`, and `keywords`. Claude Code discovers the conventional package directories without component keys.
-
-The Codex manifest at `plugins/gobbi/.codex-plugin/plugin.json` contains the same package identity plus its Codex interface metadata and this component field:
+The Codex manifest declares this supported component:
 
 ```json
 {
@@ -102,32 +98,9 @@ The Codex manifest at `plugins/gobbi/.codex-plugin/plugin.json` contains the sam
 }
 ```
 
-The outer object contains the full metadata; the snippet shows only the component contract. The current Codex manifest schema rejects a `hooks` field, and Gobbi has no hook component in either runtime.
-
-### Marketplace contracts
-
-The Claude marketplace file is `.claude-plugin/marketplace.json`. Its Gobbi entry uses:
-
-```json
-{
-  "name": "gobbi",
-  "source": "./plugins/gobbi"
-}
-```
-
-The Codex marketplace file is `.agents/plugins/marketplace.json`. Its Gobbi entry uses:
-
-```json
-{
-  "name": "gobbi",
-  "source": {
-    "source": "local",
-    "path": "./plugins/gobbi"
-  }
-}
-```
-
-Keep the remaining marketplace metadata in its ecosystem's schema. The sync checker validates both source pointers and the Gobbi entry identity.
+It declares neither agents nor hooks. `.claude-plugin/marketplace.json` uses a string `source`, while
+`.agents/plugins/marketplace.json` uses a local source object with `source.path`. Both point to
+`./plugins/gobbi` through their ecosystem-specific schemas.
 
 ### Source reconciliation
 
@@ -137,91 +110,72 @@ Run the read-only source gate first:
 bash scripts/sync-plugin-package.sh --check
 ```
 
-It validates:
+It checks registered repository-only owners, manifests, marketplaces, versions, native entrypoints, role
+wrappers, local discovery, filtered skills, complete agents, included-path bytes, and hook absence.
 
-- both manifests and both marketplace pointers;
-- equal non-empty versions across both manifests and the Claude marketplace;
-- `AGENTS.md`, `.codex/AGENTS.md`, and `.claude/CLAUDE.md` entrypoints;
-- all five canonical role pairs and both runtime wrapper symlinks;
-- `.agents/skills` discovery links;
-- the per-file `.claude/skills` mirror;
-- `plugins/gobbi/{skills,agents}`;
-- in-process Agent Teams settings; and
-- explicit absence of hook components and registrations.
-
-If only a script-owned mirror has drifted and the current task authorizes reconciliation, run:
+When the task authorizes repository-local mirror reconciliation, run:
 
 ```bash
 bash scripts/sync-plugin-package.sh
 bash scripts/sync-plugin-package.sh --check
 ```
 
-Normal sync performs a complete fail-closed preflight before its first mirror mutation. It never creates hooks. Do not run it when the task forbids mirror mutation or while another writer is changing canonical skills.
+Normal sync validates all owners and all mutation plans before changing a discovery surface. It never creates
+or restores package skills as a canonical-tree link.
 
-The focused sync test is:
+When the task authorizes package generation, run:
+
+```bash
+bash scripts/sync-plugin-package.sh --materialize-package
+bash scripts/sync-plugin-package.sh --check
+```
+
+Materialization constructs the filtered skills and complete agents expected sets, prunes proved stale paths
+without following links, copies canonical bytes, and verifies the result.
+
+The fixture regression is:
 
 ```bash
 bash scripts/test-sync-plugin-package.sh
 ```
 
-It covers safe reconciliation, unsafe mirror entries, idempotence, bounded traversal, owner moves, manifest and marketplace drift, role-wrapper drift, and injected hook rejection.
+It covers exact exclusion, similarly named inclusion, invalid-owner zero mutation, local completeness,
+package omissions, extras, changed bytes, links, empty directories, entrypoint drift, and idempotence.
 
-### Claude validation
+### Installed-cache checks
 
-When `claude` is available, validate the package without installing it:
+Run the real installed-cache checks only when the caller authorizes their isolated runtime effects:
+
+```bash
+bash scripts/check-claude-plugin-smoke.sh
+bash scripts/check-codex-plugin-smoke.sh
+```
+
+Each script locks one exact executable, clears inherited environment state, binds private runtime homes,
+installs from the local marketplace, derives the installed path from runtime output, proves resolved
+containment, and compares every installed directory, file, and byte with `plugins/gobbi/`. It also rejects
+hooks and every registered repository-only root or literal. The first failure preserves the private target and
+stops; do not retry or delete that evidence by implication.
+
+Claude's separate schema validation remains useful before a real install:
 
 ```bash
 claude plugin validate --strict plugins/gobbi
 ```
 
-A validation failure is a package failure. Read the exact manifest or component error before changing anything. Do not add redundant component keys to silence discovery problems.
-
-For a real user-authorized install, the marketplace-qualified name is selected from the configured marketplace. Installation, update, removal, and publication mutate external state and remain outside a read-only package review.
-
-### Codex installed-cache smoke
-
-Run:
-
-```bash
-bash scripts/check-codex-plugin-smoke.sh
-```
-
-The smoke creates an isolated `CODEX_HOME`, registers the repository as the `gobbi-workspace` marketplace, installs `gobbi@gobbi-workspace`, and verifies:
-
-- the plugin is available, installed, and enabled;
-- both manifests reached the installed cache;
-- no hook field or hook directory reached the cache;
-- both components are materialized directories before the install;
-- the cache top level contains only manifests, skills, and agents; and
-- every packaged manifest, skill, and agent file reached the cache at the same path with the same bytes.
-
-A missing or byte-different installed path is always a failure, never a limitation to note. The smoke's
-negative fixture proves that an omitted nested leaf and changed installed bytes both fail complete-tree
-comparison. The installer copies nothing behind a symlink at any depth, which breaks a package two ways, and
-the check reports them separately because they have different repairs. A symlinked component root delivers no
-component at all and fails before the install. A symlink left inside a materialized component directory drops
-exactly that path and fails after it. Both name `--materialize-package`. A hook component is always a failure.
+It does not replace the isolated Claude install observation.
 
 ### Failure diagnosis
 
-| Symptom | Owner to inspect | Required response |
+| Symptom | Inspect first | Response |
 |---|---|---|
-| Wrong or dangling package/discovery symlink | `scripts/sync-plugin-package.sh` and canonical target | Confirm the raw target; reconcile only when authorized |
-| Stale or missing `.claude/skills` leaf | canonical skill tree plus sync output | Classify mirror drift; never hand-edit the leaf |
-| Manifest or marketplace rejection | failing JSON file plus current CLI validation | Correct the owning schema without changing unrelated metadata |
-| Missing role wrapper | canonical role pair and hand-owned runtime symlink | Restore the exact role symlink; do not create a new role |
-| Installed skill omitted | isolated smoke output and installed path | Check the named package path for a symlink, then regenerate the package rather than copying the file |
-| Any hook path or manifest field appears | package, settings, or cache preimage | Stop and remove the unsupported component within the authorized scope |
-| Version disagreement | both manifests and Claude marketplace | Re-align to the user-approved release version |
+| Invalid repository-only owner | Exact canonical root and preflight diagnostic | Correct the canonical owner; prove all owned surfaces remained unchanged |
+| Missing or stale local discovery | Canonical skill tree and sync preflight | Reconcile only with mirror-mutation authority |
+| Missing included package path | Filtered expected inventory and canonical file | Regenerate; never classify it as an intentional exclusion |
+| Leaked repository-only root | Package path, literal guard, and projection predicate | Stop publication and correct the generator or stale package |
+| Manifest or marketplace rejection | Exact JSON owner and current runtime schema | Correct only the owning schema |
+| Installed inventory or byte mismatch | Preserved private target and named package path | Keep the target; diagnose the first differing included path |
+| Hook field or path | Manifest, package, settings, or installed cache | Stop; hooks are unsupported |
+| Version disagreement | Both manifests and Claude marketplace | Re-align only to the user-approved release version |
 
 ## References
-
-- Repository runtime contract: `AGENTS.md`
-- [Native Codex tool manual](../codex/SKILL.md)
-- [Agent-writing wiring owner](../agent-writing/SKILL.md)
-- [Skill-writing owner](../skill-writing/SKILL.md)
-- Source topology command: `scripts/sync-plugin-package.sh`
-- Source topology tests: `scripts/test-sync-plugin-package.sh`
-- Codex installed-cache smoke: `scripts/check-codex-plugin-smoke.sh`
-- Claude plugin manifest: `plugins/gobbi/.claude-plugin/plugin.json`
-- Codex plugin manifest: `plugins/gobbi/.codex-plugin/plugin.json`

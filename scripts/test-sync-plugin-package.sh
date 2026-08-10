@@ -3,6 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 sync_script="$repo_root/scripts/sync-plugin-package.sh"
+runtime_entrypoint_script="$repo_root/scripts/sync-runtime-entrypoints.sh"
 tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/gobbi-sync-tests.XXXXXX")"
 tests_run=0
 
@@ -29,6 +30,12 @@ assert_file_contains() {
   grep -F -- "$pattern" "$path" >/dev/null || fail "$path does not contain: $pattern"
 }
 
+run_entrypoint_sync() {
+  local root="$1"
+  shift
+  GOBBI_ENTRYPOINT_REPO_ROOT="$root" bash "$runtime_entrypoint_script" "$@"
+}
+
 make_fixture() {
   local root="$1" role skill
   mkdir -p \
@@ -39,6 +46,7 @@ make_fixture() {
     "$root/.claude/skills" \
     "$root/.claude/agents" \
     "$root/.codex/agents" \
+    "$root/scripts" \
     "$root/plugins/gobbi/.codex-plugin" \
     "$root/plugins/gobbi/.claude-plugin" \
     "$root/.claude-plugin"
@@ -76,6 +84,8 @@ make_fixture() {
     cp -R "$repo_root/.gobbi/projects/gobbi/skills/$skill" \
       "$root/.gobbi/projects/gobbi/skills/$skill"
   done
+  cp -R "$repo_root/.gobbi/projects/gobbi/skills/gobbi-dev" \
+    "$root/.gobbi/projects/gobbi/skills/gobbi-dev"
   cp "$repo_root/.gobbi/projects/gobbi/agents/manager.md" \
     "$root/.gobbi/projects/gobbi/agents/manager.md"
   cp "$repo_root/.gobbi/projects/gobbi/agents/assistant.md" \
@@ -83,6 +93,10 @@ make_fixture() {
   cp "$repo_root/.codex/AGENTS.md" "$root/.codex/AGENTS.md"
   cp "$repo_root/.claude/CLAUDE.md" "$root/.claude/CLAUDE.md"
   cp "$repo_root/.claude/settings.json" "$root/.claude/settings.json"
+  cp "$repo_root/scripts/check-codex-plugin-smoke.sh" "$root/scripts/check-codex-plugin-smoke.sh"
+  cp "$repo_root/scripts/check-claude-plugin-smoke.sh" "$root/scripts/check-claude-plugin-smoke.sh"
+  run_entrypoint_sync "$root" --sync >/dev/null
+  GOBBI_SYNC_REPO_ROOT="$root" bash "$sync_script" --materialize-package >/dev/null
 }
 
 replace_literal_once() {
@@ -203,6 +217,75 @@ snapshot_mirror() {
   done < "$sorted_inventory" >> "$output"
 }
 
+snapshot_owned_surfaces() {
+  local root="$1" output="$2" surface path rel raw digest inventory sorted_inventory
+  local -a surfaces=(
+    '.agents/skills'
+    '.claude/skills'
+    '.codex/AGENTS.md'
+    '.claude/CLAUDE.md'
+    'AGENTS.md'
+    'plugins/gobbi/skills'
+    'plugins/gobbi/agents'
+  )
+
+  : > "$output"
+  for surface in "${surfaces[@]}"; do
+    path="$root/$surface"
+    if [[ -L "$path" ]]; then
+      raw="$(readlink -n -- "$path" | od -An -tx1 | tr -d ' \n')"
+      printf 'l\t%s\thex:%s\n' "$surface" "$raw" >> "$output"
+    elif [[ -f "$path" ]]; then
+      digest="$(sha256sum "$path" | awk '{print $1}')"
+      printf 'f\t%s\t%s\n' "$surface" "$digest" >> "$output"
+    elif [[ -d "$path" ]]; then
+      inventory="$(mktemp "$tmp_root/owned-inventory.XXXXXX")"
+      sorted_inventory="$(mktemp "$tmp_root/owned-sorted.XXXXXX")"
+      find "$path" -mindepth 0 -print0 > "$inventory"
+      LC_ALL=C sort -z "$inventory" > "$sorted_inventory"
+      while IFS= read -r -d '' entry; do
+        rel="${entry#"$root"/}"
+        if [[ -L "$entry" ]]; then
+          raw="$(readlink -n -- "$entry" | od -An -tx1 | tr -d ' \n')"
+          printf 'l\t%s\thex:%s\n' "$rel" "$raw"
+        elif [[ -d "$entry" ]]; then
+          printf 'd\t%s\t-\n' "$rel"
+        elif [[ -f "$entry" ]]; then
+          digest="$(sha256sum "$entry" | awk '{print $1}')"
+          printf 'f\t%s\t%s\n' "$rel" "$digest"
+        else
+          printf 'o\t%s\t%s\n' "$rel" "$(stat -c '%F' "$entry")"
+        fi
+      done < "$sorted_inventory" >> "$output"
+    else
+      printf 'm\t%s\t-\n' "$surface" >> "$output"
+    fi
+  done
+}
+
+assert_owner_failure_zero_mutation() {
+  local name="$1" root="$2" expected="$3"
+  local mode before after log
+
+  for mode in normal materialize; do
+    before="$tmp_root/$name.$mode.owned.before"
+    after="$tmp_root/$name.$mode.owned.after"
+    log="$tmp_root/$name.$mode.log"
+    snapshot_owned_surfaces "$root" "$before"
+    if [[ "$mode" == normal ]]; then
+      if run_sync "$root" > "$log" 2>&1; then
+        fail "$name unexpectedly succeeded in normal mode"
+      fi
+    elif run_sync "$root" --materialize-package > "$log" 2>&1; then
+      fail "$name unexpectedly succeeded in materialize mode"
+    fi
+    snapshot_owned_surfaces "$root" "$after"
+    cmp -s "$before" "$after" || fail "$name mutated a sync-owned surface before $mode owner rejection"
+    assert_file_contains "$log" "$expected"
+  done
+  pass "$name rejects the invalid package-only owner in normal and materialize modes with zero mutation"
+}
+
 assert_unsafe_zero_mutation() {
   local name="$1" root="$2" reason="$3"
   local before="$tmp_root/$name.before" after="$tmp_root/$name.after" log="$tmp_root/$name.log"
@@ -222,6 +305,7 @@ prepare_synced_fixture() {
   local root="$1"
   make_fixture "$root"
   write_skill_file "$root" alpha SKILL.md '# Alpha'
+  run_sync "$root" --materialize-package >/dev/null
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
 }
@@ -264,8 +348,155 @@ test_semantic_positive_recovery_and_reflow() {
   replace_block_once "$root/.gobbi/projects/gobbi/skills/cowork/SKILL.md" \
     $'Apply Gobbi\x27s [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate). A\n  correction' \
     $'Apply Gobbi\x27s [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).\n  A correction'
+  run_sync "$root" --materialize-package >/dev/null
   run_sync "$root" --check >/dev/null
   pass 'finding-m preserves semantic parity across equivalent paragraph reflow'
+}
+
+test_smoke_contract_drift() {
+  local block_root="$tmp_root/smoke-block-drift" block_log="$tmp_root/smoke-block-drift.log"
+  local order_root="$tmp_root/smoke-order-drift" order_log="$tmp_root/smoke-order-drift.log"
+  local argv_root="$tmp_root/smoke-argv-drift" argv_log="$tmp_root/smoke-argv-drift.log"
+  local count_root="$tmp_root/smoke-count-drift" count_log="$tmp_root/smoke-count-drift.log"
+  local precheck_root="$tmp_root/smoke-precheck-drift" precheck_log="$tmp_root/smoke-precheck-drift.log"
+  local final_root="$tmp_root/smoke-final-drift" final_log="$tmp_root/smoke-final-drift.log"
+  local receipt_root="$tmp_root/smoke-receipt-drift" receipt_log="$tmp_root/smoke-receipt-drift.log"
+  local audit_root="$tmp_root/smoke-audit-drift" audit_log="$tmp_root/smoke-audit-drift.log"
+  local regex_root="$tmp_root/smoke-regex-drift" regex_log="$tmp_root/smoke-regex-drift.log"
+  local cardinality_root="$tmp_root/smoke-cardinality-drift" cardinality_log="$tmp_root/smoke-cardinality-drift.log"
+  local policy_root="$tmp_root/smoke-policy-drift" policy_log="$tmp_root/smoke-policy-drift.log"
+  local probe_doc_root="$tmp_root/smoke-probe-doc-drift" probe_doc_log="$tmp_root/smoke-probe-doc-drift.log"
+  prepare_semantic_fixture "$block_root"
+  replace_literal_once "$block_root/scripts/check-codex-plugin-smoke.sh" \
+    'package changed while the frozen manifest was created' \
+    'package drifted while the frozen manifest was created'
+  if run_sync "$block_root" --check > "$block_log" 2>&1; then
+    fail 'one-sided frozen-package block mutation unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$block_log" \
+    'Claude and Codex smoke frozen-package contract blocks must remain byte-equal'
+
+  prepare_semantic_fixture "$order_root"
+  replace_literal_once "$order_root/scripts/check-claude-plugin-smoke.sh" \
+    'freeze_package || fail' 'freeze_package_disabled || fail'
+  if run_sync "$order_root" --check > "$order_log" 2>&1; then
+    fail 'Claude frozen checkpoint order mutation unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$order_log" \
+    'Claude smoke must freeze before version and verify every package checkpoint against the frozen manifest'
+
+  prepare_semantic_fixture "$argv_root"
+  replace_literal_once "$argv_root/scripts/check-codex-plugin-smoke.sh" \
+    '1) [[ "$1" == --self-test ]] || usage_error; mode=--self-test ;;' \
+    '1) mode=--self-test ;;'
+  if run_sync "$argv_root" --check > "$argv_log" 2>&1; then
+    fail 'broadened Codex argv contract unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$argv_log" \
+    'runtime smoke usage must reject invalid argv before artifact creation'
+
+  prepare_semantic_fixture "$count_root"
+  replace_block_once "$count_root/scripts/check-codex-plugin-smoke.sh" \
+    "run_codex_stage install plugin add gobbi@gobbi-workspace --json || fail 'Codex install stage failed or attempted network access'" \
+    $'run_codex_stage install plugin add gobbi@gobbi-workspace --json || fail \'Codex install stage failed or attempted network access\'\nrun_codex_stage install plugin add gobbi@gobbi-workspace --json || fail \'Codex install stage failed or attempted network access\''
+  if run_sync "$count_root" --check > "$count_log" 2>&1; then
+    fail 'duplicated Codex install stage unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$count_log" 'Codex production smoke stage install must appear exactly once'
+
+  prepare_semantic_fixture "$precheck_root"
+  replace_literal_once "$precheck_root/scripts/check-claude-plugin-smoke.sh" \
+    'run_source_check_stage source-precheck' 'run_source_check_stage source-precheck-disabled'
+  if run_sync "$precheck_root" --check > "$precheck_log" 2>&1; then
+    fail 'removed Claude source precheck unexpectedly succeeded'
+  fi
+  grep -Fx 'source topology: Claude smoke must freeze before version and verify every package checkpoint against the frozen manifest' \
+    "$precheck_log" >/dev/null || fail 'precheck removal omitted the order failure'
+  grep -Fx 'source topology: Claude production smoke stage source-precheck must appear exactly once' \
+    "$precheck_log" >/dev/null || fail 'precheck removal omitted the exact-count failure'
+  [[ "$(grep -c '^source topology:' "$precheck_log")" -eq 2 ]] \
+    || fail 'precheck removal produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$final_root"
+  swap_literals_once "$final_root/scripts/check-claude-plugin-smoke.sh" \
+    'run_source_check_stage source-postcheck' \
+    'verify_frozen_tree "$package_root" package-before-success'
+  if run_sync "$final_root" --check > "$final_log" 2>&1; then
+    fail 'weakened Claude final frozen-check order unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$final_log" \
+    'Claude smoke must freeze before version and verify every package checkpoint against the frozen manifest'
+
+  prepare_semantic_fixture "$receipt_root"
+  replace_literal_once "$receipt_root/scripts/check-codex-plugin-smoke.sh" \
+    'frozen_sha256=%s dirs=%s files=%s' 'package smoke passed'
+  if run_sync "$receipt_root" --check > "$receipt_log" 2>&1; then
+    fail 'Codex frozen receipt field removal unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$receipt_log" \
+    'runtime smoke success receipt must expose the frozen digest and tree counts'
+
+  prepare_semantic_fixture "$audit_root"
+  replace_literal_once "$audit_root/scripts/check-codex-plugin-smoke.sh" \
+    'source-check stage recorded an injected line outside the exact local no-effect probe contract' \
+    'source-check stage recorded an unexpected injected line'
+  if run_sync "$audit_root" --check > "$audit_log" 2>&1; then
+    fail 'one-sided source-probe audit block mutation unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$audit_log" \
+    'Claude and Codex source-probe audit contract blocks must remain byte-equal'
+
+  prepare_semantic_fixture "$regex_root"
+  replace_literal_once "$regex_root/scripts/check-codex-plugin-smoke.sh" \
+    "source_probe_regex='^[[:space:]]*" "source_probe_regex='.*"
+  if run_sync "$regex_root" --check > "$regex_log" 2>&1; then
+    fail 'one-sided source-probe regex weakening unexpectedly succeeded'
+  fi
+  grep -Fx 'source topology: Claude and Codex source-probe audit contract blocks must remain byte-equal' \
+    "$regex_log" >/dev/null || fail 'regex weakening omitted the byte-equality failure'
+  grep -Fx 'source topology: runtime smoke source-probe regex must remain one exact anchored contract' \
+    "$regex_log" >/dev/null || fail 'regex weakening omitted the exact-regex failure'
+  [[ "$(grep -c '^source topology:' "$regex_log")" -eq 2 ]] \
+    || fail 'regex weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$cardinality_root"
+  for smoke in check-codex-plugin-smoke.sh check-claude-plugin-smoke.sh; do
+    replace_literal_once "$cardinality_root/scripts/$smoke" \
+      'injected_count" -ne 4' 'injected_count" -ne 3'
+  done
+  if run_sync "$cardinality_root" --check > "$cardinality_log" 2>&1; then
+    fail 'bilateral source-probe cardinality weakening unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime smoke source checks must require exactly four denied local probes per stage' "$cardinality_log")" -eq 2 ]] \
+    || fail 'bilateral cardinality weakening did not fail once per smoke script'
+  [[ "$(grep -c '^source topology:' "$cardinality_log")" -eq 2 ]] \
+    || fail 'bilateral cardinality weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$policy_root"
+  replace_block_once "$policy_root/scripts/check-codex-plugin-smoke.sh" \
+    $'run_codex_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" strict \\' \
+    $'run_codex_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" source \\'
+  replace_block_once "$policy_root/scripts/check-claude-plugin-smoke.sh" \
+    $'run_claude_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" strict \\' \
+    $'run_claude_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" source \\'
+  if run_sync "$policy_root" --check > "$policy_log" 2>&1; then
+    fail 'bilateral runtime source-policy mutation unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime and helper wrappers must select the strict trace audit policy' "$policy_log")" -eq 2 ]] \
+    || fail 'bilateral runtime policy mutation omitted the strict-policy failures'
+  [[ "$(grep -Fc 'source topology: only the dedicated source-check wrapper may select the source trace audit policy' "$policy_log")" -eq 2 ]] \
+    || fail 'bilateral runtime policy mutation omitted the source-policy failures'
+  [[ "$(grep -c '^source topology:' "$policy_log")" -eq 4 ]] \
+    || fail 'bilateral runtime policy mutation produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$probe_doc_root"
+  replace_literal_once "$probe_doc_root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-toolchain/SKILL.md" \
+    'exactly four denied local probes each' 'exactly three denied local probes each'
+  if run_sync "$probe_doc_root" --check > "$probe_doc_log" 2>&1; then
+    fail 'source-probe documentation count mutation unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$probe_doc_log" \
+    'Gobbi toolchain must confine four denied local probes to each source-check stage'
 }
 
 test_semantic_cowork_forbidden_wrapup_edge() {
@@ -310,7 +541,7 @@ gobbi-root-sentinels^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^`agents/manager
 gobbi-layout-session-wire^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^projects/*/sessions/^projects/*/session/^Gobbi layout must retain the exact ignore wire values
 gobbi-cowork-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../cowork/SKILL.md`](../cowork/SKILL.md)^[`../cowork/SKILL.md`](../workflow/SKILL.md)^Gobbi must hand Cowork to its canonical owner
 gobbi-workflow-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../workflow/SKILL.md`](../workflow/SKILL.md)^[`../workflow/SKILL.md`](../cowork/SKILL.md)^Gobbi must hand Workflow to its canonical owner
-gobbi-references-entry-load^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other^loads Principles and Discussion; selected owners, phases, and task triggers load every other^Gobbi References must match the Principles, Discussion, and Delegation entry load
+gobbi-references-entry-load^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Step 1.2 loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every^Step 1.2 loads Principles and Discussion; selected owners, phases, and task triggers load every^Gobbi References must match the Principles, Discussion, and Delegation entry load and distributable map boundary
 agent-teams-manual-shape^.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md^### Workflow integration^## Workflow integration^Agent Teams Workflow guidance must remain inside Manual
 delegation-result-kind^.gobbi/projects/gobbi/skills/delegation/SKILL.md^MUST name exactly one `result-kind: file | commit | response-only`^MAY omit `result-kind: file | commit | response-only`^Delegation must require exactly one of the three result kinds
 delegation-durable-kind^.gobbi/projects/gobbi/skills/delegation/SKILL.md^MUST use `result-kind: file` for durable design and evaluation results.^MAY use `result-kind: response-only` for durable design and evaluation results.^Delegation durable design and evaluation must select file results
@@ -426,6 +657,9 @@ workflow-durable-wrapup^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Wrap-up d
 finding-h-assistant-mode^.gobbi/projects/gobbi/agents/assistant.md^**Cowork Memory mode** enters only from an explicit Cowork closure assignment^**Cowork Memory mode** enters without an assignment^assignment-authorized assistant must support Cowork direct-Memory closure only
 finding-h-assistant-boundary^.gobbi/projects/gobbi/agents/assistant.md^Never load Wrap-up, create Workflow receipts or a tracked handoff^Load Wrap-up, create Workflow receipts and a tracked handoff^assignment-authorized assistant must support Cowork direct-Memory closure only
 finding-h-git-writer^.gobbi/projects/gobbi/skills/git/SKILL.md^assignment-named writer role, including an assistant^manager role only^Git must authorize an assignment-named assistant writer
+gobbi-dev-toolchain-selective-trace^.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-toolchain/SKILL.md^Local `socketpair(AF_UNIX)` remains available.^Local `socketpair(AF_UNIX)` is denied.^Gobbi toolchain must define selective trace, single-stage execution, and separate whole-smoke recovery
+gobbi-dev-deployment-stage-once^.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-deployment/SKILL.md^Invoke each runtime stage once.^Invoke each runtime stage twice.^Gobbi deployment must distinguish local IPC, one-run stages, and separately authorized recovery
+gobbi-dev-deployment-recovery-checklist^.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-deployment/checklists.md^No failed runtime stage was replayed.^A failed runtime stage was replayed.^Gobbi deployment checklist must require selective trace evidence and separately authorized recovery
 SEMANTIC_CASES
 }
 
@@ -456,6 +690,7 @@ test_safe_reconciliation() {
   write_skill_file "$root" alpha SKILL.md '# Alpha'
   write_skill_file "$root" alpha workflow/current.md '# Current'
   write_skill_file "$root" beta SKILL.md '# Beta'
+  run_sync "$root" --materialize-package >/dev/null
 
   make_owned_mirror_link "$root" alpha SKILL.md
   make_owned_mirror_link "$root" alpha removed.md
@@ -487,8 +722,8 @@ test_canonical_skill_deletion() {
   write_skill_file "$root" alpha SKILL.md '# Alpha'
   write_skill_file "$root" record SKILL.md '# Record'
 
-  run_sync "$root" >/dev/null
   run_sync "$root" --materialize-package >/dev/null
+  run_sync "$root" >/dev/null
   [[ -L "$root/.agents/skills/record" ]] || fail 'precondition missing Codex record discovery link'
   [[ -L "$root/.claude/skills/record/SKILL.md" ]] || fail 'precondition missing Claude record discovery link'
   [[ -f "$root/plugins/gobbi/skills/record/SKILL.md" ]] || fail 'precondition missing generated record skill'
@@ -641,6 +876,7 @@ test_forward_and_back_rollback() {
   write_skill_file "$root" alpha SKILL.md '# Alpha'
   write_skill_file "$root" alpha templates/shared.md '# Shared'
   write_skill_file "$root" orchestration SKILL.md '# Orchestration'
+  run_sync "$root" --materialize-package >/dev/null
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   snapshot_mirror "$root" "$initial"
@@ -649,6 +885,7 @@ test_forward_and_back_rollback() {
   mv "$root/.gobbi/projects/gobbi/skills/alpha/templates/shared.md" \
     "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md"
   rmdir "$root/.gobbi/projects/gobbi/skills/alpha/templates"
+  run_sync "$root" --materialize-package >/dev/null
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   [[ ! -e "$root/.claude/skills/alpha/templates" ]] || fail 'forward owner move left the old mirror path'
@@ -658,6 +895,7 @@ test_forward_and_back_rollback() {
   mv "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md" \
     "$root/.gobbi/projects/gobbi/skills/alpha/templates/shared.md"
   rmdir "$root/.gobbi/projects/gobbi/skills/orchestration/templates"
+  run_sync "$root" --materialize-package >/dev/null
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   snapshot_mirror "$root" "$restored"
@@ -762,9 +1000,42 @@ test_marketplace_and_role_contracts() {
   pass 'sync source topology rejects marketplace and role-wrapper drift'
 }
 
+assert_entrypoint_source_zero_mutation() {
+  local name="$1" root="$2" expected="$3"
+  local before="$tmp_root/$name.entry.before" after="$tmp_root/$name.entry.after" log="$tmp_root/$name.entry.log"
+  snapshot_owned_surfaces "$root" "$before"
+  if run_entrypoint_sync "$root" --sync > "$log" 2>&1; then
+    fail "$name entrypoint source unexpectedly succeeded"
+  fi
+  snapshot_owned_surfaces "$root" "$after"
+  cmp -s "$before" "$after" || fail "$name changed a native entrypoint or root link before rejection"
+  assert_file_contains "$log" "$expected"
+}
+
 test_runtime_entrypoint_contract() {
-  local codex_root="$tmp_root/extra-codex-contract" claude_root="$tmp_root/extra-claude-contract" log
-  local expected='runtime entrypoints must contain only canonical generated Principles content'
+  local positive_root="$tmp_root/entrypoint-positive"
+  local codex_root="$tmp_root/extra-codex-contract" claude_root="$tmp_root/extra-claude-contract"
+  local missing_root="$tmp_root/entrypoint-missing-owner" tampered_root="$tmp_root/entrypoint-tampered-owner"
+  local principles_root root_spoof duplicate_root child_drift row_reordered row_extra row_trailing
+  local agents_missing agents_regular agents_wrong agents_dangling root_skill first_row second_row
+  local before after log marker_line route_line route_count literal_count
+  local expected='runtime entrypoints must contain canonical generated Principles and the repository-local route'
+
+  make_fixture "$positive_root"
+  printf 'stale\n' > "$positive_root/.codex/AGENTS.md"
+  printf 'other stale\n' > "$positive_root/.claude/CLAUDE.md"
+  run_entrypoint_sync "$positive_root" --sync >/dev/null
+  run_entrypoint_sync "$positive_root" --check >/dev/null
+  cmp -s "$positive_root/.codex/AGENTS.md" "$positive_root/.claude/CLAUDE.md" \
+    || fail 'runtime entrypoint generator produced different native bytes'
+  [[ "$(readlink -- "$positive_root/AGENTS.md")" == '.codex/AGENTS.md' ]] \
+    || fail 'runtime entrypoint sync changed the root AGENTS.md target'
+  route_count="$(grep -c '^## Repository-local Gobbi development lifecycle$' "$positive_root/.codex/AGENTS.md")"
+  literal_count="$(grep -Fc '.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md' "$positive_root/.codex/AGENTS.md")"
+  marker_line="$(grep -n '^<!-- END GENERATED PRINCIPLES -->$' "$positive_root/.codex/AGENTS.md" | cut -d: -f1)"
+  route_line="$(grep -n '^## Repository-local Gobbi development lifecycle$' "$positive_root/.codex/AGENTS.md" | cut -d: -f1)"
+  [[ "$route_count" -eq 1 && "$literal_count" -eq 1 && "$route_line" -gt "$marker_line" ]] \
+    || fail 'runtime entrypoint route is not unique and ordered after generated Principles'
 
   prepare_semantic_fixture "$codex_root"
   printf '\nGobbi runtime contract must not live in this generated entrypoint.\n' \
@@ -783,7 +1054,495 @@ test_runtime_entrypoint_contract() {
     fail 'sync --check accepted extra Claude runtime contract content'
   fi
   assert_only_semantic_failure "$log" "$expected"
-  pass 'sync source topology rejects non-Principles runtime entrypoint content'
+
+  make_fixture "$missing_root"
+  before="$tmp_root/entrypoint-missing.before"
+  after="$tmp_root/entrypoint-missing.after"
+  snapshot_owned_surfaces "$missing_root" "$before"
+  find "$missing_root/.gobbi/projects/gobbi/skills/gobbi-dev" -depth -mindepth 1 -delete
+  rmdir "$missing_root/.gobbi/projects/gobbi/skills/gobbi-dev"
+  log="$tmp_root/entrypoint-missing.log"
+  if run_entrypoint_sync "$missing_root" --sync > "$log" 2>&1; then
+    fail 'entrypoint sync accepted a missing family owner'
+  fi
+  snapshot_owned_surfaces "$missing_root" "$after"
+  cmp -s "$before" "$after" || fail 'entrypoint sync mutated native targets for a missing family owner'
+  assert_file_contains "$log" 'gobbi-dev must be a real directory'
+
+  make_fixture "$tampered_root"
+  before="$tmp_root/entrypoint-tampered.before"
+  after="$tmp_root/entrypoint-tampered.after"
+  snapshot_owned_surfaces "$tampered_root" "$before"
+  replace_literal_once "$tampered_root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'skill-type: domain' 'skill-type: operation'
+  log="$tmp_root/entrypoint-tampered.log"
+  if run_entrypoint_sync "$tampered_root" --sync > "$log" 2>&1; then
+    fail 'entrypoint sync accepted a mistyped family owner'
+  fi
+  snapshot_owned_surfaces "$tampered_root" "$after"
+  cmp -s "$before" "$after" || fail 'entrypoint sync mutated native targets for a mistyped family owner'
+  assert_file_contains "$log" 'must declare skill-type: domain'
+
+  principles_root="$tmp_root/entrypoint-malformed-principles"
+  make_fixture "$principles_root"
+  replace_literal_once "$principles_root/.gobbi/projects/gobbi/skills/principles/SKILL.md" '---' 'not-frontmatter'
+  assert_entrypoint_source_zero_mutation entrypoint-malformed-principles "$principles_root" 'must declare name: principles'
+
+  root_spoof="$tmp_root/entrypoint-root-body-spoof"
+  make_fixture "$root_spoof"
+  replace_literal_once "$root_spoof/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'name: gobbi-dev' 'owner-name: missing'
+  printf '\nname: gobbi-dev\n' >> "$root_spoof/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_entrypoint_source_zero_mutation entrypoint-root-body-spoof "$root_spoof" 'must declare name: gobbi-dev'
+
+  duplicate_root="$tmp_root/entrypoint-root-duplicate"
+  make_fixture "$duplicate_root"
+  replace_literal_once "$duplicate_root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'skill-type: domain' $'skill-type: domain\nskill-type: domain'
+  assert_entrypoint_source_zero_mutation entrypoint-root-duplicate "$duplicate_root" 'must declare skill-type: domain'
+
+  child_drift="$tmp_root/entrypoint-child-drift"
+  make_fixture "$child_drift"
+  replace_literal_once "$child_drift/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-testing/SKILL.md" \
+    'MUST load when collecting exact-revision test evidence for Gobbi.' \
+    'MUST load when collecting changed test evidence for Gobbi.'
+  assert_entrypoint_source_zero_mutation entrypoint-child-drift "$child_drift" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  row_reordered="$tmp_root/entrypoint-row-reordered"
+  make_fixture "$row_reordered"
+  root_skill="$row_reordered/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  first_row="$(grep -F '| [`gobbi-dev-conventions`]' "$root_skill")"
+  second_row="$(grep -F '| [`gobbi-dev-deployment`]' "$root_skill")"
+  replace_block_once "$root_skill" "$first_row"$'\n'"$second_row" "$second_row"$'\n'"$first_row"
+  assert_entrypoint_source_zero_mutation entrypoint-row-reordered "$row_reordered" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  row_extra="$tmp_root/entrypoint-row-extra"
+  make_fixture "$row_extra"
+  printf '| [`unrelated`](unrelated/SKILL.md) | tool | Extra row. |\n' \
+    >> "$row_extra/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_entrypoint_source_zero_mutation entrypoint-row-extra "$row_extra" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  row_trailing="$tmp_root/entrypoint-row-trailing"
+  make_fixture "$row_trailing"
+  printf '\nUnexpected trailing policy.\n' \
+    >> "$row_trailing/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_entrypoint_source_zero_mutation entrypoint-row-trailing "$row_trailing" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  agents_missing="$tmp_root/entrypoint-agents-missing"
+  make_fixture "$agents_missing"
+  rm -f "$agents_missing/AGENTS.md"
+  assert_entrypoint_source_zero_mutation entrypoint-agents-missing "$agents_missing" \
+    'AGENTS.md must be a non-dangling symlink with raw target .codex/AGENTS.md'
+
+  agents_regular="$tmp_root/entrypoint-agents-regular"
+  make_fixture "$agents_regular"
+  rm -f "$agents_regular/AGENTS.md"
+  printf 'regular\n' > "$agents_regular/AGENTS.md"
+  assert_entrypoint_source_zero_mutation entrypoint-agents-regular "$agents_regular" \
+    'AGENTS.md must be a non-dangling symlink with raw target .codex/AGENTS.md'
+
+  agents_wrong="$tmp_root/entrypoint-agents-wrong"
+  make_fixture "$agents_wrong"
+  rm -f "$agents_wrong/AGENTS.md"
+  ln -s '.claude/CLAUDE.md' "$agents_wrong/AGENTS.md"
+  assert_entrypoint_source_zero_mutation entrypoint-agents-wrong "$agents_wrong" \
+    'AGENTS.md must be a non-dangling symlink with raw target .codex/AGENTS.md'
+
+  agents_dangling="$tmp_root/entrypoint-agents-dangling"
+  make_fixture "$agents_dangling"
+  rm -f "$agents_dangling/.codex/AGENTS.md"
+  assert_entrypoint_source_zero_mutation entrypoint-agents-dangling "$agents_dangling" \
+    'AGENTS.md must be a non-dangling symlink with raw target .codex/AGENTS.md'
+
+  pass 'entrypoint sync renders one byte-equal route and rejects target drift or invalid sources without mutation'
+}
+
+test_package_only_owner_failures() {
+  local root family root_skill outside first_row second_row
+
+  root="$tmp_root/owner-missing"
+  make_fixture "$root"
+  family="$root/.gobbi/projects/gobbi/skills/gobbi-dev"
+  find "$family" -depth -mindepth 1 -delete
+  rmdir "$family"
+  assert_owner_failure_zero_mutation owner-missing "$root" 'gobbi-dev must be a real directory'
+
+  root="$tmp_root/owner-renamed"
+  make_fixture "$root"
+  mv "$root/.gobbi/projects/gobbi/skills/gobbi-dev" \
+    "$root/.gobbi/projects/gobbi/skills/gobbi-dev-renamed"
+  assert_owner_failure_zero_mutation owner-renamed "$root" 'gobbi-dev must be a real directory'
+
+  root="$tmp_root/owner-directory-symlink"
+  make_fixture "$root"
+  family="$root/.gobbi/projects/gobbi/skills/gobbi-dev"
+  outside="$root/family-owner"
+  mv "$family" "$outside"
+  ln -s '../../../../family-owner' "$family"
+  assert_owner_failure_zero_mutation owner-directory-symlink "$root" 'gobbi-dev must be a real directory'
+
+  root="$tmp_root/owner-root-symlink"
+  make_fixture "$root"
+  family="$root/.gobbi/projects/gobbi/skills/gobbi-dev"
+  root_skill="$family/SKILL.md"
+  mv "$root_skill" "$family/root-owner.md"
+  ln -s 'root-owner.md' "$root_skill"
+  assert_owner_failure_zero_mutation owner-root-symlink "$root" 'SKILL.md must be a readable real regular file'
+
+  root="$tmp_root/owner-root-missing"
+  make_fixture "$root"
+  rm -f "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_owner_failure_zero_mutation owner-root-missing "$root" 'SKILL.md must be a readable real regular file'
+
+  root="$tmp_root/owner-root-unreadable"
+  make_fixture "$root"
+  root_skill="$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  chmod 000 "$root_skill"
+  [[ ! -r "$root_skill" ]] || fail 'owner unreadable-root fixture is still readable'
+  assert_owner_failure_zero_mutation owner-root-unreadable "$root" 'SKILL.md must be a readable real regular file'
+  chmod 644 "$root_skill"
+
+  root="$tmp_root/owner-wrong-name"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'name: gobbi-dev' 'name: gobbi-dev-wrong'
+  assert_owner_failure_zero_mutation owner-wrong-name "$root" 'must declare name: gobbi-dev'
+
+  root="$tmp_root/owner-wrong-type"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'skill-type: domain' 'skill-type: operation'
+  assert_owner_failure_zero_mutation owner-wrong-type "$root" 'must declare skill-type: domain'
+
+  root="$tmp_root/owner-duplicate-name"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'name: gobbi-dev' $'name: gobbi-dev\nname: gobbi-dev'
+  assert_owner_failure_zero_mutation owner-duplicate-name "$root" 'must declare name: gobbi-dev'
+
+  root="$tmp_root/owner-body-spoof-name"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'name: gobbi-dev' 'owner-name: missing'
+  printf '\nname: gobbi-dev\n' >> "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_owner_failure_zero_mutation owner-body-spoof-name "$root" 'must declare name: gobbi-dev'
+
+  root="$tmp_root/owner-missing-navigation"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    '## Child Skills' '## Routes'
+  assert_owner_failure_zero_mutation owner-missing-navigation "$root" 'must retain the navigation-only root shell'
+
+  root="$tmp_root/owner-child-type-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-testing/SKILL.md" \
+    'skill-type: operation' 'skill-type: tool'
+  assert_owner_failure_zero_mutation owner-child-type-drift "$root" 'must declare skill-type: operation'
+
+  root="$tmp_root/owner-child-trigger-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-testing/SKILL.md" \
+    'MUST load when collecting exact-revision test evidence for Gobbi.' \
+    'MUST load when collecting changed test evidence for Gobbi.'
+  assert_owner_failure_zero_mutation owner-child-trigger-drift "$root" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  root="$tmp_root/owner-missing-file"
+  make_fixture "$root"
+  rm -f "$root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-testing/SKILL.md"
+  assert_owner_failure_zero_mutation owner-missing-file "$root" 'exact accepted ten-file inventory'
+
+  root="$tmp_root/owner-extra-file"
+  make_fixture "$root"
+  printf 'extra\n' > "$root/.gobbi/projects/gobbi/skills/gobbi-dev/extra.md"
+  assert_owner_failure_zero_mutation owner-extra-file "$root" 'exact accepted ten-file inventory'
+
+  root="$tmp_root/owner-row-tampered"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'MUST load when collecting exact-revision test evidence for Gobbi.' \
+    'MUST load when collecting approximate test evidence for Gobbi.'
+  assert_owner_failure_zero_mutation owner-row-tampered "$root" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  root="$tmp_root/owner-row-reordered"
+  make_fixture "$root"
+  root_skill="$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  first_row="$(grep -F '| [`gobbi-dev-conventions`]' "$root_skill")"
+  second_row="$(grep -F '| [`gobbi-dev-deployment`]' "$root_skill")"
+  replace_block_once "$root_skill" "$first_row"$'\n'"$second_row" "$second_row"$'\n'"$first_row"
+  assert_owner_failure_zero_mutation owner-row-reordered "$root" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  root="$tmp_root/owner-row-extra"
+  make_fixture "$root"
+  printf '| [`unrelated`](unrelated/SKILL.md) | tool | Extra row. |\n' \
+    >> "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_owner_failure_zero_mutation owner-row-extra "$root" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+
+  root="$tmp_root/owner-row-trailing"
+  make_fixture "$root"
+  printf '\nUnexpected trailing policy.\n' \
+    >> "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_owner_failure_zero_mutation owner-row-trailing "$root" \
+    'Child Skills section must equal the ordered child-derived table through end of file'
+}
+
+expect_package_check_failure() {
+  local name="$1" root="$2" expected="$3" log
+  log="$tmp_root/$name.package.log"
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail "$name package drift unexpectedly passed"
+  fi
+  assert_file_contains "$log" "$expected"
+  pass "$name package drift fails closed"
+}
+
+assert_normal_package_preflight_zero_mutation() {
+  local name="$1" root="$2" expected="$3"
+  local before="$tmp_root/$name.normal.before" after="$tmp_root/$name.normal.after" log="$tmp_root/$name.normal.log"
+
+  make_owned_mirror_link "$root" gobbi removed-by-unsafe-normal.md
+  ln -s '../../.gobbi/projects/gobbi/skills/retired' "$root/.agents/skills/retired"
+  snapshot_owned_surfaces "$root" "$before"
+  if run_sync "$root" > "$log" 2>&1; then
+    fail "$name unexpectedly succeeded in normal mode"
+  fi
+  snapshot_owned_surfaces "$root" "$after"
+  cmp -s "$before" "$after" || fail "$name mutated an owned surface before normal package preflight rejection"
+  assert_file_contains "$log" "$expected"
+  pass "$name normal package preflight rejects with zero owned-surface mutation"
+}
+
+assert_check_package_preflight_zero_mutation() {
+  local name="$1" root="$2" expected="$3"
+  local before="$tmp_root/$name.check.before" after="$tmp_root/$name.check.after" log="$tmp_root/$name.check.log"
+
+  snapshot_owned_surfaces "$root" "$before"
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail "$name unexpectedly succeeded in check mode"
+  fi
+  snapshot_owned_surfaces "$root" "$after"
+  cmp -s "$before" "$after" || fail "$name mutated an owned surface during check-mode rejection"
+  assert_file_contains "$log" "$expected"
+  pass "$name check-mode package preflight rejects with zero owned-surface mutation"
+}
+
+assert_materialize_package_preflight_zero_mutation() {
+  local name="$1" root="$2" expected="$3"
+  local before="$tmp_root/$name.materialize.before" after="$tmp_root/$name.materialize.after"
+  local log="$tmp_root/$name.materialize.log"
+
+  snapshot_owned_surfaces "$root" "$before"
+  if run_sync "$root" --materialize-package > "$log" 2>&1; then
+    fail "$name unexpectedly succeeded in materialize mode"
+  fi
+  snapshot_owned_surfaces "$root" "$after"
+  cmp -s "$before" "$after" || fail "$name mutated an owned surface before materialize preflight rejection"
+  assert_file_contains "$log" "$expected"
+  pass "$name materialize package preflight rejects with zero owned-surface mutation"
+}
+
+test_normal_package_preflight() {
+  local root skills
+
+  root="$tmp_root/normal-package-missing"
+  make_fixture "$root"
+  skills="$root/plugins/gobbi/skills"
+  find "$skills" -depth -mindepth 1 -delete
+  rmdir "$skills"
+  assert_normal_package_preflight_zero_mutation normal-package-missing "$root" \
+    'plugins/gobbi/skills must already be a materialized filtered directory'
+
+  root="$tmp_root/normal-package-symlink"
+  make_fixture "$root"
+  skills="$root/plugins/gobbi/skills"
+  mv "$skills" "$root/package-skills-owner"
+  ln -s '../../package-skills-owner' "$skills"
+  assert_normal_package_preflight_zero_mutation normal-package-symlink "$root" \
+    'plugins/gobbi/skills must already be a materialized filtered directory'
+
+  root="$tmp_root/check-package-symlink"
+  make_fixture "$root"
+  run_sync "$root" >/dev/null
+  skills="$root/plugins/gobbi/skills"
+  mv "$skills" "$root/package-skills-owner"
+  ln -s '../../package-skills-owner' "$skills"
+  assert_check_package_preflight_zero_mutation check-package-symlink "$root" \
+    'plugins/gobbi/skills must be a materialized filtered directory, not a symlink'
+
+  root="$tmp_root/normal-package-leak"
+  make_fixture "$root"
+  mkdir -p "$root/plugins/gobbi/skills/gobbi-dev"
+  printf 'leak\n' > "$root/plugins/gobbi/skills/gobbi-dev/SKILL.md"
+  assert_normal_package_preflight_zero_mutation normal-package-leak "$root" \
+    'forbidden exact package-only skill path segment'
+
+  root="$tmp_root/normal-package-link-leak"
+  make_fixture "$root"
+  ln -s '../principles' "$root/plugins/gobbi/skills/gobbi-dev"
+  assert_normal_package_preflight_zero_mutation normal-package-link-leak "$root" \
+    'forbidden exact package-only skill path segment'
+
+  root="$tmp_root/normal-package-link-target-token"
+  make_fixture "$root"
+  ln -s '../gobbi-dev/target' "$root/plugins/gobbi/skills/safe-name-link"
+  assert_normal_package_preflight_zero_mutation normal-package-link-target-token "$root" \
+    'symlink target contains the forbidden package-only skill token'
+}
+
+test_materialize_literal_preflight() {
+  local root="$tmp_root/materialize-literal-preflight" before after log link_root
+  before="$tmp_root/materialize-literal.before"
+  after="$tmp_root/materialize-literal.after"
+  log="$tmp_root/materialize-literal.log"
+  make_fixture "$root"
+  printf '\0gobbi-dev\0' > "$root/plugins/gobbi/unrelated.bin"
+  snapshot_owned_surfaces "$root" "$before"
+  if run_sync "$root" --materialize-package > "$log" 2>&1; then
+    fail 'materialize accepted an unrelated binary standalone package-only token'
+  fi
+  snapshot_owned_surfaces "$root" "$after"
+  cmp -s "$before" "$after" || fail 'materialize changed an owned surface before unrelated literal rejection'
+  assert_file_contains "$log" 'contains the forbidden standalone package-only skill token'
+  pass 'materialize rejects non-remediable binary token leaks before mutation'
+
+  link_root="$tmp_root/materialize-link-target-token"
+  make_fixture "$link_root"
+  ln -s '../gobbi-dev/target' "$link_root/plugins/gobbi/skills/safe-name-link"
+  assert_materialize_package_preflight_zero_mutation materialize-link-target-token "$link_root" \
+    'symlink target contains the forbidden package-only skill token'
+}
+
+test_materialize_exact_subtree_prune() {
+  local root="$tmp_root/materialize-exact-subtree-prune"
+  make_fixture "$root"
+  run_sync "$root" >/dev/null
+  mkdir -p "$root/plugins/gobbi/skills/gobbi-dev/nested"
+  printf 'stale exact subtree\n' > "$root/plugins/gobbi/skills/gobbi-dev/nested/file"
+  run_sync "$root" --materialize-package >/dev/null
+  [[ ! -e "$root/plugins/gobbi/skills/gobbi-dev" && ! -L "$root/plugins/gobbi/skills/gobbi-dev" ]] \
+    || fail 'materialize did not prune the exact package-only skill subtree'
+  run_sync "$root" --check >/dev/null
+  pass 'materialize positively prunes the exact package-only skill subtree and converges'
+}
+
+test_materialize_exact_root_symlink_prune() {
+  local root="$tmp_root/materialize-exact-root-symlink-prune"
+  local outside="$root/private-package-link-target"
+  local forbidden="$root/plugins/gobbi/skills/gobbi-dev"
+  local raw_target='../../../private-package-link-target'
+  local outside_before="$tmp_root/exact-root-link.outside.before"
+  local outside_after="$tmp_root/exact-root-link.outside.after"
+  local included_before="$tmp_root/exact-root-link.included.before"
+  local included_after="$tmp_root/exact-root-link.included.after"
+
+  make_fixture "$root"
+  run_sync "$root" >/dev/null
+  run_sync "$root" --check >/dev/null
+
+  mkdir -p "$outside/nested"
+  printf 'outside sentinel\n' > "$outside/nested/sentinel"
+  printf '\0outside bytes\0\n' > "$outside/nested/binary"
+  ln -s 'nested/sentinel' "$outside/sentinel-link"
+  {
+    find -P "$outside" -mindepth 1 -printf '%y\t%P\n' | LC_ALL=C sort
+    sha256sum "$outside/nested/sentinel" "$outside/nested/binary"
+    readlink -n -- "$outside/sentinel-link" | od -An -tx1 | tr -d ' \n'
+    printf '\n'
+  } > "$outside_before"
+  sha256sum "$root/plugins/gobbi/skills/principles/SKILL.md" > "$included_before"
+
+  ln -s "$raw_target" "$forbidden"
+  [[ -L "$forbidden" && "$(readlink -n -- "$forbidden")" == "$raw_target" ]] \
+    || fail 'exact-root package symlink fixture has the wrong raw target'
+  [[ "$(realpath -e -- "$forbidden")" == "$(realpath -e -- "$outside")" ]] \
+    || fail 'exact-root package symlink fixture does not resolve to its private outside target'
+
+  run_sync "$root" --materialize-package >/dev/null
+  [[ ! -e "$forbidden" && ! -L "$forbidden" ]] \
+    || fail 'materialize did not prune the exact package-only root symlink'
+
+  {
+    find -P "$outside" -mindepth 1 -printf '%y\t%P\n' | LC_ALL=C sort
+    sha256sum "$outside/nested/sentinel" "$outside/nested/binary"
+    readlink -n -- "$outside/sentinel-link" | od -An -tx1 | tr -d ' \n'
+    printf '\n'
+  } > "$outside_after"
+  cmp -s "$outside_before" "$outside_after" \
+    || fail 'materialize changed the private outside symlink target inventory or bytes'
+
+  sha256sum "$root/plugins/gobbi/skills/principles/SKILL.md" > "$included_after"
+  cmp -s "$included_before" "$included_after" \
+    || fail 'materialize changed an included package entry while pruning the excluded link'
+  cmp -s \
+    "$root/.gobbi/projects/gobbi/skills/principles/SKILL.md" \
+    "$root/plugins/gobbi/skills/principles/SKILL.md" \
+    || fail 'included package bytes differ from their canonical owner after exact-link pruning'
+
+  run_sync "$root" --check >/dev/null
+  {
+    find -P "$outside" -mindepth 1 -printf '%y\t%P\n' | LC_ALL=C sort
+    sha256sum "$outside/nested/sentinel" "$outside/nested/binary"
+    readlink -n -- "$outside/sentinel-link" | od -An -tx1 | tr -d ' \n'
+    printf '\n'
+  } > "$outside_after"
+  cmp -s "$outside_before" "$outside_after" \
+    || fail 'post-prune check changed the private outside target'
+  pass 'materialize prunes an exact-root symlink, preserves its outside target, and converges'
+}
+
+test_exact_package_skill_filter() {
+  local root="$tmp_root/exact-package-filter" first="$tmp_root/exact-package-filter.first"
+  local second="$tmp_root/exact-package-filter.second"
+
+  make_fixture "$root"
+  write_skill_file "$root" gobbi-dev-extra SKILL.md $'---\nname: gobbi-dev-extra\ndescription: "MUST load for the valid gobbi-dev-extra neighbor."\nallowed-tools: Read\nskill-type: tool\n---\n\n# Included prefix neighbor\n\nxgobbi-dev and gobbi-devx are valid non-token identifiers.'
+  run_sync "$root" >/dev/null
+  run_sync "$root" --materialize-package >/dev/null
+  run_sync "$root" --check >/dev/null
+
+  [[ -L "$root/.agents/skills/gobbi-dev" ]] || fail 'complete Codex local discovery omitted gobbi-dev'
+  [[ -L "$root/.claude/skills/gobbi-dev/SKILL.md" ]] || fail 'complete Claude local discovery omitted gobbi-dev'
+  [[ ! -e "$root/plugins/gobbi/skills/gobbi-dev" && ! -L "$root/plugins/gobbi/skills/gobbi-dev" ]] \
+    || fail 'exact package-only skill reached package skills'
+  [[ -f "$root/plugins/gobbi/skills/gobbi-dev-extra/SKILL.md" ]] \
+    || fail 'similarly named included skill was over-filtered'
+
+  snapshot_owned_surfaces "$root" "$first"
+  run_sync "$root" --materialize-package >/dev/null
+  snapshot_owned_surfaces "$root" "$second"
+  cmp -s "$first" "$second" || fail 'filtered package materialization was not idempotent'
+  pass 'exact package exclusion preserves complete local mirrors and similarly named included skills'
+
+  rm -f "$root/plugins/gobbi/skills/gobbi-dev-extra/SKILL.md"
+  expect_package_check_failure package-omitted "$root" 'is missing from the generated copy'
+  run_sync "$root" --materialize-package >/dev/null
+
+  printf 'changed bytes\n' > "$root/plugins/gobbi/skills/gobbi-dev-extra/SKILL.md"
+  expect_package_check_failure package-changed-byte "$root" 'is not byte-equal'
+  run_sync "$root" --materialize-package >/dev/null
+
+  printf 'stale\n' > "$root/plugins/gobbi/skills/stale.md"
+  expect_package_check_failure package-extra "$root" 'has no canonical owner'
+  run_sync "$root" --materialize-package >/dev/null
+
+  ln -s 'gobbi-dev-extra/SKILL.md' "$root/plugins/gobbi/skills/stale-link"
+  expect_package_check_failure package-symlink "$root" 'is a symlink'
+  run_sync "$root" --materialize-package >/dev/null
+
+  mkdir "$root/plugins/gobbi/skills/stale-empty"
+  expect_package_check_failure package-empty-dir "$root" 'stale generated subdir'
+  run_sync "$root" --materialize-package >/dev/null
+
+  mkdir -p "$root/plugins/gobbi/skills/gobbi-dev"
+  printf 'leak\n' > "$root/plugins/gobbi/skills/gobbi-dev/SKILL.md"
+  expect_package_check_failure package-excluded-stale "$root" 'has no canonical owner'
 }
 
 # Pin the two package-component shapes the installed-cache smoke distinguishes. That smoke fails
@@ -795,11 +1554,12 @@ test_package_component_shapes() {
   local root="$tmp_root/package-shapes" component package_component
   prepare_synced_fixture "$root"
 
-  for component in skills agents; do
-    package_component="$root/plugins/gobbi/$component"
-    [[ -L "$package_component" ]] \
-      || fail "normal sync did not leave plugins/gobbi/$component a symlink"
-  done
+  package_component="$root/plugins/gobbi/skills"
+  [[ -d "$package_component" && ! -L "$package_component" ]] \
+    || fail 'plugins/gobbi/skills is not an always-materialized filtered directory'
+  package_component="$root/plugins/gobbi/agents"
+  [[ -d "$package_component" && ! -L "$package_component" ]] \
+    || fail 'fixture setup did not materialize plugins/gobbi/agents'
   run_sync "$root" --check >/dev/null
 
   run_sync "$root" --materialize-package >/dev/null
@@ -814,7 +1574,7 @@ test_package_component_shapes() {
     || fail 'generated skills component does not hold a real copy of its canonical file'
   run_sync "$root" --check >/dev/null
 
-  pass 'package components are symlinks before generation and real files after it'
+  pass 'package skills stays a filtered real directory and materialization leaves both components real'
 }
 
 test_static_deletion_guards() {
@@ -829,6 +1589,12 @@ test_static_deletion_guards() {
 
 test_static_deletion_guards
 test_package_component_shapes
+test_package_only_owner_failures
+test_normal_package_preflight
+test_materialize_literal_preflight
+test_materialize_exact_subtree_prune
+test_materialize_exact_root_symlink_prune
+test_exact_package_skill_filter
 test_safe_reconciliation
 test_canonical_skill_deletion
 test_unsafe_agents_entry
@@ -849,6 +1615,7 @@ test_manifest_hook_rejection
 test_marketplace_and_role_contracts
 test_runtime_entrypoint_contract
 test_semantic_positive_recovery_and_reflow
+test_smoke_contract_drift
 test_semantic_cowork_forbidden_wrapup_edge
 test_semantic_entry_order
 test_semantic_contract_failures

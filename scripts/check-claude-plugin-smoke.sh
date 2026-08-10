@@ -10,17 +10,16 @@ esac
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 package_root="$repo_root/plugins/gobbi"
-smoke_script="$repo_root/scripts/check-codex-plugin-smoke.sh"
-codex_executable='/home/jeonhh0061/.nvm/versions/node/v22.22.1/bin/codex'
-expected_version='codex-cli 0.147.0'
+smoke_script="$repo_root/scripts/check-claude-plugin-smoke.sh"
+claude_executable='/home/jeonhh0061/.local/bin/claude'
+expected_version='2.1.226 (Claude Code)'
 package_only_skill='gobbi-dev'
 package_only_skill_token_regex="(^|[^[:alnum:]_-])${package_only_skill}([^[:alnum:]_-]|$)"
 fd_closure_exec=$'import errno, os, sys\ntry:\n    names = os.listdir("/proc/self/fd")\nexcept OSError as exc:\n    print(f"fd-closure wrapper: cannot enumerate /proc/self/fd: {exc}", file=sys.stderr)\n    raise SystemExit(125)\nfds = []\nfor name in names:\n    try:\n        fd = int(name)\n    except ValueError:\n        print(f"fd-closure wrapper: unexpected /proc/self/fd entry: {name!r}", file=sys.stderr)\n        raise SystemExit(125)\n    if fd >= 3:\n        fds.append(fd)\nfor fd in sorted(set(fds), reverse=True):\n    try:\n        os.close(fd)\n    except OSError as exc:\n        if exc.errno != errno.EBADF:\n            print(f"fd-closure wrapper: cannot close inherited fd {fd}: {exc}", file=sys.stderr)\n            raise SystemExit(125)\nfor fd in fds:\n    try:\n        os.fstat(fd)\n    except OSError as exc:\n        if exc.errno == errno.EBADF:\n            continue\n        print(f"fd-closure wrapper: cannot verify inherited fd {fd}: {exc}", file=sys.stderr)\n        raise SystemExit(125)\n    print(f"fd-closure wrapper: inherited fd {fd} remained open", file=sys.stderr)\n    raise SystemExit(125)\ntry:\n    os.execv(sys.argv[1], sys.argv[1:])\nexcept OSError as exc:\n    print(f"fd-closure wrapper: exec failed: {exc}", file=sys.stderr)\n    raise SystemExit(126)'
 
-target="$(mktemp -d /tmp/gobbi-codex-plugin-smoke.XXXXXX)"
+target="$(mktemp -d /tmp/gobbi-claude-plugin-smoke.XXXXXX)"
 private_home="$target/home"
-codex_home="$target/codex-home"
-codex_sqlite_home="$target/codex-sqlite-home"
+claude_config="$target/claude-config"
 private_tmp="$target/tmp"
 trace_root="$target/traces"
 frozen_package_manifest="$target/frozen-package.manifest"
@@ -40,7 +39,7 @@ strictly_contained() {
 
 cleanup_success() {
   [[ -d "$target" && ! -L "$target" && -f "$target/.gobbi-smoke-target" ]] || return 1
-  [[ "$target" == /tmp/gobbi-codex-plugin-smoke.* ]] || return 1
+  [[ "$target" == /tmp/gobbi-claude-plugin-smoke.* ]] || return 1
   find "$target" -depth -mindepth 1 -delete
   rmdir "$target"
 }
@@ -60,13 +59,12 @@ on_exit() {
 trap on_exit EXIT
 
 : > "$target/.gobbi-smoke-target"
-mkdir "$private_home" "$codex_home" "$codex_sqlite_home" "$private_tmp" "$trace_root"
-for private_dir in "$private_home" "$codex_home" "$codex_sqlite_home" "$private_tmp" "$trace_root"; do
+mkdir "$private_home" "$claude_config" "$private_tmp" "$trace_root"
+for private_dir in "$private_home" "$claude_config" "$private_tmp" "$trace_root"; do
   [[ -d "$private_dir" && ! -L "$private_dir" ]] || fail "$private_dir is not a real private directory"
   strictly_contained "$private_dir" "$target" || fail "$private_dir is not contained by $target"
 done
-[[ "$private_home" != "$codex_home" && "$private_home" != "$codex_sqlite_home" && "$codex_home" != "$codex_sqlite_home" ]] \
-  || fail 'private Codex homes must be distinct'
+[[ "$private_home" != "$claude_config" ]] || fail 'private Claude homes must be distinct'
 
 # BEGIN SOURCE PROBE AUDIT CONTRACT
 trace_set='%network,?socketcall,io_uring_setup,pidfd_getfd'
@@ -197,17 +195,17 @@ run_traced_stage() {
 }
 # END SOURCE PROBE AUDIT CONTRACT
 
-run_codex_stage() {
+run_claude_stage() {
   local stage="$1"
   shift
   run_traced_stage "$stage" strict \
     env -i \
     HOME="$private_home" \
-    CODEX_HOME="$codex_home" \
-    CODEX_SQLITE_HOME="$codex_sqlite_home" \
+    CLAUDE_CONFIG_DIR="$claude_config" \
+    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
     TMPDIR="$private_tmp" \
-    PATH='/home/jeonhh0061/.nvm/versions/node/v22.22.1/bin:/usr/bin:/bin' \
-    /usr/bin/python3 -c "$fd_closure_exec" "$codex_executable" "$@"
+    PATH='/usr/bin:/bin' \
+    /usr/bin/python3 -c "$fd_closure_exec" "$claude_executable" "$@"
 }
 
 run_test_stage() {
@@ -714,7 +712,7 @@ run_helper_self_tests() {
     || fail 'status stage did not retain stdout'
   grep -Fx 'status-err' "$trace_root/helper-status.stderr" >/dev/null \
     || fail 'status stage did not retain stderr'
-  pass 'Codex smoke helper self-tests passed'
+  pass 'Claude smoke helper self-tests passed'
 }
 
 check_top_level_allow_set() {
@@ -747,9 +745,9 @@ if [[ "$mode" == --self-test ]]; then
   smoke_complete=1
   exit 0
 fi
-[[ -x "$codex_executable" ]] || fail "$codex_executable is not executable"
-resolved_codex="$(readlink -f -- "$codex_executable")"
-[[ -f "$resolved_codex" && -x "$resolved_codex" ]] || fail "$codex_executable does not resolve to an executable regular file"
+[[ -x "$claude_executable" ]] || fail "$claude_executable is not executable"
+resolved_claude="$(readlink -f -- "$claude_executable")"
+[[ -f "$resolved_claude" && -x "$resolved_claude" ]] || fail "$claude_executable does not resolve to an executable regular file"
 [[ -d "$package_root/skills" && ! -L "$package_root/skills" ]] \
   || fail 'plugins/gobbi/skills is not a materialized filtered directory'
 [[ -d "$package_root/agents" && ! -L "$package_root/agents" ]] \
@@ -761,42 +759,38 @@ package_only_skill_absent "$package_root" || fail 'source package contains a reg
 run_source_check_stage source-precheck /usr/bin/bash "$repo_root/scripts/sync-plugin-package.sh" --check \
   || fail 'source package differs from canonical owners or repository source topology is invalid'
 freeze_package || fail 'source package could not be frozen before the first runtime stage'
-expected_package_version="$(jq -r '.version // empty' "$package_root/.codex-plugin/plugin.json")"
+expected_package_version="$(jq -r '.version // empty' "$package_root/.claude-plugin/plugin.json")"
 verify_frozen_tree "$package_root" package-metadata-read \
   || fail 'source package changed while frozen metadata was read'
 
-run_codex_stage version --version || fail 'Codex version stage failed or attempted network access'
+run_claude_stage version --version || fail 'Claude version stage failed or attempted network access'
 observed_version="$(< "$stage_stdout")"
 [[ "$observed_version" == "$expected_version" ]] || fail "expected $expected_version, got ${observed_version:-<empty>}"
-pass "$codex_executable resolves to $resolved_codex at $observed_version"
+pass "$claude_executable resolves to $resolved_claude at $observed_version"
 
-run_codex_stage marketplace-add plugin marketplace add "$repo_root" --json || fail 'Codex marketplace-add stage failed or attempted network access'
-marketplace_add_json="$(< "$stage_stdout")"
-marketplace_name="$(jq -r '.marketplaceName // empty' <<< "$marketplace_add_json")"
-[[ "$marketplace_name" == gobbi-workspace ]] || fail "expected gobbi-workspace marketplace, got ${marketplace_name:-<empty>}"
-
-run_codex_stage available-list plugin list --marketplace gobbi-workspace --available --json || fail 'Codex available-list stage failed or attempted network access'
+run_claude_stage validate plugin validate --strict "$package_root" || fail 'Claude validation stage failed or attempted network access'
+run_claude_stage marketplace-add plugin marketplace add "$repo_root" || fail 'Claude marketplace-add stage failed or attempted network access'
+run_claude_stage available-list plugin list --available --json || fail 'Claude available-list stage failed or attempted network access'
 available_json="$(< "$stage_stdout")"
-jq -e '.available[]? | select(.pluginId == "gobbi@gobbi-workspace")' <<< "$available_json" >/dev/null \
-  || fail 'gobbi@gobbi-workspace is not available'
+jq -e '.available[]? | select(.pluginId == "gobbi@gobbi")' <<< "$available_json" >/dev/null \
+  || fail 'gobbi@gobbi is not available from the local marketplace'
 
 verify_frozen_tree "$package_root" package-before-install \
-  || fail 'source package changed before Codex install'
-run_codex_stage install plugin add gobbi@gobbi-workspace --json || fail 'Codex install stage failed or attempted network access'
+  || fail 'source package changed before Claude install'
+run_claude_stage install plugin install gobbi@gobbi --scope user || fail 'Claude install stage failed or attempted network access'
 verify_frozen_tree "$package_root" package-after-install \
-  || fail 'source package changed during Codex install'
-install_json="$(< "$stage_stdout")"
-installed_path="$(jq -r '.installedPath // empty' <<< "$install_json")"
-[[ -n "$installed_path" && -d "$installed_path" && ! -L "$installed_path" ]] \
-  || fail 'plugin add did not return a real installed cache directory'
-strictly_contained "$installed_path" "$codex_home" \
-  || fail "installed path is not strictly contained by $codex_home: $installed_path"
-
-run_codex_stage installed-list plugin list --marketplace gobbi-workspace --available --json || fail 'Codex installed-list stage failed or attempted network access'
+  || fail 'source package changed during Claude install'
+run_claude_stage installed-list plugin list --available --json || fail 'Claude installed-list stage failed or attempted network access'
 installed_json="$(< "$stage_stdout")"
+installed_path="$(jq -r '.installed[]? | select(.id == "gobbi@gobbi" and .scope == "user" and .enabled == true) | .installPath // empty' <<< "$installed_json")"
+[[ -n "$installed_path" && -d "$installed_path" && ! -L "$installed_path" ]] \
+  || fail 'Claude plugin list did not return a real enabled user-scope install path'
+strictly_contained "$installed_path" "$claude_config" \
+  || fail "installed path is not strictly contained by $claude_config: $installed_path"
+
 jq -e --arg version "$expected_package_version" \
-  '.installed[]? | select(.pluginId == "gobbi@gobbi-workspace" and .enabled == true and .version == $version)' \
-  <<< "$installed_json" >/dev/null || fail 'gobbi@gobbi-workspace installed identity or version does not match the package'
+  '.installed[]? | select(.id == "gobbi@gobbi" and .scope == "user" and .enabled == true and .version == $version)' \
+  <<< "$installed_json" >/dev/null || fail 'installed Claude plugin identity or version does not match the package'
 
 write_tree_inventory "$installed_path" "$target/installed.inventory" \
   || fail 'installed cache contains a symlink or unsupported entry'
@@ -806,13 +800,13 @@ package_only_skill_absent "$installed_path" || fail 'installed cache contains a 
 verify_frozen_tree "$installed_path" installed-cache \
   || fail 'installed cache directory/file inventory or hashes differ from the frozen package'
 run_source_check_stage source-postcheck /usr/bin/bash "$repo_root/scripts/sync-plugin-package.sh" --check \
-  || fail 'source package or repository source topology drifted during the Codex smoke'
+  || fail 'source package or repository source topology drifted during the Claude smoke'
 verify_frozen_tree "$package_root" package-before-success \
-  || fail 'source package changed before the Codex success receipt'
+  || fail 'source package changed before the Claude success receipt'
 
 smoke_complete=1
 [[ "$source_precheck_probe_count" -eq 4 && "$source_postcheck_probe_count" -eq 4 ]] \
-  || fail 'source-check probe receipts are incomplete before Codex success'
-printf 'Codex plugin smoke passed: frozen_sha256=%s dirs=%s files=%s source-precheck-probes=%s source-postcheck-probes=%s\n' \
+  || fail 'source-check probe receipts are incomplete before Claude success'
+printf 'Claude plugin smoke passed: frozen_sha256=%s dirs=%s files=%s source-precheck-probes=%s source-postcheck-probes=%s\n' \
   "$frozen_package_digest" "$frozen_package_dirs" "$frozen_package_files" \
   "$source_precheck_probe_count" "$source_postcheck_probe_count"
