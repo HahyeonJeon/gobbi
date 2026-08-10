@@ -105,12 +105,24 @@ records pass only when descriptor decoding proves a Unix socket; failed calls mu
 nonlocal address family, unproved successful data operation, audit error, or nonzero child status stops the
 stage and preserves its evidence.
 
-Only `source-precheck` and `source-postcheck` may classify exactly four denied local probes each. Every probe
-must be a full-line `socket(AF_UNIX|AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0)` record returning
-injected `EACCES`, so it creates no descriptor and has no effect. Each source stage reports its exact count.
-Three, five, changed flags, another family or result, another injected syscall, or the same line in any
-runtime or helper stage stops the smoke. Every other injected marker remains prohibited. This source-only
-classification grants no network authority.
+The trace audit uses three distinct policies. `source-precheck` and `source-postcheck` each require exactly
+four full-line `socket(AF_UNIX|AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0)` records returning injected
+`EACCES`, so they create no descriptor or effect. Helper stages are strict and stop on every injected
+prohibited call.
+
+Only fixed runtime wrappers and closed stage allowlists select production semantic no-effect policy. Codex
+allows exactly `version`, `marketplace-add`, `available-list`, `install`, and `installed-list`; Claude allows
+exactly `version`, `validate`, `marketplace-add`, `available-list`, `install`, and `installed-list`. The
+parser first authenticates a nonempty private current-stage trace, rejects malformed, truncated,
+unfinished/resumed, ambiguous, or unknown records, then classifies an anchored fixed-deny record only when it
+ends exactly `-1 EACCES (Permission denied) (INJECTED)`, returns no descriptor or effect, and the child exits
+zero. The later prohibited-family scan skips only those classified blocked no-effect probes. Every successful
+fixed-deny call, successful nonlocal or unproved data operation, descriptor return from a denial candidate,
+wrong error, missing marker, unclassified prohibited-family record, trace identity failure, or nonzero child
+is a prohibited effect and stops the smoke.
+
+Static parser and fixture checks prove policy wiring only. They do not prove a production runtime PASS; an
+actual runtime observation remains separate and requires caller authority.
 
 This is a trusted-runtime observation boundary, not a hostile-code sandbox. A stage is never replayed. A fresh
 whole-smoke retry is a separate recovery action that needs caller authority and a renewed unchanged-subject

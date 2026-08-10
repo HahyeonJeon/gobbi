@@ -75,8 +75,9 @@ if [[ ! -L "$repo_root/AGENTS.md" ]] || ! readlink_raw_target agents_target "$re
 fi
 
 validate_family_source() {
-  local entry rel actual_files actual_dirs row name type description child child_skill
+  local entry rel actual_files actual_dirs row name type description expected_description child child_skill root_tools dev_tools
   local expected_files expected_dirs expected_child_section
+  local expected_root_description='MUST load before realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs; collecting exact-revision test evidence for Gobbi; reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict; preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release; installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets; choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms; or choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects. Gobbi Development Lifecycle is a domain skill that routes the task to its applicable operation, tool, and preference child skills.'
   local -a children=(
     gobbi-dev-conventions:preference
     gobbi-dev-deployment:operation
@@ -101,6 +102,20 @@ validate_family_source() {
   fi
   if ! read_frontmatter_value type "$family_path/SKILL.md" skill-type || [[ "$type" != domain ]]; then
     printf '%s/SKILL.md must declare skill-type: domain\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value description "$family_path/SKILL.md" description || \
+     [[ "$description" != "\"$expected_root_description\"" ]]; then
+    printf '%s/SKILL.md must preserve the exact accepted root description\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value root_tools "$family_path/SKILL.md" allowed-tools || [[ "$root_tools" != Read ]]; then
+    printf '%s/SKILL.md must declare allowed-tools: Read\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value dev_tools "$family_path/gobbi-dev-development/SKILL.md" allowed-tools || \
+     [[ "$dev_tools" != 'Read, Grep, Glob, Bash' ]]; then
+    printf '%s/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash\n' "$family_rel" >&2
     return 1
   fi
   if [[ "$(grep -c '^# Gobbi Development Lifecycle$' "$family_path/SKILL.md" || true)" -ne 1 ]] || \
@@ -135,6 +150,15 @@ validate_family_source() {
     type="${child##*:}"
     child="${child%%:*}"
     child_skill="$family_path/$child/SKILL.md"
+    case "$child" in
+      gobbi-dev-conventions) expected_description='MUST load when choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms.' ;;
+      gobbi-dev-deployment) expected_description='MUST load when installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets.' ;;
+      gobbi-dev-development) expected_description='MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' ;;
+      gobbi-dev-release) expected_description='MUST load when preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release.' ;;
+      gobbi-dev-review) expected_description='MUST load when reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict.' ;;
+      gobbi-dev-testing) expected_description='MUST load when collecting exact-revision test evidence for Gobbi.' ;;
+      gobbi-dev-toolchain) expected_description='MUST load when choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects.' ;;
+    esac
     [[ -f "$child_skill" && ! -L "$child_skill" && -r "$child_skill" ]] || {
       printf '%s/%s/SKILL.md must be a readable real regular file\n' "$family_rel" "$child" >&2
       return 1
@@ -151,8 +175,11 @@ validate_family_source() {
       printf '%s/%s/SKILL.md must declare one frontmatter description\n' "$family_rel" "$child" >&2
       return 1
     }
-    description="$(unquote_frontmatter_value "$description")"
-    row="| [\`$child\`]($child/SKILL.md) | $type | $description |"
+    [[ "$description" == "\"$expected_description\"" ]] || {
+      printf '%s/%s/SKILL.md must preserve the exact accepted description\n' "$family_rel" "$child" >&2
+      return 1
+    }
+    row="| [\`$child\`]($child/SKILL.md) | $type | $expected_description |"
     expected_child_section+=$'\n'"$row"
   done
   cmp -s \

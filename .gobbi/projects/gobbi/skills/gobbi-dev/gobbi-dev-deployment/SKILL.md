@@ -124,10 +124,20 @@ the exact marked target contains only effects this operation created.
   not external network authority. The smoke guard denies endpoint acquisition and association, follows every
   descendant, closes inherited descriptors, and stops on a nonlocal address family, unproved successful send
   or receive, audit error, or nonzero child status.
-- Only source verification stages `source-precheck` and `source-postcheck` may classify exactly four denied
-  `AF_UNIX` or `AF_LOCAL` stream probes each. Each must use the exact ordered close-on-exec and nonblocking
-  flags, protocol zero, and injected `EACCES`, with no returned descriptor or effect. Every other injected
-  call stops the deployment. Version, validation, marketplace, list, install, and helper stages remain strict.
+- Keep three policies separate. `source-precheck` and `source-postcheck` each require exactly four denied
+  `AF_UNIX` or `AF_LOCAL` stream probes with the exact ordered flags, protocol zero, injected `EACCES`, no
+  descriptor, and no effect. Helper stages remain strict and stop on every injected prohibited call.
+- Fixed production runtime wrappers may classify a complete fixed-deny record as a blocked no-effect probe
+  only in their closed stage allowlists and only when its anchored result is exactly
+  `-1 EACCES (Permission denied) (INJECTED)`, the child exits zero, and no descriptor or effect exists. A
+  successful fixed-deny call, successful nonlocal or unproved data operation, descriptor return from a denial
+  candidate, malformed, truncated, unfinished or resumed, wrong-error, unmarked, ambiguous, or unclassified
+  prohibited-family record is a prohibited effect and stops the deployment.
+- Authenticate each nonempty private current-stage trace before parsing. Reject links, replacement, identity
+  change, missing terminal evidence, or caller-selected production policy. This is a trusted-runtime
+  observation boundary, not a hostile-code sandbox.
+- Static parser and fixture checks prove policy wiring only. They do not prove a production runtime PASS;
+  deployment completion still requires separately authorized actual runtime observations.
 - Invoke each runtime stage once. Never replay a failed stage. A fresh whole-smoke run is a separate recovery
   action that requires caller authority, preserved prior evidence, and a renewed unchanged-identity,
   containment, package, executable, and policy preflight.

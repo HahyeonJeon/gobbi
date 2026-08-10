@@ -280,6 +280,10 @@ validate_smoke_contracts() {
     done
     require_semantic_text "$smoke" 'names = os.listdir("/proc/self/fd")' \
       'runtime smoke wrapper must enumerate /proc/self/fd instead of an RLIMIT range'
+    require_semantic_text "$smoke" '/usr/bin/strace -q -f --kill-on-exit -yy -s 256' \
+      'runtime smoke must retain terminal trace evidence without detach chatter'
+    forbid_semantic_text "$smoke" '/usr/bin/strace -qq ' \
+      'runtime smoke must retain terminal trace evidence without detach chatter'
     forbid_semantic_text "$smoke" 'resource.getrlimit' \
       'runtime smoke wrapper must enumerate /proc/self/fd instead of an RLIMIT range'
     require_semantic_text "$smoke" 'find "$root" -mindepth 1 -print0 > "$walk"' \
@@ -294,13 +298,46 @@ validate_smoke_contracts() {
       'runtime smoke success receipt must expose the frozen digest and tree counts'
     require_semantic_count "$smoke" 'source_probe_regex='"'"'^[[:space:]]*[0-9]+[[:space:]]+socket\((AF_UNIX|AF_LOCAL), SOCK_STREAM\|SOCK_CLOEXEC\|SOCK_NONBLOCK, 0\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'"'"'' 1 \
       'runtime smoke source-probe regex must remain one exact anchored contract'
+    require_semantic_count "$smoke" "trace_set='%network,?socketcall,io_uring_setup,pidfd_getfd'" 1 \
+      'runtime smoke trace set must remain the exact fixed acquisition surface'
+    require_semantic_count "$smoke" "deny_set='socket,?socketcall,connect,bind,listen,accept,accept4,io_uring_setup,pidfd_getfd'" 1 \
+      'runtime smoke deny set must remain the exact fixed acquisition surface'
+    require_semantic_count "$smoke" 'runtime_denied_regex='"'"'^[[:space:]]*[0-9]+[[:space:]]+(socket|socketcall|connect|bind|listen|accept|accept4|io_uring_setup|pidfd_getfd)\(.*\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'"'"'' 1 \
+      'runtime smoke denial parser must remain one exact anchored contract'
+    require_semantic_count "$smoke" "failed_result_regex=' = -[0-9]+ [A-Z][A-Z0-9_]* \\([^)]*\\)\$'" 1 \
+      'runtime smoke failed-result parser must remain exact and terminally anchored'
+    require_semantic_count "$smoke" "unix_descriptor_regex='^[0-9]+<UNIX-(STREAM|DGRAM|SEQPACKET):\\[[0-9]+(->[0-9]+)?\\]>\$'" 1 \
+      'runtime smoke Unix descriptor parser must remain exact and terminally anchored'
+    require_semantic_count "$smoke" 'declare -A unix_descriptors=() syscall_pids=() terminal_statuses=()' 1 \
+      'runtime smoke must bind descriptor provenance and terminal closure by observed pid'
+    require_semantic_count "$smoke" 'codex:version|codex:marketplace-add|codex:available-list|codex:install|codex:installed-list|claude:version|claude:validate|claude:marketplace-add|claude:available-list|claude:install|claude:installed-list) ;;' 1 \
+      'runtime smoke common allowlist must preserve both exact runtime stage tables'
+    require_semantic_count "$smoke" 'runtime_stage_allowed "$audit_owner" "$stage" && [[ "$runtime_wrapper_capability" == "$fixed_runtime:$stage" ]] \' 1 \
+      'runtime smoke must reject runtime policy selection before command execution'
+    require_semantic_count "$smoke" '[[ "${terminal_statuses[$pid]-missing}" == 0 ]]' 1 \
+      'runtime smoke must require one zero-status terminal record for every observed syscall pid'
+    require_semantic_count "$smoke" '[[ -s "$trace" ]] || {' 1 \
+      'every audited trace must be nonempty'
+    require_semantic_count "$smoke" 'runtime trace identity differs from its bound prelaunch target' 1 \
+      'runtime smoke must authenticate the prelaunch trace identity before parsing'
+    require_semantic_count "$smoke" 'blocked_no_effect_records=%d %s' 1 \
+      'runtime smoke blocked receipt must expose its exact stage, syscall, and family records'
+    if [[ "$smoke" == "$codex" ]]; then
+      require_semantic_count "$smoke" 'case "$stage" in version|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' 1 \
+        'Codex runtime wrapper must preserve its exact stage table'
+    else
+      require_semantic_count "$smoke" 'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' 1 \
+        'Claude runtime wrapper must preserve its exact stage table'
+    fi
     require_semantic_text "$smoke" 'injected_count" -ne 4' \
       'runtime smoke source checks must require exactly four denied local probes per stage'
-    require_semantic_count "$smoke" 'audit_trace "$trace" "$stage" "$status" "$audit_policy"' 1 \
+    require_semantic_count "$smoke" 'audit_stage_trace "$trace" "$stage" "$status" "$audit_policy" "$audit_owner"' 1 \
       'runtime smoke must bind source-probe classification to exact stage, child status, and explicit policy'
-    require_semantic_count "$smoke" 'run_traced_stage "$stage" strict \' 2 \
-      'runtime and helper wrappers must select the strict trace audit policy'
-    require_semantic_count "$smoke" 'run_traced_stage "$stage" source \' 1 \
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" strict helper \' 1 \
+      'only helper wrappers may select the strict trace audit policy'
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" runtime ' 1 \
+      'the fixed runtime wrapper must select semantic no-effect policy'
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" source source \' 1 \
       'only the dedicated source-check wrapper may select the source trace audit policy'
     require_semantic_count "$smoke" '[[ "$stage" == source-precheck || "$stage" == source-postcheck ]]' 1 \
       'source trace audit policy must be confined to the two exact source-check stages'
@@ -321,7 +358,25 @@ validate_smoke_contracts() {
       'helper-source-other-injection.trace' \
       'audit_trace "$trace_root/helper-source-probes.trace" version 0 strict'; do
       require_semantic_text "$smoke" "$stage" \
-        'runtime smoke self-test must preserve source-probe cardinality, shape, injection, and runtime-strict mutations'
+      'runtime smoke self-test must preserve source-probe cardinality, shape, injection, and runtime-strict mutations'
+    done
+    for stage in \
+      'runtime_denied_regex=' \
+      'helper-runtime-denied.trace' \
+      'helper-runtime-wrong-error.trace' \
+      'helper-runtime-unmarked.trace' \
+      'helper-runtime-unfinished.trace' \
+      'helper-runtime-empty.trace' \
+      'helper-runtime-truncated.trace' \
+      'helper-runtime-resumed.trace' \
+      'helper-runtime-success.trace' \
+      'helper-runtime-unproved-unix.trace' \
+      'runtime_stage_allowed()' \
+      'audit_stage_trace()' \
+      'unix_descriptors["$left_descriptor"]' \
+      'blocked_no_effect_records=%d'; do
+      require_semantic_text "$smoke" "$stage" \
+        'runtime smoke must preserve semantic no-effect parser and adversarial fixtures'
     done
   done
   require_semantic_sequence "$codex" 160 \
@@ -348,6 +403,12 @@ validate_smoke_contracts() {
     'run_source_check_stage source-postcheck' \
     'verify_frozen_tree "$package_root" package-before-success' \
     'smoke_complete=1'
+  require_semantic_count "$codex" 'fixed_runtime=codex' 1 'Codex smoke must bind runtime policy to its fixed wrapper identity'
+  require_semantic_count "$claude" 'fixed_runtime=claude' 1 'Claude smoke must bind runtime policy to its fixed wrapper identity'
+  require_semantic_text "$codex" 'case "$stage" in version|marketplace-add|available-list|install|installed-list)' \
+    'Codex fixed wrapper must retain its closed runtime stage allowlist'
+  require_semantic_text "$claude" 'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list)' \
+    'Claude fixed wrapper must retain its closed runtime stage allowlist'
   for stage in version marketplace-add available-list install installed-list; do
     require_semantic_count "$codex" "run_codex_stage $stage " 1 \
       "Codex production smoke stage $stage must appear exactly once"
@@ -421,8 +482,9 @@ unquote_frontmatter_value() {
 validate_package_only_skill_owner() {
   local owner="$canonical_skills_root/$package_only_skill"
   local root_skill="$owner/SKILL.md"
-  local entry rel actual_files actual_dirs row name type description child child_skill
+  local entry rel actual_files actual_dirs row name type description expected_description child child_skill root_tools dev_tools
   local expected_files expected_dirs expected_child_section
+  local expected_root_description='MUST load before realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs; collecting exact-revision test evidence for Gobbi; reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict; preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release; installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets; choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms; or choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects. Gobbi Development Lifecycle is a domain skill that routes the task to its applicable operation, tool, and preference child skills.'
   local -a children=(
     gobbi-dev-conventions:preference
     gobbi-dev-deployment:operation
@@ -447,6 +509,17 @@ validate_package_only_skill_owner() {
   fi
   if ! read_frontmatter_value type "$root_skill" skill-type || [[ "$type" != domain ]]; then
     topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must declare skill-type: domain"
+  fi
+  if ! read_frontmatter_value description "$root_skill" description || \
+     [[ "$description" != "\"$expected_root_description\"" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must preserve the exact accepted root description"
+  fi
+  if ! read_frontmatter_value root_tools "$root_skill" allowed-tools || [[ "$root_tools" != Read ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must declare allowed-tools: Read"
+  fi
+  if ! read_frontmatter_value dev_tools "$owner/gobbi-dev-development/SKILL.md" allowed-tools || \
+     [[ "$dev_tools" != 'Read, Grep, Glob, Bash' ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash"
   fi
   if [[ "$(grep -c '^# Gobbi Development Lifecycle$' "$root_skill" || true)" -ne 1 ]] || \
      [[ "$(grep -c '^## Child Skills$' "$root_skill" || true)" -ne 1 ]] || \
@@ -479,6 +552,15 @@ validate_package_only_skill_owner() {
     type="${child##*:}"
     child="${child%%:*}"
     child_skill="$owner/$child/SKILL.md"
+    case "$child" in
+      gobbi-dev-conventions) expected_description='MUST load when choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms.' ;;
+      gobbi-dev-deployment) expected_description='MUST load when installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets.' ;;
+      gobbi-dev-development) expected_description='MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' ;;
+      gobbi-dev-release) expected_description='MUST load when preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release.' ;;
+      gobbi-dev-review) expected_description='MUST load when reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict.' ;;
+      gobbi-dev-testing) expected_description='MUST load when collecting exact-revision test evidence for Gobbi.' ;;
+      gobbi-dev-toolchain) expected_description='MUST load when choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects.' ;;
+    esac
     if [[ -L "$child_skill" || ! -f "$child_skill" || ! -r "$child_skill" ]]; then
       topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must be a readable real regular file"
       continue
@@ -495,8 +577,10 @@ validate_package_only_skill_owner() {
       topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must declare one frontmatter description"
       continue
     fi
-    description="$(unquote_frontmatter_value "$description")"
-    row="| [\`$child\`]($child/SKILL.md) | $type | $description |"
+    if [[ "$description" != "\"$expected_description\"" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must preserve the exact accepted description"
+    fi
+    row="| [\`$child\`]($child/SKILL.md) | $type | $expected_description |"
     expected_child_section+=$'\n'"$row"
   done
   if ! cmp -s \
@@ -1097,11 +1181,11 @@ validate_lifecycle_semantics() {
     'Gobbi toolchain must define selective trace, single-stage execution, and separate whole-smoke recovery'
   require_semantic_section_words "$gobbi_dev_toolchain" \
     '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
-    'Only `source-precheck` and `source-postcheck` may classify exactly four denied local probes each.' \
+    '`source-precheck` and `source-postcheck` each require exactly four' \
     'Gobbi toolchain must confine four denied local probes to each source-check stage'
   require_semantic_section_words "$gobbi_dev_toolchain" \
     '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
-    'Every other injected marker remains prohibited. This source-only classification grants no network authority.' \
+    'Only fixed runtime wrappers and closed stage allowlists select production semantic no-effect policy.' \
     'Gobbi toolchain must confine four denied local probes to each source-check stage'
   require_semantic_section_words "$gobbi_dev_deployment" \
     '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
@@ -1116,12 +1200,12 @@ validate_lifecycle_semantics() {
     'Gobbi deployment must distinguish local IPC, one-run stages, and separately authorized recovery'
   require_semantic_section_words "$gobbi_dev_deployment" \
     '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
-    'Only source verification stages `source-precheck` and `source-postcheck` may classify exactly four denied `AF_UNIX` or `AF_LOCAL` stream probes each.' \
-    'Gobbi deployment must keep source-probe classification out of runtime and helper stages'
+    'Keep three policies separate. `source-precheck` and `source-postcheck` each require exactly four denied' \
+    'Gobbi deployment must distinguish exact source, strict helper, and semantic runtime policies'
   require_semantic_section_words "$gobbi_dev_deployment" \
     '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
-    'Version, validation, marketplace, list, install, and helper stages remain strict.' \
-    'Gobbi deployment must keep source-probe classification out of runtime and helper stages'
+    'Fixed production runtime wrappers may classify a complete fixed-deny record as a blocked no-effect probe' \
+    'Gobbi deployment must distinguish exact source, strict helper, and semantic runtime policies'
   require_semantic_section_words "$gobbi_dev_deployment_checklists" \
     '## Installed Inventory' '## Failure and Recovery' \
     'Each runtime stage runs exactly once through the descriptor-closing wrapper with `/dev/null` input, private environment state, and all descendants kept under the trace.' \
@@ -1137,11 +1221,11 @@ validate_lifecycle_semantics() {
   require_semantic_section_words "$gobbi_dev_deployment_checklists" \
     '## Installed Inventory' '## Failure and Recovery' \
     '`source-precheck` and `source-postcheck` each report exactly four denied `AF_UNIX` or `AF_LOCAL` stream probes' \
-    'Gobbi deployment checklist must require four denied probes per source stage and strict runtime stages'
+    'Gobbi deployment checklist must require exact source, strict helper, and semantic runtime policies'
   require_semantic_section_words "$gobbi_dev_deployment_checklists" \
     '## Installed Inventory' '## Failure and Recovery' \
-    'Every other injected call stops. Runtime and helper stages consume no source-probe exception.' \
-    'Gobbi deployment checklist must require four denied probes per source stage and strict runtime stages'
+    'A fixed production runtime wrapper selects only a stage in its closed allowlist.' \
+    'Gobbi deployment checklist must require exact source, strict helper, and semantic runtime policies'
   require_semantic_section_words "$gobbi_dev_deployment_checklists" \
     '## Failure and Recovery' '' \
     'No failed runtime stage was replayed. Any fresh whole-smoke run has separate caller recovery authority' \

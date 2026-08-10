@@ -1,7 +1,7 @@
 ---
 name: gobbi-dev-development
 description: "MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
 

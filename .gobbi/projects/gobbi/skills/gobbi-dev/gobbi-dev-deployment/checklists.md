@@ -40,8 +40,18 @@ ordered decisions, grant authority, or prove a result.
   run and preserves trace, standard output, and standard error.
 - [ ] `source-precheck` and `source-postcheck` each report exactly four denied `AF_UNIX` or `AF_LOCAL` stream
   probes with the exact ordered flags, protocol zero, injected `EACCES`, no descriptor, and no effect.
-- [ ] Every other injected call stops. Runtime and helper stages consume no source-probe exception.
-- [ ] The trace evidence is treated as a trusted-runtime observation boundary, not a hostile-code sandbox.
+- [ ] Every helper stage is strict. Any injected prohibited helper call stops with zero mutation.
+- [ ] A fixed production runtime wrapper selects only a stage in its closed allowlist. Only a complete
+  fixed-deny record ending exactly `-1 EACCES (Permission denied) (INJECTED)` with zero child status and no
+  descriptor or effect is a blocked no-effect probe.
+- [ ] Every successful fixed-deny call, successful nonlocal or unproved data operation, descriptor return from
+  a denial candidate, malformed, truncated, unfinished or resumed, wrong-error, unmarked, ambiguous, or
+  unclassified prohibited-family record is a prohibited effect and stops the run.
+- [ ] Each trace is nonempty, private, contained, regular, nonlinked, unchanged in identity, and has recognized
+  terminal evidence before parsing. The trace is a trusted-runtime observation boundary, not a hostile-code
+  sandbox.
+- [ ] Static parser and fixture checks prove policy wiring only. A production runtime PASS still requires a
+  separately authorized actual runtime observation.
 - [ ] Every expected filtered package file exists at the same relative path with the same bytes.
 - [ ] No extra, omitted, changed, linked, unreadable, hook, or repository-local-only family path or literal
   exists.

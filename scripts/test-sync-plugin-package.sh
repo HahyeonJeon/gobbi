@@ -267,7 +267,7 @@ assert_owner_failure_zero_mutation() {
   local name="$1" root="$2" expected="$3"
   local mode before after log
 
-  for mode in normal materialize; do
+  for mode in normal materialize check; do
     before="$tmp_root/$name.$mode.owned.before"
     after="$tmp_root/$name.$mode.owned.after"
     log="$tmp_root/$name.$mode.log"
@@ -276,14 +276,18 @@ assert_owner_failure_zero_mutation() {
       if run_sync "$root" > "$log" 2>&1; then
         fail "$name unexpectedly succeeded in normal mode"
       fi
-    elif run_sync "$root" --materialize-package > "$log" 2>&1; then
-      fail "$name unexpectedly succeeded in materialize mode"
+    elif [[ "$mode" == materialize ]]; then
+      if run_sync "$root" --materialize-package > "$log" 2>&1; then
+        fail "$name unexpectedly succeeded in materialize mode"
+      fi
+    elif run_sync "$root" --check > "$log" 2>&1; then
+      fail "$name unexpectedly succeeded in check mode"
     fi
     snapshot_owned_surfaces "$root" "$after"
     cmp -s "$before" "$after" || fail "$name mutated a sync-owned surface before $mode owner rejection"
     assert_file_contains "$log" "$expected"
   done
-  pass "$name rejects the invalid package-only owner in normal and materialize modes with zero mutation"
+  pass "$name rejects the invalid package-only owner in all plugin modes with zero mutation"
 }
 
 assert_unsafe_zero_mutation() {
@@ -365,6 +369,11 @@ test_smoke_contract_drift() {
   local regex_root="$tmp_root/smoke-regex-drift" regex_log="$tmp_root/smoke-regex-drift.log"
   local cardinality_root="$tmp_root/smoke-cardinality-drift" cardinality_log="$tmp_root/smoke-cardinality-drift.log"
   local policy_root="$tmp_root/smoke-policy-drift" policy_log="$tmp_root/smoke-policy-drift.log"
+  local deny_root="$tmp_root/smoke-bilateral-deny-drift" deny_log="$tmp_root/smoke-bilateral-deny-drift.log"
+  local trace_set_root="$tmp_root/smoke-bilateral-trace-set-drift" trace_set_log="$tmp_root/smoke-bilateral-trace-set-drift.log"
+  local runtime_regex_root="$tmp_root/smoke-bilateral-runtime-regex-drift" runtime_regex_log="$tmp_root/smoke-bilateral-runtime-regex-drift.log"
+  local unix_regex_root="$tmp_root/smoke-bilateral-unix-regex-drift" unix_regex_log="$tmp_root/smoke-bilateral-unix-regex-drift.log"
+  local stage_table_root="$tmp_root/smoke-bilateral-stage-table-drift" stage_table_log="$tmp_root/smoke-bilateral-stage-table-drift.log"
   local probe_doc_root="$tmp_root/smoke-probe-doc-drift" probe_doc_log="$tmp_root/smoke-probe-doc-drift.log"
   prepare_semantic_fixture "$block_root"
   replace_literal_once "$block_root/scripts/check-codex-plugin-smoke.sh" \
@@ -473,25 +482,93 @@ test_smoke_contract_drift() {
     || fail 'bilateral cardinality weakening produced an unexpected semantic failure count'
 
   prepare_semantic_fixture "$policy_root"
-  replace_block_once "$policy_root/scripts/check-codex-plugin-smoke.sh" \
-    $'run_codex_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" strict \\' \
-    $'run_codex_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" source \\'
-  replace_block_once "$policy_root/scripts/check-claude-plugin-smoke.sh" \
-    $'run_claude_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" strict \\' \
-    $'run_claude_stage() {\n  local stage="$1"\n  shift\n  run_traced_stage "$stage" source \\'
+  replace_literal_once "$policy_root/scripts/check-codex-plugin-smoke.sh" \
+    'run_traced_stage "$stage" runtime codex \' 'run_traced_stage "$stage" strict codex \'
+  replace_literal_once "$policy_root/scripts/check-claude-plugin-smoke.sh" \
+    'run_traced_stage "$stage" runtime claude \' 'run_traced_stage "$stage" strict claude \'
   if run_sync "$policy_root" --check > "$policy_log" 2>&1; then
     fail 'bilateral runtime source-policy mutation unexpectedly succeeded'
   fi
-  [[ "$(grep -Fc 'source topology: runtime and helper wrappers must select the strict trace audit policy' "$policy_log")" -eq 2 ]] \
-    || fail 'bilateral runtime policy mutation omitted the strict-policy failures'
-  [[ "$(grep -Fc 'source topology: only the dedicated source-check wrapper may select the source trace audit policy' "$policy_log")" -eq 2 ]] \
-    || fail 'bilateral runtime policy mutation omitted the source-policy failures'
-  [[ "$(grep -c '^source topology:' "$policy_log")" -eq 4 ]] \
+  [[ "$(grep -Fc 'source topology: the fixed runtime wrapper must select semantic no-effect policy' "$policy_log")" -eq 2 ]] \
+    || fail 'bilateral runtime policy mutation omitted the runtime-policy failures'
+  [[ "$(grep -c '^source topology:' "$policy_log")" -eq 2 ]] \
     || fail 'bilateral runtime policy mutation produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$deny_root"
+  for smoke in check-codex-plugin-smoke.sh check-claude-plugin-smoke.sh; do
+    replace_literal_once "$deny_root/scripts/$smoke" \
+      "deny_set='socket,?socketcall,connect,bind,listen,accept,accept4,io_uring_setup,pidfd_getfd'" \
+      "deny_set='socket,?socketcall,connect,bind,listen,accept,accept4,io_uring_setup'"
+  done
+  if run_sync "$deny_root" --check > "$deny_log" 2>&1; then
+    fail 'bilateral fixed deny-set weakening unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime smoke deny set must remain the exact fixed acquisition surface' "$deny_log")" -eq 2 ]] \
+    || fail 'bilateral fixed deny-set weakening did not fail once per smoke script'
+  [[ "$(grep -c '^source topology:' "$deny_log")" -eq 2 ]] \
+    || fail 'bilateral fixed deny-set weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$trace_set_root"
+  for smoke in check-codex-plugin-smoke.sh check-claude-plugin-smoke.sh; do
+    replace_literal_once "$trace_set_root/scripts/$smoke" \
+      "trace_set='%network,?socketcall,io_uring_setup,pidfd_getfd'" \
+      "trace_set='%network,?socketcall,io_uring_setup'"
+  done
+  if run_sync "$trace_set_root" --check > "$trace_set_log" 2>&1; then
+    fail 'bilateral fixed trace-set weakening unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime smoke trace set must remain the exact fixed acquisition surface' "$trace_set_log")" -eq 2 ]] \
+    || fail 'bilateral fixed trace-set weakening did not fail once per smoke script'
+  [[ "$(grep -c '^source topology:' "$trace_set_log")" -eq 2 ]] \
+    || fail 'bilateral fixed trace-set weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$runtime_regex_root"
+  for smoke in check-codex-plugin-smoke.sh check-claude-plugin-smoke.sh; do
+    replace_literal_once "$runtime_regex_root/scripts/$smoke" \
+      '(socket|socketcall|connect|bind|listen|accept|accept4|io_uring_setup|pidfd_getfd)' \
+      '(socket|socketcall|connect|bind|listen|accept|accept4|io_uring_setup)'
+  done
+  if run_sync "$runtime_regex_root" --check > "$runtime_regex_log" 2>&1; then
+    fail 'bilateral runtime denial-regex weakening unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime smoke denial parser must remain one exact anchored contract' "$runtime_regex_log")" -eq 2 ]] \
+    || fail 'bilateral runtime denial-regex weakening did not fail once per smoke script'
+  [[ "$(grep -c '^source topology:' "$runtime_regex_log")" -eq 2 ]] \
+    || fail 'bilateral runtime denial-regex weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$unix_regex_root"
+  for smoke in check-codex-plugin-smoke.sh check-claude-plugin-smoke.sh; do
+    replace_literal_once "$unix_regex_root/scripts/$smoke" \
+      '(STREAM|DGRAM|SEQPACKET)' \
+      '(STREAM|DGRAM|SEQPACKET|FAKE)'
+  done
+  if run_sync "$unix_regex_root" --check > "$unix_regex_log" 2>&1; then
+    fail 'bilateral Unix descriptor-regex weakening unexpectedly succeeded'
+  fi
+  [[ "$(grep -Fc 'source topology: runtime smoke Unix descriptor parser must remain exact and terminally anchored' "$unix_regex_log")" -eq 2 ]] \
+    || fail 'bilateral Unix descriptor-regex weakening did not fail once per smoke script'
+  [[ "$(grep -c '^source topology:' "$unix_regex_log")" -eq 2 ]] \
+    || fail 'bilateral Unix descriptor-regex weakening produced an unexpected semantic failure count'
+
+  prepare_semantic_fixture "$stage_table_root"
+  replace_literal_once "$stage_table_root/scripts/check-codex-plugin-smoke.sh" \
+    'case "$stage" in version|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' \
+    'case "$stage" in version|debug|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac'
+  replace_literal_once "$stage_table_root/scripts/check-claude-plugin-smoke.sh" \
+    'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' \
+    'case "$stage" in version|debug|validate|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac'
+  if run_sync "$stage_table_root" --check > "$stage_table_log" 2>&1; then
+    fail 'bilateral runtime wrapper stage-table widening unexpectedly succeeded'
+  fi
+  grep -Fx 'source topology: Codex runtime wrapper must preserve its exact stage table' "$stage_table_log" >/dev/null \
+    || fail 'bilateral stage-table widening omitted the Codex failure'
+  grep -Fx 'source topology: Claude runtime wrapper must preserve its exact stage table' "$stage_table_log" >/dev/null \
+    || fail 'bilateral stage-table widening omitted the Claude failure'
 
   prepare_semantic_fixture "$probe_doc_root"
   replace_literal_once "$probe_doc_root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-toolchain/SKILL.md" \
-    'exactly four denied local probes each' 'exactly three denied local probes each'
+    '`source-precheck` and `source-postcheck` each require exactly' \
+    '`source-precheck` and `source-postcheck` may require exactly'
   if run_sync "$probe_doc_root" --check > "$probe_doc_log" 2>&1; then
     fail 'source-probe documentation count mutation unexpectedly succeeded'
   fi
@@ -1002,14 +1079,72 @@ test_marketplace_and_role_contracts() {
 
 assert_entrypoint_source_zero_mutation() {
   local name="$1" root="$2" expected="$3"
-  local before="$tmp_root/$name.entry.before" after="$tmp_root/$name.entry.after" log="$tmp_root/$name.entry.log"
-  snapshot_owned_surfaces "$root" "$before"
-  if run_entrypoint_sync "$root" --sync > "$log" 2>&1; then
-    fail "$name entrypoint source unexpectedly succeeded"
-  fi
-  snapshot_owned_surfaces "$root" "$after"
-  cmp -s "$before" "$after" || fail "$name changed a native entrypoint or root link before rejection"
-  assert_file_contains "$log" "$expected"
+  local mode before after log
+  for mode in sync check; do
+    before="$tmp_root/$name.entry.$mode.before"
+    after="$tmp_root/$name.entry.$mode.after"
+    log="$tmp_root/$name.entry.$mode.log"
+    snapshot_owned_surfaces "$root" "$before"
+    if run_entrypoint_sync "$root" "--$mode" > "$log" 2>&1; then
+      fail "$name entrypoint source unexpectedly succeeded in $mode mode"
+    fi
+    snapshot_owned_surfaces "$root" "$after"
+    cmp -s "$before" "$after" || fail "$name changed an owned surface before $mode rejection"
+    assert_file_contains "$log" "$expected"
+  done
+}
+
+test_exact_family_frontmatter_contracts() {
+  local root
+
+  root="$tmp_root/family-root-description-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'MUST load before realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs; collecting exact-revision test evidence for Gobbi;' \
+    'MUST load before collecting exact-revision test evidence for Gobbi; realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs;'
+  assert_owner_failure_zero_mutation family-root-description-drift "$root" \
+    'source topology: .gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must preserve the exact accepted root description'
+  assert_entrypoint_source_zero_mutation family-root-description-drift "$root" \
+    '.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must preserve the exact accepted root description'
+
+  root="$tmp_root/family-root-description-quote-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" 'description: "' 'description: '
+  assert_owner_failure_zero_mutation family-root-description-quote-drift "$root" \
+    'source topology: .gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must preserve the exact accepted root description'
+  assert_entrypoint_source_zero_mutation family-root-description-quote-drift "$root" \
+    '.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must preserve the exact accepted root description'
+
+  root="$tmp_root/family-development-tools-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md" \
+    'allowed-tools: Read, Grep, Glob, Bash' 'allowed-tools: Read, Grep, Glob, Bash, Write, Edit'
+  assert_owner_failure_zero_mutation family-development-tools-drift "$root" \
+    'source topology: .gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash'
+  assert_entrypoint_source_zero_mutation family-development-tools-drift "$root" \
+    '.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash'
+
+  root="$tmp_root/family-root-tools-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'allowed-tools: Read' 'allowed-tools: Read, Grep'
+  assert_owner_failure_zero_mutation family-root-tools-drift "$root" \
+    'source topology: .gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must declare allowed-tools: Read'
+  assert_entrypoint_source_zero_mutation family-root-tools-drift "$root" \
+    '.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md must declare allowed-tools: Read'
+
+  root="$tmp_root/family-coordinated-child-description-drift"
+  make_fixture "$root"
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md" \
+    'MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' \
+    'MUST load when implementing an accepted Gobbi change and handing it off.'
+  replace_literal_once "$root/.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md" \
+    'MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' \
+    'MUST load when implementing an accepted Gobbi change and handing it off.'
+  assert_owner_failure_zero_mutation family-coordinated-child-description-drift "$root" \
+    'source topology: .gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md must preserve the exact accepted description'
+  assert_entrypoint_source_zero_mutation family-coordinated-child-description-drift "$root" \
+    '.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-development/SKILL.md must preserve the exact accepted description'
 }
 
 test_runtime_entrypoint_contract() {
@@ -1107,7 +1242,7 @@ test_runtime_entrypoint_contract() {
     'MUST load when collecting exact-revision test evidence for Gobbi.' \
     'MUST load when collecting changed test evidence for Gobbi.'
   assert_entrypoint_source_zero_mutation entrypoint-child-drift "$child_drift" \
-    'Child Skills section must equal the ordered child-derived table through end of file'
+    'gobbi-dev-testing/SKILL.md must preserve the exact accepted description'
 
   row_reordered="$tmp_root/entrypoint-row-reordered"
   make_fixture "$row_reordered"
@@ -1249,7 +1384,7 @@ test_package_only_owner_failures() {
     'MUST load when collecting exact-revision test evidence for Gobbi.' \
     'MUST load when collecting changed test evidence for Gobbi.'
   assert_owner_failure_zero_mutation owner-child-trigger-drift "$root" \
-    'Child Skills section must equal the ordered child-derived table through end of file'
+    'gobbi-dev-testing/SKILL.md must preserve the exact accepted description'
 
   root="$tmp_root/owner-missing-file"
   make_fixture "$root"
@@ -1613,6 +1748,7 @@ test_bounded_walks
 test_hook_component_rejection
 test_manifest_hook_rejection
 test_marketplace_and_role_contracts
+test_exact_family_frontmatter_contracts
 test_runtime_entrypoint_contract
 test_semantic_positive_recovery_and_reflow
 test_smoke_contract_drift

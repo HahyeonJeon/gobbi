@@ -66,19 +66,35 @@ for private_dir in "$private_home" "$claude_config" "$private_tmp" "$trace_root"
 done
 [[ "$private_home" != "$claude_config" ]] || fail 'private Claude homes must be distinct'
 
+fixed_runtime=claude
+runtime_wrapper_capability=''
 # BEGIN SOURCE PROBE AUDIT CONTRACT
 trace_set='%network,?socketcall,io_uring_setup,pidfd_getfd'
 deny_set='socket,?socketcall,connect,bind,listen,accept,accept4,io_uring_setup,pidfd_getfd'
 source_probe_regex='^[[:space:]]*[0-9]+[[:space:]]+socket\((AF_UNIX|AF_LOCAL), SOCK_STREAM\|SOCK_CLOEXEC\|SOCK_NONBLOCK, 0\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'
+runtime_denied_regex='^[[:space:]]*[0-9]+[[:space:]]+(socket|socketcall|connect|bind|listen|accept|accept4|io_uring_setup|pidfd_getfd)\(.*\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'
+
+runtime_stage_allowed() {
+  local owner="$1" stage="$2"
+  [[ "$owner" == "$fixed_runtime" ]] || return 1
+  case "$fixed_runtime:$stage" in
+    codex:version|codex:marketplace-add|codex:available-list|codex:install|codex:installed-list|claude:version|claude:validate|claude:marketplace-add|claude:available-list|claude:install|claude:installed-list) ;;
+    *) return 1 ;;
+  esac
+}
 
 audit_trace() {
-  local trace="$1" stage="${2:-helper-audit}" child_status="${3:-0}" audit_policy="${4:-strict}"
-  local family line syscall injected_count=0
-  local source_probe_stage=false
+  local trace="$1" stage="${2:-helper-audit}" child_status="${3:-0}" audit_policy="${4:-strict}" audit_owner="${5:-helper}"
+  local family line syscall pid terminal_status injected_count=0 unix_fd_regex socketpair_regex first_fd_regex
+  local failed_result_regex unix_descriptor_regex left_descriptor right_descriptor first_descriptor
+  declare -A unix_descriptors=() syscall_pids=() terminal_statuses=()
+  local source_probe_stage=false runtime_stage=false
   trace_audit_error=''
   trace_audit_tolerated_probes=0
-  [[ -f "$trace" ]] || {
-    trace_audit_error='trace file is missing'
+  trace_audit_blocked_records=0
+  trace_audit_blocked_receipt=''
+  [[ -s "$trace" ]] || {
+    trace_audit_error='trace file is missing or empty'
     return 1
   }
   case "$audit_policy" in
@@ -90,13 +106,58 @@ audit_trace() {
       fi
       [[ "$child_status" -eq 0 ]] && source_probe_stage=true
       ;;
+    runtime)
+      runtime_stage_allowed "$audit_owner" "$stage" || {
+        trace_audit_error='runtime policy owner or stage is outside the fixed wrapper allowlist'
+        return 1
+      }
+      runtime_stage=true
+      [[ "$child_status" -eq 0 ]] || {
+        trace_audit_error='runtime stage child status was nonzero'
+        return 1
+      }
+      ;;
     *)
       trace_audit_error="unknown trace audit policy: $audit_policy"
       return 1
       ;;
   esac
+  if [[ -s "$trace" ]] && ! tail -c 1 -- "$trace" | cmp -s - <(printf '\n'); then
+    trace_audit_error='trace contains an unterminated final record'
+    return 1
+  fi
   while IFS= read -r line; do
+    [[ -n "$line" ]] || continue
+    if [[ "$line" =~ ^[[:space:]]*([0-9]+)[[:space:]]+\+\+\+[[:space:]]+exited[[:space:]]+with[[:space:]]+([0-9]+)[[:space:]]+\+\+\+$ ]]; then
+      pid="${BASH_REMATCH[1]}"; terminal_status="${BASH_REMATCH[2]}"
+      [[ -z "${terminal_statuses[$pid]+x}" ]] || { trace_audit_error="duplicate terminal record for pid $pid"; return 1; }
+      terminal_statuses["$pid"]="$terminal_status"
+      continue
+    fi
+    if [[ "$line" =~ ^[[:space:]]*([0-9]+)[[:space:]]+\+\+\+[[:space:]]+killed[[:space:]]+by[[:space:]]+(SIG[A-Z0-9]+)[[:space:]]+\+\+\+$ ]]; then
+      pid="${BASH_REMATCH[1]}"
+      [[ -z "${terminal_statuses[$pid]+x}" ]] || { trace_audit_error="duplicate terminal record for pid $pid"; return 1; }
+      terminal_statuses["$pid"]="killed:${BASH_REMATCH[2]}"
+      continue
+    fi
+    if [[ "$line" =~ ^[[:space:]]*[0-9]+[[:space:]]+---[[:space:]]+SIG[A-Z0-9]+[[:space:]]+\{[^\}]+\}[[:space:]]+---$ ]]; then
+      continue
+    fi
+    if [[ "$line" == *'<unfinished ...>'* || "$line" == *' resumed>'* || \
+          ! "$line" =~ ^[[:space:]]*[0-9]+[[:space:]]+[[:alnum:]_]+\(.*\)[[:space:]]+=[[:space:]]+.+$ ]]; then
+      trace_audit_error='trace contains a malformed, unfinished, resumed, or unclassified record'
+      return 1
+    fi
+    [[ "$line" =~ ^[[:space:]]*([0-9]+)[[:space:]]+ ]] || { trace_audit_error='syscall record has no pid'; return 1; }
+    pid="${BASH_REMATCH[1]}"; syscall_pids["$pid"]=1
     [[ "$line" == *'(INJECTED)'* ]] || continue
+    if [[ "$runtime_stage" == true && "$line" =~ $runtime_denied_regex ]]; then
+      injected_count=$((injected_count + 1))
+      syscall="${BASH_REMATCH[1]}"; family=none
+      [[ "$line" =~ (AF_[[:alnum:]_]+) ]] && family="${BASH_REMATCH[1]}"
+      trace_audit_blocked_receipt+="${trace_audit_blocked_receipt:+,}stage=$stage syscall=$syscall family=$family"
+      continue
+    fi
     if [[ "$source_probe_stage" != true ]]; then
       trace_audit_error='an injected prohibited syscall was attempted outside a source-check stage'
       return 1
@@ -107,17 +168,25 @@ audit_trace() {
     fi
     injected_count=$((injected_count + 1))
   done < "$trace"
+  if [[ "$runtime_stage" == true ]]; then
+    for pid in "${!syscall_pids[@]}"; do
+      [[ "${terminal_statuses[$pid]-missing}" == 0 ]] || { trace_audit_error="runtime pid $pid lacks one zero-status terminal record"; return 1; }
+    done
+  fi
   if [[ "$source_probe_stage" == true && "$injected_count" -ne 4 ]]; then
     trace_audit_error="source-check stage recorded $injected_count exact local no-effect probes; expected 4"
     return 1
   fi
-  trace_audit_tolerated_probes="$injected_count"
-  while IFS= read -r family; do
-    [[ "$family" == AF_UNIX || "$family" == AF_LOCAL ]] && continue
-    trace_audit_error="nonlocal address family recorded: $family"
-    return 1
-  done < <(grep -aEo 'AF_[[:alnum:]_]+' "$trace" 2>/dev/null || true)
+  if [[ "$source_probe_stage" == true ]]; then
+    trace_audit_tolerated_probes="$injected_count"
+  elif [[ "$runtime_stage" == true ]]; then
+    trace_audit_blocked_records="$injected_count"
+  fi
+  failed_result_regex=' = -[0-9]+ [A-Z][A-Z0-9_]* \([^)]*\)$'
+  unix_descriptor_regex='^[0-9]+<UNIX-(STREAM|DGRAM|SEQPACKET):\[[0-9]+(->[0-9]+)?\]>$'
   while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*[0-9]+[[:space:]]+---[[:space:]]+SIG[A-Z0-9]+[[:space:]].*[[:space:]]+---$ ]] && continue
+    [[ "$line" =~ ^[[:space:]]*[0-9]+[[:space:]]+\+\+\+[[:space:]]+exited[[:space:]]+with[[:space:]]+[0-9]+[[:space:]]+\+\+\+$ ]] && continue
     [[ "$line" =~ ^[[:space:]]*[0-9]+[[:space:]]+([[:alnum:]_]+)\( ]] || continue
     syscall="${BASH_REMATCH[1]}"
     case "$syscall" in
@@ -125,26 +194,34 @@ audit_trace() {
         if [[ "$source_probe_stage" == true && "$line" =~ $source_probe_regex ]]; then
           continue
         fi
+        if [[ "$runtime_stage" == true && "$line" =~ $runtime_denied_regex ]]; then
+          continue
+        fi
         trace_audit_error="prohibited syscall recorded without an injection marker: $syscall"
         return 1
         ;;
       socketpair)
-        if [[ "$line" != *'socketpair(AF_UNIX,'* && "$line" != *'socketpair(AF_LOCAL,'* ]]; then
-          trace_audit_error='socketpair did not prove an AF_UNIX/AF_LOCAL family'
-          return 1
-        fi
+        [[ "$line" =~ $failed_result_regex ]] && continue
+        socketpair_regex='^[[:space:]]*[0-9]+[[:space:]]+socketpair\((AF_UNIX|AF_LOCAL), [[:alnum:]_|]+, 0, \[([^,]+>), (.*>)\]\) = 0$'
+        [[ "$line" =~ $socketpair_regex ]] || { trace_audit_error='socketpair record is not a complete successful local pair'; return 1; }
+        left_descriptor="${BASH_REMATCH[2]}"; right_descriptor="${BASH_REMATCH[3]}"
+        [[ "$left_descriptor" =~ $unix_descriptor_regex && "$right_descriptor" =~ $unix_descriptor_regex ]] \
+          || { trace_audit_error='socketpair descriptors do not prove Unix identities'; return 1; }
+        unix_descriptors["$left_descriptor"]=1; unix_descriptors["$right_descriptor"]=1
         ;;
       sendto|sendmsg|sendmmsg|recvfrom|recvmsg|recvmmsg)
-        if [[ "$line" != *'<UNIX'* && ! "$line" =~ =[[:space:]]+-[[:digit:]]+ ]]; then
-          trace_audit_error="successful $syscall did not prove a UNIX descriptor"
-          return 1
-        fi
+        [[ "$line" =~ $failed_result_regex ]] && continue
+        first_fd_regex="^[[:space:]]*[0-9]+[[:space:]]+$syscall\\(([^,]+),"
+        [[ "$line" =~ $first_fd_regex ]] || { trace_audit_error="$syscall has no parsed descriptor"; return 1; }
+        first_descriptor="${BASH_REMATCH[1]}"
+        [[ -n "${unix_descriptors[$first_descriptor]+x}" ]] || { trace_audit_error="successful $syscall lacks socketpair provenance"; return 1; }
         ;;
       getsockname|getpeername|shutdown|setsockopt|getsockopt)
-        if [[ "$line" != *'<UNIX'* && ! "$line" =~ =[[:space:]]+-[[:digit:]]+ ]]; then
-          trace_audit_error="$syscall did not prove a UNIX descriptor or a failed no-effect call"
-          return 1
-        fi
+        [[ "$line" =~ $failed_result_regex ]] && continue
+        first_fd_regex="^[[:space:]]*[0-9]+[[:space:]]+$syscall\\(([^,]+),"
+        [[ "$line" =~ $first_fd_regex ]] || { trace_audit_error="$syscall has no parsed descriptor"; return 1; }
+        first_descriptor="${BASH_REMATCH[1]}"
+        [[ -n "${unix_descriptors[$first_descriptor]+x}" ]] || { trace_audit_error="successful $syscall lacks socketpair provenance"; return 1; }
         ;;
       *)
         trace_audit_error="unclassified traced syscall: $syscall"
@@ -154,23 +231,52 @@ audit_trace() {
   done < "$trace"
 }
 
+audit_stage_trace() {
+  local trace="$1" stage="$2" child_status="$3" audit_policy="$4" audit_owner="$5" launch_identity="${6:-}"
+  local expected identity_before identity_after digest_before digest_after trace_fd
+  if [[ "$audit_policy" != runtime ]]; then
+    audit_trace "$trace" "$stage" "$child_status" "$audit_policy" "$audit_owner"
+    return
+  fi
+  expected="$trace_root/$stage.trace"
+  [[ "$trace" == "$expected" && -s "$trace" && -f "$trace" && ! -L "$trace" ]] || { trace_audit_error='runtime trace path, type, or content is invalid'; return 1; }
+  strictly_contained "$trace" "$trace_root" || { trace_audit_error='runtime trace escaped its private root'; return 1; }
+  [[ "$(stat -c '%u:%a' -- "$trace")" == "$(id -u):600" ]] || { trace_audit_error='runtime trace owner or mode is not private'; return 1; }
+  [[ -n "$launch_identity" && "$(stat -c '%d:%i' -- "$trace")" == "$launch_identity" ]] || { trace_audit_error='runtime trace identity differs from its bound prelaunch target'; return 1; }
+  identity_before="$(stat -c '%d:%i:%u:%a:%s:%Y:%Z' -- "$trace")"; digest_before="$(sha256sum "$trace")"; digest_before="${digest_before%% *}"
+  exec {trace_fd}< "$trace" || { trace_audit_error='runtime trace could not be opened'; return 1; }
+  [[ "$(stat -Lc '%d:%i' -- "/proc/$$/fd/$trace_fd")" == "$(stat -c '%d:%i' -- "$trace")" ]] || { exec {trace_fd}<&-; trace_audit_error='runtime trace path was replaced before parsing'; return 1; }
+  audit_trace "/proc/$$/fd/$trace_fd" "$stage" "$child_status" "$audit_policy" "$audit_owner" || { exec {trace_fd}<&-; return 1; }
+  exec {trace_fd}<&-
+  identity_after="$(stat -c '%d:%i:%u:%a:%s:%Y:%Z' -- "$trace")"; digest_after="$(sha256sum "$trace")"; digest_after="${digest_after%% *}"
+  [[ "$identity_before" == "$identity_after" && "$digest_before" == "$digest_after" ]] || { trace_audit_error='runtime trace changed during parsing'; return 1; }
+}
+
 run_traced_stage() {
-  local stage="$1" audit_policy="$2" status trace stdout stderr
-  shift 2
+  local stage="$1" audit_policy="$2" audit_owner="$3" status trace stdout stderr launch_identity=''
+  shift 3
   case "$audit_policy" in
-    strict|source) ;;
+    strict|source|runtime) ;;
     *) printf 'invalid trace audit policy for stage %s: %s\n' "$stage" "$audit_policy" >&2; return 1 ;;
   esac
+  if [[ "$audit_policy" == runtime ]]; then
+    runtime_stage_allowed "$audit_owner" "$stage" && [[ "$runtime_wrapper_capability" == "$fixed_runtime:$stage" ]] \
+      || { printf 'runtime policy rejected before execution for stage %s\n' "$stage" >&2; return 1; }
+    runtime_wrapper_capability=''
+  fi
   trace="$trace_root/$stage.trace"
   stdout="$trace_root/$stage.stdout"
   stderr="$trace_root/$stage.stderr"
+  if [[ "$audit_policy" == runtime ]]; then
+    : > "$trace"; chmod 600 "$trace"; launch_identity="$(stat -c '%d:%i' -- "$trace")"
+  fi
   set +e
-  /usr/bin/strace -qq -f --kill-on-exit -yy -s 256 \
+  /usr/bin/strace -q -f --kill-on-exit -yy -s 256 \
     -e "trace=$trace_set" -e "inject=$deny_set:error=EACCES" -o "$trace" -- \
     "$@" < /dev/null > "$stdout" 2> "$stderr"
   status=$?
   set -e
-  if ! audit_trace "$trace" "$stage" "$status" "$audit_policy"; then
+  if ! audit_stage_trace "$trace" "$stage" "$status" "$audit_policy" "$audit_owner" "$launch_identity"; then
     printf 'prohibited traced activity during stage %s: %s; child status: %d; trace: %s; stdout: %s; stderr: %s\n' \
       "$stage" "$trace_audit_error" "$status" "$trace" "$stdout" "$stderr" >&2
     sed -n '1,80p' "$trace" >&2
@@ -191,6 +297,9 @@ run_traced_stage() {
       source-postcheck) source_postcheck_probe_count="$trace_audit_tolerated_probes" ;;
     esac
   fi
+  if [[ "$trace_audit_blocked_records" -ne 0 ]]; then
+    printf 'PASS %s blocked_no_effect_records=%d %s\n' "$stage" "$trace_audit_blocked_records" "$trace_audit_blocked_receipt"
+  fi
   stage_stdout="$stdout"
 }
 # END SOURCE PROBE AUDIT CONTRACT
@@ -198,7 +307,9 @@ run_traced_stage() {
 run_claude_stage() {
   local stage="$1"
   shift
-  run_traced_stage "$stage" strict \
+  case "$stage" in version|validate|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac
+  runtime_wrapper_capability="$fixed_runtime:$stage"
+  run_traced_stage "$stage" runtime claude \
     env -i \
     HOME="$private_home" \
     CLAUDE_CONFIG_DIR="$claude_config" \
@@ -211,7 +322,7 @@ run_claude_stage() {
 run_test_stage() {
   local stage="$1"
   shift
-  run_traced_stage "$stage" strict \
+  run_traced_stage "$stage" strict helper \
     env -i HOME="$private_home" TMPDIR="$private_tmp" PATH='/usr/bin:/bin' \
     /usr/bin/python3 -c "$fd_closure_exec" "$@"
 }
@@ -223,7 +334,7 @@ run_source_check_stage() {
     printf 'invalid source-check stage: %s\n' "$stage" >&2
     return 1
   }
-  run_traced_stage "$stage" source \
+  run_traced_stage "$stage" source source \
     env -i HOME="$private_home" TMPDIR="$private_tmp" PATH='/usr/bin:/bin' \
     /usr/bin/python3 -c "$fd_closure_exec" "$@"
 }
@@ -441,7 +552,7 @@ write_exact_source_probe_trace() {
 
 run_helper_self_tests() {
   local fixture="$target/helper" expected="$target/helper-expected" actual="$target/helper-actual"
-  local diagnostic first_line inherited_probe frozen_a="$target/helper-frozen-a"
+  local diagnostic first_line inherited_probe runtime_syscall launch_identity replacement_identity frozen_a="$target/helper-frozen-a"
   local frozen_b="$target/helper-frozen-b" frozen_installed="$target/helper-frozen-installed"
   mkdir -p "$fixture/inside" "$expected/nested" "$actual/nested"
   printf '%s\n' 'mktemp() { : > "$GOBBI_SMOKE_MKTEMP_MARKER"; return 99; }' > "$target/mktemp-probe.bash"
@@ -667,6 +778,112 @@ run_helper_self_tests() {
     "$trace_root/helper-source-other-injection.trace"
   ! audit_trace "$trace_root/helper-source-other-injection.trace" source-precheck 0 source \
     || fail 'source-stage audit accepted another injected syscall'
+  printf '951 io_uring_setup(1024, {flags=0}) = -1 EACCES (Permission denied) (INJECTED)\n951 +++ exited with 0 +++\n' \
+    > "$trace_root/helper-runtime-denied.trace"
+  chmod 600 "$trace_root/helper-runtime-denied.trace"
+  audit_trace "$trace_root/helper-runtime-denied.trace" version 0 runtime claude \
+    || fail 'runtime audit rejected a complete blocked no-effect record'
+  [[ "$trace_audit_blocked_records" -eq 1 ]] || fail 'runtime audit reported the wrong blocked-record count'
+  [[ "$trace_audit_blocked_receipt" == 'stage=version syscall=io_uring_setup family=none' ]] \
+    || fail 'runtime audit receipt omitted the stage, syscall, or family'
+  ! audit_trace "$trace_root/helper-runtime-denied.trace" helper-audit 0 strict \
+    || fail 'strict helper audit accepted a runtime blocked no-effect record'
+  ! audit_trace "$trace_root/helper-runtime-denied.trace" unknown-stage 0 runtime claude \
+    || fail 'runtime audit accepted an unknown stage'
+  ! audit_trace "$trace_root/helper-runtime-denied.trace" version 7 runtime claude \
+    || fail 'runtime audit accepted a nonzero child'
+  cp "$trace_root/helper-runtime-denied.trace" "$trace_root/helper-runtime-wrong-error.trace"
+  sed -i 's/EACCES (Permission denied)/EPERM (Operation not permitted)/' "$trace_root/helper-runtime-wrong-error.trace"
+  ! audit_trace "$trace_root/helper-runtime-wrong-error.trace" version 0 runtime claude \
+    || fail 'runtime audit accepted the wrong injected error'
+  cp "$trace_root/helper-runtime-denied.trace" "$trace_root/helper-runtime-unmarked.trace"
+  sed -i 's/ (INJECTED)$//' "$trace_root/helper-runtime-unmarked.trace"
+  ! audit_trace "$trace_root/helper-runtime-unmarked.trace" version 0 runtime claude \
+    || fail 'runtime audit accepted an unmarked denial'
+  printf '951 io_uring_setup(1024, {flags=0} <unfinished ...>\n' > "$trace_root/helper-runtime-unfinished.trace"
+  chmod 600 "$trace_root/helper-runtime-unfinished.trace"
+  ! audit_trace "$trace_root/helper-runtime-unfinished.trace" version 0 runtime claude \
+    || fail 'runtime audit accepted unfinished evidence'
+  : > "$trace_root/helper-runtime-empty.trace"
+  chmod 600 "$trace_root/helper-runtime-empty.trace"
+  ! audit_trace "$trace_root/helper-runtime-empty.trace" version 0 runtime claude \
+    || fail 'runtime audit accepted empty evidence'
+  ! audit_trace "$trace_root/helper-runtime-empty.trace" helper-audit 0 strict helper \
+    || fail 'strict helper audit accepted empty evidence'
+  for runtime_syscall in socket socketcall connect bind listen accept accept4 io_uring_setup pidfd_getfd; do
+    printf '960 %s(0) = -1 EACCES (Permission denied) (INJECTED)\n960 +++ exited with 0 +++\n' "$runtime_syscall" \
+      > "$trace_root/helper-runtime-$runtime_syscall.trace"
+    chmod 600 "$trace_root/helper-runtime-$runtime_syscall.trace"
+    audit_trace "$trace_root/helper-runtime-$runtime_syscall.trace" version 0 runtime claude \
+      || fail "runtime audit rejected fixed-deny syscall $runtime_syscall"
+  done
+  printf '970 socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) = 3<TCP:[1]>\n970 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-success.trace"
+  chmod 600 "$trace_root/helper-runtime-success.trace"
+  ! audit_trace "$trace_root/helper-runtime-success.trace" version 0 runtime claude || fail 'runtime audit accepted successful acquisition'
+  printf '971 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED) trailing\n971 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-suffix.trace"
+  chmod 600 "$trace_root/helper-runtime-suffix.trace"
+  ! audit_trace "$trace_root/helper-runtime-suffix.trace" version 0 runtime claude || fail 'runtime audit accepted a malformed suffix'
+  printf '972 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)' > "$trace_root/helper-runtime-truncated.trace"
+  chmod 600 "$trace_root/helper-runtime-truncated.trace"
+  ! audit_trace "$trace_root/helper-runtime-truncated.trace" version 0 runtime claude || fail 'runtime audit accepted an unterminated tail'
+  printf '973 <... socket resumed>) = -1 EACCES (Permission denied) (INJECTED)\n973 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-resumed.trace"
+  chmod 600 "$trace_root/helper-runtime-resumed.trace"
+  ! audit_trace "$trace_root/helper-runtime-resumed.trace" version 0 runtime claude || fail 'runtime audit accepted resumed evidence'
+  printf '951 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)\n' > "$trace_root/helper-runtime-no-terminal.trace"
+  ! audit_trace "$trace_root/helper-runtime-no-terminal.trace" version 0 runtime claude || fail 'runtime audit accepted a missing terminal record'
+  printf '951 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)\n952 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-wrong-terminal-pid.trace"
+  ! audit_trace "$trace_root/helper-runtime-wrong-terminal-pid.trace" version 0 runtime claude || fail 'runtime audit accepted a mismatched terminal pid'
+  printf '951 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)\n951 +++ exited with 7 +++\n' > "$trace_root/helper-runtime-nonzero-terminal.trace"
+  ! audit_trace "$trace_root/helper-runtime-nonzero-terminal.trace" version 0 runtime claude || fail 'runtime audit accepted a nonzero terminal status'
+  printf '951 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)\n951 +++ killed by SIGTERM +++\n' > "$trace_root/helper-runtime-killed-terminal.trace"
+  ! audit_trace "$trace_root/helper-runtime-killed-terminal.trace" version 0 runtime claude || fail 'runtime audit accepted a killed terminal record'
+  printf '951 io_uring_setup(1, {}) = -1 EACCES (Permission denied) (INJECTED)\n951 +++ exited with 0 +++\n951 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-duplicate-terminal.trace"
+  ! audit_trace "$trace_root/helper-runtime-duplicate-terminal.trace" version 0 runtime claude || fail 'runtime audit accepted a duplicate terminal record'
+  ! audit_trace "$trace_root/helper-runtime-denied.trace" version 0 runtime codex || fail 'Claude audit accepted the wrong runtime owner'
+  printf '974 sendto(9<UNIX-STREAM:[123]>, "x", 1, 0, NULL, 0) = 1\n974 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-unproved-unix.trace"
+  chmod 600 "$trace_root/helper-runtime-unproved-unix.trace"
+  ! audit_trace "$trace_root/helper-runtime-unproved-unix.trace" version 0 runtime claude || fail 'runtime audit accepted Unix-looking traffic without provenance'
+  printf '975 socketpair(AF_UNIX, SOCK_STREAM, 0, [3<UNIXfake>, 4<UNIXfake>]) = 0\n975 sendto(3<UNIXfake>, "x", 1, 0, NULL, 0) = 1\n975 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-fake-unix.trace"
+  ! audit_trace "$trace_root/helper-runtime-fake-unix.trace" version 0 runtime claude || fail 'runtime audit accepted a fake Unix descriptor'
+  printf '976 socketpair(AF_UNIX, SOCK_STREAM, 0, [3<UNIX-STREAM:[101->102]>, 4<UNIX-STREAM:[102->101]>]) = 0\n976 sendto(3<UNIX-STREAM:[101->102]>, "x", 1, 0, NULL, 0) = 1\n976 +++ exited with 0 +++\n' > "$trace_root/helper-runtime-proved-unix.trace"
+  audit_trace "$trace_root/helper-runtime-proved-unix.trace" version 0 runtime claude || fail 'runtime audit rejected exact socketpair provenance'
+  sed 's/sendto(3<UNIX-STREAM:\[101->102\]>/sendto(3<UNIX-STREAM:[999]>/' "$trace_root/helper-runtime-proved-unix.trace" > "$trace_root/helper-runtime-reused-unix.trace"
+  ! audit_trace "$trace_root/helper-runtime-reused-unix.trace" version 0 runtime claude || fail 'runtime audit accepted a different Unix identity'
+  runtime_wrapper_capability=''
+  rm -f "$target/helper-runtime-command-ran"
+  ! run_traced_stage version runtime claude /usr/bin/touch "$target/helper-runtime-command-ran" >/dev/null 2>&1 \
+    || fail 'direct runtime selection bypassed the wrapper capability'
+  [[ ! -e "$target/helper-runtime-command-ran" ]] || fail 'rejected direct runtime selection executed its command'
+  runtime_wrapper_capability='claude:version'
+  ! run_traced_stage version runtime codex /usr/bin/touch "$target/helper-runtime-command-ran" >/dev/null 2>&1 \
+    || fail 'wrong runtime owner reached execution'
+  [[ ! -e "$target/helper-runtime-command-ran" ]] || fail 'wrong runtime owner executed its command'
+  runtime_wrapper_capability='claude:unknown-stage'
+  ! run_traced_stage unknown-stage runtime claude /usr/bin/touch "$target/helper-runtime-command-ran" >/dev/null 2>&1 \
+    || fail 'unknown runtime stage reached execution'
+  [[ ! -e "$target/helper-runtime-command-ran" ]] || fail 'unknown runtime stage executed its command'
+  ln -s helper-runtime-denied.trace "$trace_root/version.trace"
+  ! audit_stage_trace "$trace_root/version.trace" version 0 runtime claude || fail 'runtime trace authentication accepted a symlink'
+  rm -f "$trace_root/version.trace"
+  cp "$trace_root/helper-runtime-denied.trace" "$trace_root/version.trace"
+  chmod 600 "$trace_root/version.trace"
+  launch_identity="$(stat -c '%d:%i' -- "$trace_root/version.trace")"
+  audit_stage_trace "$trace_root/version.trace" version 0 runtime claude "$launch_identity" \
+    || fail 'runtime trace authentication rejected a bound private trace'
+  chmod 640 "$trace_root/version.trace"
+  ! audit_stage_trace "$trace_root/version.trace" version 0 runtime claude "$launch_identity" \
+    || fail 'runtime trace authentication accepted the wrong mode'
+  chmod 600 "$trace_root/version.trace"
+  cp "$trace_root/helper-runtime-denied.trace" "$trace_root/replacement.trace"
+  replacement_identity="$(stat -c '%d:%i' -- "$trace_root/version.trace")"
+  mv "$trace_root/replacement.trace" "$trace_root/version.trace"
+  chmod 600 "$trace_root/version.trace"
+  ! audit_stage_trace "$trace_root/version.trace" version 0 runtime claude "$replacement_identity" \
+    || fail 'runtime trace authentication accepted a replaced launch target'
+  ! audit_stage_trace "$trace_root/helper-runtime-denied.trace" version 0 runtime claude \
+      "$(stat -c '%d:%i' -- "$trace_root/helper-runtime-denied.trace")" \
+    || fail 'runtime trace authentication accepted the wrong path'
+  rm -f "$trace_root/version.trace"
   diagnostic="$target/helper-acquisition.diagnostic"
   if run_test_stage helper-acquisition /usr/bin/python3 -c \
       'import ctypes,os; libc=ctypes.CDLL(None, use_errno=True); assert os.uname().machine in ("x86_64", "aarch64"); libc.syscall(425, 0, 0); libc.syscall(438, -1, -1, 0)' \
