@@ -6,6 +6,8 @@ repo_root_source="${GOBBI_ENTRYPOINT_REPO_ROOT:-$(cd -- "$(dirname -- "${BASH_SO
 repo_root="$(cd -- "$repo_root_source" && pwd -P)"
 source_rel='.gobbi/projects/gobbi/skills/principles/SKILL.md'
 source_path="$repo_root/$source_rel"
+family_rel='.gobbi/projects/gobbi/skills/gobbi-dev'
+family_path="$repo_root/$family_rel"
 mode=''
 
 usage() {
@@ -22,10 +24,174 @@ case "$1" in
   *) usage; exit 2 ;;
 esac
 
-[[ -r "$source_path" ]] || {
-  printf '%s is absent or unreadable\n' "$source_rel" >&2
+read_frontmatter_value() {
+  local -n output="$1"
+  local path="$2" key="$3" value
+  if ! value="$(awk -v wanted="$key" '
+    NR == 1 { if ($0 != "---") exit 10; inside = 1; next }
+    inside && $0 == "---" { closed = 1; inside = 0; nextfile }
+    inside {
+      prefix = wanted ":"
+      if (index($0, prefix) == 1) {
+        count++
+        value = substr($0, length(prefix) + 1)
+        sub(/^[[:space:]]+/, "", value)
+      }
+    }
+    END { if (!closed || count != 1) exit 11; print value }
+  ' "$path")"; then
+    return 1
+  fi
+  output="$value"
+}
+
+unquote_frontmatter_value() {
+  local value="$1"
+  if [[ "$value" == \"*\" && ${#value} -ge 2 ]]; then
+    value="${value:1:${#value}-2}"
+  fi
+  printf '%s' "$value"
+}
+
+readlink_raw_target() {
+  local -n output="$1"
+  local path="$2" captured
+  captured="$(readlink -n -- "$path" && printf '\034')" || return 1
+  output="${captured%$'\034'}"
+}
+
+[[ -f "$source_path" && ! -L "$source_path" && -r "$source_path" ]] || {
+  printf '%s must be a readable real regular file\n' "$source_rel" >&2
   exit 1
 }
+if ! read_frontmatter_value principles_name "$source_path" name || [[ "$principles_name" != principles ]]; then
+  printf '%s must declare name: principles\n' "$source_rel" >&2
+  exit 1
+fi
+if [[ ! -L "$repo_root/AGENTS.md" ]] || ! readlink_raw_target agents_target "$repo_root/AGENTS.md" || \
+   [[ "$agents_target" != '.codex/AGENTS.md' ]] || [[ ! -e "$repo_root/AGENTS.md" ]]; then
+  printf 'AGENTS.md must be a non-dangling symlink with raw target .codex/AGENTS.md\n' >&2
+  exit 1
+fi
+
+validate_family_source() {
+  local entry rel actual_files actual_dirs row name type description expected_description child child_skill root_tools dev_tools
+  local expected_files expected_dirs expected_child_section
+  local expected_root_description='MUST load before realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs; collecting exact-revision test evidence for Gobbi; reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict; preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release; installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets; choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms; or choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects. Gobbi Development Lifecycle is a domain skill that routes the task to its applicable operation, tool, and preference child skills.'
+  local -a children=(
+    gobbi-dev-conventions:preference
+    gobbi-dev-deployment:operation
+    gobbi-dev-development:operation
+    gobbi-dev-release:operation
+    gobbi-dev-review:operation
+    gobbi-dev-testing:operation
+    gobbi-dev-toolchain:tool
+  )
+
+  [[ -d "$family_path" && ! -L "$family_path" ]] || {
+    printf '%s must be a real directory\n' "$family_rel" >&2
+    return 1
+  }
+  [[ -f "$family_path/SKILL.md" && ! -L "$family_path/SKILL.md" && -r "$family_path/SKILL.md" ]] || {
+    printf '%s/SKILL.md must be a readable real regular file\n' "$family_rel" >&2
+    return 1
+  }
+  if ! read_frontmatter_value name "$family_path/SKILL.md" name || [[ "$name" != gobbi-dev ]]; then
+    printf '%s/SKILL.md must declare name: gobbi-dev\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value type "$family_path/SKILL.md" skill-type || [[ "$type" != domain ]]; then
+    printf '%s/SKILL.md must declare skill-type: domain\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value description "$family_path/SKILL.md" description || \
+     [[ "$description" != "\"$expected_root_description\"" ]]; then
+    printf '%s/SKILL.md must preserve the exact accepted root description\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value root_tools "$family_path/SKILL.md" allowed-tools || [[ "$root_tools" != Read ]]; then
+    printf '%s/SKILL.md must declare allowed-tools: Read\n' "$family_rel" >&2
+    return 1
+  fi
+  if ! read_frontmatter_value dev_tools "$family_path/gobbi-dev-development/SKILL.md" allowed-tools || \
+     [[ "$dev_tools" != 'Read, Grep, Glob, Bash' ]]; then
+    printf '%s/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash\n' "$family_rel" >&2
+    return 1
+  fi
+  if [[ "$(grep -c '^# Gobbi Development Lifecycle$' "$family_path/SKILL.md" || true)" -ne 1 ]] || \
+     [[ "$(grep -c '^## Child Skills$' "$family_path/SKILL.md" || true)" -ne 1 ]] || \
+     [[ "$(grep -c '^## ' "$family_path/SKILL.md" || true)" -ne 1 ]]; then
+    printf '%s/SKILL.md must retain the navigation-only root shell\n' "$family_rel" >&2
+    return 1
+  fi
+
+  expected_files=$'SKILL.md\ngobbi-dev-conventions/SKILL.md\ngobbi-dev-deployment/SKILL.md\ngobbi-dev-deployment/checklists.md\ngobbi-dev-development/SKILL.md\ngobbi-dev-release/SKILL.md\ngobbi-dev-release/checklists.md\ngobbi-dev-review/SKILL.md\ngobbi-dev-testing/SKILL.md\ngobbi-dev-toolchain/SKILL.md'
+  expected_dirs=$'gobbi-dev-conventions\ngobbi-dev-deployment\ngobbi-dev-development\ngobbi-dev-release\ngobbi-dev-review\ngobbi-dev-testing\ngobbi-dev-toolchain'
+  actual_files="$(cd "$family_path" && find . -mindepth 1 -type f -print | sed 's|^\./||' | LC_ALL=C sort)"
+  actual_dirs="$(cd "$family_path" && find . -mindepth 1 -type d -print | sed 's|^\./||' | LC_ALL=C sort)"
+  [[ "$actual_files" == "$expected_files" ]] || {
+    printf '%s must contain the exact accepted ten-file inventory\n' "$family_rel" >&2
+    return 1
+  }
+  [[ "$actual_dirs" == "$expected_dirs" ]] || {
+    printf '%s must contain the exact accepted seven real child directories\n' "$family_rel" >&2
+    return 1
+  }
+  while IFS= read -r -d '' entry; do
+    rel="${entry#"$family_path"/}"
+    if [[ -L "$entry" || ( ! -d "$entry" && ! -f "$entry" ) ]]; then
+      printf '%s/%s must be a real directory or regular file\n' "$family_rel" "$rel" >&2
+      return 1
+    fi
+  done < <(find "$family_path" -mindepth 1 -print0)
+
+  expected_child_section=$'## Child Skills\n\n| Child skill | Type | Load when |\n|---|---|---|'
+  for child in "${children[@]}"; do
+    type="${child##*:}"
+    child="${child%%:*}"
+    child_skill="$family_path/$child/SKILL.md"
+    case "$child" in
+      gobbi-dev-conventions) expected_description='MUST load when choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms.' ;;
+      gobbi-dev-deployment) expected_description='MUST load when installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets.' ;;
+      gobbi-dev-development) expected_description='MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' ;;
+      gobbi-dev-release) expected_description='MUST load when preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release.' ;;
+      gobbi-dev-review) expected_description='MUST load when reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict.' ;;
+      gobbi-dev-testing) expected_description='MUST load when collecting exact-revision test evidence for Gobbi.' ;;
+      gobbi-dev-toolchain) expected_description='MUST load when choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects.' ;;
+    esac
+    [[ -f "$child_skill" && ! -L "$child_skill" && -r "$child_skill" ]] || {
+      printf '%s/%s/SKILL.md must be a readable real regular file\n' "$family_rel" "$child" >&2
+      return 1
+    }
+    read_frontmatter_value name "$child_skill" name && [[ "$name" == "$child" ]] || {
+      printf '%s/%s/SKILL.md must declare name: %s\n' "$family_rel" "$child" "$child" >&2
+      return 1
+    }
+    read_frontmatter_value name "$child_skill" skill-type && [[ "$name" == "$type" ]] || {
+      printf '%s/%s/SKILL.md must declare skill-type: %s\n' "$family_rel" "$child" "$type" >&2
+      return 1
+    }
+    read_frontmatter_value description "$child_skill" description || {
+      printf '%s/%s/SKILL.md must declare one frontmatter description\n' "$family_rel" "$child" >&2
+      return 1
+    }
+    [[ "$description" == "\"$expected_description\"" ]] || {
+      printf '%s/%s/SKILL.md must preserve the exact accepted description\n' "$family_rel" "$child" >&2
+      return 1
+    }
+    row="| [\`$child\`]($child/SKILL.md) | $type | $expected_description |"
+    expected_child_section+=$'\n'"$row"
+  done
+  cmp -s \
+    <(printf '%s\n' "$expected_child_section") \
+    <(sed -n '/^## Child Skills$/,$p' "$family_path/SKILL.md") || {
+      printf '%s/SKILL.md Child Skills section must equal the ordered child-derived table through end of file\n' \
+        "$family_rel" >&2
+      return 1
+    }
+}
+
+validate_family_source
 
 targets=(
   "$repo_root/.codex/AGENTS.md"
@@ -61,6 +227,11 @@ render_entrypoint() {
       while ((getline line < body_path) > 0) print line
       close(body_path)
       print marker_end
+      print ""
+      print "## Repository-local Gobbi development lifecycle"
+      print ""
+      print "When the frontmatter trigger in `.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md` applies, load that"
+      print "repository-local skill and every applicable child it routes."
     }
   ' > "$output"
 }

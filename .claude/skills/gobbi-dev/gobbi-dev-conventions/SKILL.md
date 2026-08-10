@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-conventions/SKILL.md

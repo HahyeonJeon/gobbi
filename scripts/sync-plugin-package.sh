@@ -37,6 +37,8 @@ package_component_link_target() {
 }
 
 canonical_skills_root="$repo_root/.gobbi/projects/gobbi/skills"
+package_only_skill='gobbi-dev'
+package_only_skill_token_regex="(^|[^[:alnum:]_-])${package_only_skill}([^[:alnum:]_-]|$)"
 claude_skills_drift=0
 source_topology_failures=0
 roles=(manager leader executor evaluator assistant)
@@ -174,6 +176,13 @@ require_semantic_text() {
   grep -Fq -- "$text" "$path" || topology_fail "$label"
 }
 
+require_semantic_count() {
+  local path="$1" text="$2" expected="$3" label="$4" count
+  [[ -f "$path" ]] || return 0
+  count="$(grep -Fc -- "$text" "$path" || true)"
+  [[ "$count" -eq "$expected" ]] || topology_fail "$label"
+}
+
 require_semantic_section_words() {
   local path="$1" start="$2" end="$3" text="$4" label="$5"
   [[ -f "$path" ]] || return 0
@@ -232,6 +241,355 @@ require_semantic_permission() {
   fi
 }
 
+validate_smoke_contracts() {
+  local codex="$repo_root/scripts/check-codex-plugin-smoke.sh"
+  local claude="$repo_root/scripts/check-claude-plugin-smoke.sh"
+  local codex_block claude_block codex_audit_block claude_audit_block smoke stage
+  require_file "$codex"
+  require_file "$claude"
+  if [[ -f "$codex" && -f "$claude" ]]; then
+    codex_block="$(sed -n '/^# BEGIN FROZEN PACKAGE CONTRACT$/,/^# END FROZEN PACKAGE CONTRACT$/p' "$codex")"
+    claude_block="$(sed -n '/^# BEGIN FROZEN PACKAGE CONTRACT$/,/^# END FROZEN PACKAGE CONTRACT$/p' "$claude")"
+    if [[ -z "$codex_block" || "$codex_block" != "$claude_block" ]]; then
+      topology_fail 'Claude and Codex smoke frozen-package contract blocks must remain byte-equal'
+    fi
+    codex_audit_block="$(sed -n '/^# BEGIN SOURCE PROBE AUDIT CONTRACT$/,/^# END SOURCE PROBE AUDIT CONTRACT$/p' "$codex")"
+    claude_audit_block="$(sed -n '/^# BEGIN SOURCE PROBE AUDIT CONTRACT$/,/^# END SOURCE PROBE AUDIT CONTRACT$/p' "$claude")"
+    if [[ -z "$codex_audit_block" || "$codex_audit_block" != "$claude_audit_block" ]]; then
+      topology_fail 'Claude and Codex source-probe audit contract blocks must remain byte-equal'
+    fi
+  fi
+  for smoke in "$codex" "$claude"; do
+    [[ -f "$smoke" ]] || continue
+    require_semantic_sequence "$smoke" 35 \
+      'runtime smoke usage must reject invalid argv before artifact creation' \
+      'case $# in' \
+      '0) mode=run ;;' \
+      '1) [[ "$1" == --self-test ]] || usage_error; mode=--self-test ;;' \
+      '*) usage_error ;;' \
+      'esac' \
+      'repo_root=' \
+      'target="$(mktemp -d /tmp/gobbi-'
+    for stage in \
+      'assert_invalid_usage_no_artifact literal-run run' \
+      "assert_invalid_usage_no_artifact empty ''" \
+      'assert_invalid_usage_no_artifact bad --bad' \
+      'assert_invalid_usage_no_artifact extra --self-test extra'; do
+      require_semantic_count "$smoke" "$stage" 1 \
+        'runtime smoke self-test must preserve every invalid-usage no-artifact assertion'
+    done
+    require_semantic_text "$smoke" 'names = os.listdir("/proc/self/fd")' \
+      'runtime smoke wrapper must enumerate /proc/self/fd instead of an RLIMIT range'
+    require_semantic_text "$smoke" '/usr/bin/strace -q -f --kill-on-exit -yy -s 256' \
+      'runtime smoke must retain terminal trace evidence without detach chatter'
+    forbid_semantic_text "$smoke" '/usr/bin/strace -qq ' \
+      'runtime smoke must retain terminal trace evidence without detach chatter'
+    forbid_semantic_text "$smoke" 'resource.getrlimit' \
+      'runtime smoke wrapper must enumerate /proc/self/fd instead of an RLIMIT range'
+    require_semantic_text "$smoke" 'find "$root" -mindepth 1 -print0 > "$walk"' \
+      'runtime smoke complete tree walks must propagate traversal failure'
+    require_semantic_text "$smoke" '[[ -d "$root" && ! -L "$root" && -r "$root" ]]' \
+      'runtime smoke frozen manifest must reject a linked or unreadable root'
+    require_semantic_text "$smoke" 'digest="$(sha256sum < "$entry")"' \
+      'runtime smoke frozen manifest hashes file bytes safely for backslash paths'
+    forbid_semantic_text "$smoke" 'tree_matches_package "$package_root" "$installed_path"' \
+      'runtime smoke installed acceptance must use the frozen manifest, not the live package'
+    require_semantic_count "$smoke" 'frozen_sha256=%s dirs=%s files=%s' 1 \
+      'runtime smoke success receipt must expose the frozen digest and tree counts'
+    require_semantic_count "$smoke" 'source_probe_regex='"'"'^[[:space:]]*[0-9]+[[:space:]]+socket\((AF_UNIX|AF_LOCAL), SOCK_STREAM\|SOCK_CLOEXEC\|SOCK_NONBLOCK, 0\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'"'"'' 1 \
+      'runtime smoke source-probe regex must remain one exact anchored contract'
+    require_semantic_count "$smoke" "trace_set='%network,?socketcall,io_uring_setup,pidfd_getfd'" 1 \
+      'runtime smoke trace set must remain the exact fixed acquisition surface'
+    require_semantic_count "$smoke" "deny_set='socket,?socketcall,connect,bind,listen,accept,accept4,io_uring_setup,pidfd_getfd'" 1 \
+      'runtime smoke deny set must remain the exact fixed acquisition surface'
+    require_semantic_count "$smoke" 'runtime_denied_regex='"'"'^[[:space:]]*[0-9]+[[:space:]]+(socket|socketcall|connect|bind|listen|accept|accept4|io_uring_setup|pidfd_getfd)\(.*\) = -1 EACCES \(Permission denied\) \(INJECTED\)$'"'"'' 1 \
+      'runtime smoke denial parser must remain one exact anchored contract'
+    require_semantic_count "$smoke" "failed_result_regex=' = -[0-9]+ [A-Z][A-Z0-9_]* \\([^)]*\\)\$'" 1 \
+      'runtime smoke failed-result parser must remain exact and terminally anchored'
+    require_semantic_count "$smoke" "unix_descriptor_regex='^[0-9]+<UNIX-(STREAM|DGRAM|SEQPACKET):\\[[0-9]+(->[0-9]+)?\\]>\$'" 1 \
+      'runtime smoke Unix descriptor parser must remain exact and terminally anchored'
+    require_semantic_count "$smoke" 'declare -A unix_descriptors=() syscall_pids=() terminal_statuses=()' 1 \
+      'runtime smoke must bind descriptor provenance and terminal closure by observed pid'
+    require_semantic_count "$smoke" 'codex:version|codex:marketplace-add|codex:available-list|codex:install|codex:installed-list|claude:version|claude:validate|claude:marketplace-add|claude:available-list|claude:install|claude:installed-list) ;;' 1 \
+      'runtime smoke common allowlist must preserve both exact runtime stage tables'
+    require_semantic_count "$smoke" 'runtime_stage_allowed "$audit_owner" "$stage" && [[ "$runtime_wrapper_capability" == "$fixed_runtime:$stage" ]] \' 1 \
+      'runtime smoke must reject runtime policy selection before command execution'
+    require_semantic_count "$smoke" '[[ "${terminal_statuses[$pid]-missing}" == 0 ]]' 1 \
+      'runtime smoke must require one zero-status terminal record for every observed syscall pid'
+    require_semantic_count "$smoke" '[[ -s "$trace" ]] || {' 1 \
+      'every audited trace must be nonempty'
+    require_semantic_count "$smoke" 'runtime trace identity differs from its bound prelaunch target' 1 \
+      'runtime smoke must authenticate the prelaunch trace identity before parsing'
+    require_semantic_count "$smoke" 'blocked_no_effect_records=%d %s' 1 \
+      'runtime smoke blocked receipt must expose its exact stage, syscall, and family records'
+    if [[ "$smoke" == "$codex" ]]; then
+      require_semantic_count "$smoke" 'case "$stage" in version|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' 1 \
+        'Codex runtime wrapper must preserve its exact stage table'
+    else
+      require_semantic_count "$smoke" 'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list) ;; *) return 1 ;; esac' 1 \
+        'Claude runtime wrapper must preserve its exact stage table'
+    fi
+    require_semantic_text "$smoke" 'injected_count" -ne 4' \
+      'runtime smoke source checks must require exactly four denied local probes per stage'
+    require_semantic_count "$smoke" 'audit_stage_trace "$trace" "$stage" "$status" "$audit_policy" "$audit_owner"' 1 \
+      'runtime smoke must bind source-probe classification to exact stage, child status, and explicit policy'
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" strict helper \' 1 \
+      'only helper wrappers may select the strict trace audit policy'
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" runtime ' 1 \
+      'the fixed runtime wrapper must select semantic no-effect policy'
+    require_semantic_count "$smoke" 'run_traced_stage "$stage" source source \' 1 \
+      'only the dedicated source-check wrapper may select the source trace audit policy'
+    require_semantic_count "$smoke" '[[ "$stage" == source-precheck || "$stage" == source-postcheck ]]' 1 \
+      'source trace audit policy must be confined to the two exact source-check stages'
+    forbid_semantic_text "$smoke" 'run_test_stage source-precheck' \
+      'production source precheck must not use the strict helper wrapper'
+    forbid_semantic_text "$smoke" 'run_test_stage source-postcheck' \
+      'production source postcheck must not use the strict helper wrapper'
+    require_semantic_count "$smoke" 'source-precheck-probes=%s source-postcheck-probes=%s' 1 \
+      'runtime smoke success receipt must report both exact source-probe counts'
+    require_semantic_text "$smoke" 'source_precheck_probe_count" -eq 4 && "$source_postcheck_probe_count" -eq 4' \
+      'runtime smoke must require four precheck and four postcheck probes before success'
+    for stage in \
+      'write_exact_source_probe_trace "$trace_root/helper-source-probes-three.trace" 3' \
+      'write_exact_source_probe_trace "$trace_root/helper-source-probes-five.trace" 5' \
+      'helper-source-wrong-flags.trace' \
+      'helper-source-wrong-family.trace' \
+      'helper-source-wrong-result.trace' \
+      'helper-source-other-injection.trace' \
+      'audit_trace "$trace_root/helper-source-probes.trace" version 0 strict'; do
+      require_semantic_text "$smoke" "$stage" \
+      'runtime smoke self-test must preserve source-probe cardinality, shape, injection, and runtime-strict mutations'
+    done
+    for stage in \
+      'runtime_denied_regex=' \
+      'helper-runtime-denied.trace' \
+      'helper-runtime-wrong-error.trace' \
+      'helper-runtime-unmarked.trace' \
+      'helper-runtime-unfinished.trace' \
+      'helper-runtime-empty.trace' \
+      'helper-runtime-truncated.trace' \
+      'helper-runtime-resumed.trace' \
+      'helper-runtime-success.trace' \
+      'helper-runtime-unproved-unix.trace' \
+      'runtime_stage_allowed()' \
+      'audit_stage_trace()' \
+      'unix_descriptors["$left_descriptor"]' \
+      'blocked_no_effect_records=%d'; do
+      require_semantic_text "$smoke" "$stage" \
+        'runtime smoke must preserve semantic no-effect parser and adversarial fixtures'
+    done
+  done
+  require_semantic_sequence "$codex" 160 \
+    'Codex smoke must freeze before version and verify every package checkpoint against the frozen manifest' \
+    'run_source_check_stage source-precheck ' \
+    'freeze_package ||' \
+    'run_codex_stage version --version' \
+    'verify_frozen_tree "$package_root" package-before-install' \
+    'run_codex_stage install plugin add' \
+    'verify_frozen_tree "$package_root" package-after-install' \
+    'verify_frozen_tree "$installed_path" installed-cache' \
+    'run_source_check_stage source-postcheck' \
+    'verify_frozen_tree "$package_root" package-before-success' \
+    'smoke_complete=1'
+  require_semantic_sequence "$claude" 160 \
+    'Claude smoke must freeze before version and verify every package checkpoint against the frozen manifest' \
+    'run_source_check_stage source-precheck ' \
+    'freeze_package ||' \
+    'run_claude_stage version --version' \
+    'verify_frozen_tree "$package_root" package-before-install' \
+    'run_claude_stage install plugin install' \
+    'verify_frozen_tree "$package_root" package-after-install' \
+    'verify_frozen_tree "$installed_path" installed-cache' \
+    'run_source_check_stage source-postcheck' \
+    'verify_frozen_tree "$package_root" package-before-success' \
+    'smoke_complete=1'
+  require_semantic_count "$codex" 'fixed_runtime=codex' 1 'Codex smoke must bind runtime policy to its fixed wrapper identity'
+  require_semantic_count "$claude" 'fixed_runtime=claude' 1 'Claude smoke must bind runtime policy to its fixed wrapper identity'
+  require_semantic_text "$codex" 'case "$stage" in version|marketplace-add|available-list|install|installed-list)' \
+    'Codex fixed wrapper must retain its closed runtime stage allowlist'
+  require_semantic_text "$claude" 'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list)' \
+    'Claude fixed wrapper must retain its closed runtime stage allowlist'
+  for stage in version marketplace-add available-list install installed-list; do
+    require_semantic_count "$codex" "run_codex_stage $stage " 1 \
+      "Codex production smoke stage $stage must appear exactly once"
+  done
+  for stage in source-precheck source-postcheck; do
+    require_semantic_count "$codex" "run_source_check_stage $stage " 1 \
+      "Codex production smoke stage $stage must appear exactly once"
+  done
+  for stage in version validate marketplace-add available-list install installed-list; do
+    require_semantic_count "$claude" "run_claude_stage $stage " 1 \
+      "Claude production smoke stage $stage must appear exactly once"
+  done
+  for stage in source-precheck source-postcheck; do
+    require_semantic_count "$claude" "run_source_check_stage $stage " 1 \
+      "Claude production smoke stage $stage must appear exactly once"
+  done
+}
+
+package_skill_path_excluded() {
+  path_is_equal_or_descendant "$1" "$package_only_skill"
+}
+
+path_is_equal_or_descendant() {
+  local path="$1" root="$2" prefix
+  [[ "$path" == "$root" ]] && return 0
+  prefix="${root}/"
+  ((${#path} >= ${#prefix})) && [[ "${path:0:${#prefix}}" == "$prefix" ]]
+}
+
+read_frontmatter_value() {
+  local -n output="$1"
+  local path="$2" key="$3" value
+
+  if ! value="$(awk -v wanted="$key" '
+    NR == 1 {
+      if ($0 != "---") exit 10
+      inside = 1
+      next
+    }
+    inside && $0 == "---" {
+      closed = 1
+      inside = 0
+      nextfile
+    }
+    inside {
+      prefix = wanted ":"
+      if (index($0, prefix) == 1) {
+        count++
+        value = substr($0, length(prefix) + 1)
+        sub(/^[[:space:]]+/, "", value)
+      }
+    }
+    END {
+      if (!closed || count != 1) exit 11
+      print value
+    }
+  ' "$path")"; then
+    return 1
+  fi
+  output="$value"
+}
+
+unquote_frontmatter_value() {
+  local value="$1"
+  if [[ "$value" == \"*\" && ${#value} -ge 2 ]]; then
+    value="${value:1:${#value}-2}"
+  fi
+  printf '%s' "$value"
+}
+
+validate_package_only_skill_owner() {
+  local owner="$canonical_skills_root/$package_only_skill"
+  local root_skill="$owner/SKILL.md"
+  local entry rel actual_files actual_dirs row name type description expected_description child child_skill root_tools dev_tools
+  local expected_files expected_dirs expected_child_section
+  local expected_root_description='MUST load before realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs; collecting exact-revision test evidence for Gobbi; reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict; preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release; installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets; choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms; or choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects. Gobbi Development Lifecycle is a domain skill that routes the task to its applicable operation, tool, and preference child skills.'
+  local -a children=(
+    gobbi-dev-conventions:preference
+    gobbi-dev-deployment:operation
+    gobbi-dev-development:operation
+    gobbi-dev-release:operation
+    gobbi-dev-review:operation
+    gobbi-dev-testing:operation
+    gobbi-dev-toolchain:tool
+  )
+
+  if [[ -L "$owner" || ! -d "$owner" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill must be a real directory"
+    return
+  fi
+  if [[ -L "$root_skill" || ! -f "$root_skill" || ! -r "$root_skill" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must be a readable real regular file"
+    return
+  fi
+
+  if ! read_frontmatter_value name "$root_skill" name || [[ "$name" != "$package_only_skill" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must declare name: $package_only_skill"
+  fi
+  if ! read_frontmatter_value type "$root_skill" skill-type || [[ "$type" != domain ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must declare skill-type: domain"
+  fi
+  if ! read_frontmatter_value description "$root_skill" description || \
+     [[ "$description" != "\"$expected_root_description\"" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must preserve the exact accepted root description"
+  fi
+  if ! read_frontmatter_value root_tools "$root_skill" allowed-tools || [[ "$root_tools" != Read ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must declare allowed-tools: Read"
+  fi
+  if ! read_frontmatter_value dev_tools "$owner/gobbi-dev-development/SKILL.md" allowed-tools || \
+     [[ "$dev_tools" != 'Read, Grep, Glob, Bash' ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/gobbi-dev-development/SKILL.md must declare allowed-tools: Read, Grep, Glob, Bash"
+  fi
+  if [[ "$(grep -c '^# Gobbi Development Lifecycle$' "$root_skill" || true)" -ne 1 ]] || \
+     [[ "$(grep -c '^## Child Skills$' "$root_skill" || true)" -ne 1 ]] || \
+     [[ "$(grep -c '^## ' "$root_skill" || true)" -ne 1 ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md must retain the navigation-only root shell"
+  fi
+
+  expected_files=$'SKILL.md\ngobbi-dev-conventions/SKILL.md\ngobbi-dev-deployment/SKILL.md\ngobbi-dev-deployment/checklists.md\ngobbi-dev-development/SKILL.md\ngobbi-dev-release/SKILL.md\ngobbi-dev-release/checklists.md\ngobbi-dev-review/SKILL.md\ngobbi-dev-testing/SKILL.md\ngobbi-dev-toolchain/SKILL.md'
+  expected_dirs=$'gobbi-dev-conventions\ngobbi-dev-deployment\ngobbi-dev-development\ngobbi-dev-release\ngobbi-dev-review\ngobbi-dev-testing\ngobbi-dev-toolchain'
+  actual_files="$(cd "$owner" && find . -mindepth 1 -type f -print | sed 's|^\./||' | LC_ALL=C sort)"
+  actual_dirs="$(cd "$owner" && find . -mindepth 1 -type d -print | sed 's|^\./||' | LC_ALL=C sort)"
+  if [[ "$actual_files" != "$expected_files" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill must contain the exact accepted ten-file inventory"
+  fi
+  if [[ "$actual_dirs" != "$expected_dirs" ]]; then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill must contain the exact accepted seven real child directories"
+  fi
+
+  while IFS= read -r -d '' entry; do
+    rel="${entry#"$owner"/}"
+    if [[ -L "$entry" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$rel must not be a symlink"
+    elif [[ ! -d "$entry" && ! -f "$entry" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$rel has an unsupported type"
+    fi
+  done < <(find "$owner" -mindepth 1 -print0)
+
+  expected_child_section=$'## Child Skills\n\n| Child skill | Type | Load when |\n|---|---|---|'
+  for child in "${children[@]}"; do
+    type="${child##*:}"
+    child="${child%%:*}"
+    child_skill="$owner/$child/SKILL.md"
+    case "$child" in
+      gobbi-dev-conventions) expected_description='MUST load when choosing Gobbi development lifecycle names, topology, branch roles, handoff vocabulary, or evidence forms.' ;;
+      gobbi-dev-deployment) expected_description='MUST load when installing, verifying, or recovering a released Gobbi plugin deployment in caller-named isolated Claude Code and Codex targets.' ;;
+      gobbi-dev-development) expected_description='MUST load when realizing an accepted Gobbi change contract and coordinating it through a verified local commit and lifecycle handoffs.' ;;
+      gobbi-dev-release) expected_description='MUST load when preparing or recovering a Gobbi release candidate, supplying a frozen Gobbi release candidate to Evaluation before manager or user acceptance, or promoting, publishing, or recovering an accepted Gobbi release.' ;;
+      gobbi-dev-review) expected_description='MUST load when reviewing one Gobbi change or the whole Gobbi project for scoped evidence and findings without an acceptance verdict.' ;;
+      gobbi-dev-testing) expected_description='MUST load when collecting exact-revision test evidence for Gobbi.' ;;
+      gobbi-dev-toolchain) expected_description='MUST load when choosing or diagnosing Gobbi project commands, tools, prerequisites, and effects.' ;;
+    esac
+    if [[ -L "$child_skill" || ! -f "$child_skill" || ! -r "$child_skill" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must be a readable real regular file"
+      continue
+    fi
+    if ! read_frontmatter_value name "$child_skill" name || [[ "$name" != "$child" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must declare name: $child"
+      continue
+    fi
+    if ! read_frontmatter_value name "$child_skill" skill-type || [[ "$name" != "$type" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must declare skill-type: $type"
+      continue
+    fi
+    if ! read_frontmatter_value description "$child_skill" description; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must declare one frontmatter description"
+      continue
+    fi
+    if [[ "$description" != "\"$expected_description\"" ]]; then
+      topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/$child/SKILL.md must preserve the exact accepted description"
+    fi
+    row="| [\`$child\`]($child/SKILL.md) | $type | $expected_description |"
+    expected_child_section+=$'\n'"$row"
+  done
+  if ! cmp -s \
+      <(printf '%s\n' "$expected_child_section") \
+      <(sed -n '/^## Child Skills$/,$p' "$root_skill"); then
+    topology_fail ".gobbi/projects/gobbi/skills/$package_only_skill/SKILL.md Child Skills section must equal the ordered child-derived table through end of file"
+  fi
+}
+
 validate_lifecycle_semantics() {
   local skills="$repo_root/.gobbi/projects/gobbi/skills"
   local agents="$repo_root/.gobbi/projects/gobbi/agents"
@@ -247,6 +605,9 @@ validate_lifecycle_semantics() {
   local phase_1="$skills/workflow/phase-1/SKILL.md"
   local phase_2="$skills/workflow/phase-2/SKILL.md"
   local phase_3="$skills/workflow/phase-3/SKILL.md"
+  local gobbi_dev_toolchain="$skills/gobbi-dev/gobbi-dev-toolchain/SKILL.md"
+  local gobbi_dev_deployment="$skills/gobbi-dev/gobbi-dev-deployment/SKILL.md"
+  local gobbi_dev_deployment_checklists="$skills/gobbi-dev/gobbi-dev-deployment/checklists.md"
   local manager="$agents/manager.md"
   local assistant="$agents/assistant.md"
   local path permission role
@@ -264,6 +625,9 @@ validate_lifecycle_semantics() {
     "$phase_1" \
     "$phase_2" \
     "$phase_3" \
+    "$gobbi_dev_toolchain" \
+    "$gobbi_dev_deployment" \
+    "$gobbi_dev_deployment_checklists" \
     "$manager" \
     "$assistant"; do
     require_file "$path"
@@ -282,11 +646,11 @@ validate_lifecycle_semantics() {
     'Read [`../principles/SKILL.md`](../principles/SKILL.md), then [`../discussion/SKILL.md`](../discussion/SKILL.md)' \
     'then [`../delegation/SKILL.md`](../delegation/SKILL.md)' \
     'Confirm Principles, Discussion, and Delegation before governed action'
-  require_semantic_sequence "$gobbi" 4 \
-    'Gobbi References must match the Principles, Discussion, and Delegation entry load' \
+  require_semantic_sequence "$gobbi" 6 \
+    'Gobbi References must match the Principles, Discussion, and Delegation entry load and distributable map boundary' \
     '## References' \
-    'loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other' \
-    'skill. The map shows what exists rather than what is loaded.'
+    'Step 1.2 loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every' \
+    'other shared skill. The map shows what is distributable rather than what is loaded.'
   require_semantic_text "$gobbi" \
     '`AskUserQuestion` in Claude Code or `request_user_input` in Codex' \
     'Gobbi entry must name the structured question controls'
@@ -803,6 +1167,70 @@ validate_lifecycle_semantics() {
     'assignment-named writer role, including an assistant' \
     'Git must authorize an assignment-named assistant writer'
 
+  require_semantic_section_words "$gobbi_dev_toolchain" \
+    '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
+    'Each runtime stage executes its exact CLI once through a fixed descriptor-closing wrapper under an empty environment, private homes, a private temporary directory, and `/dev/null` standard input.' \
+    'Gobbi toolchain must define selective trace, single-stage execution, and separate whole-smoke recovery'
+  require_semantic_section_words "$gobbi_dev_toolchain" \
+    '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
+    'Local `socketpair(AF_UNIX)` remains available.' \
+    'Gobbi toolchain must define selective trace, single-stage execution, and separate whole-smoke recovery'
+  require_semantic_section_words "$gobbi_dev_toolchain" \
+    '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
+    'This is a trusted-runtime observation boundary, not a hostile-code sandbox. A stage is never replayed. A fresh whole-smoke retry is a separate recovery action' \
+    'Gobbi toolchain must define selective trace, single-stage execution, and separate whole-smoke recovery'
+  require_semantic_section_words "$gobbi_dev_toolchain" \
+    '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
+    '`source-precheck` and `source-postcheck` each require exactly four' \
+    'Gobbi toolchain must confine four denied local probes to each source-check stage'
+  require_semantic_section_words "$gobbi_dev_toolchain" \
+    '#### Installed-runtime trace boundary' '### Prerequisites and Effects' \
+    'Only fixed runtime wrappers and closed stage allowlists select production semantic no-effect policy.' \
+    'Gobbi toolchain must confine four denied local probes to each source-check stage'
+  require_semantic_section_words "$gobbi_dev_deployment" \
+    '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
+    'Treat local `socketpair(AF_UNIX)` and audited traffic on its proved Unix descriptors as local runtime IPC, not external network authority.' \
+    'Gobbi deployment must distinguish local IPC, one-run stages, and separately authorized recovery'
+  require_semantic_section_words "$gobbi_dev_deployment" \
+    '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
+    'Invoke each runtime stage once. Never replay a failed stage. A fresh whole-smoke run is a separate recovery action' \
+    'Gobbi deployment must distinguish local IPC, one-run stages, and separately authorized recovery'
+  require_semantic_text "$gobbi_dev_deployment" \
+    'A runtime-smoke failure never resumes by replaying its failed stage' \
+    'Gobbi deployment must distinguish local IPC, one-run stages, and separately authorized recovery'
+  require_semantic_section_words "$gobbi_dev_deployment" \
+    '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
+    'Keep three policies separate. `source-precheck` and `source-postcheck` each require exactly four denied' \
+    'Gobbi deployment must distinguish exact source, strict helper, and semantic runtime policies'
+  require_semantic_section_words "$gobbi_dev_deployment" \
+    '#### 3.2 Install the same local release' '#### 3.3 Verify both identities and inventories' \
+    'Fixed production runtime wrappers may classify a complete fixed-deny record as a blocked no-effect probe' \
+    'Gobbi deployment must distinguish exact source, strict helper, and semantic runtime policies'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Installed Inventory' '## Failure and Recovery' \
+    'Each runtime stage runs exactly once through the descriptor-closing wrapper with `/dev/null` input, private environment state, and all descendants kept under the trace.' \
+    'Gobbi deployment checklist must require selective trace evidence and separately authorized recovery'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Installed Inventory' '## Failure and Recovery' \
+    'Local `socketpair(AF_UNIX)` and proved Unix-descriptor traffic are the only successful socket activity;' \
+    'Gobbi deployment checklist must require selective trace evidence and separately authorized recovery'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Installed Inventory' '## Failure and Recovery' \
+    'trusted-runtime observation boundary, not a hostile-code sandbox.' \
+    'Gobbi deployment checklist must require selective trace evidence and separately authorized recovery'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Installed Inventory' '## Failure and Recovery' \
+    '`source-precheck` and `source-postcheck` each report exactly four denied `AF_UNIX` or `AF_LOCAL` stream probes' \
+    'Gobbi deployment checklist must require exact source, strict helper, and semantic runtime policies'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Installed Inventory' '## Failure and Recovery' \
+    'A fixed production runtime wrapper selects only a stage in its closed allowlist.' \
+    'Gobbi deployment checklist must require exact source, strict helper, and semantic runtime policies'
+  require_semantic_section_words "$gobbi_dev_deployment_checklists" \
+    '## Failure and Recovery' '' \
+    'No failed runtime stage was replayed. Any fresh whole-smoke run has separate caller recovery authority' \
+    'Gobbi deployment checklist must require selective trace evidence and separately authorized recovery'
+
   for permission in \
     'Skill(cowork)' \
     'Skill(gobbi:partner)' \
@@ -824,6 +1252,9 @@ validate_source_topology() {
     topology_fail 'jq is required to validate plugin manifests and marketplaces'
     return 1
   fi
+
+  validate_package_only_skill_owner
+  validate_smoke_contracts
 
   for path in \
     "$package_root/.codex-plugin/plugin.json" \
@@ -880,7 +1311,7 @@ validate_source_topology() {
   if [[ -f "$repo_root/.codex/AGENTS.md" && -f "$repo_root/.claude/CLAUDE.md" ]]; then
     if ! GOBBI_ENTRYPOINT_REPO_ROOT="$repo_root" \
       bash "$runtime_entrypoint_sync" --check >/dev/null; then
-      topology_fail 'runtime entrypoints must contain only canonical generated Principles content'
+      topology_fail 'runtime entrypoints must contain canonical generated Principles and the repository-local route'
     fi
   fi
 
@@ -1415,16 +1846,28 @@ check_claude_skills_mirror() {
 # file, so it must never appear as a file here and is named by its own guard pass instead.
 component_files() {
   local dir="$1"
+  local component="${2:-}" filtered="${3:-false}" rel
   [[ -d "$dir" ]] || return 0
-  ( cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type f -print ) \
-    | sed 's|^\./||' | LC_ALL=C sort
+  while IFS= read -r rel; do
+    rel="${rel#./}"
+    if [[ "$filtered" == true && "$component" == skills ]] && package_skill_path_excluded "$rel"; then
+      continue
+    fi
+    printf '%s\n' "$rel"
+  done < <(cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type f -print) | LC_ALL=C sort
 }
 
 component_dirs() {
   local dir="$1"
+  local component="${2:-}" filtered="${3:-false}" rel
   [[ -d "$dir" ]] || return 0
-  ( cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type d -print ) \
-    | sed 's|^\./||' | LC_ALL=C sort
+  while IFS= read -r rel; do
+    rel="${rel#./}"
+    if [[ "$filtered" == true && "$component" == skills ]] && package_skill_path_excluded "$rel"; then
+      continue
+    fi
+    printf '%s\n' "$rel"
+  done < <(cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type d -print) | LC_ALL=C sort
 }
 
 component_symlinks() {
@@ -1444,15 +1887,15 @@ check_generated_component() {
   local canonical_root="$repo_root/.gobbi/projects/gobbi/$component"
   local package_dir="$package_root/$component"
   local drift=0
-  local canonical_files package_files canonical_dirs package_dirs missing stale stale_dirs rel
+  local canonical_files package_files canonical_dirs package_dirs missing stale missing_dirs stale_dirs rel
 
   if [[ -L "$canonical_root" || ! -d "$canonical_root" ]]; then
     printf '.gobbi/projects/gobbi/%s is not a real directory\n' "$component" >&2
     return 1
   fi
 
-  canonical_files="$(component_files "$canonical_root")"
-  package_files="$(component_files "$package_dir")"
+  canonical_files="$(component_files "$canonical_root" "$component" true)"
+  package_files="$(component_files "$package_dir" "$component" false)"
 
   # comm must use the SAME collation as the LC_ALL=C sort in the enumerators above.
   missing="$(LC_ALL=C comm -23 <(printf '%s\n' "$canonical_files") <(printf '%s\n' "$package_files"))"
@@ -1489,9 +1932,15 @@ check_generated_component() {
 
   # Directory parity in the stale direction. The file comparison cannot see an EMPTY stale
   # subdir, which would otherwise ship in the published package.
-  canonical_dirs="$(component_dirs "$canonical_root")"
-  package_dirs="$(component_dirs "$package_dir")"
+  canonical_dirs="$(component_dirs "$canonical_root" "$component" true)"
+  package_dirs="$(component_dirs "$package_dir" "$component" false)"
+  missing_dirs="$(LC_ALL=C comm -23 <(printf '%s\n' "$canonical_dirs") <(printf '%s\n' "$package_dirs"))"
   stale_dirs="$(LC_ALL=C comm -13 <(printf '%s\n' "$canonical_dirs") <(printf '%s\n' "$package_dirs"))"
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    printf 'plugins/gobbi/%s/%s is a missing generated subdir\n' "$component" "$rel" >&2
+    drift=1
+  done <<< "$missing_dirs"
   while IFS= read -r rel; do
     [[ -n "$rel" ]] || continue
     printf 'plugins/gobbi/%s/%s is a stale generated subdir (no canonical dir)\n' "$component" "$rel" >&2
@@ -1511,6 +1960,10 @@ check_package_component() {
   local package_dir="$package_root/$component"
 
   if [[ -L "$package_dir" ]]; then
+    if [[ "$component" == skills ]]; then
+      printf 'plugins/gobbi/skills must be a materialized filtered directory, not a symlink\n' >&2
+      return 1
+    fi
     check_link "$package_dir" "$(package_component_link_target "$component")"
     return
   fi
@@ -1548,6 +2001,9 @@ materialize_package_component() {
 
   while IFS= read -r -d '' entry; do
     rel="${entry#"$canonical_root"/}"
+    if [[ "$component" == skills ]] && package_skill_path_excluded "$rel"; then
+      continue
+    fi
     if ! validate_reconcile_relative_path "$rel"; then
       printf 'cannot generate plugins/gobbi/%s: .gobbi/projects/gobbi/%s/%s: %s\n' \
         "$component" "$component" "$rel" "$reconcile_path_reason" >&2
@@ -1627,12 +2083,71 @@ materialize_package_component() {
     "$component" "$component" "${#expected_files[@]}"
 }
 
+path_has_exact_package_skill_segment() {
+  local rel="$1" segment
+  local -a segments=()
+  IFS='/' read -r -a segments <<< "$rel"
+  for segment in "${segments[@]}"; do
+    [[ "$segment" == "$package_only_skill" ]] && return 0
+  done
+  return 1
+}
+
+string_has_package_skill_token() {
+  local value="$1"
+  [[ "$value" =~ $package_only_skill_token_regex ]]
+}
+
+file_has_package_skill_token() {
+  local path="$1"
+  LC_ALL=C grep -aEq -- "$package_only_skill_token_regex" "$path"
+}
+
+check_package_only_skill_tokens() {
+  local allow_prunable_subtree="${1:-false}"
+  local entry rel raw_target
+
+  while IFS= read -r -d '' entry; do
+    rel="${entry#"$package_root"/}"
+    if [[ "$allow_prunable_subtree" == true ]] && \
+       path_is_equal_or_descendant "$rel" "skills/$package_only_skill"; then
+      continue
+    fi
+    if path_has_exact_package_skill_segment "$rel"; then
+      printf 'plugins/gobbi/%s contains the forbidden exact package-only skill path segment\n' "$rel" >&2
+      return 1
+    fi
+    if [[ -L "$entry" ]]; then
+      if ! readlink_raw_target raw_target "$entry"; then
+        printf 'cannot read package symlink target for plugins/gobbi/%s\n' "$rel" >&2
+        return 1
+      fi
+      if string_has_package_skill_token "$raw_target"; then
+        printf 'plugins/gobbi/%s symlink target contains the forbidden package-only skill token\n' "$rel" >&2
+        return 1
+      fi
+    elif [[ -f "$entry" ]] && file_has_package_skill_token "$entry"; then
+      printf 'plugins/gobbi/%s contains the forbidden standalone package-only skill token\n' "$rel" >&2
+      return 1
+    fi
+  done < <(find -P "$package_root" -mindepth 1 -print0)
+}
+
+preflight_normal_package_skills() {
+  if [[ ! -d "$package_root/skills" || -L "$package_root/skills" ]]; then
+    printf 'plugins/gobbi/skills must already be a materialized filtered directory; run --materialize-package\n' >&2
+    return 1
+  fi
+  check_package_only_skill_tokens false
+}
+
 if ! validate_source_topology; then
   printf '%d source-topology check(s) failed\n' "$source_topology_failures" >&2
   exit 1
 fi
 
 if $materialize_mode; then
+  check_package_only_skill_tokens true
   for component in "${package_components[@]}"; do
     materialize_package_component "$component"
   done
@@ -1640,6 +2155,7 @@ if $materialize_mode; then
   for component in "${package_components[@]}"; do
     check_package_component "$component"
   done
+  check_package_only_skill_tokens false
   printf 'every generated package file is byte-equal to its canonical owner\n'
   exit 0
 fi
@@ -1650,6 +2166,7 @@ if $check_mode; then
   for component in "${package_components[@]}"; do
     check_package_component "$component"
   done
+  check_package_only_skill_tokens false
 
   # .claude/skills mirror — per-skill bidirectional parity, derived from the canonical
   # tree (no hardcoded skill/file list, no magic count). Catches a missing child, a
@@ -1684,6 +2201,7 @@ fi
 # A mixed safe+unsafe mirror therefore leaves the complete mirror byte-for-byte intact.
 preflight_claude_skills_reconciliation
 preflight_agents_skill_reconciliation
+preflight_normal_package_skills
 apply_claude_skills_reconciliation
 apply_agents_skill_reconciliation
 
@@ -1692,6 +2210,9 @@ apply_agents_skill_reconciliation
 # directory back to one. A stale generated copy is reported by --check, which names
 # --materialize-package, rather than silently repaired or silently discarded here.
 for component in "${package_components[@]}"; do
+  if [[ "$component" == skills ]]; then
+    continue
+  fi
   if [[ -d "$package_root/$component" && ! -L "$package_root/$component" ]]; then
     continue
   fi

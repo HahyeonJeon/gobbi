@@ -22,8 +22,8 @@ the family composable and lets one child change without forcing the root or its 
 ### Route selectively with complete coverage
 
 Loading every child wastes context, while an uncovered root trigger leaves the reader without domain
-guidance. The routing table should load every applicable child, no others, and always select at least one
-child for a task that activates the root.
+guidance. A root must activate exactly when at least one direct child activates, and its routing table must
+then load every applicable child and no other child.
 
 ### Keep identity shallow and globally unique
 
@@ -46,14 +46,17 @@ child identities globally unique when different domains use the same capability 
   owned supporting documents when needed.
 - **MUST author every child in a separate fresh Skill Writing pass.** Keep `domain-skill.md` as the only type
   guide in the root pass and load exactly one matching ordinary type guide in each child pass.
-- **MUST keep the routing table complete and current.** List every direct child exactly once, copy its load
-  trigger from child frontmatter, select every applicable child, cover every root-triggered task, and reject
-  stale rows, orphan children, and missing routes.
+- **MUST keep root activation and child routing complete, current, and bidirectional.** List every direct
+  child exactly once, copy its load trigger from child frontmatter, load every applicable child and no other
+  child, and require the root predicate `R` to be true if and only if at least one direct-child predicate
+  `Ci` is true; reject stale rows, orphan children, missing routes, child-without-root cases, and
+  root-without-child cases.
 
 ## Naming Standard
 
 This section adds a capability vocabulary that this document did not define before. It binds every child named
-or renamed from now on, and it declares no existing name incorrect.
+or substantively revised from now on. An unchanged legacy child is not invalidated solely because a reserved
+meaning becomes narrower.
 
 ### Reserved words
 
@@ -62,9 +65,10 @@ other word for that meaning.
 
 | Reserved word | Fixed meaning |
 |---|---|
-| `development` | The author-or-change operation for a domain, including a review mode where the family carries one |
+| `development` | The operation that realizes an accepted change for a domain and coordinates its implementation handoffs; it does not own protected independent review, Evaluation, or acceptance. |
+| `review` | The protected read-only operation that produces scoped evidence and findings without an Evaluation verdict or acceptance. |
 | `testing` | The evidence operation |
-| `conventions` | The project-overridable naming and error-text preference, including authority and departure boundaries for written-form choices. |
+| `conventions` | The project-overridable cross-capability preference for domain names, written forms, canonical, generated, and local-only topology, role and branch vocabulary, handoffs, and evidence forms, including authority and departure boundaries. |
 | `source` | The source-file organization, formatter layout, import-form, and generated provenance preference. |
 | `documentation` | The public documentation and implementation-comment preference. |
 | `design` | The domain-specific capability for creating or judging structure, behavior, boundaries, and interfaces |
@@ -113,7 +117,7 @@ These four form rules bind every child and every root routing table.
 
 | Form rule | Statement |
 |---|---|
-| FR-1 | Every child `description` opens `MUST load when`, matching the `MUST load before` that opens every root `description`. |
+| FR-1 | Every child `description` contains one trigger sentence beginning `MUST load when`. Every root `description` contains one trigger sentence beginning `MUST load before`, followed by the stable domain identity sentence. Define each `Ci` from its child trigger after removing only `MUST load when`, and define `R` from the root trigger after removing only `MUST load before`; `R` must be true if and only if at least one `Ci` is true. |
 | FR-2 | Every child `description` is exactly one sentence and carries no second identity sentence. |
 | FR-3 | Every root routing row copies its child's `description` byte for byte, so string equality checks it. |
 | FR-4 | Every cross-reference to a sibling child uses the backticked slug, never a prose display name. |
@@ -130,8 +134,10 @@ These four form rules bind every child and every root routing table.
   evidence; require at least one operation, one tool, and one preference child.
 - Assign every material claim to one child, split mixed triggers or types, and merge children that cannot
   explain their boundaries without repeating the same contract.
-- Define the root tasks that activate each child, select every applicable child, and prove that every
-  supported root task selects at least one child.
+- Derive each child predicate `Ci` from its stable child trigger, then define the root predicate `R` as the
+  semantic union of all direct-child predicates.
+- Prove both implications: every true `Ci` makes `R` true, and every true `R` has at least one true `Ci`.
+  Route all true children for each supported task.
 
 #### 1.2 Lock the family skeleton
 
@@ -140,8 +146,11 @@ These four form rules bind every child and every root routing table.
   [Naming Standard](#naming-standard), which admits a reserved word for its fixed meaning and a free word its
   domain's authoritative literature uses.
 - Write each child trigger from the approved routing design and reserve a universal trigger only for a
-  genuine domain-wide floor. Apply form rules FR-1 through FR-4 to every child `description`, root routing
-  row, and sibling cross-reference.
+  genuine domain-wide floor. Build the root trigger only after every child trigger is stable: use a broad
+  domain trigger only when it is proved equivalent to their union; otherwise use a grammatical semantic
+  union that preserves every child's actors, scope, conditions, and force without adding another case.
+- Apply form rules FR-1 through FR-4 to every child `description`, root routing row, and sibling
+  cross-reference.
 - Render the root skeleton, every direct child `SKILL.md` skeleton, supporting-document paths, and one routing
   row per child before writing substantive prose.
 - Keep all independently loadable children direct and create no `SKILL.md` beneath a direct child.
@@ -159,7 +168,8 @@ These four form rules bind every child and every root routing table.
 
 #### 2.2 Write the navigation root
 
-- Write the stable child metadata into this exact root shape:
+- Use this broad root shape only when a genuine universal child floor proves the broad trigger equivalent to
+  the union of all child triggers:
 
 ```yaml
 ---
@@ -169,6 +179,21 @@ allowed-tools: Read
 skill-type: domain
 ---
 ```
+
+- Otherwise use this semantic-union root shape, listing the stable child triggers in stable child-name order
+  and joining them as one grammatical alternative list:
+
+```yaml
+---
+name: {domain}
+description: "MUST load before {C1}; {C2}; ...; or {Cn}. {Domain} is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
+allowed-tools: Read
+skill-type: domain
+---
+```
+
+  Each `{Ci}` is the meaning of its child trigger after removing only `MUST load when`. Remove repeated words
+  or conjunctions only when that grammatical edit leaves the meaning unchanged.
 
 - Write the root with this exact body shape:
 
@@ -202,15 +227,20 @@ trigger applies.}
   Rules, Preferences, Manual, Procedure, References, or body after Child Skills.
 - Require a one-to-one match between direct child directories and routing rows; verify direct globally unique
   names, types, triggers, paths, no grandchildren, and at least one child of each ordinary type.
-- Exercise ordinary, multi-child, universal-floor, no-match, stale-row, orphan-child, and duplicate-owner
-  cases, requiring every supported root task to select at least one applicable child.
+- Exercise one positive case per child, multi-child, universal-floor when present, outside-every-child,
+  child-without-root, root-without-child, unjustified-broad-root, stale-row, orphan-child, and duplicate-owner
+  cases. Require `R` if and only if at least one `Ci` is true, and require the routing table to select every
+  true child and no false child.
+- When this trigger contract or its register changes, audit every existing domain family and propagate only
+  root corrections proved necessary by the audit.
 - Confirm that every child passed its ordinary type review, owns its policy, and that the complete family
   passes parent Phase 3 plus structural, relative-link, topology, discovery, and compatibility checks.
 
 #### 3.2 Correct and re-review the family
 
-- Trace each finding to the earliest incorrect domain boundary, partition, child type, owner, name, trigger,
-  skeleton, child pass, or root row and propagate the correction through every affected projection.
+- Trace each finding to the earliest incorrect domain boundary, partition, child type, owner, name, child
+  predicate, root predicate, implication, skeleton, child pass, or root row and propagate the correction
+  through every affected projection.
 - Repeat the affected child review and the complete family review before returning a complete, selective,
   policy-free, and independently usable family.
 
