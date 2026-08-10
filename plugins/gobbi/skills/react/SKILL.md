@@ -1,6 +1,6 @@
 ---
 name: react
-description: "MUST load before working in React. React is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
+description: "MUST load before React Compiler configuration, diagnostics, coverage, migration, memoization, or compiler-related performance is in scope; naming, defining, exporting, moving, organizing, or reviewing React components, Hooks, or JSX files; designing React-specific component structure, props, composition, render, Hooks, state, Effects, identity, native interface, or Error Boundary behavior; implementing one scoped React change for a browser application or Electron renderer; using server rendering, hydration, Server Components, Server Functions, or client/server directives in a React browser application or Electron renderer; creating or revising React component or Hook tests; or using TypeScript, TSX, or installed React type definitions in React source or tests. React is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
 allowed-tools: Read
 skill-type: domain
 ---
