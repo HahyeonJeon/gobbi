@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/python/python-project-structure/SKILL.md

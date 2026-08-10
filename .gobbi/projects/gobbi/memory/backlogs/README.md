@@ -3,6 +3,11 @@
 Recursive index of every deferred item, grouped by feature or project scope and ordered alphabetically within
 each group. Order implies no priority, readiness, or sequence.
 
+## CLI skill family
+
+- `Automatic pager management` → `cli-skill-family.md#automatic-pager-management`
+- `Full-screen TUI support` → `cli-skill-family.md#full-screen-tui-support`
+
 ## Project
 
 - `agent-writing template still hardcodes the agents path` → `project.md#agent-writing-template-still-hardcodes-the-agents-path`

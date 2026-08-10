@@ -301,5 +301,7 @@ Each of these roots covers work in its language or platform and routes the task 
 | [`typescript`](../typescript/SKILL.md) | TypeScript |
 | [`react`](../react/SKILL.md) | React |
 | [`go`](../go/SKILL.md) | Go |
+| [`python`](../python/SKILL.md) | Python |
 | [`electron`](../electron/SKILL.md) | Electron |
 | [`desktop`](../desktop/SKILL.md) | Installable desktop applications |
+| [`cli`](../cli/SKILL.md) | Line-oriented TypeScript CLI products |
