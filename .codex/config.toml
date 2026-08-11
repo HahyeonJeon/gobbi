@@ -31,9 +31,18 @@ status_line = [
 ]
 status_line_use_colors = true
 
-[features.multi_agent_v2]
+[agents]
 enabled = true
-max_concurrent_threads_per_session = 8
+max_concurrent_threads_per_session = 16
+default_subagent_model = "gpt-5.6-sol"
+default_subagent_reasoning_effort = "high"
+interrupt_message = false
 
 [features]
+multi_agent = true
 default_mode_request_user_input = true
+
+[features.multi_agent_v2]
+enabled = true
+min_wait_timeout_ms = 60000
+default_wait_timeout_ms = 300000
