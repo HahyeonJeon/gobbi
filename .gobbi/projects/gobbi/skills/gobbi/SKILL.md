@@ -281,6 +281,7 @@ that has children routes to them from its own document.
 | [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces five accepted phase documents and one confirmed synthesis. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
+| [`docs-review`](../docs-review/SKILL.md) | Reviewing an exact Markdown subject for reader-facing quality and returning a typed report. |
 
 ### Authoring the system
 
