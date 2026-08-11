@@ -279,6 +279,7 @@ that has children routes to them from its own document.
 | [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
 | [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces five accepted phase documents and one confirmed synthesis. |
+| [`code-review`](../code-review/SKILL.md) | Read-only, evidence-backed review of an exact code subject without verdict authority. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
 
