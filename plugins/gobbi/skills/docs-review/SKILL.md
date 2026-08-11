@@ -16,25 +16,25 @@ response-only delivery, while specialized truth and acceptance stay with their o
 
 ## Principles
 
-### Judge the document by its reader outcome and governing basis
+### Reader outcome
 
-A clear document serves specific readers and tasks within its local contract. A reviewer therefore ties each
-concern to that outcome, a governing source, or an observed reader cost instead of a private house style.
+A reviewer ties each concern to the reader outcome, a governing source, or an observed reader cost instead
+of a private house style.
 
-### Keep result meanings separate
+### Result meanings
 
 An unmet requirement, an optional better choice, a verified benefit, and missing evidence create different
 owner decisions. Mixing them hides correction needs and weakens author choice.
 
-### Require evidence for improvement
+### Improvement evidence
 
 Improvement analysis must be visible even when it supports no change. Evidence decides whether the result is
 an opportunity or an explained `None supported`, so the review does not reward cosmetic churn.
 
-### Protect subject and delivery identity
+### Subject and delivery
 
-Review evidence remains current only while the subject is stable and the selected output boundary is honored.
-A changed subject or unauthorized side effect is a recoverable stop, not a completed review.
+A changed subject or unauthorized side effect is a recoverable stop, not a completed review. Review evidence
+remains current only while the subject is stable and the selected output boundary is honored.
 
 ## Rules
 
@@ -56,9 +56,9 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
 
 ## Procedure
 
-### Phase 1 — Bind the Protected Review
+### Phase 1 — Bind the Review
 
-#### 1.1 Bind the reader outcome, scope, and delivery
+#### 1.1 Bind review inputs
 
 - Take the exact Markdown path or path set, intended readers and tasks, included and excluded scope,
   governing sources, caller questions, optional classification labels and their basis, reviewer relationship,
@@ -84,7 +84,7 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
 - Stop when stable identity or a safe method cannot be proved. Resume this step with a stable subject or proved
   read-only method; never weaken the identity or safety boundary to continue.
 
-### Phase 2 — Inspect the Documentation
+### Phase 2 — Inspect Documentation
 
 #### 2.1 Inspect reader-facing quality
 
@@ -103,10 +103,10 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
   Markdown mechanics, and stale or conflicting content. Record a scope-based reason for each omitted concern.
 - Inspect rendered form when Markdown constructs may change meaning or navigation. A parser, linter, spell
   checker, link checker, or renderer supplies evidence only; a pass is not a content conclusion.
-- Apply purpose-aware guardrails. Favor topic-first wording and short descriptive titles, but impose no fixed
-  heading, order, word count, sentence score, or voice rule. Recommend a list, table, code block, or link only
-  when it reduces reading or lookup work. Preserve exact domain language, rationale, evidence, conditions,
-  exceptions, safety boundaries, recovery guidance, normative force, and useful linear prose.
+- Favor topic-first wording and short descriptive titles without imposing fixed headings or order, a word
+  count, a sentence score, or a voice rule. Recommend a list, table, code block, or link only when it reduces
+  reading or lookup work. Preserve exact domain language, rationale, evidence, conditions, exceptions, safety
+  boundaries, recovery guidance, normative force, and useful linear prose.
 
 #### 2.2 Check claims and route specialized judgment
 
@@ -123,7 +123,7 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
 - Return to Step 1.1 when evidence changes the subject, readers, scope, basis, questions, or output contract.
   Otherwise continue with the recorded support, conflicts, limits, and owner routes.
 
-### Phase 3 — Reconcile the Evidence
+### Phase 3 — Reconcile Evidence
 
 #### 3.1 Form typed results
 
@@ -153,9 +153,9 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
 - Treat the evidenced zero state as completed analysis, not proof of perfect documentation. Continue only
   after every reviewed concern has one semantic type and the improvement analysis is explicit.
 
-### Phase 4 — Report, Recover, and Hand Off
+### Phase 4 — Deliver the Review
 
-#### 4.1 Render the chosen output
+#### 4.1 Render output
 
 - Recheck the bound subject identity before output. If it changed, mark affected observations historical,
   write no current report, and return to Step 1.1 to bind and inspect the changed subject.
@@ -185,7 +185,7 @@ A changed subject or unauthorized side effect is a recoverable stop, not a compl
   output and repeat this step plus the subject-stability check. If response-only output caused a file write,
   report the exact unauthorized side effect, remove nothing without authority, and stop for caller direction.
 
-#### 4.3 Complete and hand off
+#### 4.3 Final handoff
 
 - Complete only when the unchanged subject retains its bound identity; all four categories and applicable
   cross-cutting concerns were inspected; claims and specialized routes are explicit; result types, IDs,
