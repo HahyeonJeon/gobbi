@@ -375,6 +375,15 @@ test_smoke_contract_drift() {
   local unix_regex_root="$tmp_root/smoke-bilateral-unix-regex-drift" unix_regex_log="$tmp_root/smoke-bilateral-unix-regex-drift.log"
   local stage_table_root="$tmp_root/smoke-bilateral-stage-table-drift" stage_table_log="$tmp_root/smoke-bilateral-stage-table-drift.log"
   local probe_doc_root="$tmp_root/smoke-probe-doc-drift" probe_doc_log="$tmp_root/smoke-probe-doc-drift.log"
+  local machine_path_root="$tmp_root/smoke-codex-machine-path-drift" machine_path_log="$tmp_root/smoke-codex-machine-path-drift.log"
+  local lookup_root="$tmp_root/smoke-codex-lookup-drift" lookup_log="$tmp_root/smoke-codex-lookup-drift.log"
+  local canonical_exec_root="$tmp_root/smoke-codex-canonical-exec-drift" canonical_exec_log="$tmp_root/smoke-codex-canonical-exec-drift.log"
+  local inherited_path_root="$tmp_root/smoke-codex-inherited-path-drift" inherited_path_log="$tmp_root/smoke-codex-inherited-path-drift.log"
+  local user_path_root="$tmp_root/smoke-codex-user-path-drift" user_path_log="$tmp_root/smoke-codex-user-path-drift.log"
+  local selected_receipt_root="$tmp_root/smoke-codex-selected-receipt-drift" selected_receipt_log="$tmp_root/smoke-codex-selected-receipt-drift.log"
+  local version_removed_root="$tmp_root/smoke-codex-version-removed-drift" version_removed_log="$tmp_root/smoke-codex-version-removed-drift.log"
+  local version_moved_root="$tmp_root/smoke-codex-version-moved-drift" version_moved_log="$tmp_root/smoke-codex-version-moved-drift.log"
+  local fixed_home_path
   prepare_semantic_fixture "$block_root"
   replace_literal_once "$block_root/scripts/check-codex-plugin-smoke.sh" \
     'package changed while the frozen manifest was created' \
@@ -564,6 +573,95 @@ test_smoke_contract_drift() {
     || fail 'bilateral stage-table widening omitted the Codex failure'
   grep -Fx 'source topology: Claude runtime wrapper must preserve its exact stage table' "$stage_table_log" >/dev/null \
     || fail 'bilateral stage-table widening omitted the Claude failure'
+
+  prepare_semantic_fixture "$machine_path_root"
+  fixed_home_path="/""home/fixture/.nvm/""versions/node/v22/bin/codex"
+  replace_literal_once "$machine_path_root/scripts/check-codex-plugin-smoke.sh" \
+    "selected_codex=''" \
+    "selected_codex='$fixed_home_path'"
+  if run_sync "$machine_path_root" --check > "$machine_path_log" 2>&1; then
+    fail 'machine-specific Codex executable path unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$machine_path_log" \
+    'Codex runtime selection must not contain a machine- or home-specific executable path'
+  pass 'Codex smoke source gate rejects a machine-specific NVM executable path'
+
+  prepare_semantic_fixture "$lookup_root"
+  replace_literal_once "$lookup_root/scripts/check-codex-plugin-smoke.sh" \
+    'selected_codex="$(type -P -- codex)"' \
+    'selected_codex="$(command -v -- codex)"'
+  if run_sync "$lookup_root" --check > "$lookup_log" 2>&1; then
+    fail 'non-disk-only Codex lookup unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$lookup_log" \
+    'Codex runtime selection must use Bash disk-only PATH lookup'
+  pass 'Codex smoke source gate rejects a missing disk-only lookup'
+
+  prepare_semantic_fixture "$canonical_exec_root"
+  replace_literal_once "$canonical_exec_root/scripts/check-codex-plugin-smoke.sh" \
+    '/usr/bin/python3 -c "$fd_closure_exec" "$canonical_codex" "$@"' \
+    '/usr/bin/python3 -c "$fd_closure_exec" "$selected_codex" "$@"'
+  if run_sync "$canonical_exec_root" --check > "$canonical_exec_log" 2>&1; then
+    fail 'Codex execution through the selected alias unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$canonical_exec_log" \
+    'Codex runtime wrapper must execute only the canonical executable'
+  pass 'Codex smoke source gate rejects execution through the selected alias'
+
+  prepare_semantic_fixture "$inherited_path_root"
+  replace_literal_once "$inherited_path_root/scripts/check-codex-plugin-smoke.sh" \
+    "PATH='/usr/bin:/bin' \\" \
+    'PATH="$PATH" \'
+  if run_sync "$inherited_path_root" --check > "$inherited_path_log" 2>&1; then
+    fail 'inherited Codex runtime PATH unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$inherited_path_log" \
+    'Codex runtime wrapper must use only the fixed system PATH'
+  pass 'Codex smoke source gate rejects an inherited runtime PATH'
+
+  prepare_semantic_fixture "$user_path_root"
+  replace_literal_once "$user_path_root/scripts/check-codex-plugin-smoke.sh" \
+    "PATH='/usr/bin:/bin' \\" \
+    "PATH='/opt/codex/bin:/usr/bin:/bin' \\"
+  if run_sync "$user_path_root" --check > "$user_path_log" 2>&1; then
+    fail 'user Codex runtime PATH unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$user_path_log" \
+    'Codex runtime wrapper must use only the fixed system PATH'
+  pass 'Codex smoke source gate rejects a user runtime directory in PATH'
+
+  prepare_semantic_fixture "$selected_receipt_root"
+  replace_literal_once "$selected_receipt_root/scripts/check-codex-plugin-smoke.sh" \
+    'pass "selected Codex entry $selected_codex; canonical executable $canonical_codex; version $observed_version"' \
+    'pass "Codex runtime version $observed_version"'
+  if run_sync "$selected_receipt_root" --check > "$selected_receipt_log" 2>&1; then
+    fail 'Codex receipt without selected and canonical identities unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$selected_receipt_log" \
+    'Codex runtime success receipt must name the selected entry and canonical executable'
+  pass 'Codex smoke source gate rejects a receipt without selected and canonical identities'
+
+  prepare_semantic_fixture "$version_removed_root"
+  replace_literal_once "$version_removed_root/scripts/check-codex-plugin-smoke.sh" \
+    'version_output_is_expected "$observed_version"' \
+    'version_output_is_ignored "$observed_version"'
+  if run_sync "$version_removed_root" --check > "$version_removed_log" 2>&1; then
+    fail 'removed Codex exact-version gate unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$version_removed_log" \
+    'Codex exact version gate must pass before plugin commands'
+  pass 'Codex smoke source gate rejects a removed exact-version gate'
+
+  prepare_semantic_fixture "$version_moved_root"
+  swap_literals_once "$version_moved_root/scripts/check-codex-plugin-smoke.sh" \
+    'version_output_is_expected "$observed_version"' \
+    'run_codex_stage marketplace-add plugin marketplace add'
+  if run_sync "$version_moved_root" --check > "$version_moved_log" 2>&1; then
+    fail 'Codex exact-version gate moved after a plugin command unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$version_moved_log" \
+    'Codex exact version gate must pass before plugin commands'
+  pass 'Codex smoke source gate rejects an exact-version gate moved after a plugin command'
 
   prepare_semantic_fixture "$probe_doc_root"
   replace_literal_once "$probe_doc_root/.gobbi/projects/gobbi/skills/gobbi-dev/gobbi-dev-toolchain/SKILL.md" \

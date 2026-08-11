@@ -183,6 +183,18 @@ require_semantic_count() {
   [[ "$count" -eq "$expected" ]] || topology_fail "$label"
 }
 
+require_semantic_count_after() {
+  local path="$1" anchor="$2" text="$3" expected="$4" label="$5" anchor_line count
+  [[ -f "$path" ]] || return 0
+  anchor_line="$(awk -v needle="$anchor" 'index($0, needle) { print NR; exit }' "$path")"
+  [[ -n "$anchor_line" ]] || return 0
+  count="$(awk -v after="$anchor_line" -v needle="$text" '
+    NR > after && index($0, needle) { count++ }
+    END { print count + 0 }
+  ' "$path")"
+  [[ "$count" -eq "$expected" ]] || topology_fail "$label"
+}
+
 require_semantic_section_words() {
   local path="$1" start="$2" end="$3" text="$4" label="$5"
   [[ -f "$path" ]] || return 0
@@ -231,6 +243,32 @@ require_semantic_sequence() {
   fi
 }
 
+require_semantic_sequence_after() {
+  local path="$1" anchor="$2" max_span="$3" label="$4"
+  local anchor_line first_line=0 previous_line line token
+  shift 4
+  [[ -f "$path" ]] || return 0
+
+  anchor_line="$(awk -v needle="$anchor" 'index($0, needle) { print NR; exit }' "$path")"
+  [[ -n "$anchor_line" ]] || return 0
+  previous_line="$anchor_line"
+  for token in "$@"; do
+    line="$(awk -v after="$previous_line" -v needle="$token" '
+      NR > after && index($0, needle) { print NR; exit }
+    ' "$path")"
+    if [[ -z "$line" ]]; then
+      topology_fail "$label"
+      return 0
+    fi
+    [[ "$first_line" -ne 0 ]] || first_line="$line"
+    previous_line="$line"
+  done
+
+  if ((previous_line - first_line > max_span)); then
+    topology_fail "$label"
+  fi
+}
+
 require_semantic_permission() {
   local permission="$1" label="$2" settings="$repo_root/.claude/settings.json"
   [[ -f "$settings" ]] || return 0
@@ -245,6 +283,8 @@ validate_smoke_contracts() {
   local codex="$repo_root/scripts/check-codex-plugin-smoke.sh"
   local claude="$repo_root/scripts/check-claude-plugin-smoke.sh"
   local codex_block claude_block codex_audit_block claude_audit_block smoke stage
+  local canonical_exec_count selected_exec_count fixed_runtime_path_count
+  local codex_production_anchor="select_codex_runtime || fail 'Codex disk executable selection failed'"
   require_file "$codex"
   require_file "$claude"
   if [[ -f "$codex" && -f "$claude" ]]; then
@@ -259,6 +299,43 @@ validate_smoke_contracts() {
       topology_fail 'Claude and Codex source-probe audit contract blocks must remain byte-equal'
     fi
   fi
+  require_semantic_count "$codex" 'selected_codex="$(type -P -- codex)"' 1 \
+    'Codex runtime selection must use Bash disk-only PATH lookup'
+  require_semantic_count "$codex" 'canonical_codex="$(realpath -e -- "$selected_codex" 2>/dev/null)"' 1 \
+    'Codex runtime selection must resolve the selected entry once to one canonical executable'
+  require_semantic_count "$codex" '[[ "$canonical_codex" != /* || ! -f "$canonical_codex" || ! -x "$canonical_codex" ]]' 1 \
+    'Codex runtime selection must require an absolute executable regular canonical target'
+  canonical_exec_count="$(grep -Fc -- '/usr/bin/python3 -c "$fd_closure_exec" "$canonical_codex" "$@"' "$codex" || true)"
+  selected_exec_count="$(grep -Fc -- '/usr/bin/python3 -c "$fd_closure_exec" "$selected_codex" "$@"' "$codex" || true)"
+  if [[ "$canonical_exec_count" -ne 1 || "$selected_exec_count" -ne 0 ]]; then
+    topology_fail 'Codex runtime wrapper must execute only the canonical executable'
+  fi
+  fixed_runtime_path_count="$(grep -Fc -- "PATH='/usr/bin:/bin' \\" "$codex" || true)"
+  if [[ "$fixed_runtime_path_count" -ne 3 ]]; then
+    topology_fail 'Codex runtime wrapper must use only the fixed system PATH'
+  fi
+  if grep -Eq -- '(/(home|Users)/|\.nvm[/]versions|packages[/]standalone|GOBBI_CODEX_EXECUTABLE)' "$codex"; then
+    topology_fail 'Codex runtime selection must not contain a machine- or home-specific executable path'
+  fi
+  require_semantic_count "$codex" \
+    'pass "selected Codex entry $selected_codex; canonical executable $canonical_codex; version $observed_version"' 1 \
+    'Codex runtime success receipt must name the selected entry and canonical executable'
+  require_semantic_sequence "$codex" 20 \
+    'Codex self-test must finish before production disk lookup' \
+    'if [[ "$mode" == --self-test ]]' \
+    'run_helper_self_tests' \
+    'exit 0' \
+    "$codex_production_anchor"
+  require_semantic_count "$codex" "$codex_production_anchor" 1 \
+    'Codex production disk-selection anchor must appear exactly once'
+  require_semantic_sequence_after "$codex" "$codex_production_anchor" 20 \
+    'Codex exact version gate must pass before plugin commands' \
+    'run_codex_stage version --version' \
+    'observed_version="$(< "$stage_stdout")"' \
+    'version_output_is_expected "$observed_version"' \
+    'run_codex_stage marketplace-add plugin marketplace add'
+  require_semantic_count "$codex" "expected_version='codex-cli 0.147.0'" 1 \
+    'Codex exact version gate must retain codex-cli 0.147.0'
   for smoke in "$codex" "$claude"; do
     [[ -f "$smoke" ]] || continue
     require_semantic_sequence "$smoke" 35 \
@@ -410,7 +487,7 @@ validate_smoke_contracts() {
   require_semantic_text "$claude" 'case "$stage" in version|validate|marketplace-add|available-list|install|installed-list)' \
     'Claude fixed wrapper must retain its closed runtime stage allowlist'
   for stage in version marketplace-add available-list install installed-list; do
-    require_semantic_count "$codex" "run_codex_stage $stage " 1 \
+    require_semantic_count_after "$codex" "$codex_production_anchor" "run_codex_stage $stage " 1 \
       "Codex production smoke stage $stage must appear exactly once"
   done
   for stage in source-precheck source-postcheck; do

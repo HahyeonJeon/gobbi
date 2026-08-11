@@ -11,7 +11,8 @@ esac
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 package_root="$repo_root/plugins/gobbi"
 smoke_script="$repo_root/scripts/check-codex-plugin-smoke.sh"
-codex_executable='/home/jeonhh0061/.nvm/versions/node/v22.22.1/bin/codex'
+selected_codex=''
+canonical_codex=''
 expected_version='codex-cli 0.147.0'
 package_only_skill='gobbi-dev'
 package_only_skill_token_regex="(^|[^[:alnum:]_-])${package_only_skill}([^[:alnum:]_-]|$)"
@@ -30,6 +31,27 @@ source_postcheck_probe_count=0
 
 pass() { printf 'PASS %s\n' "$1"; }
 fail() { printf 'FAIL %s\n' "$1" >&2; exit 1; }
+
+select_codex_runtime() {
+  selected_codex=''
+  canonical_codex=''
+  if ! selected_codex="$(type -P -- codex)"; then
+    printf 'Codex disk executable was not found in PATH\n' >&2
+    return 1
+  fi
+  if ! canonical_codex="$(realpath -e -- "$selected_codex" 2>/dev/null)"; then
+    printf 'selected Codex entry does not resolve: %s\n' "$selected_codex" >&2
+    return 1
+  fi
+  if [[ "$canonical_codex" != /* || ! -f "$canonical_codex" || ! -x "$canonical_codex" ]]; then
+    printf 'selected Codex entry does not resolve to an absolute executable regular file: %s\n' "$selected_codex" >&2
+    return 1
+  fi
+}
+
+version_output_is_expected() {
+  [[ "$1" == "$expected_version" ]]
+}
 
 strictly_contained() {
   local child="$1" parent="$2" resolved_child resolved_parent
@@ -317,8 +339,8 @@ run_codex_stage() {
     CODEX_HOME="$codex_home" \
     CODEX_SQLITE_HOME="$codex_sqlite_home" \
     TMPDIR="$private_tmp" \
-    PATH='/home/jeonhh0061/.nvm/versions/node/v22.22.1/bin:/usr/bin:/bin' \
-    /usr/bin/python3 -c "$fd_closure_exec" "$codex_executable" "$@"
+    PATH='/usr/bin:/bin' \
+    /usr/bin/python3 -c "$fd_closure_exec" "$canonical_codex" "$@"
 }
 
 run_test_stage() {
@@ -556,6 +578,9 @@ run_helper_self_tests() {
   local fixture="$target/helper" expected="$target/helper-expected" actual="$target/helper-actual"
   local diagnostic first_line inherited_probe runtime_syscall launch_identity replacement_identity frozen_a="$target/helper-frozen-a"
   local frozen_b="$target/helper-frozen-b" frozen_installed="$target/helper-frozen-installed"
+  local lookup_bin="$fixture/lookup-bin" lookup_tools="$fixture/lookup-tools" fake_runtime="$fixture/codex-real"
+  local fake_observed="$fixture/codex-observed" fixture_version invalid_version
+  local runtime_selection_cases=0 runtime_wrapper_cases=0 version_cases=0
   mkdir -p "$fixture/inside" "$expected/nested" "$actual/nested"
   printf '%s\n' 'mktemp() { : > "$GOBBI_SMOKE_MKTEMP_MARKER"; return 99; }' > "$target/mktemp-probe.bash"
   assert_invalid_usage_no_artifact literal-run run || fail 'literal run usage reached artifact creation'
@@ -886,6 +911,108 @@ run_helper_self_tests() {
       "$(stat -c '%d:%i' -- "$trace_root/helper-runtime-denied.trace")" \
     || fail 'runtime trace authentication accepted the wrong path'
   rm -f "$trace_root/version.trace"
+
+  mkdir -p "$lookup_bin" "$lookup_tools"
+  ln -s /usr/bin/realpath "$lookup_tools/realpath"
+  {
+    printf '#!/usr/bin/python3\n'
+    printf 'import errno, os, sys\n'
+    printf 'expected = {"HOME": "%s", "CODEX_HOME": "%s", "CODEX_SQLITE_HOME": "%s", "TMPDIR": "%s", "PATH": "/usr/bin:/bin"}\n' \
+      "$private_home" "$codex_home" "$codex_sqlite_home" "$private_tmp"
+    printf 'observed = dict(os.environ)\n'
+    printf 'locale_value = observed.pop("LC_CTYPE", None)\n'
+    printf 'assert locale_value in (None, "C.UTF-8")\n'
+    printf 'assert observed == expected, observed\n'
+    printf 'assert sys.stdin.buffer.read() == b""\n'
+    printf 'for name in os.listdir("/proc/self/fd"):\n'
+    printf '    fd = int(name)\n'
+    printf '    if fd < 3:\n'
+    printf '        continue\n'
+    printf '    try:\n'
+    printf '        os.fstat(fd)\n'
+    printf '    except OSError as exc:\n'
+    printf '        if exc.errno == errno.EBADF:\n'
+    printf '            continue\n'
+    printf '        raise\n'
+    printf '    raise SystemExit("inherited descriptor remained open: %%d" %% fd)\n'
+    printf 'assert sys.argv == ["%s", "--version"], sys.argv\n' "$fake_runtime"
+    printf 'with open("%s", "w", encoding="utf-8") as receipt:\n' "$fake_observed"
+    printf '    receipt.write(sys.argv[0] + "\\n")\n'
+    printf 'print("codex-cli 0.147.0")\n'
+  } > "$fake_runtime"
+  chmod 700 "$fake_runtime"
+  ln -s "$fake_runtime" "$lookup_bin/codex"
+
+  PATH="$lookup_bin:$lookup_tools" select_codex_runtime || fail 'controlled Codex disk lookup failed'
+  [[ "$selected_codex" == "$lookup_bin/codex" && "$canonical_codex" == "$fake_runtime" ]] \
+    || fail 'controlled Codex lookup did not pin the selected symlink to its canonical executable'
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+
+  codex() { return 99; }
+  [[ "$(type -t codex)" == function ]] || fail 'Codex function-shadow fixture was not active'
+  PATH="$lookup_bin:$lookup_tools" select_codex_runtime || fail 'disk lookup was shadowed by a Codex function'
+  [[ "$selected_codex" == "$lookup_bin/codex" && "$canonical_codex" == "$fake_runtime" ]] \
+    || fail 'Codex function shadow changed disk lookup or canonical pinning'
+  unset -f codex
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+
+  (
+    shopt -s expand_aliases
+    alias codex='/bin/false'
+    [[ "$(type -t codex)" == alias ]] || fail 'Codex alias-shadow fixture was not active'
+    PATH="$lookup_bin:$lookup_tools" select_codex_runtime || fail 'disk lookup was shadowed by a Codex alias'
+    [[ "$selected_codex" == "$lookup_bin/codex" && "$canonical_codex" == "$fake_runtime" ]] \
+      || fail 'Codex alias shadow changed disk lookup or canonical pinning'
+    unalias codex
+  )
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+
+  printf 'inherited\n' > "$fixture/runtime-inherited-fd"
+  exec 200< "$fixture/runtime-inherited-fd"
+  run_codex_stage version --version || fail 'canonical fake Codex runtime stage failed'
+  fixture_version="$(< "$stage_stdout")"
+  version_output_is_expected "$fixture_version" || fail 'canonical fake Codex version output was rejected'
+  [[ "$(< "$fake_observed")" == "$fake_runtime" ]] \
+    || fail 'Codex wrapper did not execute the exact canonical fixture target'
+  IFS= read -r inherited_probe <&200
+  [[ "$inherited_probe" == inherited ]] || fail 'Codex runtime wrapper changed the caller descriptor'
+  exec 200<&-
+  rm -f "$trace_root/version.trace" "$trace_root/version.stdout" "$trace_root/version.stderr"
+  runtime_wrapper_cases=$((runtime_wrapper_cases + 1))
+
+  mkdir "$fixture/no-codex-bin"
+  ! PATH="$fixture/no-codex-bin:$lookup_tools" select_codex_runtime >/dev/null 2>&1 \
+    || fail 'Codex selection accepted a PATH with no disk-backed executable'
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+  mkdir "$fixture/dangling-bin"
+  ln -s "$fixture/missing-codex" "$fixture/dangling-bin/codex"
+  ! PATH="$fixture/dangling-bin:$lookup_tools" select_codex_runtime >/dev/null 2>&1 \
+    || fail 'Codex selection accepted a dangling executable entry'
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+  mkdir -p "$fixture/directory-bin/codex"
+  ! PATH="$fixture/directory-bin:$lookup_tools" select_codex_runtime >/dev/null 2>&1 \
+    || fail 'Codex selection accepted a directory as its executable'
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+  mkdir "$fixture/nonexecutable-bin"
+  printf '#!/bin/sh\nexit 0\n' > "$fixture/nonexecutable-bin/codex"
+  chmod 600 "$fixture/nonexecutable-bin/codex"
+  ! PATH="$fixture/nonexecutable-bin:$lookup_tools" select_codex_runtime >/dev/null 2>&1 \
+    || fail 'Codex selection accepted a nonexecutable file'
+  runtime_selection_cases=$((runtime_selection_cases + 1))
+
+  version_output_is_expected "$expected_version" || fail 'exact Codex version output was rejected'
+  version_cases=$((version_cases + 1))
+  for invalid_version in \
+    '' \
+    'codex-cli 0.146.0' \
+    'codex-cli 0.148.0' \
+    'prefix codex-cli 0.147.0' \
+    'codex-cli 0.147.0 suffix' \
+    $'codex-cli 0.147.0\nunexpected'; do
+    ! version_output_is_expected "$invalid_version" || fail "invalid Codex version output was accepted: $invalid_version"
+    version_cases=$((version_cases + 1))
+  done
+
   diagnostic="$target/helper-acquisition.diagnostic"
   if run_test_stage helper-acquisition /usr/bin/python3 -c \
       'import ctypes,os; libc=ctypes.CDLL(None, use_errno=True); assert os.uname().machine in ("x86_64", "aarch64"); libc.syscall(425, 0, 0); libc.syscall(438, -1, -1, 0)' \
@@ -931,7 +1058,7 @@ run_helper_self_tests() {
     || fail 'status stage did not retain stdout'
   grep -Fx 'status-err' "$trace_root/helper-status.stderr" >/dev/null \
     || fail 'status stage did not retain stderr'
-  pass 'Codex smoke helper self-tests passed'
+  pass "Codex smoke helper self-tests passed: runtime-selection-cases=$runtime_selection_cases runtime-wrapper-cases=$runtime_wrapper_cases version-cases=$version_cases"
 }
 
 check_top_level_allow_set() {
@@ -964,9 +1091,7 @@ if [[ "$mode" == --self-test ]]; then
   smoke_complete=1
   exit 0
 fi
-[[ -x "$codex_executable" ]] || fail "$codex_executable is not executable"
-resolved_codex="$(readlink -f -- "$codex_executable")"
-[[ -f "$resolved_codex" && -x "$resolved_codex" ]] || fail "$codex_executable does not resolve to an executable regular file"
+select_codex_runtime || fail 'Codex disk executable selection failed'
 [[ -d "$package_root/skills" && ! -L "$package_root/skills" ]] \
   || fail 'plugins/gobbi/skills is not a materialized filtered directory'
 [[ -d "$package_root/agents" && ! -L "$package_root/agents" ]] \
@@ -984,8 +1109,8 @@ verify_frozen_tree "$package_root" package-metadata-read \
 
 run_codex_stage version --version || fail 'Codex version stage failed or attempted network access'
 observed_version="$(< "$stage_stdout")"
-[[ "$observed_version" == "$expected_version" ]] || fail "expected $expected_version, got ${observed_version:-<empty>}"
-pass "$codex_executable resolves to $resolved_codex at $observed_version"
+version_output_is_expected "$observed_version" || fail "expected $expected_version, got ${observed_version:-<empty>}"
+pass "selected Codex entry $selected_codex; canonical executable $canonical_codex; version $observed_version"
 
 run_codex_stage marketplace-add plugin marketplace add "$repo_root" --json || fail 'Codex marketplace-add stage failed or attempted network access'
 marketplace_add_json="$(< "$stage_stdout")"
