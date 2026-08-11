@@ -29,7 +29,10 @@ frontmatter.
 ### Method
 
 {State the actual-subject-first inspection order, proved read-only techniques, environment, time boundary,
-sampling, and evidence plan. State every material check or surface that was not inspected and why.}
+sampling, uncertainty, and evidence plan. State every material check or surface that was not inspected and why.}
+
+The Method values for environment, time boundary, sampling, and uncertainty apply to every evidence row unless
+that row records an override.
 
 ### Evidence
 
