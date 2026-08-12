@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-12 — Documentation-review operation completed](2026-08-12-docs-review-skill.md)
 - [2026-08-10 — Gobbi development lifecycle skill family completed](2026-08-10-gobbi-dev-skill-family.md)
 - [2026-08-10 — Gobbi skill-documentation review completed](2026-08-10-gobbi-skill-documentation-review.md)
 - [2026-08-09 — CLI skill family completed](2026-08-09-cli-skill-family.md)

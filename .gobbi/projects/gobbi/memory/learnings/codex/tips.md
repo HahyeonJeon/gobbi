@@ -45,3 +45,15 @@ for a loaded skill reports the skills root directory itself, not the skill's own
 **Application:** Use the prefixed form in any reference meant to work from a consumer project. See
 [`design/architecture/plugin-skill-locator.md`](../../design/architecture/plugin-skill-locator.md) for how
 this and the Claude Code shape difference are reconciled by one locator.
+
+## Resolve the Codex runtime from disk before smoke stages
+
+**Context:** A smoke or verification script must select the Codex executable from `PATH` before running
+effectful plugin stages.
+
+**Tip:** Use a disk-only lookup such as `type -P -- codex`, resolve the selected entry once with
+`realpath -e`, and require an absolute executable regular file. Pass that canonical path through the private
+runtime wrapper and environment, then gate effectful stages on the exact expected version.
+
+**Application:** Do not treat a shell alias, function, unresolved link, or repeated per-stage lookup as the
+runtime identity. Keep source and fixture checks aligned with the same selection and version contract.
