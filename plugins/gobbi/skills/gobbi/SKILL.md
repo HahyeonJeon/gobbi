@@ -282,6 +282,7 @@ that has children routes to them from its own document.
 | [`code-review`](../code-review/SKILL.md) | Read-only, evidence-backed review of an exact code subject without verdict authority. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
+| [`docs-review`](../docs-review/SKILL.md) | Reviewing an exact Markdown subject for reader-facing quality and returning a typed report. |
 
 ### Authoring the system
 

@@ -10,6 +10,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Review
 
+- [Documentation-review operation review](review/2026-08-12-docs-review-skill-review.md)
 - [Gobbi development lifecycle skill family review](review/2026-08-10-gobbi-dev-skill-family-review.md)
 - [Gobbi skill-documentation review](review/2026-08-10-gobbi-skill-documentation-review.md)
 - [CLI skill family review](review/2026-08-09-cli-skill-family-review.md)
