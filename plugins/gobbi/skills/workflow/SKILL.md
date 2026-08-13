@@ -205,7 +205,7 @@ The participant matrix is:
   and reproduction, distinct Problems, Optional Improvements, Strengths and Must-Preserve Conditions, and
   criteria and verdict reasoning when applicable. Workflow requires those meanings without prescribing one
   report order or set of section labels.
-- Every Problem states ID, severity, evidence, impact, cause, confidence, suggested direction, and
+- Every Problem states ID, severity, evidence, impact, cause, uncertainty, suggested direction, and
   `blocking: yes|no`. A completed report declares a criteria-derived verdict. Evidence insufficiency names
   the gaps, issues no verdict, and pauses the evaluation round before gate validation.
 - A fast gate applies to Ideation, Planning, and Wrap-up with two total iterations. Preserve evaluator verdicts

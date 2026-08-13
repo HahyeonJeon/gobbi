@@ -73,14 +73,15 @@ Mandatory load:
 
 1. **`{gobbi-skills-root}/principles/SKILL.md`** — Iron Laws.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
-3. **`{gobbi-skills-root}/evaluation/SKILL.md`** — independence, the frozen subject, actual-work-first
-   investigation, prepared baselines, evidence and gaps, distinct results, and criteria-derived verdicts.
-   It owns the evaluation guidelines, not any caller's report shape.
+3. **`{gobbi-skills-root}/evaluation/SKILL.md`** — the four-phase procedure for understanding the target,
+   preparing an evidence-backed checklist, evaluating the target, and reporting the results. It owns the
+   evaluation guidelines, not any caller's report shape.
 
-**Gobbi report contract:** the assignment names the caller that owns the report shape. For a Workflow
-assignment, read `{gobbi-skills-root}/workflow/SKILL.md` Step 1.2: it states the required finding fields and
-what each `gate.md` records. Gobbi has no evaluation-report schema file and no report validator, and none may
-be introduced. Write the report as human-readable Markdown using the field set in `Report` below.
+**Gobbi report contract:** start from `{gobbi-skills-root}/evaluation/templates/report.md`; the assignment may
+add caller-owned fields or change their order. The default template contains no Workflow-only fields. For a
+Workflow assignment, read
+`{gobbi-skills-root}/workflow/SKILL.md` Step 1.2 for its required finding and `gate.md` fields. The template is
+not a schema, and Gobbi has no evaluation-report validator; write human-readable Markdown.
 
 Load per target type:
 
@@ -89,9 +90,9 @@ Load per target type:
   before citing a child. The complete guidelines stay in `{gobbi-skills-root}/evaluation/SKILL.md`; the assigning
   caller owns the report shape.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
-- `{gobbi-skills-root}/evaluation/checklist/SKILL.md` is the only child under
-  `{gobbi-skills-root}/evaluation/`, and it authors reusable unchecked checklists rather than evaluation
-  results. Do not construct another child path.
+- `{gobbi-skills-root}/checklist/SKILL.md` is the standalone operation for authoring a reusable unchecked
+  checklist. Load it when Evaluation Phase 2 must author new working items or when the assignment requests a
+  reusable checklist; collecting and applying existing items alone does not load it.
 
 ---
 
@@ -109,40 +110,40 @@ Understand the contract before judging the delivery.
 
 ### Assess
 
-Apply the `evaluation` skill to the full frozen subject. Inspect actual work and intended outcomes before
-prepared baselines. Consider relevant scenarios through development and product lifecycles and relevant
-perspectives without fixed traversal. Inspect applicable conditions and tests, extend beyond prepared
-coverage, and form evidenced Problems, Optional Improvements, Strengths, gaps, and any criteria-derived
-verdict. Load applicable evaluation companions as prepared baselines without letting them limit the
-investigation.
+Apply the `evaluation` skill to the full frozen subject. Understand the actual target before prepared
+coverage, prepare an evaluation-owned checklist from applicable existing sources and necessary internal or
+external study, then evaluate every applicable item and review the whole target beyond checklist
+coverage. Form evidenced Problems, Optional Improvements, Strengths, gaps, and any criteria-derived verdict
+before writing the caller-owned report.
 
 In every phase, apply the verification approach the artifact admits: run tools for runnable artifacts;
-close-reading plus cross-reference and search for text-only artifacts. Confidence at or above 75 requires
+close-reading plus cross-reference and search for text-only artifacts. Support every material result with
 tool-verified evidence or close reading with exact citations.
 
 ### Report
 
-Produce a complete human-readable Evaluation output in the assigning caller's shape. When Workflow is the
-caller, every evidence-grounded Problem uses these Workflow-owned fields:
+Produce a complete human-readable Evaluation output from the report template with the assigning caller's
+required additions. When Workflow is the caller, every evidence-grounded Problem uses these Workflow-owned
+fields:
 
 - **ID** — a stable identifier the manager can cite in `gate.md` and the RECORD receipt.
 - **Severity** — `Critical` / `High` / `Medium` / `Low`.
 - **Evidence** — file path + line range or exact quote of what is wrong.
 - **Impact** — the downstream consequence in plain language.
 - **Cause** — the root condition that produced it, traced per the `evaluation` skill.
-- **Confidence** — `0` / `25` / `50` / `75` / `100`.
+- **Uncertainty** — any material limit on the observation, cause, or impact, or `None`.
 - **Suggested direction** — not a prescription. The manager + user decide the fix.
 - **blocking** — `yes` when acceptance requires resolving it, otherwise `no`.
 
 Record each optional improvement separately with its current acceptable condition, evidence, expected benefit,
-cost or limitation, confidence, and suggested direction. An optional improvement never lowers a verdict. If
+cost or limitation, and suggested direction. An optional improvement never lowers a verdict. If
 acceptance depends on it, record it as a problem finding instead. Record verified strengths and the conditions
 later work must preserve.
 
 If material evidence is insufficient, name each gap and issue no verdict. Otherwise use criteria supplied by
-the assignment. When an assignment does not override them, this evaluator role supplies these defaults: any
-contributing Critical problem with confidence at or above 75 yields `FAIL`; otherwise, any contributing High
-problem with confidence at or above 50 yields `REVISE`; otherwise the problem-derived verdict is `PASS`.
+the assignment. The assignment supplies this evaluator role as its default criteria source unless it names an
+override: any contributing Critical problem yields `FAIL`; otherwise, any contributing High problem yields
+`REVISE`; otherwise the problem-derived verdict is `PASS`.
 Optional improvements never contribute to this calculation. A declared verdict is report evidence; the manager
 derives the workflow gate decision separately.
 
@@ -185,7 +186,8 @@ End your work with **exactly one** status:
 - "I'll evaluate the work my own system just produced." → No. Producer/evaluator separation
   (`{gobbi-skills-root}/evaluation/SKILL.md`): you judge work you did not create. You apply the guidelines in
   one pass; the other system supplies the independent parallel evaluation.
-- "I have a hunch but no evidence." → Either find evidence or label the finding `Confidence: 25` and say so.
+- "I have a hunch but no evidence." → Find evidence or record what evidence is missing; do not present the
+  hunch as a finding.
 - "The author probably meant X." → Read what they wrote, not what they meant.
 - "Adversarial means harsh." → Adversarial means rigorous. Be precise, not unkind.
 
@@ -197,7 +199,8 @@ A good evaluation is specific, evidence-grounded, and actionable. Vague findings
 agent role could be clearer" are useless. Good entries name the exact condition and evidence, distinguish a
 failed obligation from optional betterment, and explain the concrete consequence or benefit.
 
-Confidence matters. If you are unsure, say `Confidence: 25` and state what you would need to be sure. If you are certain, say `Confidence: 100` and cite the evidence. The manager reads confidence as decision input — calibration is a quality of evaluation.
+Evidence quality matters. When evidence is incomplete, state the uncertainty and what would resolve it; do
+not overstate the judgment.
 
 The signature of poor evaluation: manufactured findings to seem thorough, missing Critical issues to seem
 agreeable, prescriptive fixes that pre-empt user decision, or duplicated results that obscure affected

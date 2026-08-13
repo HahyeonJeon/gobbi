@@ -1,146 +1,155 @@
 ---
 name: evaluation
-description: "Evaluation is a read-only operation for independent, evidence-based judgment of one exact frozen subject. It is used after work is finished and before acceptance decisions."
-allowed-tools: Read, Grep, Glob, Bash
+description: "Evaluation is an operation for preparing a checklist, assessing one defined target, and writing an evidence-based report."
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Evaluation
 
-Evaluation inspects one exact frozen subject to produce an independent, reproducible, evidence-based judgment. Use it after work is finished and before acceptance or workflow decisions; it does not change the subject or prepared inputs and derives a verdict only from caller-supplied criteria.
+Evaluation defines a four-phase procedure for understanding one target, preparing an evidence-backed
+checklist, assessing the target, and reporting the results. Use it after the target is ready for independent
+review and before an acceptance or workflow decision; it does not modify the target, source checklists, or
+decision state.
 
 ## Principles
 
-### Inspect actual outcomes first
+### Understand the target before defining coverage
 
-Actual work and observable state define the boundary; prepared coverage cannot erase a scenario or gap exposed by evidence.
+Inspect the actual target, intended results, context, and boundaries before preparing checklist items.
+This prevents assumptions, summaries, or existing checklists from defining the target incorrectly.
 
-### Keep judgment independent
+### Find useful improvements as well as problems
 
-The evaluator has no producer role or stake in defending the subject. Conflicts, limits, uncertainty, and missing evidence stay visible.
+Evaluation should show how an acceptable target can become better, not stop after identifying failures.
+Record evidence-backed improvement points with practical suggestions, while keeping them separate from
+Problems and verdicts.
 
-### Use broad prompts without fixed traversal
+### Keep the evaluation independent and preserve its inputs
 
-Development and product lifecycles plus relevant perspectives reveal boundaries, but never define required traversal or records.
+The evaluator should have no producer role or interest in defending the target. Write only evaluation-owned
+checklists, notes, and reports while preserving the target, source checklists, criteria, and workflow state.
 
-### Support only the causes the evidence reaches
+### Support each judgment with direct evidence
 
-Tie each Problem to an expectation, observation, impact, and supported cause or hypothesis. State material uncertainty and confidence.
+Connect every result to the expected condition, observed state, impact, and evidence. State uncertainty and
+limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST freeze the exact subject and establish independence before judging.** Disclose material conflicts, limits, and missing capabilities.
-- **MUST inspect actual work and intended outcomes before prepared coverage.** Discover context-driven
-  scenarios from evidence across relevant development and product lifecycle positions.
-- **MUST keep context-appropriate prepared checklists unchanged.** Never migrate, translate, normalize, repair, or rewrite an input.
-- **MUST inspect applicable prepared conditions and tests, then extend beyond them when evidence exposes a
-  gap.** Justify exclusions, uncertainty, sampling, and evidence limits.
-- **MUST keep Problems, Optional Improvements, and Strengths semantically separate and evidenced.** Causes and
-  confidence go only as far as the evidence supports.
-- **NEVER issue a verdict when material evidence is insufficient or caller-supplied decision criteria are
-  absent.** Name the gaps, and derive a verdict only from the criteria the caller supplied.
+- **MUST bind the exact target, scope, intended results, supplied decision criteria, caller-authorized report
+  path, and any other evaluation output paths before preparing the checklist.** Stop when identity, access,
+  independence, or preservation of source-owned inputs cannot support a responsible evaluation.
+- **MUST prepare one evaluation-owned checklist from applicable existing checklists and necessary internal or
+  external study.** Load the standalone Checklist operation before authoring a new item; reusing existing items
+  alone does not load it.
+- **MUST evaluate the target through both its working checklist and a general review.** Evaluate every
+  applicable item, then inspect the whole target for material problems, improvements, strengths, and
+  evidence gaps the checklist did not anticipate.
+- **MUST derive a verdict only from sufficient evidence and caller-supplied decision criteria.** Do not let an
+  optional improvement or strength cancel an unmet criterion.
+- **NEVER change the target, source checklists, supplied criteria, acceptance state, or workflow state.** Write
+  only the evaluation-owned checklist, notes, and report.
 
 ## Procedure
 
-### Phase 1 — Freeze and Inspect the Subject
+### Phase 1 — Understand the Evaluation Target
 
-#### 1.1 Establish the evaluation boundary
+#### 1.1 Bind the target and evaluation boundary
 
-- Confirm that the evaluator did not design, author, or implement the subject. Disclose any relationship or
-  interest that could affect independent judgment.
-- Freeze the exact subject identity and version or content hash, actual artifacts and observable state,
-  intended outcomes, scope, governing inputs, known risks, and prior failures.
-- Bind supplied checklist sources, tests, evidence, and caller criteria to their exact identities when
-  available.
-- Establish a safe read-only method. Stop when independence, stable identity, access, or the read-only
-  boundary cannot support a responsible judgment.
+- Confirm that the evaluator did not design, author, or implement the target. Disclose any relationship,
+  interest, access limit, or missing capability that could affect independent judgment.
+- Identify the exact artifact, state, version, or content hash under evaluation, plus its scope, intended
+  results, and caller-supplied decision criteria. Record affected people and systems, governing inputs, known
+  risks, prior failures, the caller-authorized report path, and any other evaluation-owned output paths;
+  confirm that no output overlaps the target or source-owned inputs.
+- Establish a safe inspection method that preserves the target and source-owned inputs, and record the
+  available evidence. Stop when the target is unstable or material identity, access, or authority is missing;
+  absent decision criteria allow a report but not a verdict.
 
-#### 1.2 Inspect actual work and intended outcomes
+#### 1.2 Inspect and understand the actual target
 
-- Examine produced artifacts and observable behavior before summaries, completion claims, prepared
-  conditions, or test reports can shape the conclusion.
-- Distinguish delivered outcomes from claims, deferred work, missing results, and unavailable state.
-- Discover relevant scenarios across the development lifecycle and product lifecycle. Consider creator or
-  developer and consumer or user positions when they materially change expectations or evidence.
-- Consider ordinary success, boundaries and transitions, failure and recovery, and deficient-but-functioning
-  outcomes such as inconvenience, unintuitive behavior, confusion, inconsistency, or poor appearance.
-- Consider governance, misuse, abuse, or cosmetic compliance when relevant to the subject. Treat these as
-  context prompts, not fixed classes or required traversal.
-- Use relevant perspectives only when they help challenge an evaluation boundary. Do not name a fixed set or
-  record their use.
+- Inspect the artifacts and observable behavior before reading completion claims, reports, or prepared
+  checklists. Distinguish delivered results from claims, deferred work, missing results, and unavailable state.
+- Trace the target's relevant structure, dependencies, interfaces, states, transitions, failures, recovery,
+  and user or consumer paths. Follow only the contexts that can change an expected result or its evidence.
+- Record verified facts, open questions, assumptions, and material evidence gaps. Return to Step 1.1 when the
+  inspection changes the target identity, scope, intended result, or decision criteria.
 
-### Phase 2 — Use and Challenge Prepared Coverage
+### Phase 2 — Prepare the Evaluation Checklist
 
-#### 2.1 Bind prepared inputs without changing them
+#### 2.1 Gather existing checklist coverage
 
-- Accept each prepared checklist in the form appropriate to its context. Bind it to the frozen subject and
-  preserve its wording, hierarchy, identifiers, and unchecked source state.
-- Do not classify, migrate, translate, normalize, repair, reorder, or rewrite prepared content. Report a
-  material ambiguity or mismatch as an evidence gap.
-- Treat prepared conditions and tests as baseline inputs, not a coverage ceiling or a substitute for
-  inspecting actual work.
+- Collect the applicable project checklists, caller-supplied checklists, requirements, rules, tests, and prior
+  evaluation items. Treat them as baseline coverage rather than proof that the target is complete.
+- Preserve every source's wording, hierarchy, identifiers, and unchecked state. Copy or reference only
+  applicable items in the evaluation-owned checklist and retain their exact source identity.
+- Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its reason and
+  effect on coverage. Do not repair or rewrite the source during Evaluation.
 
-#### 2.2 Inspect conditions, tests, and evidence
+#### 2.2 Study for missing checklist items
 
-- Inspect every applicable prepared condition and test against actual state. Keep answers, observations,
-  limitations, and results in evaluation-owned notes or output only.
-- Record enough evidence and reproduction detail for another evaluator to understand each material judgment.
-- Justify every exclusion from inspected context. State uncertainty when access, sampling, causality,
-  freshness, or evidence quality limits an answer.
-- Preserve the source/judgment boundary: checklist assertions remain source-owned, while observations and
-  judgments remain evaluation-owned.
+- Study relevant internal evidence, including governing documents, designs, source, tests, configuration,
+  user evidence, history, and prior failures. Look for expectations, boundaries, and risks not covered by the
+  existing checklist sources.
+- Study current primary external sources when the target depends on an external standard, platform, library,
+  security practice, or other mechanism that internal evidence does not settle. Record the source and why it
+  applies.
+- Load [Checklist](../checklist/SKILL.md) before authoring any new working item, then apply its item guidance
+  within the evaluation-owned checklist. Add only material expectations or risks supported by study
+  evidence, not coverage that fills a category, increases a count, or represents a speculative case.
 
-#### 2.3 Extend the investigation when needed
+#### 2.3 Finalize the evaluation-owned checklist
 
-- Compare prepared coverage with the context-driven scenarios found from the actual subject.
-- Investigate material gaps exposed by behavior, boundaries, transitions, deficient quality, governing
-  constraints, failures, recovery, or affected positions.
-- Add new observations and evidence needs to the evaluation, not to the prepared source.
-- Return to Phase 1 when new evidence changes the frozen identity, intended outcome, scope, or material
-  context.
+- Organize the working items in an order that fits the target and remove only working-copy duplication. Keep
+  every reused item traceable to its unchanged source and every added item traceable to its
+  study evidence.
+- Check relevant success, boundary, transition, failure, recovery, deficient-quality, safety, misuse, and
+  change cases. Include only cases that the target or evidence makes applicable.
+- Confirm that the working checklist covers the material target boundary and that every reused or added item
+  remains traceable. Freeze the working checklist with the target before evaluation begins.
 
-### Phase 3 — Reconcile Evidence and Form Results
+### Phase 3 — Evaluate the Target
 
-#### 3.1 Reconcile evidence and gaps
+#### 3.1 Complete the checklist-based evaluation
 
-- Reconcile actual observations, prepared expectations, tests, governing inputs, reproduction evidence,
-  exclusions, limitations, and uncertainty.
-- Test conflicting explanations against actual state when the read-only boundary permits it. Keep alternatives
-  as hypotheses when evidence cannot distinguish them.
-- Name each material evidence gap, its effect on judgment, and the evidence or access needed to resolve it.
-- Stop without a verdict when evidence is insufficient for a material judgment. Return to the earliest
-  affected step if recovery is possible without changing the frozen subject.
+- Evaluate every applicable item against the frozen target with safe non-mutating inspections,
+  reproductions, tests, or measurements. Record the observations, exact evidence, limitations, and uncertainty
+  needed to support the material results.
+- Record each Problem with its expectation, observation, impact, evidence, supported cause or hypothesis,
+  and uncertainty.
+- Record each Optional Improvement with its acceptable current condition, evidence, expected benefit,
+  and practical suggestion. Record each Strength with its verified benefit, evidence, and condition to
+  preserve.
 
-#### 3.2 Separate the result meanings
+#### 3.2 Review the target beyond the checklist
 
-- Record a Problem only for an unmet outcome, requirement, or caller criterion. State the expectation,
-  inspected observation, impact, evidence, supported cause or hypothesis, uncertainty, and confidence.
-- Record an Optional Improvement only when the current condition is acceptable and evidence supports a useful
-  benefit. Keep it out of verdict derivation.
-- Record a Strength only for a verified beneficial outcome. State its evidence and any condition later work
-  should preserve without using it to cancel a Problem.
-- Define each result once and reference it elsewhere only when the caller needs traceability.
+- Review the frozen target as a whole because a checklist cannot anticipate every material case or
+  interaction. Inspect relationships, inconsistencies, omissions, deficient quality, and improvement
+  opportunities that become visible only outside item-by-item traversal.
+- Record each additional Problem, Optional Improvement, Strength, or evidence gap with direct evidence and
+  the same result meanings as Step 3.1. Return to Phase 2 when a discovery exposes a material coverage gap, or
+  Phase 1 when it changes the target or evaluation boundary.
+- Reconcile the checklist-based results with the general review, then apply the caller-supplied criteria,
+  thresholds, and aggregation rule once to all contributing Problems. Issue no verdict when material evidence
+  or decision criteria are insufficient, and name what would resolve the gap.
 
-### Phase 4 — Derive and Hand Off the Judgment
+### Phase 4 — Report the Evaluation
 
-#### 4.1 Apply caller-supplied decision criteria
+#### 4.1 Write and summarize the evaluation report
 
-- Derive a verdict only when the caller supplied applicable criteria, thresholds, and any aggregation rule.
-- Show how evidence and relevant Problems satisfy those criteria. Do not invent default thresholds or allow
-  Optional Improvements or Strengths to offset a criterion.
-- When criteria are absent or incomplete, return the evidence-based results without a verdict and name the
-  missing decision input.
-
-#### 4.2 Hand off without mutation
-
-- Let the caller own report order, formatting, section labels, acceptance, disposition, and workflow routing.
-- Include the frozen subject, independence statement, method, evidence, reproduction details, gaps,
-  uncertainty, results, and any criteria-derived verdict needed to understand the judgment.
-- Do not change the subject, checklists, tests, criteria, findings, dispositions, acceptance state, or workflow
-  state.
-- If a frozen input or observable state changes materially, mark affected judgment historical and restart at
-  the earliest affected step with the changed premise.
+- Recheck the frozen target identity and evaluation-owned output paths before writing. Return to Phase 1 when
+  the target changed or an output path overlaps the target or a source-owned input.
+- Write the report from the [report template](templates/report.md), adding caller-required fields without
+  replacing its target identity, independence, scope, method, result, gap, or verdict meanings. Give each
+  material result exact evidence and enough reproduction detail, and give each Optional Improvement a concise
+  evidence-backed suggestion.
+- Cite internal paths and external sources beside the claims they support. Return a short summary with the
+  verdict or reason none was issued, Problems, Optional Improvements, Strengths, and unresolved evidence.
 
 ## References
 
-- [Checklist](checklist/SKILL.md) owns authoring reusable unchecked evaluation sources.
+| Name | Description |
+|---|---|
+| [Checklist](../checklist/SKILL.md) | Standalone operation for authoring a reusable, unchecked evaluation source. |
+| [Report template](templates/report.md) | Default structure for a short, evidence-based Evaluation report. |

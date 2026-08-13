@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preference type guides are now direct child skills with their own `SKILL.md` files.
 - Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
   the skill is and when to use it in one to three sentences across no more than two paragraphs.
+- Evaluation now uses four phases and a short report template: understand the target, prepare an
+  evidence-backed checklist, evaluate the target, and report the results. Checklist is now a standalone root
+  skill, and its old nested path has no compatibility alias. Reports state evidence and uncertainty without a
+  numeric certainty score. Its checklist template renders Project, Design and Development, and Product lifecycle
+  sections with categories, broad mistake-oriented scenarios, and unchecked problem signs. Checklist defines
+  the categories first, the scenarios second, and the observable problem signs third before assembling the source.
+  Each review step checks coverage; checklist items avoid unnecessary subject-specific detail and use heading
+  paths instead of IDs. A bundled evaluation checklist covers generated checklist documents.
 
 ## 1.1.2 - 2026-08-08
 
