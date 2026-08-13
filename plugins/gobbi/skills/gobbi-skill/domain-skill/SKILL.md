@@ -1,256 +1,138 @@
 ---
 name: domain-skill
-description: "Domain Skill Writing is guidance for writing a navigation-only domain skill and its selected child family."
+description: "Domain Skill is guidance for writing a navigation-only skill that routes readers to applicable direct child skills."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
-# Domain Skill Writing
+# Domain Skill
 
-Domain Skill Writing defines how to author or substantively revise one navigation-only domain root and its selected operation, tool, and preference children. Use it after Gobbi Skill classifies the target as `domain`.
+Domain Skill defines how to author or substantively revise one navigation-only domain root and its direct
+operation, tool, and preference children. Use it after Gobbi Skill classifies the target as `domain` and one
+broad area needs a selective family of independently loadable skills.
 
 ## Principles
 
 ### Keep the root as navigation
 
-A domain root exists because one broad trigger needs several independently loadable capabilities. It should
-help the reader select those capabilities without restating their principles, rules, manuals, or procedures.
+A domain root helps the reader find and load the right children. Keep policy, instruction, tool guidance, and
+preferences in their child owners.
 
-### Give every policy one child owner
+### Give each capability one child owner
 
-Each operation, tool surface, and preference belongs to one self-contained child skill. Clear ownership keeps
-the family composable and lets one child change without forcing the root or its siblings to duplicate policy.
+Each domain-routing capability belongs to one direct child. A collection's individual tool lookup belongs to
+its Tool Skill child, which prevents copied guidance and isolates unrelated changes.
 
 ### Route selectively with complete coverage
 
-Loading every child wastes context, while an uncovered root trigger leaves the reader without domain
-guidance. A root must activate exactly when at least one direct child activates, and its routing table must
-then load every applicable child and no other child.
+The root applies exactly when at least one child applies. Its routing table selects every applicable child and
+no other child.
 
-### Keep identity shallow and globally unique
+### Keep names shallow and stable
 
-One direct child level makes the complete family visible from the root. Domain-prefixed directory names keep
-child identities globally unique when different domains use the same capability word.
+One direct domain-routing level keeps the family visible. A Tool Skill child may own direct Tool Skill
+children for independently loadable tools, while domain-prefixed names and one shared capability vocabulary
+keep identities clear.
 
 ## Rules
 
-- **MUST run this procedure only after Step 1.3 classifies the target as `domain`.** The family must represent
-  one specific domain and contain at least one operation, one tool, and one preference child skill; otherwise
-  return to Step 1.3.
-- **MUST produce the exact navigation-root shape.** Use Frontmatter → Title → one-to-three-sentence Intro →
-  Child Skills table, set `allowed-tools: Read`, and add no Principles, Rules, Preferences, Manual, Procedure,
-  References, or domain policy to the root.
-- **MUST keep child skills direct and globally namespaced.** Use
-  `{domain}/{domain}-{capability}/SKILL.md`, make each child `name` equal its directory, and create no
-  independently loadable grandchild skill.
-- **MUST make every child an ordinary self-contained skill.** Give it its own four-key frontmatter,
-  one-to-three-sentence Intro in no more than two paragraphs, one `skill-type: operation|tool|preference`, matching type shape, and locally
-  owned supporting documents when needed.
-- **MUST author every child in a separate fresh Gobbi Skill pass.** Keep `domain-skill` as the only type-
-  writing skill in the root pass and use exactly one matching ordinary type-writing skill in each child pass.
-- **MUST keep root activation and child routing complete, current, and bidirectional.** List every direct
-  child exactly once, copy its canonical applicability sentence from its Intro, select every applicable child and no other
-  child, and require the root predicate `R` to be true if and only if at least one direct-child predicate
-  `Ci` is true; reject stale rows, orphan children, missing routes, child-without-root cases, and
-  root-without-child cases.
-
-## Naming Standard
-
-This section adds a capability vocabulary that this document did not define before. It binds every child named
-or substantively revised from now on. An unchanged legacy child is not invalidated solely because a reserved
-meaning becomes narrower.
-
-### Reserved words
-
-Each word below carries one meaning across the whole project. Use the word only for that meaning, and use no
-other word for that meaning.
-
-| Reserved word | Fixed meaning |
-|---|---|
-| `development` | The operation that realizes an accepted change for a domain and coordinates its implementation handoffs; it does not own protected independent review, Evaluation, or acceptance. |
-| `review` | The protected read-only operation that produces scoped evidence and findings without an Evaluation verdict or acceptance. |
-| `testing` | The evidence operation |
-| `conventions` | The project-overridable cross-capability preference for domain names, written forms, canonical, generated, and local-only topology, role and branch vocabulary, handoffs, and evidence forms, including authority and departure boundaries. |
-| `source` | The source-file organization, formatter layout, import-form, and generated provenance preference. |
-| `documentation` | The public documentation and implementation-comment preference. |
-| `design` | The domain-specific capability for creating or judging structure, behavior, boundaries, and interfaces |
-| `platform` | A standard or engine you did not write |
-| `runtime` | A framework runtime you execute inside |
-| `toolchain` | Tooling you invoke |
-| `release` | Shipping, at either operation or preference granularity |
-
-### Concrete platform names
-
-Use `windows`, `macos`, and `linux` as lowercase slug words only for a `skill-type: tool` child whose subject
-is that exact external platform and whose compatibility boundary is explicit. This closed list admits no
-other platform name, general proper-name or brand-name class, free synonym for `platform`, or identifier
-alias; `platform` keeps its reserved generic meaning.
-
-### Free words
-
-A capability the domain genuinely owns may take a word that the domain's own authoritative literature uses,
-provided the word collides with no reserved meaning above. A word collides when the capability it names is
-already a reserved meaning; use the reserved word instead. A reserved word and a free synonym for one meaning
-would restore the overload the two tiers remove.
-
-These words qualify today: `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
-`architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
-`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`,
-`app-lifecycle`, `operations`, `project-structure`, `debugging`, `performance`, and `compiler` as the
-proper noun React Compiler.
-
-### Maintaining the register
-
-The reserved-word table, closed concrete-platform-name rule, and free-word list above are the register. Update
-this section in the same change that changes a reserved meaning, changes the closed concrete-platform list,
-or admits a new free word, and record the change beside the others. Without that update the register drifts
-and each family invents its own vocabulary again.
-
-### Relation to globally unique identity
-
-The Principle "Keep identity shallow and globally unique" stays true and is not narrowed here. Two domains may
-use one capability word: `go-testing` and `web-testing` are both correct, because each names the same meaning
-inside its own domain. This standard forbids something else — one word carrying two meanings, and one meaning
-carrying two words. The domain prefix keeps identity unique; the tier keeps meaning singular.
-
-### Trigger and routing form
-
-These five form rules bind every child and every root routing table.
-
-| Form rule | Statement |
-|---|---|
-| FR-1 | Every root and child `description` contains only identity: what capability the skill represents. It contains no trigger, normative discovery expression, or routing command. |
-| FR-2 | Every root and child Intro contains one canonical applicability sentence beginning with `Use`, naming the skill or using `it`, and stating `when`, `before`, or `after` it applies. |
-| FR-3 | Define each child predicate `Ci` from its canonical Intro applicability sentence and define root predicate `R` from the root's sentence. Require `R` if and only if at least one `Ci` is true. |
-| FR-4 | Every root routing row copies its child's canonical Intro applicability sentence byte for byte, so string equality checks it. |
-| FR-5 | Every cross-reference to a sibling child uses the backticked slug, never a prose display name. |
+- **MUST produce the exact navigation-root shape.** Use Frontmatter → Title → Intro → Child Skills table, set
+  `allowed-tools: Read`, and add no domain policy, Principles, Rules, Preferences, Manual, Procedure, or
+  References to the root.
+- **MUST keep children direct and globally namespaced.** Use `{domain}/{domain}-{capability}/SKILL.md`, make
+  each child `name` match its directory, and create no nested domain-routing child; a Tool Skill child may own
+  direct Tool Skill children under the Tool Skill contract.
+- **MUST make every child an ordinary operation, tool, or preference skill.** Author each child through a fresh
+  Gobbi Skill pass and give it one matching type shape with locally owned supporting documents only when
+  needed.
+- **MUST keep root activation and child routing complete and bidirectional.** List each direct child once and
+  require root predicate `R` to be true if and only if at least one direct-child predicate `Ci` is true.
+- **MUST keep applicability wording canonical.** Put identity only in each `description`, put one applicability
+  sentence in each Intro, and copy that sentence byte for byte into the root routing row.
+- **MUST use the [Naming Standard](naming-standard.md) for every child capability word.** Keep one fixed meaning per reserved word,
+  use a free word only for a distinct domain-owned meaning, and update the register when its vocabulary
+  changes.
 
 ## Procedure
 
 ### Phase 1 — Design the Domain Family
 
-#### 1.1 Partition child ownership and routing
+#### 1.1 Define the family boundary
 
-- Use the approved domain frame to inventory the operations, named tool or platform surfaces, and judgment
-  areas the family must support.
-- Partition the inventory by independently useful trigger, outcome or judgment, policy owner, and required
-  evidence; require at least one operation, one tool, and one preference child.
-- Assign every material claim to one child, split mixed triggers or types, and merge children that cannot
-  explain their boundaries without repeating the same contract.
-- Derive each child predicate `Ci` from its canonical Intro applicability sentence, then define the root predicate `R` as the
-  semantic union of all direct-child predicates.
-- Prove both implications: every true `Ci` makes `R` true, and every true `R` has at least one true `Ci`.
-  Route all true children for each supported task.
+- Name the domain, intended readers, supported work, and navigation boundary.
+- Inventory the operations, named tools or platforms, and judgment areas that need independent loading.
+- Return to parent Phase 1 when one ordinary skill can own the capability without a routing family.
 
-#### 1.2 Lock the family skeleton
+#### 1.2 Assign child ownership
 
-- Give the root the domain slug and name every direct child `{domain}-{capability}`, using the same value for
-  its directory and frontmatter `name`. Take each `{capability}` from the
-  [Naming Standard](#naming-standard), which admits a reserved word for its fixed meaning and a free word its
-  domain's authoritative literature uses.
-- Write each child's canonical Intro applicability sentence from the approved routing design and reserve a
-  universal predicate only for a genuine domain-wide floor. Build the root applicability sentence only after every child sentence is stable: use a broad
-  domain sentence only when it is proved equivalent to their union; otherwise use a grammatical semantic
-  union that preserves every child's actors, scope, conditions, and force without adding another case.
-- Apply form rules FR-1 through FR-5 to every description, Intro, root routing row, and sibling
-  cross-reference.
-- Render the root skeleton, every direct child `SKILL.md` skeleton, supporting-document paths, and one routing
-  row per child before writing substantive prose.
-- Keep all independently loadable children direct and create no `SKILL.md` beneath a direct child.
+- Partition the inventory by independently useful applicability, type, and policy owner.
+- Require at least one operation, one tool, and one preference child, and assign every material claim to one
+  child.
+- Split a child with mixed types or owners, and merge children that cannot state distinct boundaries without
+  repeating the same contract.
+
+#### 1.3 Design names and routing
+
+- Name each child `{domain}-{capability}` with a capability word from the
+  [Naming Standard](naming-standard.md).
+- Write one canonical applicability sentence for each child and derive its predicate `Ci` from that sentence.
+- Write the root applicability sentence, derive predicate `R` from it, and check both directions: every true
+  `Ci` makes `R` true, and every true `R` has at least one true `Ci`.
 
 ### Phase 2 — Write the Domain Family
 
-#### 2.1 Write and review each child
+#### 2.1 Write each child
 
-- Run one fresh Gobbi Skill pass for each child and use exactly its matching `operation-skill`,
-  `tool-skill`, or `preference-skill` procedure.
-- Complete the child's core, supporting sections, and type-specific review before starting the next child.
-- Keep the root as a skeleton until every child path, name, type, trigger, and policy owner is stable.
-- Return to Phase 1 when a child changes type, splits, merges, exposes an ownership conflict, or invalidates
-  the required operation-tool-preference coverage.
+- Run one fresh Gobbi Skill pass for each child with its matching Operation, Tool, or Preference Skill.
+- Finish the child's type-specific review before starting the next child.
+- Return to Phase 1 when a child changes type, splits, merges, or exposes an ownership conflict.
 
 #### 2.2 Write the navigation root
 
-- Use this broad root shape only when a genuine universal child floor proves the broad applicability sentence
-  equivalent to the union of all child predicates:
-
-```yaml
----
-name: {domain}
-description: "{Domain} is a domain skill that routes work to its applicable operation, tool, and preference child skills."
-allowed-tools: Read
-skill-type: domain
----
-```
-
-- Otherwise use the same identity-only frontmatter and write the root's canonical Intro applicability sentence
-  as a semantic union of the stable child predicates in stable child-name order.
-
-```yaml
----
-name: {domain}
-description: "{Domain} is a domain skill that routes work to its applicable operation, tool, and preference child skills."
-allowed-tools: Read
-skill-type: domain
----
-```
-
-  Each `{Ci}` is the meaning of its child's canonical applicability sentence. Remove repeated words or
-  conjunctions only when that grammatical edit leaves the meaning unchanged.
-
-- Write the root with this exact body shape:
+- Write identity-only frontmatter, a short Intro, and the Child Skills table. Use this body pattern:
 
 ```markdown
 # {Domain Name}
 
-{In one short paragraph, identify the domain, actors, supported capability, and boundary.}
-
-{In one canonical applicability sentence beginning with Use, state when, before, or after the root applies.
-State that the root owns navigation only and direct the reader to select every applicable row.}
+{State what the domain skill is.} {State the canonical applicability and navigation instruction.}
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`{domain}-{operation}`]({domain}-{operation}/SKILL.md) | operation | {Exact child applicability sentence} |
-| [`{domain}-{tool}`]({domain}-{tool}/SKILL.md) | tool | {Exact child applicability sentence} |
-| [`{domain}-{preference}`]({domain}-{preference}/SKILL.md) | preference | {Exact child applicability sentence} |
+| [`{child}`]({child}/SKILL.md) | operation|tool|preference | {Exact child applicability sentence} |
 ```
 
-- Keep the Intro to one to three sentences in no more than two orientation-and-routing paragraphs.
-- Add one stable-name-ordered row per direct child, no row for a supporting document, and copy each type and
-  canonical applicability sentence from the child's Intro.
-- Add no policy or body section after Child Skills.
+- Add one stable-name-ordered row per direct child and copy its type and applicability sentence from the
+  child.
+- End the root after the Child Skills table and add no supporting document row.
+
+#### 2.3 Reconcile the family
+
+- Match every direct child directory to exactly one routing row and reject missing, duplicate, stale, or
+  orphan entries.
+- Confirm unique direct names, valid types, resolving paths, exact applicability text, and no nested
+  domain-routing children. For each Tool Skill child, apply the Tool Skill collection reconciliation.
+- Confirm that the root selects every applicable child and no other child for single-child, multi-child, and
+  outside-family cases.
 
 ### Phase 3 — Review and Improve the Domain Family
 
-#### 3.1 Review the complete family
+#### 3.1 Improve structure, routing, sentences, and vocabulary
 
-- Confirm the exact navigation-root shape and verify that the root contains no domain policy, Principles,
-  Rules, Preferences, Manual, Procedure, References, or body after Child Skills.
-- Require a one-to-one match between direct child directories and routing rows; verify direct globally unique
-  names, types, applicability sentences, paths, no grandchildren, and at least one child of each ordinary type.
-- Exercise one positive case per child, multi-child, universal-floor when present, outside-every-child,
-  child-without-root, root-without-child, unjustified-broad-root, stale-row, orphan-child, and duplicate-owner
-  cases. Require `R` if and only if at least one `Ci` is true, and require the routing table to select every
-  true child and no false child.
-- When this applicability contract or its register changes, audit every existing domain family and propagate only
-  root corrections proved necessary by the audit.
-- Confirm that every child passed its ordinary type review, owns its policy, and that the complete family
-  passes parent Phase 3 plus structural, relative-link, topology, discovery, and compatibility checks.
-
-#### 3.2 Correct and re-review the family
-
-- Trace each finding to the earliest incorrect domain boundary, partition, child type, owner, name, child
-  predicate, root predicate, implication, skeleton, child pass, or root row and propagate the correction
-  through every affected projection.
-- Repeat the affected child review and the complete family review before returning a complete, selective,
-  policy-free, and independently usable family.
+- Apply parent Phase 3 and return every structural change to Phase 1. Return each affected child to Step 2.1
+  before changing the root so the child remains the source of its name, type, and applicability sentence.
+- Improve child Intros first, then copy their canonical applicability sentences into the routing rows. Rewrite
+  the root Intro last, derive `R` from its actual sentence, and use short, direct, stable vocabulary throughout.
+- Reconcile the complete family after every improvement. Verify child coverage, predicates, exact row text,
+  paths, topology, and discovery before applying the parent stopping condition.
 
 ## References
 
-- [`Gobbi Skill`](../SKILL.md) owns the parent operation, its type classification at Step 1.3, and the
-  Principle and Rule limits every child skill in the family must meet.
-- [`operation-skill`](../operation-skill/SKILL.md) owns writing each operation child of the family.
-- [`tool-skill`](../tool-skill/SKILL.md) owns writing each tool child of the family.
-- [`preference-skill`](../preference-skill/SKILL.md) owns writing each preference child of the family.
+| Name | Description |
+|---|---|
+| [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
+| [Naming Standard](naming-standard.md) | Reserved and free capability words plus canonical applicability and routing forms. |
+| [`Operation Skill`](../operation-skill/SKILL.md) | Guidance for writing each operation child as a straightforward SOP. |
+| [`Tool Skill`](../tool-skill/SKILL.md) | Guidance for writing each tool child and any direct Tool Skill children as direct-lookup manuals. |
+| [`Preference Skill`](../preference-skill/SKILL.md) | Guidance for writing each preference child as consistency guidance for recurring agent choices and results. |

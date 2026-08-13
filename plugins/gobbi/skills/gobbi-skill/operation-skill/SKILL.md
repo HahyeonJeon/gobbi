@@ -1,154 +1,144 @@
 ---
 name: operation-skill
-description: "Operation Skill Writing is guidance for writing an outcome-focused skill with a complete executable procedure."
+description: "Operation Skill is guidance for writing a straightforward standard operating procedure with structured phases and steps."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
-# Operation Skill Writing
+# Operation Skill
 
-Operation Skill Writing defines how to author or substantively revise one skill whose ordered actions produce an observable outcome. Use it after Gobbi Skill classifies the target as `operation`.
+Operation Skill defines how to author or substantively revise a skill whose core is a standard operating
+procedure (SOP). Use it after Gobbi Skill classifies the target as `operation` and the reader needs direct,
+ordered instructions arranged as simple phases and steps.
 
 ## Principles
 
-### Center one observable outcome
+### Make the SOP the core
 
-An operation skill earns its structure by producing a recognizable end state. Actor, trigger, authority,
-inputs, order, branches, failures, recovery, evidence, and completion all exist to make that outcome
-repeatable rather than merely plausible.
+An operation skill exists to tell a reader how to perform repeatable work. Put the SOP in Procedure, and keep
+Principles, Rules, tool facts, and references subordinate to the instructions the reader follows.
 
-### Model the flow before writing prose
+### Use phases for stages and steps for actions
 
-The happy path alone hides the decisions that make an operation reliable. Modeling boundary conditions,
-alternative-valid paths, failure, retry, rollback, pause points, and terminal states exposes the real
-operational contract before polished wording conceals gaps.
+A Phase groups one necessary stage of the SOP, while a Step gives one direct action or decision in execution
+order. Keep this hierarchy stable so the reader always knows where they are and what comes next.
 
-### Keep the target self-contained and supporting content subordinate
+### Keep the path straightforward
 
-The target `SKILL.md` must state the complete operational contract. Preferences, tool facts, and direct
-children may support the standard operating procedure (SOP), but they cannot replace or repair a missing
-trigger, action, branch, authority boundary, failure, recovery path, or completion condition.
+The SOP should give the reader the shortest correct path through the work. Present the normal path first, add
+only necessary branches beside their conditions, and remove needless nesting, detours, and repeated context.
 
-### Prove behavior rather than topology
+### Write instructions, not narrative
 
-Correct headings can still contain a broken operation. Direct review must show that ordinary, boundary,
-failing, recovery, adversarial, and cosmetically compliant cases produce the intended result or fail for the
-intended reason.
+A Procedure should tell the reader what to do, under which condition, and what confirms the Step. Use direct
+action bullets and short supporting sentences instead of background stories, long transitions, or essay-style
+explanation.
 
 ## Rules
 
-- **MUST run this procedure only after Step 1.3 classifies the target as `operation`.** Return to Step 1.3
-  when the target owns no ordered actions that produce one observable work outcome or only navigates a mixed
-  domain child-skill family.
 - **MUST produce the exact operation target shape.** Use Frontmatter → Intro → Principles → Rules → Procedure
   → References; inside Procedure, use numbered Phase headings, decimal Step headings, and bulleted step
   bodies; keep Procedure dominant and add no top-level Manual.
-- **MUST make the target Procedure own the complete executable outcome.** State actor, trigger, preconditions,
-  authority, inputs, outputs, ordered decisions and actions, branches, failures, recovery, evidence,
-  completion, non-goals, and handoff boundaries.
-- **MUST keep target `SKILL.md` self-contained and supporting material subordinate.** Place operational
-  judgment in Principles, Rules, or step-local decisions; keep compact tool facts beside the step that needs
-  them; route larger lookup material to an owned child or tool skill; and never use a child to repair missing
-  parent policy.
-- **MUST review behavior before returning the target.** Exercise ordinary, alternative-valid, boundary, failure,
-  recovery, adversarial, change, and cosmetic-compliance cases when applicable, and return to the earliest
-  responsible authoring step when any case fails.
+- **MUST make the target Procedure own the complete SOP.** State actor, trigger, preconditions, authority,
+  inputs, ordered actions and decisions, conditions and branches, failures, recovery, completion evidence,
+  non-goals, and handoff boundaries when they apply.
+- **MUST keep every Phase and Step direct and necessary.** Give each Phase one stage and each Step one primary
+  action or decision; present the normal path first, place branches beside their conditions, and remove
+  narrative, needless nesting, and repeated context.
+- **MUST keep each Step to at most three substeps.** Treat each bullet directly under a Step as one substep
+  and split the Step when it needs more.
+- **MUST keep every substep to one or two sentences.** Put the direct instruction first, and use a second
+  sentence only for a condition, branch, or confirmation needed to perform it.
 
 ## Procedure
 
-### Phase 1 — Model the Operation
+### Phase 1 — Design the SOP
 
-#### 1.1 Define the operational contract
+#### 1.1 Define the SOP boundary
 
-- Use the approved design to state one observable outcome, its actor and trigger, and the evidence that proves
-  completion.
+- Use the approved design to state the reader or actor, trigger, starting state, and evidence that shows the
+  SOP is complete.
 - Record the preconditions, authority, inputs and trust boundaries, outputs and side effects, non-goals, and
   handoff boundaries.
-- Narrow the operation or return to parent Phase 1 to split independent outcomes when the outcome cannot be
-  stated as one coherent result.
+- Return to parent Phase 1 when the target does not need a repeatable ordered procedure or combines separate
+  procedures that should be classified independently.
 
-#### 1.2 Model paths, authority, and recovery
+#### 1.2 Structure the direct path
 
-- Map the happy path, alternative-valid paths, boundary conditions, failures, retries or rollback, recovery,
-  and terminal states.
-- Mark irreversible or externally visible actions as pause points and assign each decision to the user or
-  operating agent.
-- Require every path to reach observable completion, a recoverable state, or an explicit stop condition.
+- List the required actions and decisions in the shortest correct order, then group them into Phases and Steps.
+- Create a new Phase only when a group of Steps has a distinct prerequisite, responsibility, or state
+  transition; otherwise keep those Steps in one Phase.
+- Give each Step one primary action or decision and arrange the Steps in execution order within their Phase.
 
 ### Phase 2 — Write the Operation Skill
 
-#### 2.1 Create the complete skeleton
+#### 2.1 Start with the Procedure structure
 
-- Render the approved frontmatter slots, required headings, and planned direct children in their exact order.
-- Stamp `skill-type: operation` and use this exact shape for Principles, Rules, and Procedure:
+- Use the parent skill to write the frontmatter and top-level sections, then write Procedure first. Use this
+  minimal pattern for the SOP:
 
 ```markdown
-## Principles
-
-### {Principle title}
-
-{Explain one durable mental model. Repeat for no more than four Principles.}
-
-## Rules
-
-- **MUST {state one binding requirement}.** {State its self-contained pass condition.}
-
-- **NEVER {state one prohibited behavior}.** {State its self-contained failure condition.}
-
 ## Procedure
 
-### Phase 1 — {Phase outcome}
+### Phase 1 — {Stage}
 
-#### 1.1 {Step action}
+#### 1.1 {Direct action or decision}
 
-- {State the input or precondition.}
-- {State the action and any decision rule.}
-- {State the evidence or state change.}
-- {State the next branch for success, failure, or missing context.}
+- {State one direct instruction.}
+- {Take the required branch when its condition applies.}
+- {Confirm the result, then continue or stop as required.}
 ```
 
-- Repeat entries only as the operation requires, include a `NEVER` Rule only for a real prohibition, and write
-  no substantive prose until the skeleton is complete.
+- Repeat Phases and Steps only as the SOP requires. Use no more than three substeps under each Step.
 
-#### 2.2 Write Procedure as the core
+#### 2.2 Write direct Phases and Steps
 
-- Organize the operation into outcome-based Phases, decimal-numbered Steps, and action bullets.
-- Make each Step state its input or precondition, action and decision rule, resulting evidence or state
-  change, and next branch for success, failure, or missing context.
-- Cover the complete modeled flow, including authority boundaries, failure, recovery, completion, and
-  handoff; use exact commands only where fragility requires them.
-- Keep compact tool facts beside the consuming Step and route larger setup, syntax, capability, or
-  troubleshooting material to an owned child or tool skill.
+- Arrange Phases in execution order and name each for its stage. Arrange Steps within each Phase in the order
+  the reader performs them.
+- Start each Step with a direct action or decision, then give it no more than three substeps.
+- Keep each substep to one or two sentences. Put its instruction first and add only a needed condition, branch,
+  or confirmation.
+
+#### 2.3 Add conditions and boundaries
+
+- Present the normal path first. Add alternatives, failure, retry, rollback, recovery, and stop paths only
+  where their conditions occur.
+- State authority boundaries, irreversible or externally visible actions, side effects, completion evidence,
+  and handoffs where the reader encounters them.
 - Include access boundaries and output paths when the operation writes session or durable state.
 
-#### 2.3 Complete Principles, Rules, Intro, and References
+#### 2.4 Remove narrative and extra detail
+
+- Remove narrative setup, chronological retelling, conversational transitions, repeated rationale, and
+  explanation that does not change an action or decision.
+- Keep compact tool facts beside the consuming Step. Route larger setup, syntax, capability, or troubleshooting
+  material to an owned internal document or tool skill.
+
+#### 2.5 Complete the remaining sections
 
 - Write Principles for the durable operating model and Rules for distinct binding invariants; keep ordered
   work in Procedure and apply the parent limits and normative expressions.
-- Write the Intro from the completed body, orienting the reader to the actor, trigger, outcome, boundary, and
-  operating model without adding new policy.
-- Keep References limited to owned Markdown children, cite outside owners beside their claims, and leave the
-  heading empty when no internal child applies.
-- Re-read the target `SKILL.md` alone and confirm that it owns the complete operation without relying on a
-  child to repair missing policy.
+- Write the Intro from the completed body, orienting the reader to the actor, trigger, SOP, and boundary
+  without adding new policy.
+- Use the parent's fixed `Name | Description` table in References. Include only relevant internal parent,
+  type, or supporting documents; cite external owners beside their claims.
 
 ### Phase 3 — Review and Improve the Operation Skill
 
-#### 3.1 Review the complete operation
+#### 3.1 Improve structure, sentences, and vocabulary
 
-- Confirm that the target has one aligned outcome, the exact operation shape, and a Procedure that owns every
-  required action, branch, authority boundary, failure, recovery path, completion condition, and handoff.
-- Walk ordinary, alternative-valid, boundary, failure, recovery, adversarial, change, and
-  cosmetic-compliance cases; require each to succeed or fail for the intended reason.
-- Verify operation-specific commands, examples, paths, schemas, permissions, and version-sensitive claims
-  against their owners.
-- Confirm that supporting preferences, tool facts, and direct children remain subordinate and that the
-  complete target also passes parent Phase 3.
-
-#### 3.2 Correct and re-review the operation
-
-- Trace each finding to the earliest incorrect contract, flow model, skeleton, Procedure step, or supporting
-  section and propagate the correction through every affected part.
-- Repeat the affected behavioral checks and the complete operation review before returning the target.
+- Apply parent Phase 3, then reshape the SOP instead of only marking problems. Remove, merge, split, or reorder
+  Phases and Steps until Procedure is the core, each Phase owns one necessary stage, and each Step owns one
+  primary action or decision in execution order.
+- Split every Step with more than three substeps, and rewrite each substep as one or two direct sentences.
+  Remove narrative, needless nesting, detours, repeated rationale, long transitions, and details that do not
+  change an action or decision.
+- Replace vague, inflated, uncommon, or inconsistent words with plain, precise, stable terms. Verify required
+  conditions, authority, recovery, completion, handoffs, commands, paths, schemas, permissions, and
+  version-sensitive claims, then apply the parent stopping condition.
 
 ## References
+
+| Name | Description |
+|---|---|
+| [`Gobbi Skill`](../SKILL.md) | Parent guidance for classifying the target and applying shared skill-writing rules. |

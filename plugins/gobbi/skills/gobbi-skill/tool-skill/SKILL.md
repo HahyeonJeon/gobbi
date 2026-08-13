@@ -1,125 +1,145 @@
 ---
 name: tool-skill
-description: "Tool Skill Writing is guidance for writing a lookup-oriented skill for one named tool or platform."
+description: "Tool Skill is guidance for writing a direct-lookup manual for a named tool, platform, or cohesive tool collection."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
-# Tool Skill Writing
+# Tool Skill
 
-Tool Skill Writing defines how to author or substantively revise an authoritative manual for one named tool or platform. Use it after Gobbi Skill classifies the target as `tool`.
+Tool Skill defines how to author or substantively revise an authoritative manual for a named tool, platform,
+or cohesive tool collection. Use it after Gobbi Skill classifies the target as `tool` and readers need direct
+answers about that surface rather than an end-to-end SOP.
 
 ## Principles
 
-### Keep one named surface as the subject
+### Keep one cohesive surface as the subject
 
-A tool skill is useful when its boundaries match a concrete tool or platform. Mixing adjacent tools or a
-broader delivery outcome makes lookup unreliable and obscures which behavior, version, and vocabulary the
-manual actually owns.
+A tool skill covers one named tool, platform, or cohesive collection within an explicit compatibility
+boundary. For a collection, give each independently loadable tool one direct Tool Skill child and keep shared
+guidance in the collection parent.
 
-### Organize the Manual for lookup
+### Organize the Manual for direct lookup
 
-Readers enter a tool skill with specific questions about capability, configuration, syntax, inputs, outputs,
-side effects, limits, or failures. A lookup-oriented Manual should let them answer those questions without
-following an unrelated end-to-end workflow.
+Readers arrive with specific questions about capabilities, setup, syntax, inputs, outputs, limits, or
+failures. Arrange the Manual so they can reach an answer without following an unrelated workflow.
 
-### Prefer authoritative and live evidence
+### Use authoritative and live evidence
 
-Tool behavior changes with versions, configuration, permissions, and environment. Official documentation,
-built-in help, schemas, source, and observed behavior provide stronger teaching evidence than recollection or
-third-party summaries.
+Prefer official docs, built-in help, schemas, source, and observed supported behavior over recollection or
+summaries. Recheck behavior that can change with versions, configuration, permissions, or environment.
 
-### Teach failure as part of correct use
+### Explain failure as part of correct use
 
-A successful example alone does not explain prerequisites, diagnosis, or recovery. Expected failures reveal
-the boundaries that let a reader interpret both working and non-working behavior correctly.
+Pair important usage with the failures readers need to recognize, diagnose, and recover from. A successful
+example alone does not establish prerequisites or limits.
 
 ## Rules
 
-- **MUST run this procedure only after Step 1.3 classifies the target as `tool`.** Return to Step 1.3 when the
-  target owns a broader ordered work outcome, mainly states tool-independent judgment and defaults, or only
-  navigates a mixed domain child-skill family.
 - **MUST produce the exact tool target shape.** Use Frontmatter → Intro → Principles → Rules → Manual →
-  References; keep Manual dominant; and add no Procedure.
-- **MUST keep one named tool or platform inside an explicit compatibility boundary.** Fence adjacent tools and
-  broader workflows as non-goals, and keep setup or local sequences scoped to one tool capability.
-- **MUST include only applicable Manual material.** Omit empty template headings and organize every retained
-  capability, setup, syntax, input, output, side effect, default, limit, example, error, diagnosis, or recovery
-  item for direct lookup.
-- **MUST verify every taught command, snippet, application programming interface example, output, side effect,
-  expected failure, and version-sensitive fact.** Use its authoritative owner or the live supported surface
-  and state every prerequisite, permission, cost, or compatibility condition needed to interpret the result.
+  References, keep Manual dominant, and add no Procedure.
+- **MUST keep one named tool, platform, or cohesive collection inside an explicit compatibility boundary.**
+  For a collection, use `{collection}/{collection}-{tool}/SKILL.md`, route each child from the parent Manual,
+  and allow no deeper skill level.
+- **MUST include only material needed for approved lookup tasks.** Omit empty headings and let Step 1.2 own
+  the complete coverage inventory.
+- **MUST use the Manual hierarchy.** Use a `###` capability-category title, a `####` lookup-subcategory
+  subtitle, and at most three one-or-two-sentence detail bullets under each subtitle.
+- **MUST keep Manual entries direct and compact.** Put the answer first, use the tool's own vocabulary, and
+  remove narrative, repeated context, and workflow detail that belongs to an operation skill.
+- **MUST verify taught behavior safely against its authoritative owner or live supported surface.** Reconcile
+  conflicting evidence or state the limitation, and state material prerequisites, permissions, costs, and
+  compatibility conditions.
 
 ## Procedure
 
-### Phase 1 — Model the Manual
+### Phase 1 — Design the Manual
 
-#### 1.1 Lock the named surface, consumers, and evidence
+#### 1.1 Define the named surface
 
-- Use the approved design to name the exact tool or platform, supported versions or compatibility range,
-  intended consumers, lookup tasks, adjacent-tool boundary, and non-goals.
-- Prefer official documentation, built-in help, schemas, source, and observed supported behavior; record any
-  material difference between documented and live behavior.
-- Inspect permission, cost, network, mutation, and compatibility boundaries before teaching or running an
-  example.
+- Name the exact tool, platform, or cohesive collection, supported versions or compatibility range, intended
+  readers, and lookup tasks.
+- For a collection, identify shared lookup guidance and each tool that needs a direct Tool Skill child. Make
+  the collection Intro applicable to its shared guidance and every child, and make each child's applicability
+  sentence tell readers to load the parent first.
+- State adjacent tools, broader workflows, and unsupported versions as boundaries or non-goals.
 
-#### 1.2 Select applicable Manual coverage
+#### 1.2 Select evidence and coverage
 
-- Inventory only the prerequisites, capabilities, syntax, inputs, outputs, state, side effects, defaults,
-  limits, examples, errors, diagnosis, and recovery needed for the approved lookup tasks.
-- Group retained material by stable capability or question and omit empty headings or topics that do not
-  apply.
-- Return to parent Phase 1 when the target expands into a broader work outcome, tool-independent judgment, or
-  a domain navigation family.
+- Gather official docs, built-in help, schemas, source, and observed supported behavior for the approved tasks.
+- Inventory only the capabilities, setup, syntax, inputs, outputs, side effects, defaults, limits, examples,
+  errors, diagnosis, and recovery readers need.
+- Resolve conflicting evidence or record the limitation, then group the inventory by stable question or
+  capability and remove topics that do not apply.
 
 ### Phase 2 — Write the Tool Skill
 
-#### 2.1 Create the complete skeleton
+#### 2.1 Start with the Manual structure
 
-- Render the approved frontmatter, Intro, Principles, Rules, Manual, References, and planned direct children
-  in their exact order.
-- Stamp `skill-type: tool`, use placeholders only to expose the approved structure, and write no substantive
-  prose until the skeleton is complete.
+- Use the parent skill to write the top-level sections, then write Manual first. Use this minimal pattern:
 
-#### 2.2 Write Manual as the core
+```markdown
+## Manual
 
-- Organize Manual for direct lookup using stable capability names and the tool's own vocabulary; place syntax
-  beside semantics and name required inputs, outputs, side effects, defaults, and limits.
-- Keep setup and local sequences scoped to the named tool capability, and point to an operation skill when
-  the consumer needs an end-to-end work outcome.
-- Run or trace every command, snippet, and application programming interface example against the supported
-  surface; confirm its output and side effects, exercise an expected failure, and state its prerequisites,
-  permissions, cost, and compatibility conditions.
-- Mark an example as illustrative when it cannot be executed, and never present it as verified behavior.
+### {Capability category title}
 
-#### 2.3 Complete Principles, Rules, Intro, and References
+#### {Lookup subcategory subtitle}
 
-- Write Principles for durable usage judgment and Rules for distinct safety, correctness, permission, or
-  compatibility invariants; apply the parent limits and normative expressions.
-- Write the Intro from the completed body without adding instructions or compatibility claims absent from
-  their owners.
-- Keep References limited to owned Markdown children, cite outside owners beside their claims, and leave the
-  heading empty when no internal child applies.
-- Re-read the target as a cold user and confirm that its vocabulary and lookup structure answer the approved
-  tasks without unstated context.
+- {State the direct answer or instruction.}
+- {State necessary syntax, inputs, outputs, defaults, or limits.}
+- {State a relevant failure, diagnosis, or recovery detail.}
+```
+
+- Repeat category titles and subcategory subtitles only as the approved lookup tasks require, with no more
+  than three details per subtitle. Keep a needed code block, table, or link with its owning detail; it does not
+  create another semantic detail.
+- For a collection, place `### Child Tools` first, give each direct child one `####` subtitle, and add one
+  detail linking the child with its exact Intro applicability sentence. Author each through a fresh Gobbi Skill
+  pass with Tool Skill; match its `name` to its directory, link the collection parent in its References, and do
+  not copy shared guidance into the child.
+
+#### 2.2 Write direct lookup details
+
+- Arrange category titles in lookup order and use stable capability names. Arrange each subtitle under its
+  owning category.
+- Put each answer before its explanation, syntax beside its meaning, and inputs, outputs, side effects,
+  defaults, and limits beside the capability they qualify.
+- Keep setup local to the named surface and refer end-to-end work to an operation skill.
+
+#### 2.3 Add examples and failure guidance
+
+- Run or trace each command, snippet, and API example against the supported surface.
+- State the expected output, side effects, prerequisites, permissions, cost, and compatibility conditions needed
+  to interpret the example.
+- Safely reproduce or trace an expected failure and give direct diagnosis or recovery. Otherwise, verify it
+  against authoritative evidence and label it source-verified but not live-reproduced; use `illustrative` only
+  when exact behavior lacks authoritative support.
+
+#### 2.4 Complete the remaining sections
+
+- Write Principles for durable usage judgment and Rules for binding safety, correctness, permission, or
+  compatibility constraints.
+- Write the Intro from the completed Manual without adding unsupported instructions or compatibility claims.
+- Use the parent's fixed `Name | Description` table in References for relevant internal parent, type, child,
+  or supporting documents. Cite external owners beside their claims.
 
 ### Phase 3 — Review and Improve the Tool Skill
 
-#### 3.1 Review lookup behavior and evidence
+#### 3.1 Improve structure, sentences, and vocabulary
 
-- Test direct lookup for capability discovery, setup, syntax, input and output interpretation, expected
-  failure, and diagnosis; revise any answer that requires an unrelated workflow or private context.
-- Confirm the named-tool and compatibility boundaries, applicable Manual coverage, and separation between
-  Principles, Rules, and lookup material.
-- Verify every taught command, example, output, side effect, failure, and version-sensitive claim against its
-  stated owner or supported surface.
-- Confirm that internal References remain local and that the complete target also passes parent Phase 3.
-
-#### 3.2 Correct and re-review the tool skill
-
-- Trace each finding to the earliest incorrect boundary, evidence source, coverage choice, skeleton section,
-  Manual entry, Principle, or Rule and propagate the correction through the complete target.
-- Repeat the affected lookup tasks and evidence checks; return to parent Phase 1 if the correction changes
-  the skill type.
+- Apply parent Phase 3, then reshape Manual headings and entries instead of only marking lookup problems.
+  Remove, merge, split, or reorder category titles, subcategory subtitles, and details until each approved
+  question has one direct answer in a predictable place.
+- Limit each subtitle to three details and each detail to one or two sentences. Split a subtitle or rewrite its
+  details whenever either limit is exceeded, then put each answer first and replace vague or inconsistent
+  words with the tool's precise vocabulary.
+- Reconcile retained claims with controlling evidence, and reach one complete answer for each approved lookup
+  question without following unrelated sections. For a collection, match every direct child to one `Child
+  Tools` entry, reject missing, stale, duplicate, orphan, or deeper children, and check shared-parent-only,
+  single-child, multi-child, and outside-collection cases before applying the parent stopping condition.
 
 ## References
+
+| Name | Description |
+|---|---|
+| [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
