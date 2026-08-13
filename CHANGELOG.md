@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the categories first, the scenarios second, and the observable problem signs third before assembling the source.
   Each review step checks coverage; checklist items avoid unnecessary subject-specific detail and use heading
   paths instead of IDs. A bundled evaluation checklist covers generated checklist documents.
+- Execution keeps its evidence-led, bottom-up task procedure while strengthening YAGNI and incremental growth.
+  Executors study the project's vision, philosophy, design, architecture, and live evidence before choosing an
+  implementation, verify each smallest complete unit before expanding it, and add complexity only for a
+  current requirement or observed failure. Each task returns a compact response-only handoff for its result,
+  changes, verification, local delivery, concerns, and limits.
 
 ## 1.1.2 - 2026-08-08
 
