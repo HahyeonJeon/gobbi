@@ -89,7 +89,12 @@ Load per target type:
   checklist, or evaluation children it names. Not every skill has them: verify by listing the skill directory
   before citing a child. The complete guidelines stay in `{gobbi-skills-root}/evaluation/SKILL.md`; the assigning
   caller owns the report shape.
-- Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
+- Apply every baseline that Evaluation Step 2.1 names for the target. A current indexed Ideation or Planning
+  result uses its operation baseline together with the Documentation baseline; mixed targets use every
+  applicable source.
+- Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code;
+  `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
+- Evaluating documentation → read the document's governing sources and any relevant subject skill.
 - `{gobbi-skills-root}/checklist/SKILL.md` is the standalone operation for authoring a reusable unchecked
   checklist. Load it when Evaluation Phase 2 must author new working items or when the assignment requests a
   reusable checklist; collecting and applying existing items alone does not load it.

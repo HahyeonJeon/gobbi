@@ -111,15 +111,18 @@ the manager may advance it, but never become a second route.
 
 | Content | Path below the session root |
 |---|---|
-| Topic Ideation | `work/topic-NN-slug/ideation.md` |
-| Topic Planning | `work/topic-NN-slug/planning/{tasks.md,plan.md}` |
-| Planning scratch | `work/topic-NN-slug/planning/`, removed by Planning when the artifacts freeze |
+| Topic Ideation locator | `work/topic-NN-slug/ideation/ideation-index.md` |
+| Topic Planning locator | `work/topic-NN-slug/planning/plan-index.md` |
+| Planning scratch | `work/topic-NN-slug/planning/working/`, removed when the Planning result freezes |
 | Optional creation round | `work/topic-NN-slug/partner/creation/round-N/` |
 | Explicit evaluation | `work/evaluation/{whole-branch|subject-slug}/round-N/` |
 | Closure input | `work/wrap-up/closure.md` |
 
 - Supply each exact path to [Memory](../memory/SKILL.md) `Temporary Record`. Memory owns identity validation,
   containment, and no-Git capture; Cowork never stages a session path or writes outside the verified worktree.
+- Use indexed Ideation and Planning locators for new topics. Recovery may retain an exact caller-recorded
+  legacy `work/topic-NN-slug/ideation.md` or `work/topic-NN-slug/planning/{tasks.md,plan.md}` pair; never migrate
+  a legacy result or choose between both shapes without decisive accepted topic evidence.
 - Use this exact fixed Cowork title template. Topic discussion is owned by the Ideation stage, so it has no
   separate TODO title. Dynamic topic, task, subject, stage, iteration, and closure values stay in the topic
   contract, assignment, evidence path, or checkpoint; they never become TODO title fields:
@@ -176,18 +179,25 @@ CW · Wrap-up
   stable assignment and task ID, absolute worktree, branch, prerequisites, allowed and protected paths,
   result, verification, commit authority, escape paths, and exact skill/role paths resolved from the fixed root
   pair.
+- For Ideation and Planning, use `result-kind: file` with the absolute `ideation/ideation-index.md` or
+  `planning/plan-index.md` locator. Require the leader to return the ordered result members and prove that
+  every file is listed and inside the owning output root.
 - In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) before persistent specialists. Reuse a
   leader only within one topic's shaping stages, an executor only within one related task chain, and an
   assistant only within one closure memory chain. Reuse only after manager acceptance and a clean tracked
   tree, with a fresh assignment and re-anchored paths and authority.
 - Load selected [Ideation](../ideation/SKILL.md) or [Planning](../planning/SKILL.md) only when its TODO is active.
   The leader self-reviews the exact Step 1.2 output, removes Planning scratch, and proves no tracked change.
-  For every design-bearing Ideation package, freeze the local leader's draft after all named independent local
+  For every design-bearing Ideation result, freeze the local leader's draft after all named independent local
   inputs are available. Enabled then calls [Partner](../gobbi/partner/SKILL.md) for at least one independent
   external draft and one external cross-review over frozen inputs, stores each labeled return in the creation
   round, and lets the leader synthesize only after both returns validate. Disabled invokes no external runtime.
   The manager owns local participants, freeze order, assembly, acceptance, and routing. Creation evidence is
   never evaluation coverage.
+- Accept an indexed Ideation or Planning result only after rereading its root index and every file it reaches
+  in declared order.
+  Preserve the locator, ordered relative member paths, and exact file hashes in the topic evidence; any
+  membership, order, path, or byte change makes that evidence stale.
 - Assign each dependency-ready task through [Execution](../execution/SKILL.md). Keep one writer active. The
   manager rereads each artifact or commit and reproduces verification before acceptance or dependent work.
 - Advance only from accepted evidence. On a missing or malformed result, failed check, unavailable capability,
@@ -204,6 +214,8 @@ CW · Wrap-up
   clean worktree and freezes the whole subject from immutable base through current head, including commits,
   tree, contracts, artifacts, user decisions, verification, status, and exclusions. A user-named subset is not
   whole-branch coverage.
+- When the named subset is an indexed Ideation or Planning result, freeze the root index and every file it
+  reaches as one subject. Evaluator reports stay outside the result.
 - Activate the fixed `CW · Evaluation` item and make it the only active item. Load
   [Evaluation](../evaluation/SKILL.md) before dispatching the fresh evaluators. Place the round under
   `{session-root}/work/evaluation/{whole-branch|subject-slug}/round-N/` and apply Memory `Temporary Record` to

@@ -48,29 +48,33 @@ receipt, task, or commit.
 #### 1.1 Enter and freeze the Planning contract
 
 - Confirm the parent and its owner-skill register, Phase 1 Hand-off, active Planning TODO, canonical Ideation
-  output, settings, decisions, accepted findings, repository/worktree preimages, authority, skills, dependencies,
-  writer boundary, and recovery evidence.
+  locator and result evidence, settings, decisions, accepted findings, repository/worktree preimages,
+  authority, skills, dependencies, writer boundary, and recovery evidence.
 - Load [Planning](../../planning/SKILL.md). Build the leader brief through
   [Delegation](../../delegation/SKILL.md) and
-  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments).
-- Give Planning the complete Ideation contract and require: a fine-grained hierarchy with exact leaf coverage;
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments). Read `ideation-index.md` and every
+  listed authoritative Ideation part in order, then give Planning that complete contract; treat listed
+  requirements and topics snapshots as supporting evidence, while a receipt-proved legacy `ideation.md`
+  remains one complete input and is never migrated during recovery.
+- Require a fine-grained hierarchy with exact leaf coverage;
   context-coherent groups with stable `task-NN-slug` IDs; each leaf's path, title, work, boundary, and output;
   combination reason and outcome; accepted design and repository context; dependencies, roles, skills, inputs,
   constraints, writer boundaries, handoffs, verification, and coverage of every Ideation obligation.
-- Workflow retains TODO expansion, evaluation, RECORD, scheduling, and commit provenance. Freeze the Planning
+  Workflow retains TODO expansion, evaluation, RECORD, scheduling, and commit provenance. Freeze the Planning
   contract only after hierarchy, dependencies, scope, acceptance, and authority are explicit.
 
 #### 1.2 Run the Planning cycle and expand the route
 
 - Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the locked Ideation contract and project preimage as subject;
-  `2-planning/outputs/{tasks.md,plan.md}` as outputs; fast gate; cap `2`; and Planning's six closure invariants as
-  unique checks.
-- Require the local leader to synthesize complete independently readable candidates. Before EVALUATION, verify
-  every Ideation obligation appears in the hierarchy, every leaf maps to exactly one nonempty task group, IDs
-  are stable, dependencies are acyclic, roles and contexts are complete, and write-capable groups do not overlap.
+  `2-planning/outputs/planning/` as the output root and its `plan-index.md` as the canonical locator; fast
+  gate; cap `2`; and Planning's six closure invariants as unique checks.
+- Require the local leader to synthesize one complete independently readable result. Before EVALUATION, read
+  the root index, task index, every task part, and every plan part in declared order; verify every Ideation obligation
+  appears in the hierarchy, every leaf maps to exactly one nonempty task group, IDs are stable, dependencies
+  are acyclic, roles and contexts are complete, and write-capable groups do not overlap.
 - Run every RECORD pass. On first-pass REVISE, return to DISCUSSION. On second-pass FAIL, preserve recovery state
   and stop at the parent critical-blocker boundary. Never create iteration 3.
-- On PASS, freeze both ignored outputs without a second contract layer and prove the tracked tree unchanged.
+- On PASS, freeze the complete ordered result without a second contract layer and prove the tracked tree unchanged.
   Activate the fixed `P2 · Execution` item for the first dependency-ready task. Keep task IDs only in the plan,
   assignment, evidence, commit, and recovery records:
 

@@ -105,25 +105,33 @@ prove.
 #### 2.2 Run the shared productive-step cycle
 
 - Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the frozen Ideation contract and immutable project evidence
-  as subject; `1-ideation/outputs/ideation.md` as canonical output; the fast gate; cap `2`; and complete
-  material-decision coverage as the unique check.
-- Before the local leader synthesizes a design-bearing Ideation package, require every named local input from
+  as subject; `1-ideation/outputs/ideation/` as the output root and its `ideation-index.md` as the canonical
+  locator; the fast gate; cap `2`; and complete material-decision coverage as the unique check.
+- Before the local leader synthesizes a design-bearing Ideation result, require every named local input from
   Step 2.1. Enabled requires at least one independent Partner draft and one Partner cross-review over frozen
   input before synthesis; disabled invokes no external runtime. The local leader alone produces, self-reviews,
-  and synthesizes. Resolve user-owned conflicts before EVALUATION. Require the canonical result to cover the
-  problem, actors, What, Why, How, scope, success/failure, alternatives, authority, risks, recovery, accepted
-  findings, and deferrals.
-- Run every RECORD pass. Write the canonical output only after PASS, keep it ignored and uncommitted, and prove
-  the tracked tree unchanged. On first-pass REVISE, return to DISCUSSION; on second-pass FAIL, preserve exact
-  recovery evidence and present the user-owned choices. Never create iteration 3.
+  and synthesizes. Resolve user-owned conflicts before EVALUATION.
+
+#### 2.3 Accept and record the indexed result
+
+- Require the canonical result to cover the problem, actors, What, Why, How, scope, success and failure,
+  alternatives, authority, risks, recovery, accepted findings, and deferrals. Read `ideation-index.md` and every
+  listed authoritative and optional snapshot file in order.
+- Reject a missing, duplicate, unlisted, or out-of-root member. Freeze the ordered paths and exact bytes as one
+  subject before EVALUATION.
+- Run every RECORD pass, write the canonical result only after PASS, keep it ignored and uncommitted, prove the
+  tracked tree unchanged, and record the locator, ordered members, file hashes, and complete-result freeze. On
+  first-pass REVISE, return to DISCUSSION; on second-pass FAIL, preserve exact recovery evidence and present the
+  user-owned choices; never create iteration 3.
 
 ### Phase 3 — Hand off to Planning
 
 #### 3.1 Verify Phase 1 completion
 
-- Verify Configuration, canonical Ideation output, policy-required reports, gate, receipt, accepted findings,
-  branch, worktree, and active `P1 · Hand-off`. Confirm the contract is concrete enough for Planning and no later
-  TODO is active. Return to the earliest responsible Phase 1 step on failure.
+- Verify Configuration, the canonical Ideation locator and complete indexed result, policy-required reports,
+  gate, receipt, accepted findings, branch, worktree, and active `P1 · Hand-off`. Confirm the contract is
+  concrete enough for Planning and no later TODO is active. Return to the earliest responsible Phase 1 step on
+  failure.
 
 #### 3.2 Render and continue
 

@@ -1,12 +1,11 @@
 # Project Backlog
 
-## check-markdown-links.sh never inspects the plugin mirror
+## Future Markdown link checking must inspect the plugin mirror
 
 **Backlogged at:** 2026-08-02T12:16:00Z
 
-**What:** Change `scripts/check-markdown-links.sh`'s file discovery from `find -type f` to `find -xtype f` (or
-equivalent), so it inspects the 159 symlink `.md` leaves under `.claude/skills/` rather than skipping all of
-them.
+**What:** When Markdown link checking is reimplemented, use `find -xtype f` or an equivalent symlink-following
+strategy so it inspects Markdown leaves under `.claude/skills/` instead of skipping the plugin mirror.
 
 **Why backlogged:** Not currently unsafe — every mirror leaf points at a canonical file the checker already
 checks directly — but it is false assurance: a future task that points the checker at the mirror itself, or at

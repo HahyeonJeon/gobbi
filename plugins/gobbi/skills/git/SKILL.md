@@ -164,9 +164,9 @@ pull-request head.
 - Recommend the current clean branch and head as the base. Ask the user when the checkout is dirty,
   detached, ambiguous, or conflicts with an existing target; do not silently exclude uncommitted work or
   invent `main`, `master`, `develop`, or a remote default.
-- Run [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) for the local prerequisites every session
-  requires. Probe remote and GitHub prerequisites only when the declared publication intent or a separate Git
-  operation authorizes an external action.
+- Probe the local prerequisites required by the current Git action directly and report any unavailable
+  capability. Probe remote and GitHub prerequisites only when the declared publication intent or a separate
+  Git operation authorizes an external action.
 - Generate the full session UUID before using [`conventions.md`](conventions.md). Normalize and validate the
   caller-supplied slug, retain the original UTC session-start date, then derive the new branch and worktree
   leaf separately from the same tuple. Confirm both equal the fresh contract's intended values. Before
@@ -364,4 +364,3 @@ caller-supplied tag/ref action with verified local and remote state or a `recove
 
 - [Git conventions](conventions.md) owns deterministic branch, path, commit, trailer, issue, pull-request,
   label, and merge mappings.
-- [Git posture probe](scripts/git-posture-probe.sh) owns the read-only runtime posture report.

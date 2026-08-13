@@ -123,10 +123,15 @@ Use these fixed evidence owners:
 
 Each owner uses `working/iteration-N/`, `evaluation/iteration-N/`, and `record/iteration-N.md`.
 `evaluation/iteration-N/` contains `gate.md` and only required `claude.md` or `codex.md` reports. PASS writes
-Ideation to `1-ideation/outputs/ideation.md` and Planning to `2-planning/outputs/{tasks.md,plan.md}`; Execution
-outputs stay at tracked planned paths. `{evidence-root}/work/` holds other session-only work. Every evidence-root
+Ideation to `1-ideation/outputs/ideation/` with `ideation-index.md` as its locator and Planning to
+`2-planning/outputs/planning/` with `plan-index.md` as its locator; Execution outputs stay at tracked planned paths. `{evidence-root}/work/`
+holds other session-only work. Every evidence-root
 path is ignored, receives Memory `Temporary Record`, and is never staged. Wrap-up later applies `Memorize` to
 the full root, including readable legacy `memory/` input.
+
+New sessions use indexed Ideation and Planning results. Recovery may retain a receipt-proved legacy
+`1-ideation/outputs/ideation.md` or `2-planning/outputs/{tasks.md,plan.md}` pair; never migrate a legacy result or
+choose between both shapes when the accepted evidence does not identify one canonical result.
 
 #### 1.3 Build and accept specialist assignments
 
@@ -144,6 +149,9 @@ the full root, including readable legacy `memory/` input.
   assignment's branch, path, authority, provenance, and verification contract. Study, assistant lookup,
   Partner, or another operation that intentionally consumes conversation content or forbids durable writes may
   use `response-only` with its exact response shape and consumer.
+- An indexed Ideation or Planning result keeps `result-kind: file` and names its absolute root index as
+  `ARTIFACT`. The owning skill defines the complete result; Workflow validates and freezes every file reached
+  in declared order rather than treating the locator alone as the subject.
 - Require this base return prefix:
 
 ```text
@@ -221,6 +229,9 @@ The participant matrix is:
 - Each `record/iteration-N.md` contains only exact TODO and decision; source artifact, package, report, gate,
   commit, or output identifiers and hashes as applicable; verification; accepted finding dispositions; and next
   or recovery state. Gates and receipts prove recovery; only the native TODO routes.
+- For an indexed Ideation or Planning result, the receipt records the index locator, ordered relative member paths, each
+  file hash, and the complete-result freeze. A membership, order, path, or byte change invalidates the prior
+  gate and receipt.
 - On a failed partner run or specialist, preserve valid evidence, identify the exact failed system, assignment,
   operation, and check, and retry only that bounded operation when safe. Replace a stale specialist through
   [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md). Continue only after the missing output validates. A waiver must already

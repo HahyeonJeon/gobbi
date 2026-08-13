@@ -80,8 +80,12 @@ limit causes and verdicts to what the evidence supports.
 
 #### 2.1 Gather existing checklist coverage
 
-- Collect the applicable project checklists, caller-supplied checklists, requirements, rules, tests, and prior
-  evaluation items. Treat them as baseline coverage rather than proof that the target is complete.
+- Collect applicable project and caller-supplied checklists, requirements, rules, tests, and prior evaluation
+  items, including the [Code checklist](code/checklist.md) for code work, the
+  [Documentation checklist](docs/checklist.md) for documentation work, the
+  [Ideation checklist](ideation/checklist.md) for a current indexed Ideation result, and the
+  [Planning checklist](planning/checklist.md) for a current indexed Planning result. Apply every matching
+  baseline to mixed work, treating each source as baseline coverage rather than proof that the target is complete.
 - Preserve every source's wording, hierarchy, identifiers, and unchecked state. Copy or reference only
   applicable items in the evaluation-owned checklist and retain their exact source identity.
 - Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its reason and
@@ -152,4 +156,8 @@ limit causes and verdicts to what the evidence supports.
 | Name | Description |
 |---|---|
 | [Checklist](../checklist/SKILL.md) | Standalone operation for authoring a reusable, unchecked evaluation source. |
+| [Code checklist](code/checklist.md) | Baseline reusable source for evaluating general code-work quality. |
+| [Documentation checklist](docs/checklist.md) | Baseline reusable source for evaluating general documentation-work quality. |
+| [Ideation checklist](ideation/checklist.md) | Baseline reusable source for evaluating a complete current indexed Ideation result. |
+| [Planning checklist](planning/checklist.md) | Baseline reusable source for evaluating a complete current indexed Planning result. |
 | [Report template](templates/report.md) | Default structure for a short, evidence-based Evaluation report. |

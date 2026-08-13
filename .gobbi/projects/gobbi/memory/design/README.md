@@ -17,5 +17,4 @@ Recursive navigation across design memory, grouped by category.
 ## Process
 
 - [Collaborative design and delegated results](process/collaborative-design-and-delegated-results.md)
-- [Documentation review operation](process/docs-review.md)
 - [React skill family](process/react-skill-family.md)

@@ -20,12 +20,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sections with categories, broad mistake-oriented scenarios, and unchecked problem signs. Checklist defines
   the categories first, the scenarios second, and the observable problem signs third before assembling the source.
   Each review step checks coverage; checklist items avoid unnecessary subject-specific detail and use heading
-  paths instead of IDs. A bundled evaluation checklist covers generated checklist documents.
+  paths instead of IDs. Design and Development owns work-artifact creation, handoff, project use, maintenance,
+  and change; Product is reserved for operating apps, services, libraries, and comparable products. A bundled
+  evaluation checklist covers generated checklist documents.
+- Evaluation now includes general code and documentation checklist sources plus operation-specific baselines
+  for complete current indexed Ideation and Planning results. The separate Code Review and Documentation
+  Review operations are removed; their reusable quality checks now belong to Evaluation rather than separate
+  review procedures.
 - Execution keeps its evidence-led, bottom-up task procedure while strengthening YAGNI and incremental growth.
   Executors study the project's vision, philosophy, design, architecture, and live evidence before choosing an
   implementation, verify each smallest complete unit before expanding it, and add complexity only for a
   current requirement or observed failure. Each task returns a compact response-only handoff for its result,
   changes, verification, local delivery, concerns, and limits.
+- Ideation now records one indexed result with an `ideation-index.md` locator, coherent numbered design
+  parts, and optional nested requirements and topics snapshots. Workflow and Cowork freeze, evaluate, recover,
+  and hand off the complete listed result while retaining receipt-proved legacy single-file results without
+  migration.
+- Planning now records one indexed result with a `plan-index.md` locator, direct numbered plan parts, and a
+  numbered task hierarchy. Workflow and Cowork consume and freeze the complete listed result while retaining
+  a receipt-proved legacy `tasks.md` and `plan.md` pair without migration.
+- Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
+  operations will be redesigned before they are reintroduced.
 
 ## 1.1.2 - 2026-08-08
 

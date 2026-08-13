@@ -396,6 +396,6 @@ locked implementation task explicitly includes that file and value.
 ## Runtime git posture
 
 [`SKILL.md` § Probe posture](SKILL.md#21-probe-posture-and-create-one-isolated-worktree) owns how runtime
-sandbox, network, and approval state affect Git actions. [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh)
-is the read-only probe. This conventions document owns no runtime configuration and authorizes no edit to
+sandbox, network, and approval state affect Git actions and requires direct checks of the capabilities the
+current action needs. This conventions document owns no runtime configuration and authorizes no edit to
 `.codex/config.toml`, Claude settings, `.git/config`, or user Git configuration.

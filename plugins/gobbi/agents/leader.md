@@ -116,7 +116,7 @@ Refine, study, or decompose — per the phase brief.
 - Implementation task groups **sequence** — only investigation/research/evaluation parallelize.
 - When evidence substantively challenges the accepted direction, return that evidence and the exact question
   through the manager as Planning requires.
-- Output: the jointly validated `tasks.md` and `plan.md` at the paths the caller specifies.
+- Output: the complete indexed Planning result at the caller-specified absolute `plan-index.md` locator.
 
 **Partner WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a partner WORK stage):** an independent active-runtime draft and an independent partner draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
 - Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
@@ -130,7 +130,7 @@ Check your output against the phase's quality bar.
 - **Ideation:** root problem named (not just the symptom)? approach concrete enough to decompose? constraints/trade-offs explicit? success measurable? open questions flagged honestly?
 - **Study:** every codebase reference accurate? every external reference linked? recommendations directional rather than prescriptive? no executor could follow this mechanically without thinking?
 - **Planning:** every hierarchy leaf mapped once? every combined task group context-coherent and assigned one
-  role? complete task and execution context carried inside each group? dependencies correct? both artifacts
+  role? complete task and execution context carried inside each group? dependencies correct? both views
   independently readable and consistent, with no placeholders or type/name drift?
 
 ### Memorize

@@ -28,8 +28,9 @@ to this section.}
 
 ## Design and Development Lifecycle
 
-{Cover how a project or product result is conceived, designed, implemented, verified, delivered, maintained,
-and changed.}
+{Cover how a project or product result is conceived, designed, implemented, verified, handed off, used within
+the work, delivered, maintained, and changed. Keep documents, designs, plans, source files, and other work
+artifacts here when later project work uses or revises them.}
 
 {If no design and development coverage is supported, write `No supported coverage for this lifecycle.` and
 add nothing else to this section.}
@@ -45,7 +46,8 @@ add nothing else to this section.}
 
 ## Product Lifecycle
 
-{Cover all applicable concerns about the product and its consumers throughout the product's life.}
+{Use this lifecycle only for an operating app, service, library, or comparable product. Cover applicable
+consumer use, operation, support, compatibility, migration, replacement, retirement, and exit concerns.}
 
 {If no product coverage is supported, write `No supported coverage for this lifecycle.` and add nothing else
 to this section.}

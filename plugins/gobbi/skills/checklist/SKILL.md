@@ -18,11 +18,13 @@ signs must be prepared; it stops before executing the items or judging the subje
 Inspect the subject, intended results, affected people and systems, boundaries, risks, and available evidence
 before choosing categories or scenarios. Include only coverage supported by that context.
 
-### Keep the lifecycle views distinct
+### Assign each concern to its owning lifecycle
 
-Project Lifecycle examines the project as a unit of work, Design and Development Lifecycle examines how a
-result is created and changed, and Product Lifecycle examines the product and its consumers throughout the
-product's life. Keep these views separate, even when a concern appears in more than one.
+Project Lifecycle examines the project as a unit of work, while Design and Development Lifecycle examines how
+project or product results are conceived, created, handed off, used within the work, maintained, and changed.
+Product Lifecycle examines an operating app, service, library, or comparable product through consumer use,
+operation, support, evolution, and retirement; a work artifact is not a product merely because it has readers
+or downstream consumers.
 
 ### Keep scenarios broad and items precise
 
@@ -40,7 +42,8 @@ when omitting it would make the sign ambiguous or unanswerable.
 - **MUST bind the checklist to one stable subject class or one exact target, plus its scope and context.** Give
   a reusable source an applicability boundary; give a target-specific source an exact artifact identity.
 - **MUST use the fixed lifecycle structure in this order: Project, Design and Development, then Product.**
-  Render each lifecycle at level two, each category at level three, and each broad expected scenario at level four.
+  Render each lifecycle at level two, each category at level three, and each broad expected scenario at level
+  four; use Product only for an operating app, service, library, or comparable product.
 - **MUST make each expected scenario one broad problem family that can group related checklist items.** Never
   nest scenarios, create a separate scenario for each sign, or invent a sign to meet a count.
 - **MUST give each checklist item one broadly reusable, independently answerable sign of its scenario's
@@ -69,18 +72,20 @@ when omitting it would make the sign ambiguous or unanswerable.
   from applicable concerns such as purpose, scope, ownership, planning, governance, coordination, project
   structure, change control, documentation, and archival.
 - Use Design and Development Lifecycle for how a project or product result is conceived, designed,
-  implemented, verified, delivered, maintained, and changed. Derive categories from applicable concerns such
-  as requirements, decisions, architecture, implementation, integration, verification, delivery, and recovery.
-- Use Product Lifecycle for all applicable concerns about the operating product and its consumers throughout
-  the product's life. Examples include product operation, user scenarios, adoption, configuration, use,
-  reliability, support, compatibility, migration, replacement, and exit.
+  implemented, verified, handed off, used within the work, delivered, maintained, and changed. Documents,
+  designs, plans, source files, and other work artifacts remain in this lifecycle when later project work uses
+  or revises them.
+- Use Product Lifecycle only for an operating app, service, library, or comparable product and its consumers.
+  Derive categories from applicable operation, user scenario, adoption, configuration, reliability, support,
+  compatibility, migration, replacement, retirement, and exit concerns.
 
 #### 2.2 Review lifecycle category coverage
 
 - Compare the categories with the subject, intended results, governing sources, affected people and systems,
   interfaces, transitions, risks, and prior failures. Ensure every applicable material concern is covered.
-- Keep the three lifecycle views separate. Retain an overlapping concern only when its viewpoint changes the
-  scenario, expected result, or evidence, and name each category for the concern it groups.
+- Place each concern by its owning viewpoint, not by the mere presence of a reader, handoff, or downstream
+  consumer. Keep work-artifact use and revision in Design and Development; use Product only when the concern
+  belongs to the operation or life of an app, service, library, or comparable product.
 - Merge duplicate categories and remove unsupported categories, then recheck coverage. Return to Phase 1 when
   a category exposes an unstable boundary or material evidence gap.
 

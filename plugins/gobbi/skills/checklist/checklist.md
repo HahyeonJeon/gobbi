@@ -58,6 +58,8 @@
 - [ ] An expected scenario combines materially different problem families.
 - [ ] Two expected scenarios cover the same problem family in the same context.
 - [ ] The same concern appears in multiple lifecycle views without a different viewpoint.
+- [ ] A work artifact appears in Product Lifecycle only because it has readers, handoffs, or downstream users.
+- [ ] An operating app, service, library, or comparable product concern appears outside Product Lifecycle without a different viewpoint.
 - [ ] A category exists without support from the subject or governing evidence.
 
 #### Expected-scenario coverage is incomplete or artificial
@@ -112,8 +114,6 @@
 - [ ] An expected scenario still reflects an earlier governing source.
 - [ ] A checklist item still reflects an earlier material premise.
 
-## Product Lifecycle
-
 ### Discovery and Applicability
 
 #### A cold evaluator cannot identify, apply, or navigate the checklist
@@ -144,3 +144,7 @@
 - [ ] A problem sign changes meaning across contexts inside the stated applicability boundary.
 - [ ] The current reusable source cannot be distinguished from a superseded source.
 - [ ] A working checklist cannot be distinguished from its reusable source.
+
+## Product Lifecycle
+
+No supported coverage for this lifecycle.
