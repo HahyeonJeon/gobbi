@@ -1,19 +1,15 @@
 ---
 name: cli-security
-description: "MUST load when a line-oriented CLI change accepts untrusted input, crosses a filesystem, process, shell, network, credential, update, telemetry, or terminal-control trust boundary, can cause destructive or partial effects, or requires CLI security analysis."
+description: "CLI Security is an operation that derives a CLI-specific assurance contract for one exact line-oriented command change. It owns threat, control, recovery, and residual-risk analysis, not implementation or action."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # CLI Security
 
-CLI Security guides the reviewer who derives one assurance contract for an exact line-oriented CLI change.
-It maps actors, assets, inputs, effects, threats, authority, controls, evidence, failure, recovery, and residual
-risk before returning the contract to implementation, release, or lifecycle coordination owners.
+CLI Security maps actors, assets, inputs, effects, trust crossings, threats, authority, controls, evidence, failure, recovery, and residual risk for an exact CLI path.
 
-This operation owns CLI-specific threat and control judgment. It does not implement TypeScript controls, run
-tests, produce supply artifacts, use credentials, perform delivery or release actions, or define generic
-organizational security policy.
+Use it when untrusted input, trust boundaries, destructive or partial effects, credentials, updates, telemetry, or terminal control are in scope; testing, implementation, artifact, delivery, release action, and risk acceptance remain with their owners.
 
 ## Principles
 

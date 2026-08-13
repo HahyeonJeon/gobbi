@@ -1,15 +1,15 @@
 ---
 name: typescript-conventions
-description: "MUST load when writing or reviewing TypeScript code to choose names, files, imports, documentation, comments, or formatting."
+description: "TypeScript Conventions is a preference skill for source naming, file layout, imports, public documentation, comments, and formatting."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # TypeScript Conventions
 
-TypeScript Conventions defines the source-level choices that make typed code predictable to read: names, file layout, imports, documentation, comments, and formatting. It does not decide type semantics, runtime architecture, or compiler configuration.
+TypeScript Conventions defines source-level choices that make typed code predictable to read. Use it when writing or reviewing TypeScript names, files, imports, documentation, comments, or formatting.
 
-Existing project conventions take priority when they are coherent and tool-enforced. These preferences provide a deliberate baseline for new code and for choices the project has not settled.
+It does not decide type semantics, runtime architecture, or compiler configuration, and coherent tool-enforced project conventions take priority.
 
 ## Principles
 

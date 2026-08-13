@@ -1,18 +1,13 @@
 ---
 name: planning
-description: "MUST load when defined work must be decomposed into an executable plan. Planning produces a traceable task hierarchy and ordered context-coherent combined task groups."
+description: "Planning turns defined work into a traceable task hierarchy and an ordered list of context-coherent task groups. It produces the frozen `tasks.md` and `plan.md` artifacts."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Planning
 
-Use this skill to turn defined work into a fine-grained top-down task hierarchy and a flat ordered list of
-combined task groups assigned to agents. Its caller owns TODO state, evaluation, records, iterations, commit
-provenance, and orchestration.
-
-Planning decomposes the accepted direction in `tasks.md` and combines tasks into context-coherent groups in
-`plan.md`. It freezes and returns both artifacts only after final validation passes.
+Planning converts accepted work into a fine-grained task hierarchy in `tasks.md` and a flat, dependency-valid execution plan in `plan.md`. Use it when scope and direction are defined but work still needs decomposition and grouping for accountable agents; the caller retains orchestration and evaluation authority.
 
 ## Principles
 

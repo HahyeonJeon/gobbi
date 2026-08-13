@@ -1,6 +1,6 @@
 ---
 name: materials
-description: MUST load after the memory operation identifies content as material memory. Materials is a preference skill for what durable source and supporting material belongs in memory and how it is structured.
+description: "Material Memory is a preference skill for selecting and structuring durable source material and supporting project evidence."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,13 +8,9 @@ user-invocable: false
 
 # Material Memory
 
-This internal category skill guides material-memory judgment after the parent memory operation identifies
-content as material memory. It owns the content and structure of `memory/materials/`. The parent memory skill
-owns when and how materials are read, created, updated, moved, or deleted.
+Material Memory defines the content and structure of `memory/materials/` after the parent Memory operation classifies content as material memory. Use it to retain permitted project inputs and evidence by intended use, while keeping project-authored conclusions, current intent, guidance, actions, and shipped source with their owners.
 
-Material memory preserves durable project inputs and evidence. The material's intended use chooses its
-category. Its file format does not. Project-authored conclusions, current intent, guidance, actions, and
-shipped source remain under their own owners.
+The parent Memory operation owns when and how materials are read, created, updated, moved, or deleted; this skill owns source integrity, provenance, restrictions, and purpose-based structure.
 
 ## Principles
 

@@ -10,7 +10,6 @@ each group. Order implies no priority, readiness, or sequence.
 
 ## Project
 
-- `agent-writing template still hardcodes the agents path` → `project.md#agent-writing-template-still-hardcodes-the-agents-path`
 - `check-markdown-links.sh never inspects the plugin mirror` → `project.md#check-markdown-linkssh-never-inspects-the-plugin-mirror`
 - `.codex/config.toml is inert` → `project.md#codexconfigtoml-is-inert`
 - `Consumer-project README setup section` → `project.md#consumer-project-readme-setup-section`

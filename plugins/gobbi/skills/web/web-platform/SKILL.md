@@ -1,19 +1,15 @@
 ---
 name: web-platform
-description: "MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics."
+description: "Web Platform is a tool skill for interpreting standards, browser and execution-context behavior, compatibility, security boundaries, lifecycle, accessibility and performance evidence, and diagnostics."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
 
 # Web Platform
 
-Use this tool skill to answer what a web standard defines, what a target browser and execution context do, and
-what an observation can establish. It covers lifecycle, navigation, storage, networking, origins,
-compatibility, accessibility evidence, performance evidence, and diagnosis.
+Web Platform establishes what standards define, what a target browser and execution context do, and what an observation can prove. Use it when interpreting or verifying browser behavior, compatibility, lifecycle, security boundaries, accessibility, performance evidence, or diagnostics.
 
-It supplies platform facts to `web-app-lifecycle`, development, frontend, backend, architecture, security,
-testing, HTML, CSS, language, and framework owners. It does not choose product behavior, controls, tests, or
-architecture; `web-app-lifecycle` chooses the user-visible browser and PWA state contract.
+It supplies platform facts without choosing product behavior, architecture, controls, or tests.
 
 ## Principles
 

@@ -1,17 +1,13 @@
 ---
 name: delegation
-description: "MUST load when writing or reviewing a task prompt for a subagent. Delegation is a preference skill for clear, contextual, and verifiable task prompts."
+description: "Delegation is a preference skill for writing or reviewing clear, contextual, and verifiable task prompts for subagents."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # Delegation
 
-Delegation is a preference skill for writing detailed task prompts for subagents. It gives the receiver enough
-context, direct instructions, required resources, and an exact result contract.
-
-Apply its runtime-neutral base template across Claude and Codex and across leader, executor, evaluator, and
-assistant roles. The owning operation may make the template more specific.
+Delegation guides task prompts for subagents across supported runtimes and specialist roles. Use it when a specialist needs the context, instructions, resources, result contract, and acceptance proof required for an authoritative handoff; an owning operation may make the base template more specific.
 
 ## Principles
 

@@ -1,20 +1,15 @@
 ---
 name: react-typescript
-description: "MUST load when React source or tests use TypeScript, TSX, or installed React type definitions."
+description: "React TypeScript is a tool skill for TSX, component props, children, events, Hooks, refs, JSX-facing values, and installed React type definitions."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # React TypeScript
 
-Use this lookup tool for React-specific TypeScript in browser applications and Electron renderers:
-TSX, component props, children, events, Hooks, refs, JSX-facing values, and installed React types.
+React TypeScript explains React-specific TypeScript for browser applications and Electron renderers. Use it when React source or tests use TypeScript, TSX, or installed React type definitions.
 
-This child does not teach generic TypeScript. Load the `typescript` skill for strictness, narrowing, modules,
-async behavior, resource handling, packaging, conventions, and type-level tests.
-
-Apply the project's installed TypeScript, React, renderer, framework, configuration, and type definitions. Do not
-substitute examples from another version for the types the project compiles.
+Generic TypeScript behavior remains with the `typescript` family, and the project's installed compiler, React, renderer, framework, configuration, and types remain authoritative.
 
 ## Principles
 

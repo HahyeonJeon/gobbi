@@ -1,19 +1,15 @@
 ---
 name: desktop-linux
-description: "MUST load when looking up or diagnosing current Linux facts about compatibility, installation, runtime lifecycle, native integration, update, repair, uninstall, trust, or failure evidence for an installable Electron desktop application written in TypeScript."
+description: "Desktop Linux is a tool Manual for current Linux facts and failure diagnosis for one exact installable Electron application compatibility tuple. It returns Supported, Not supported, or Unknown."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
 
 # Desktop Linux
 
-Desktop Linux is the query-first Manual for current Linux facts about one installable Electron and
-TypeScript application. A **compatibility tuple** is the exact application, artifact, Linux distribution,
-and environment record that bounds one lookup.
+Desktop Linux looks up compatibility, distribution and installation, lifecycle, desktop and display integration, portals, secret storage, confinement, update, repair, uninstall, trust, and failure facts for an exact Linux tuple.
 
-The Manual returns one bounded fact result and its diagnosis. It does not choose product behavior, declare
-product support policy, implement or test the application, use credentials, mutate a machine or external
-system, or run an end-to-end development or release procedure.
+Use it when a current Linux fact or diagnosis is needed; it does not choose product behavior or support, implement or test, use credentials, mutate systems, or coordinate a lifecycle.
 
 ## Principles
 

@@ -1,25 +1,15 @@
 ---
 name: gobbi
-description: "MUST load at session start and at every boundary that may discard session context. Loads Principles, Discussion, and Delegation, then obtains and routes the user's General, Cowork, or Workflow mode selection."
+description: "Gobbi is the read-only entry operation for a Gobbi manager. It establishes and routes General, Cowork, or Workflow session state across fresh entry and context boundaries."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
 
 # Gobbi
 
-Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, Discussion, and Delegation,
-reports any configuration the session is missing, obtains one session mode — General, Cowork, or Workflow — an
-applicable session slug, and one session-wide `partner: enabled|disabled` policy, then hands the complete entry
-state to that mode's owner.
+Gobbi is the read-only entry operation for a Gobbi manager. Use it at session start and after a boundary that may discard manager context to establish or preserve the foundation, mode, applicable slug, partner policy, and owner route.
 
-Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
-every mode inherits. General continues from the Principles foundation, Cowork uses
-[`cowork`](../cowork/SKILL.md), and Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all
-mode-specific creation, state, routing, execution, evaluation, and closure.
-
-The entry writes nothing: reading configuration and asking the user are both reads. It runs again at every
-boundary that may discard manager context and keeps an established mode whenever that mode's evidence still
-validates.
+It reports missing configuration and hands complete entry state to General, Cowork, or Workflow without creating session artifacts or implementation.
 
 ## Principles
 
@@ -288,10 +278,7 @@ that has children routes to them from its own document.
 
 | Skill | Owns |
 |---|---|
-| [`skill-writing`](../skill-writing/SKILL.md) | Authoring or substantively revising one project skill. |
-| [`agent-writing`](../agent-writing/SKILL.md) | Authoring a Gobbi agent's canonical Markdown and TOML pair. |
-| [`claude-plugin`](../claude-plugin/SKILL.md) | The shared Claude Code and Codex plugin package and its manifests. |
-| [`codex`](../codex/SKILL.md) | The Codex CLI and native Codex entry surfaces. |
+| [`gobbi-skill`](../gobbi-skill/SKILL.md) | Authoring or substantively revising one project skill or skill family. |
 
 ### Languages and platforms
 

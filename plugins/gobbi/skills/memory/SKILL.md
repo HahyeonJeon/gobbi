@@ -1,19 +1,15 @@
 ---
 name: memory
-description: "MUST load when writing a temporary session record or memorizing durable project context. Memory is one operation with explicit Temporary Record and Memorize actions."
+description: "Memory is an operation skill for writing compact temporary session records and selecting, routing, and updating durable project memory."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Memory
 
-Memory keeps temporary session evidence and durable project memory useful and current. **Temporary Record**
-writes compact recovery evidence below `sessions/*`. **Memorize** selects durable future value from the
-session and closure evidence, then updates tracked `memory/*`.
+Memory records compact recovery state for active sessions and keeps durable project context current. Use **Temporary Record** after the worktree, project, session identity, and paths are known for caller-owned output below `sessions/*`; use **Memorize** to select durable value and update tracked `memory/*`.
 
-The active worktree, project, and session determine the roots. Cowork or Workflow owns each exact temporary
-output path and schema. Memory owns containment, temporary-write safety, durable judgment, and category
-routing.
+Cowork or Workflow owns each temporary schema, while Memory owns containment, write safety, durable judgment, and category routing.
 
 ## Principles
 

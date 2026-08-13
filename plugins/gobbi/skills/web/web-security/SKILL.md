@@ -1,17 +1,15 @@
 ---
 name: web-security
-description: "MUST load when a web change crosses a trust boundary; handles identity, sessions, protected or sensitive data; accepts untrusted content; changes authorization, providers, dependencies, security configuration, or public exposure; or requires security review."
+description: "Web Security is an operation skill for deriving versioned security requirements from assets and threats, binding controls to owners, verifying them adversarially, and reporting residual risk."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Web Security
 
-Use this operation to derive versioned security requirements from assets and threats, bind controls to their
-owners, verify them adversarially, and report residual risk.
+Web Security derives versioned requirements from assets and threats, binds controls to their owners, verifies them adversarially, and reports residual risk. Use it when a change crosses trust boundaries, handles identity or protected data, accepts untrusted content, changes authorization or exposure, or needs security review.
 
-Security owns requirements, threat analysis, assurance, and residual-risk handoff. Backend owns domain policy
-and its server-side implementation, platform owns browser facts, and testing owns harness and suite mechanics.
+It owns requirements, threat analysis, assurance, and residual-risk handoff; implementation, browser facts, and test mechanics remain with their named owners.
 
 ## Principles
 

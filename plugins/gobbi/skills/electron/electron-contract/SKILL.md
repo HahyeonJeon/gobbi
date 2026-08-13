@@ -1,26 +1,15 @@
 ---
 name: electron-contract
-description: "MUST load when defining or reviewing observable installed Electron behavior across targets, entry modes, windows, application lifecycle, operating-system integration, local data, installation, updates, and recovery."
+description: "Electron Contract is a preference skill for defining and reviewing observable installed behavior across targets, entry modes, lifecycle states, operating-system integrations, local data, updates, failures, and recovery."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Electron Contract
 
-Use this preference skill to define or review one installed Electron application contract. It covers
-target-specific installation, launch and alternate entry, windows, local data, application lifecycle,
-operating-system integration, update restart, failure, uninstall, recovery, and support.
+Electron Contract defines or reviews one target-specific installed application contract as an observable state machine for users, operators, and support staff.
 
-The contract is an observable state machine for affected users, operators, and support staff. Each promise is
-associated with an exact target operating system and architecture, application identity, installed artifact
-identity, starting state, trigger, result, the state change the application or operating system accepts as
-final, preservation behavior, failure, recovery, diagnostics requirement, and evidence required to establish
-the observable result.
-
-This skill owns installed behavior judgments only. Interface owns observable interface judgment,
-[`electron-design`](../electron-design/SKILL.md) owns technical architecture, and Runtime supplies current
-mechanism facts. Rules define the valid
-choice space and override every conflicting Preference.
+Use it when deciding installation, launch and alternate-entry behavior, windows and application lifetime, local data, updates, failures, uninstall, recovery, or support.
 
 ## Principles
 

@@ -4,7 +4,7 @@
 
 ## Changes
 
-- Added the [Gobbi development lifecycle skill family](../design/feature/gobbi-dev-skill-family.md): one
+- Added the Gobbi development lifecycle skill family: one
   navigation-only root and seven direct children for development, testing, review, release, deployment,
   conventions, and toolchain guidance.
 - Added repository-local Claude and Codex discovery while excluding the exact top-level family from plugin

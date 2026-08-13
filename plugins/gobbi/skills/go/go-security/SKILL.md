@@ -1,19 +1,15 @@
 ---
 name: go-security
-description: "MUST load when Go work crosses a trust boundary; handles untrusted input, identity, authorization, cryptography, secrets, sensitive data, dependencies, vulnerability findings, network exposure, or security review."
+description: "Go Security is an operation for reviewing or coordinating changes across trust boundaries and returning verified security results with residual risk."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Security
 
-Go Security reviews or coordinates changes to Go work that crosses a trust boundary. It returns a verified
-security review or a complete verified security change with exact evidence and residual risk.
+Use Go Security when work involves untrusted input, identity, authorization, cryptography, protected values, dependencies, vulnerability findings, network exposure, or another trust boundary.
 
-This operation owns trust boundaries, threat and attack-path analysis, protected-data handling, dependency and
-vulnerability decisions, network-exposure judgment, and the Go-domain security result. General construction,
-module changes, evidence design, project-command mechanics, and causal diagnosis remain with their named Go
-siblings. External mutation and publication remain with a named external-action owner.
+It owns threat and attack-path analysis, protected-data handling, dependency and vulnerability decisions, network-exposure judgment, verification, and residual risk while routing construction, module work, evidence, commands, diagnosis, publication, and external mutation to their owners.
 
 ## Principles
 

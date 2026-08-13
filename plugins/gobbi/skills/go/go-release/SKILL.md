@@ -1,25 +1,15 @@
 ---
 name: go-release
-description: "MUST load when versioning, publishing, verifying, or recovering a Go module, binary, or archive release."
+description: "Go Release is an operation for preparing, coordinating, verifying, or recovering an exact module, binary, or archive release."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Release
 
-Go Release prepares, coordinates, verifies, or recovers one exact Go module, binary, or archive release. It
-returns a prepared release contract, a verified release result, or an exact failed, blocked, or recoverable
-partial state.
+Use Go Release when versioning, publishing, verifying, or recovering one exact module, binary, or archive release.
 
-This operation owns Go-domain release classification, release compatibility analysis, the exact version and
-tag decision, readiness evidence, action specifications, post-action and external-consumer verification,
-recovery semantics, and the release result. It consumes final `go-modules` facts or `go-packaging` checksum
-identity unchanged and never recreates, rebuilds, or alters those inputs.
-
-Exactly three modes exist: **Preparation**, **Read-only verification coordination**, and **Authorized
-external-action coordination**. The manager grants current authority, the Git operation executes an exact
-tag/ref action, and a named external-action owner executes or reads a non-Git destination; Go Release only
-supplies contracts and verifies returned evidence.
+It owns release classification, compatibility analysis, exact version and tag decisions, readiness, action specifications, verification, and recovery semantics while consuming immutable module or artifact inputs and leaving Git and destination effects to manager-authorized executors.
 
 ## Principles
 

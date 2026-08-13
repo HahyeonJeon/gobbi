@@ -1,19 +1,15 @@
 ---
 name: web-development
-description: "MUST load when coordinating or reviewing one web change across design, implementation, testing, release, deployment, live learning, iteration, and retirement handoffs."
+description: "Web Development is an operation skill for coordinating one observable change across its applicable lifecycle stages and specialist handoffs."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Web Development
 
-Use this operation to coordinate one observable web change across the lifecycle stages it needs. It binds the
-outcome, routes each stage, preserves handoff evidence, and keeps returns and reopen reasons owned.
+Web Development coordinates one observable change across every applicable lifecycle stage and specialist handoff. Use it when coordinating or reviewing work across design, implementation, testing, release, deployment, live learning, iteration, maintenance, and retirement.
 
-This operation performs no design, implementation, test, release, deployment, operations, or retirement
-action by virtue of coordination. [`web-design`](../web-design/SKILL.md), frontend, backend, architecture,
-security, testing, release, deployment, observability, operations, and other specialists retain their action,
-authority, evidence, and acceptance.
+Coordination grants no specialist or action authority; each owner retains its work, evidence, and acceptance.
 
 ## Principles
 

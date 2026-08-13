@@ -1,21 +1,5 @@
 # Project Backlog
 
-## agent-writing template still hardcodes the agents path
-
-**Backlogged at:** 2026-08-02T12:16:00Z
-
-**What:** Remove the remaining hardcoded `.gobbi/projects/gobbi/agents/{role}.md` path from
-`agent-writing/SKILL.md` (7 occurrences), replacing it with the `{gobbi-agents-root}` placeholder the five
-live role-contract wrappers now use.
-
-**Why backlogged:** The template and the five live `.toml` wrappers must change together, or the identity
-check that compares the template's string against each wrapper's string breaks. The 2026-08-02 locator session
-deliberately left this unfixed rather than half-fixing it — see
-[`learnings/dev/mistakes.md`](../learnings/dev/mistakes.md#fixing-one-copy-of-a-duplicated-invariant).
-
-**Context:** Raised during the same session that converted the five wrappers to reference the role contract's
-resolved roots instead of a hardcoded path.
-
 ## check-markdown-links.sh never inspects the plugin mirror
 
 **Backlogged at:** 2026-08-02T12:16:00Z
@@ -95,11 +79,11 @@ without spending another review cycle on it was preferred to leaving the whole f
 **What:** Decide whether `assistant.toml` needs a git/scope guardrail clause and whether `manager.toml` needs
 the conflict-precedence clause the other four role wrappers carry.
 
-**Why backlogged:** `agent-writing/SKILL.md`'s P3 template requires a git/scope guardrail clause (c) for any
-role that writes to the worktree; `assistant.toml` has none, though the assistant role writes to the worktree
-during RECORD and Wrap-up WORK. `manager.toml` lacks the conflict-precedence clause the other four wrappers
-carry, which reads as a pre-existing asymmetry rather than a clear defect. Both need a user decision on
-whether the omission is intentional.
+**Why backlogged:** Direct comparison of the five live role contracts and wrappers shows that
+`assistant.toml` has no git/scope guardrail clause, though the assistant role writes to the worktree during
+RECORD and Wrap-up WORK. `manager.toml` lacks the conflict-precedence clause the other four wrappers carry,
+which reads as a pre-existing asymmetry rather than a clear defect. Both need a user decision on whether the
+omission is intentional.
 
 **Context:** Raised during the 2026-08-02 locator session while converting the five role-contract wrappers;
 pre-existing, not introduced by that conversion.

@@ -1,19 +1,15 @@
 ---
 name: html-css-design
-description: "MUST load when choosing or reviewing an HTML/CSS system's structural regions and relationships, layout architecture, responsive or adaptive strategy, state-to-presentation mapping, material variants, or public markup and styling interface shape."
+description: "HTML/CSS Design is a preference skill for markup-and-presentation structure and public interfaces. It covers layout, adaptation, state presentation, and material variants."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # HTML/CSS Design
 
-Use this preference to translate approved interface intent into a coordinated markup-and-presentation system.
-It helps a designer compare structural regions and relationships, layout and adaptation strategies, state
-presentation, material variants, and the shape of public markup and styling interfaces.
+HTML/CSS Design translates approved interface intent into structural regions, layout architecture, adaptation, state presentation, variants, and public markup or styling interfaces. Use it when choosing or reviewing those system-level relationships before implementation.
 
-The skill does not decide product identity, aesthetics, or whether motion is warranted. It records specialist
-questions for `html-css-semantics`, `html-css-conventions`, and `html-css-motion` instead of deciding their exact
-elements, defaults, or mechanics.
+It does not decide product identity, aesthetics, exact semantics, conventions, or motion mechanics.
 
 ## Principles
 

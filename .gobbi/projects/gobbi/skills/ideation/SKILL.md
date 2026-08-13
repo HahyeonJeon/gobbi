@@ -1,19 +1,13 @@
 ---
 name: ideation
-description: "MUST load when discussing a problem and exploring how to address it with the user. Ideation is an operation skill for understanding the problem, defining its boundaries, and developing an evidence-backed design through discussion."
+description: "Ideation turns a user-triggered problem into an evidence-backed design through caller-led study and discussion. It produces one authoritative `ideation.md` and stops before implementation planning."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Ideation
 
-The Ideation operator applies this skill when a caller needs a user trigger turned into an
-evidence-backed design. The operator studies the problem, prepares and resolves material decisions through
-the caller, and writes one current authoritative result: `ideation.md`.
-
-The caller retains user interaction, orchestration, and independent evaluation. The operator stops at the
-design boundary and freezes a self-reviewed subject. Caller-requested `requirements.md` and `topics.md`
-snapshots remain optional and subordinate.
+Ideation turns a caller's user trigger into an evidence-backed design. Use it to study the problem, resolve material decisions through the caller, and produce one authoritative, self-reviewed `ideation.md`; the caller retains user interaction, orchestration, and evaluation, and the operation stops before implementation planning or realization.
 
 ## Principles
 

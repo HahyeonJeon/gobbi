@@ -1,24 +1,15 @@
 ---
 name: go-conventions
-description: "MUST load when choosing or reviewing Go package names, identifiers, receiver names, source file names, import aliases, error text, or project-wide written-form conventions."
+description: "Go Conventions provides preferences for names, receiver forms, source filenames, import aliases, and error text."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Go Conventions
 
-Use this preference skill when choosing or reviewing Go package names, identifiers, receiver names, source
-file names, import aliases, error text, or project-wide written-form conventions.
+Use Go Conventions when choosing or reviewing the written form of package names, identifiers, receiver names, source filenames, import aliases, or error text.
 
-Accepted project conventions and design decisions remain authoritative. This skill supplies naming and error
-text defaults only when the project is silent. A material project-wide departure requires project authority
-and a substantive basis.
-
-`go-design` owns each package name, import path, package directory or placement, package boundary, public API
-or CLI, type, and error contract; this skill judges their written form after those decisions. `go-source` owns
-source organization, formatter layout, import form, and generated provenance. `go-documentation` owns public
-documentation and implementation comments. `go-toolchain` owns Go version and command evidence, and
-`go-development` owns general construction.
+It supplies defaults only after accepted semantic decisions and project conventions; package and API design, source organization, documentation, command mechanics, and construction remain with their named owners.
 
 ## Principles
 

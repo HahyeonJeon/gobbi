@@ -1,27 +1,15 @@
 ---
 name: web-localization
-description: "MUST load when choosing or reviewing how a web app or Electron renderer handles language and region, including message catalogs, plural and grammatical selection, date, number, and currency formatting, locale negotiation, or right-to-left layout."
+description: "Web Localization is a preference skill for language, locale, grammar, formatting, catalogs, negotiation, and writing-direction choices in browser interfaces and Electron renderers."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
 
 # Web Localization
 
-Use this preference skill when a web app's language and region need a judgment rather than a step: where a
-user-visible string comes from, how a sentence survives a language whose grammar differs, which locale a
-visitor is served, and what changes when the writing direction reverses. It holds for any browser interface,
-including an Electron renderer.
+Web Localization guides language and region choices for browser interfaces and Electron renderers. Use it when choosing or reviewing message catalogs, grammatical selection, formatting, locale negotiation, translated content, or right-to-left behavior.
 
-Read this before a product ships in one language, not after it needs a second. Localization is the cheapest
-of the coverage decisions to take early and the most expensive to take late, because the change site is every
-component that renders text, a number, a date, or a direction-dependent layout.
-
-[`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owns the `lang` and `dir` attributes and where each is
-expressed, and [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owns logical properties and the flow
-they drive; this skill decides which language and direction those mechanisms carry. `web-frontend` owns the
-ordered browser operation that applies these choices, `web-design` owns the identity and wording
-judgment behind the words, and `web-backend` owns locale-dependent server-owned data. Rules define the
-boundary, Preferences select defaults inside it, and a Rule wins every conflict.
+HTML and CSS owners express language, direction, and layout mechanics; frontend, design, and backend owners apply the choices in their respective layers.
 
 ## Principles
 

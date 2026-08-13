@@ -24,8 +24,7 @@
   and Codex discovery, exact package exclusion, bilateral validators, fixture coverage, and hardened runtime
   smoke policy.
   **Evidence:** Original commit `8b4d9a17205b697840cfb4346450e002304e3fc6`, accepted repair commit
-  `9f6ea2f6db4c197f5f109756801242d7be747dd3`, the
-  [current design](../../design/feature/gobbi-dev-skill-family.md), and the
+  `9f6ea2f6db4c197f5f109756801242d7be747dd3`, the then-current design, and the
   [completed review](../review/2026-08-10-gobbi-dev-skill-family-review.md).
 
 ## Memory

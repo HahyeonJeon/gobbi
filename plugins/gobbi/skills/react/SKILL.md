@@ -1,25 +1,24 @@
 ---
 name: react
-description: "MUST load before React Compiler configuration, diagnostics, coverage, migration, memoization, or compiler-related performance is in scope; naming, defining, exporting, moving, organizing, or reviewing React components, Hooks, or JSX files; designing React-specific component structure, props, composition, render, Hooks, state, Effects, identity, native interface, or Error Boundary behavior; implementing one scoped React change for a browser application or Electron renderer; using server rendering, hydration, Server Components, Server Functions, or client/server directives in a React browser application or Electron renderer; creating or revising React component or Hook tests; or using TypeScript, TSX, or installed React type definitions in React source or tests. React is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
+description: "React is a navigation-only domain skill for component design, implementation, compiler use, server features, conventions, testing, and TypeScript integration in browser applications and Electron renderers."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # React
 
-React covers design, implementation, and test creation or revision for browser applications and
-Electron renderers that use React. React Native requires project-specific guidance.
+React routes browser-application and Electron-renderer work to focused component, compiler, server, testing, convention, and TypeScript skills. Use it when work involves React source, behavior, or tooling; React Native requires project-specific guidance.
 
-This root provides navigation only. Load every child whose trigger applies.
+This root owns navigation only, and a task may need several children.
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`react-compiler`](react-compiler/SKILL.md) | tool | MUST load when React Compiler configuration, diagnostics, coverage, migration, memoization, or compiler-related performance is in scope. |
-| [`react-conventions`](react-conventions/SKILL.md) | preference | MUST load when naming, defining, exporting, moving, organizing, or reviewing React components, Hooks, or JSX files. |
-| [`react-design`](react-design/SKILL.md) | operation | MUST load when designing React-specific component structure, props, composition, render, Hooks, state, Effects, identity, native interface, or Error Boundary behavior. |
-| [`react-development`](react-development/SKILL.md) | operation | MUST load when implementing one scoped React change for a browser application or Electron renderer. |
-| [`react-server`](react-server/SKILL.md) | tool | MUST load when a React browser application or Electron renderer uses server rendering, hydration, Server Components, Server Functions, or client/server directives. |
-| [`react-testing`](react-testing/SKILL.md) | operation | MUST load when creating or revising React component or Hook tests. |
-| [`react-typescript`](react-typescript/SKILL.md) | tool | MUST load when React source or tests use TypeScript, TSX, or installed React type definitions. |
+| [`react-compiler`](react-compiler/SKILL.md) | tool | Use it when compiler setup, adoption, coverage, diagnostics, memoization, or compiler-related performance is in scope. |
+| [`react-conventions`](react-conventions/SKILL.md) | preference | Use it when creating, exporting, moving, organizing, or reviewing those units. |
+| [`react-design`](react-design/SKILL.md) | operation | Use it after the broader experience is known and when React-specific structure, props, composition, state, Hooks, Effects, identity, error recovery, accessibility obligations, host interfaces, or performance planning needs design. |
+| [`react-development`](react-development/SKILL.md) | operation | Use it when implementing components, Hooks, state, Error Boundaries, approved host interfaces, and their React-local tests, types, callers, documents, or client-render profiling. |
+| [`react-server`](react-server/SKILL.md) | tool | Use it when the installed framework or bundler supports those features in a React browser application or Electron renderer. |
+| [`react-testing`](react-testing/SKILL.md) | operation | Use it when creating or revising component or Hook tests with the project's installed runner, renderer, helpers, and conventions. |
+| [`react-typescript`](react-typescript/SKILL.md) | tool | Use it when React source or tests use TypeScript, TSX, or installed React type definitions. |

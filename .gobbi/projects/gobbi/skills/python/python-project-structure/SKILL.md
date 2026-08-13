@@ -1,19 +1,15 @@
 ---
 name: python-project-structure
-description: "MUST load when Python workspace, application, package, source, test, configuration, generated-output, or artifact placement is established or reviewed."
+description: "Python Project Structure provides overridable preferences for workspace, source, test, configuration, generated-output, cache, and non-distribution artifact placement."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Python Project Structure
 
-Python Project Structure gives authors and reviewers overridable guidance for general workspace, application,
-source, test, configuration, generated-output, and non-distribution artifact placement. It keeps paths
-discoverable and their owners and lifecycles visible.
+Python Project Structure guides placement of workspace, application, source, tests, configuration, generated output, caches, and non-distribution artifacts.
 
-Required project, framework, runtime, workspace, and build conventions win. This skill does not decide
-`pyproject.toml` packaging semantics, package discovery, distribution artifacts, or installed-consumer behavior;
-a layout choice that affects them also loads `python-packaging`.
+Use it when authors or reviewers establish or assess path ownership and lifecycle under project, framework, runtime, and build constraints. Distribution-sensitive layout decisions also require Python Packaging.
 
 ## Principles
 

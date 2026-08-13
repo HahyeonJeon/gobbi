@@ -1,22 +1,15 @@
 ---
 name: web-app-lifecycle
-description: "MUST load when choosing or reviewing browser or PWA behavior for startup, readiness, restoration, foreground and background transitions, freeze or discard, offline and reconnect, service-worker updates, mixed versions, browser-managed PWA installation state, cleanup, or removal."
+description: "Web App Lifecycle is a preference skill for the user-visible browser and PWA state contract across startup, interruption, offline use, updates, installation state, cleanup, and removal."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
 
 # Web App Lifecycle
 
-Use this preference skill to choose the user-visible browser and PWA state contract for startup, restoration,
-visibility changes, freeze or discard, offline and reconnect, service-worker updates, mixed versions,
-browser-managed installation state, cleanup, and removal.
+Web App Lifecycle defines the user-visible browser and PWA state contract for startup, restoration, interruption, offline use, service-worker updates, installation state, cleanup, and removal. Use it when choosing or reviewing any of those states or transitions.
 
-`web-platform` supplies browser and compatibility facts. Frontend, backend, service-worker, storage, release,
-and deployment owners implement their parts; `web-development` coordinates their handoffs; and `web-testing`
-owns evidence design and test execution.
-
-This skill covers browser documents, workers, service workers, browser storage, and browser-managed PWA
-installation and removal. Native installed-application behavior remains with Desktop and Electron.
+Browser facts come from `web-platform`; implementation and proof remain with their layer and testing owners, and native application lifecycle remains outside this skill.
 
 ## Principles
 

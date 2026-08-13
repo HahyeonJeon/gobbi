@@ -1,20 +1,15 @@
 ---
 name: go-development
-description: "MUST load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification."
+description: "Go Development is an operation for implementing, changing, or reviewing code through study, design, incremental construction, and verification."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Development
 
-Go Development implements, changes, or reviews Go code through `Study -> Design -> Build -> Verify`. Author
-mode returns a project-consistent verified tree. Read-only review mode returns evidence-backed findings without
-mutating the subject.
+Use Go Development when implementing or changing Go code, or reviewing it without mutation, through `Study → Design → Build → Verify`.
 
-This operation owns general construction and review, not the judgments or results of its siblings. Load every
-matching Go preference, module, testing, toolchain, architecture, debugging, security, observability,
-performance, packaging, or release child and consume its owned result without restating its policy. Repository
-workflow owners retain scope, commit, publication, cleanup, and destructive-action authority.
+It owns general construction and review, consumes applicable sibling-owned judgments and results, and leaves scope, commits, publication, cleanup, destructive actions, and specialist outcomes with their owners.
 
 ## Principles
 

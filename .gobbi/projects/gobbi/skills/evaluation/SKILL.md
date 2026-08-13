@@ -1,17 +1,13 @@
 ---
 name: evaluation
-description: "MUST load when finished work needs an independent judgment. Evaluation produces one read-only, evidence-based judgment of an exact frozen subject."
+description: "Evaluation is a read-only operation for independent, evidence-based judgment of one exact frozen subject. It is used after work is finished and before acceptance decisions."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
 
 # Evaluation
 
-An independent evaluator uses this operation to produce one reproducible, evidence-based judgment of an exact frozen subject.
-
-Evaluation inspects actual work before prepared checklists or tests. They are context-appropriate baselines, never a coverage ceiling.
-
-Evaluation is read-only. It keeps judgment outside the subject, checklists, tests, criteria, dispositions, and workflow state.
+Evaluation inspects one exact frozen subject to produce an independent, reproducible, evidence-based judgment. Use it after work is finished and before acceptance or workflow decisions; it does not change the subject or prepared inputs and derives a verdict only from caller-supplied criteria.
 
 ## Principles
 

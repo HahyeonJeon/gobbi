@@ -1,20 +1,15 @@
 ---
 name: electron-development
-description: "MUST load when implementing or reviewing one bounded Electron source change across main, preload, renderer, utility process, window, application lifecycle, or operating-system integration boundaries."
+description: "Electron Development is an operation skill for implementing or reviewing one bounded source change across process, window, application-lifecycle, and operating-system integration boundaries."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Development
 
-Use this operation to implement or review one bounded Electron source change. Start from accepted installed
-contract, interface, and technical design records plus current runtime facts for the affected targets.
+Electron Development implements or reviews one bounded source outcome from accepted contract, interface, technical-design, and runtime records.
 
-Model the whole affected process chain before source details. Choose implementation with an exact edit set
-or read-only review, then work from shared contracts toward dependent integrations.
-
-The operation ends with one construction-verified source result and explicit dynamic records for later work.
-It does not establish behavior, construct a package candidate, accept a candidate, or make a release ready.
+Use it when source-scoped work involves main, preload, renderer, utility, window, lifecycle, or operating-system integration code. It stops at construction verification or an exact review classification with later-owner handoffs.
 
 ## Principles
 

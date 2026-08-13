@@ -65,10 +65,9 @@ Load per phase:
 
 Load when relevant: `{gobbi-skills-root}/startup/SKILL.md` (when the brief calls for a software-project design
 interview). When the work touches runtime docs or agents, read the active surfaces directly
-(`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) and load the skill that
-owns the surface — `{gobbi-skills-root}/skill-writing/SKILL.md`,
-`{gobbi-skills-root}/agent-writing/SKILL.md`, or
-`{gobbi-skills-root}/claude-plugin/SKILL.md`. For a language or platform, use the skill map in
+(`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex). Load
+`{gobbi-skills-root}/gobbi-skill/SKILL.md` when authoring a skill; use direct repository and runtime evidence
+for role and package surfaces. For a language or platform, use the skill map in
 `{gobbi-skills-root}/gobbi/SKILL.md` § References as the live inventory.
 
 ---

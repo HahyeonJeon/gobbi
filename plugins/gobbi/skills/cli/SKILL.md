@@ -1,27 +1,23 @@
 ---
 name: cli
-description: "MUST load before choosing or reviewing command hierarchy, command, option, or operand semantics, configuration sources or precedence, semantic result or error models, stream roles, exit-status contracts, public modes, compatibility, deprecation, or retirement for a line-oriented CLI; coordinating a scoped change to a line-oriented TypeScript CLI across accepted product contracts, security analysis, TypeScript implementation and testing, Bun and platform facts, package or direct delivery, release judgment, authorized external action, post-release observation, or maintenance; choosing or reviewing help and discovery content, terminal wording, human, plain, or structured rendering within accepted stream roles, diagnostics, prompts, progress, visualization, accessibility, localization, or adaptive presentation for a line-oriented CLI; looking up or diagnosing current command-line execution-platform facts about terminals, standard streams, process lifecycle, pipes, signals, shell entry, path resolution, encoding, locale, or operating-system differences for a line-oriented CLI; choosing or reviewing supported runtime, target, or delivery policy, required consumer evidence, runtime, artifact, installation, or data compatibility, release readiness, rollout controls, recovery, rollback, forward-fix, support, deprecation, or retirement for a line-oriented TypeScript CLI; or handling a line-oriented CLI change that accepts untrusted input, crosses a filesystem, process, shell, network, credential, update, telemetry, or terminal-control trust boundary, can cause destructive or partial effects, or requires CLI security analysis. CLI is a domain skill that routes line-oriented command-line work to its applicable operation, tool, and preference child skills."
+description: "CLI is a domain router for line-oriented command-line products, with TypeScript-specific development and release coverage."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # CLI
 
-CLI covers product structure, terminal expression, current execution-platform facts, and security analysis for
-line-oriented command-line tools. Development coordination and release judgment are TypeScript-scoped; Bun
-applies only when the development trigger names it.
+CLI covers command contracts, terminal expression, execution-platform facts, lifecycle coordination, release judgment, and security for line-oriented command-line products.
 
-This root owns navigation only. For every task that activates it, load at least one child and every row whose
-trigger applies; one task may require several children. Do not load a child whose trigger does not apply, and
-route work outside this line-oriented product domain to its owning skill.
+Use it when work touches this product domain and route the task to every applicable child; development and release are TypeScript-scoped, and Bun applies only when named.
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`cli-architecture`](cli-architecture/SKILL.md) | preference | MUST load when choosing or reviewing command hierarchy, command, option, or operand semantics, configuration sources or precedence, semantic result or error models, stream roles, exit-status contracts, public modes, compatibility, deprecation, or retirement for a line-oriented CLI. |
-| [`cli-development`](cli-development/SKILL.md) | operation | MUST load when coordinating a scoped change to a line-oriented TypeScript CLI across accepted product contracts, security analysis, TypeScript implementation and testing, Bun and platform facts, package or direct delivery, release judgment, authorized external action, post-release observation, or maintenance. |
-| [`cli-interface`](cli-interface/SKILL.md) | preference | MUST load when choosing or reviewing help and discovery content, terminal wording, human, plain, or structured rendering within accepted stream roles, diagnostics, prompts, progress, visualization, accessibility, localization, or adaptive presentation for a line-oriented CLI. |
-| [`cli-platform`](cli-platform/SKILL.md) | tool | MUST load when looking up or diagnosing current command-line execution-platform facts about terminals, standard streams, process lifecycle, pipes, signals, shell entry, path resolution, encoding, locale, or operating-system differences for a line-oriented CLI. |
-| [`cli-release`](cli-release/SKILL.md) | preference | MUST load when choosing or reviewing supported runtime, target, or delivery policy, required consumer evidence, runtime, artifact, installation, or data compatibility, release readiness, rollout controls, recovery, rollback, forward-fix, support, deprecation, or retirement for a line-oriented TypeScript CLI. |
-| [`cli-security`](cli-security/SKILL.md) | operation | MUST load when a line-oriented CLI change accepts untrusted input, crosses a filesystem, process, shell, network, credential, update, telemetry, or terminal-control trust boundary, can cause destructive or partial effects, or requires CLI security analysis. |
+| [`cli-architecture`](cli-architecture/SKILL.md) | preference | Use it when choosing or reviewing command meaning before expression or implementation; terminal wording, current platform facts, assurance, realization, evidence, delivery, and support remain with their owners. |
+| [`cli-development`](cli-development/SKILL.md) | operation | Use it when two or more owners must agree or the outcome claims support, delivery, release, maintenance, deprecation, or retirement; bounded single-owner work goes directly to that owner. |
+| [`cli-interface`](cli-interface/SKILL.md) | preference | Use it after command meaning and stream roles are accepted; it does not alter semantics or choose renderer, platform, security, implementation, evidence, support, paging, or full-screen behavior. |
+| [`cli-platform`](cli-platform/SKILL.md) | tool | Use it when a current platform fact or bounded diagnosis is needed; it does not make product, interface, security, implementation, evidence, delivery, or support decisions. |
+| [`cli-release`](cli-release/SKILL.md) | preference | Use it when support matrices, consumer evidence, compatibility, recovery, rollout, support, deprecation, or retirement need judgment; build, test, packaging, credential, publication, installation, and rollout actions remain elsewhere. |
+| [`cli-security`](cli-security/SKILL.md) | operation | Use it when untrusted input, trust boundaries, destructive or partial effects, credentials, updates, telemetry, or terminal control are in scope; testing, implementation, artifact, delivery, release action, and risk acceptance remain with their owners. |

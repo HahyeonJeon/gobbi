@@ -1,28 +1,15 @@
 ---
 name: typescript-cli-delivery
-description: "MUST load when producing, validating, installing, releasing, rolling back, or recovering a TypeScript command delivered directly without a package archive, such as a standalone executable or archive, a script copied or linked directly to an install target, or a recorded workspace or repository revision plus command."
+description: "TypeScript CLI Delivery is an operation skill for identifying, distributing, installing, verifying, rolling back, and recovering a command delivered without a package archive."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript CLI Delivery
 
-TypeScript CLI Delivery turns one command delivered directly without a package archive into an identified,
-distributed or installed, verified, and recoverable command for every authorized target. Direct non-archive
-delivery means the consumer receives the command without installing a package archive. Examples are a
-standalone executable or archive, a script copied or linked directly to an install target, and a recorded
-workspace or repository revision plus command.
+TypeScript CLI Delivery turns one directly delivered command into an identified, delivered, verified, and recoverable unit for each authorized target. Use it when delivering standalone executables or archives, directly copied or linked scripts, recorded workspace or repository commands, or other named direct-delivery methods.
 
-Package-backed command metadata is a command name or entry supplied by package metadata, including a
-`package.json` `bin` entry, a package script, or a workspace package link. `typescript-packaging` owns that
-metadata and its package behavior. A package-backed workspace command delivered directly loads both owners:
-`typescript-packaging` owns its package metadata, while this operation owns the direct non-archive delivery.
-A genuine hybrid distributes the same command through both a package archive and a direct non-archive method;
-it loads both owners and preserves separate artifact identities and consumer entries.
-
-Author mode may produce and deliver an authorized unit. Review-only validation inspects a pre-existing unit
-without changing the reviewed subject. TypeScript compilation belongs to `typescript-toolchain`, and command
-behavior test design belongs to `typescript-testing`.
+`typescript-packaging` owns package-backed metadata and archive distribution; compiler work and command behavior tests remain with `typescript-toolchain` and `typescript-testing`.
 
 ## Principles
 

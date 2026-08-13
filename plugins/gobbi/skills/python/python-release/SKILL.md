@@ -1,19 +1,15 @@
 ---
 name: python-release
-description: "MUST load when immutable Python artifact evidence is used to coordinate version readiness, authorized publication verification, or recovery."
+description: "Python Release coordinates artifact readiness, authorized publication verification, and recovery from immutable evidence."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Release
 
-Python Release consumes immutable Python artifact evidence to coordinate version readiness, authorized publication
-verification, and recovery. It returns a readiness record, an evidence-backed verification record, or a blocked
-state without changing the artifact or an external destination.
+Python Release coordinates version readiness, authorized publication verification, and recovery for one immutable artifact.
 
-This operation owns release readiness and recovery coordination only. `python-packaging` owns artifact creation
-and installed-consumer evidence. A separately authorized external owner performs every tag, credential use,
-publication, destination read, or external mutation.
+Use it after Python Packaging has supplied exact artifact and installed-consumer evidence. It returns a readiness, verification, or blocked record without building, publishing, using credentials, or mutating an external destination.
 
 ## Principles
 

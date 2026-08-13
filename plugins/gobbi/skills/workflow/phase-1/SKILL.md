@@ -1,6 +1,6 @@
 ---
 name: phase-1
-description: "MUST load when Workflow enters Phase 1. Configures or recovers one isolated session, locks the user's intent through Ideation, and hands a verified contract to Planning."
+description: "Workflow Phase 1 configures or recovers an isolated session and produces a verified Ideation contract for Planning. The parent Workflow retains shared contracts and transition authority."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,12 +8,7 @@ user-invocable: false
 
 # Workflow Phase 1
 
-The manager loads this child only after the parent [Workflow](../SKILL.md) activates `P1 · Configuration`, or
-when recovery selects an unfinished Phase 1 item. The parent remains loaded; it owns TODOs, evidence,
-participants, assignments, gates, records, recovery, and transitions.
-
-Phase 1 creates or recovers the isolated session, locks What, Why, How, scope, success, and authority with the
-user, and produces the verified Ideation contract that Planning consumes.
+Workflow Phase 1 configures or recovers one isolated Workflow session, resolves the user's What, Why, How, scope, success, and authority, and produces the verified Ideation contract consumed by Planning. Use it after the parent Workflow activates `P1 · Configuration` or recovery selects unfinished Phase 1 work, and before Phase 2 Planning; the parent remains active and owns all shared Workflow contracts.
 
 ## Principles
 

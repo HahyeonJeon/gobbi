@@ -1,17 +1,13 @@
 ---
 name: study
-description: "Use for bounded internal or external study that answers a question with source-grounded evidence and calibrated uncertainty."
+description: "Study is a read-only operation for answering one bounded internal or external question with source-grounded evidence and calibrated uncertainty."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Study
 
-Study is a read-only operation for answering one bounded question or goal with source-grounded evidence. It
-accepts the request and any available context, scope, constraints, or preferred output form.
-
-Study returns the answer in the requested form, or the shortest clear form when none is requested. It creates
-no artifact and requires no report, headings, identity envelope, slug, destination, or output path.
+Study answers one bounded question or goal with source-grounded evidence and calibrated uncertainty. Use it when internal or external research should return the requested answer without modifying sources or creating an artifact; when no form is specified, it returns the shortest clear answer.
 
 ## Principles
 

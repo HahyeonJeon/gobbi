@@ -1,6 +1,6 @@
 ---
 name: agent-teams
-description: "MUST load when setting up or using Agent Teams in Claude Code. Agent Teams is a tool skill for enabling, creating, coordinating, and cleaning up a team."
+description: "Agent Teams is a tool skill for coordinating and recovering Claude Code teams. It explains the experimental shared-task and messaging interface without owning assignments, authority, acceptance, or workflow state."
 allowed-tools: Read, Grep, Bash
 skill-type: tool
 user-invocable: false
@@ -8,11 +8,9 @@ user-invocable: false
 
 # Agent Teams
 
-Agent Teams is an experimental Claude Code feature. One lead coordinates independent Claude Code sessions
-through shared tasks and direct messages. Native Codex has no Agent Teams interface.
+Agent Teams is an experimental Claude Code tool for coordinating independent sessions through shared tasks and direct messages; native Codex has no equivalent interface. Use it before setting up or using a Claude Code team, and after a context boundary when Workflow needs team continuity or recovery guidance.
 
-This manual explains the tool. It also owns the shared Agent Teams continuity guidance used by Workflow.
-Cowork and Workflow still own assignments, authority, write boundaries, acceptance, and recovery evidence.
+Cowork and Workflow retain assignments, authority, write boundaries, acceptance, and recovery evidence.
 
 ## Principles
 

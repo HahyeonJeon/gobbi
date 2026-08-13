@@ -1,19 +1,15 @@
 ---
 name: html-css-testing
-description: "MUST load when designing, writing, running, diagnosing, or reviewing focused tests for an HTML/CSS contract, generated or conditional output, or direct browser or Electron-renderer behavior claimed by that contract."
+description: "HTML/CSS Testing is an operation skill for focused evidence about one markup or presentation contract. It covers authored output and direct browser or Electron-renderer behavior."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # HTML/CSS Testing
 
-Use this operation to design, write, run, diagnose, or review focused evidence for one HTML/CSS contract. It
-binds each atomic assertion to its semantic owner, system under test, source and variant cases, target and mode,
-minimum establishing evidence, and evidence ceiling.
+HTML/CSS Testing produces focused evidence for one HTML/CSS contract. Use it when designing, writing, running, diagnosing, or reviewing tests for authored markup or styling, generated or conditional output, or direct browser or Electron-renderer behavior.
 
-The operation can verify authored semantics and direct semantic or accessibility output, but it does not choose
-or implement keyboard behavior. Application-suite risk, cross-layer seams, end-to-end workflows, and release
-reconciliation remain with `web-testing`; load both owners when both claim boundaries apply.
+It binds atomic assertions to their owners, variants, targets, minimum evidence, and evidence ceilings; broader application and release evidence remains with `web-testing`.
 
 ## Principles
 

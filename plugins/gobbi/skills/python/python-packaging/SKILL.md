@@ -1,19 +1,15 @@
 ---
 name: python-packaging
-description: "MUST load when Python package build metadata, distribution identity, artifacts, installed behavior, or installed-consumer tests are created, changed, or validated."
+description: "Python Packaging creates, changes, and validates build metadata, distribution identity, artifacts, and installed behavior."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Packaging
 
-Python Packaging creates, changes, or validates Python package build metadata, distribution identity, artifacts,
-installed behavior, and installed-consumer evidence. It returns a bounded record of what the built distribution
-contains and how an isolated consumer observes it.
+Python Packaging creates, changes, or validates build metadata, distribution identity, artifacts, and installed-consumer behavior.
 
-This operation owns `pyproject.toml` packaging semantics and distribution behavior. General workspace placement
-belongs to `python-project-structure`; concrete tool commands belong to `python-toolchain`; and immutable
-artifact release readiness belongs to `python-release`. Project configuration decides the backend and tools.
+Use it when packaging inputs or outputs must be established or proven from project configuration through an isolated installed consumer. It returns immutable artifact evidence without owning general workspace placement, publication, or release readiness.
 
 ## Principles
 

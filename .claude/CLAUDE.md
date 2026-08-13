@@ -1,6 +1,10 @@
 ## Principles
 <!-- BEGIN GENERATED PRINCIPLES: .gobbi/projects/gobbi/skills/principles/SKILL.md -->
 
+# Principles
+
+Principles is the behavioral foundation for every Gobbi agent. It applies to every task before governed work and gives the detailed guidance behind the governing principles summary.
+
 ## Principle 1 — Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST.
 
 **Why:** Agents often act before they understand the work. Sound action requires studying the problem, existing work, prior attempts, and the observed needs and behavior of affected people, then thinking about what the evidence means. Skipping either produces a well-executed answer to the wrong problem.
@@ -163,8 +167,3 @@
 
 This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and detail behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
 <!-- END GENERATED PRINCIPLES -->
-
-## Repository-local Gobbi development lifecycle
-
-When the frontmatter trigger in `.gobbi/projects/gobbi/skills/gobbi-dev/SKILL.md` applies, load that
-repository-local skill and every applicable child it routes.

@@ -1,21 +1,15 @@
 ---
 name: react-compiler
-description: "MUST load when React Compiler configuration, diagnostics, coverage, migration, memoization, or compiler-related performance is in scope."
+description: "React Compiler is a tool skill for compiler configuration, diagnostics, coverage, incremental adoption, memoization boundaries, and compiler-related performance evidence."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # React Compiler
 
-Use this lookup tool when a React browser application or Electron renderer configures, evaluates, migrates,
-or troubleshoots React Compiler or changes memoization under compiler coverage.
+React Compiler explains how to establish compiler configuration and per-function coverage, interpret diagnostics, migrate safely, and assess memoization in React browser applications and Electron renderers. Use it when compiler setup, adoption, coverage, diagnostics, memoization, or compiler-related performance is in scope.
 
-This child covers compiler configuration, diagnostics, coverage, incremental adoption, and the compiler-facing
-memoization boundary. React design, generic build tooling, framework integration, and performance measurement
-remain with their responsible skills.
-
-Apply the installed compiler, React, linter, and build-tool configuration with their supported versions. Do
-not infer configuration or coverage from a neighboring project or version.
+React design, generic build tooling, framework integration, and performance measurement remain with their responsible skills.
 
 ## Principles
 

@@ -1,24 +1,15 @@
 ---
 name: electron-testing
-description: "MUST load when designing, implementing, running, or interpreting Electron-specific tests across process, bridge, security, application lifecycle, operating-system integration, diagnostics, packaged, installed, or update boundaries."
+description: "Electron Testing is an operation skill for designing, implementing, running, and interpreting Electron-specific tests and producing subject-, target-, and environment-specific evidence."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Testing
 
-Use this operation to design, implement, run, and interpret Electron-specific tests. It covers process,
-bridge, security, application lifecycle, operating-system integration, diagnostics, packaged, installed, and
-update claims.
+Electron Testing owns Electron-specific test design, test code and fixtures, execution, interpretation, environment classification, reruns, and evidence records.
 
-The outcome is one request-specific, subject-specific, target-specific, and environment-classified Electron
-evidence record, or an explicit stopped result that names the last accepted state and missing evidence.
-
-Testing is the sole owner of Electron-specific test design, test implementation, execution, interpretation,
-environment classification, rerun decisions, and evidence records. It may change authorized test code and
-fixtures. It never changes product code to make a test pass, sets product policy, constructs or mutates an
-artifact, accepts or rejects a candidate, decides release readiness, publishes, rolls out, or completes a
-multi-owner delivery.
+Use it when process, bridge, security, lifecycle, operating-system integration, diagnostics, packaged, installed, or update claims need observable evidence. It returns one complete evidence record or an exact stopped result.
 
 ## Principles
 

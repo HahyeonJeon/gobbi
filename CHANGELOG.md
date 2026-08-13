@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Renamed `skill-writing` to `gobbi-skill` with no compatibility alias. Its domain, operation, tool, and
+  preference type guides are now direct child skills with their own `SKILL.md` files.
+- Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
+  the skill is and when to use it in one to three sentences across no more than two paragraphs.
+
 ## 1.1.2 - 2026-08-08
 
 ### Changed

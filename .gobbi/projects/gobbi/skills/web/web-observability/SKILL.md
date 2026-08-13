@@ -1,33 +1,15 @@
 ---
 name: web-observability
-description: "MUST load when instrumenting or reviewing telemetry from a web app or Electron renderer, including structured logs, metrics, traces, trace-context propagation, crash and unhandled-error capture, or diagnostic redaction."
+description: "Web Observability is an operation skill for designing, emitting, redacting, correlating, and verifying telemetry from web applications and installed renderers."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebFetch
 skill-type: operation
 ---
 
 # Web Observability
 
-Use this operation to make one web app or installed renderer emit the signals that explain its behavior in
-production: structured logs, metrics, traces that correlate across the client and server boundary, crash and
-unhandled-error reports, and the redaction that keeps protected data out of all of them. It ends when every
-signal reaches its destination and has answered the question it was created for.
+Web Observability makes a web app or installed renderer emit structured logs, metrics, traces, and failure reports that answer defined production questions. Use it when instrumenting or reviewing emission, context propagation, crash capture, redaction, destination arrival, or lifecycle flush behavior.
 
-This operation owns emission. Reading a signal already has owners: `web-platform` interprets browser and
-standards evidence, [`html-css-platform`](../../html-css/html-css-platform/SKILL.md) owns direct HTML/CSS diagnosis, and
-[`electron-runtime`](../../electron/electron-runtime/SKILL.md) owns process, preload, and lifecycle failures.
-Load those to diagnose a failure; load this one to decide what the application produces.
-
-`web-development` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
-this operation supplies the signal shape those contracts name. `web-security` owns which data is protected and
-which logging controls are required; this operation owns keeping that data out of a diagnostic before it
-leaves the process, and out of the annotations an out-of-process crash reporter carries on its behalf.
-`web-testing` proves behavior under test, which is a different claim from what production emits.
-
-`web-app-lifecycle` owns product behavior when a document hides, freezes, resumes, or is discarded. This
-operation owns the telemetry delivery and flush behavior required at those transitions.
-
-`web-operations` consumes reconciled arriving signals as live-service evidence. It owns health, support, and
-incident decisions without taking ownership of emission, verified arrival, or the signal's evidence limits.
+It owns emission and verified arrival; diagnosis, security classification, tests, and live-service decisions remain with their owners.
 
 ## Principles
 

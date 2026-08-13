@@ -1,26 +1,15 @@
 ---
 name: react-design
-description: "MUST load when designing React-specific component structure, props, composition, render, Hooks, state, Effects, identity, native interface, or Error Boundary behavior."
+description: "React Design is an operation skill that turns an accepted interface outcome into a validated component design and implementation handoff."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # React Design
 
-React Design turns an accepted browser or installed-application outcome into a validated React component
-design. It starts after the broader interface and experience outcome is known and ends with an implementation
-handoff to `react-development`.
+React Design turns an accepted browser or installed-application outcome into a validated component design and implementation handoff. Use it after the broader experience is known and when React-specific structure, props, composition, state, Hooks, Effects, identity, error recovery, accessibility obligations, host interfaces, or performance planning needs design.
 
-This operation covers React-specific component structure, props and events, state and data flow, identity,
-render, Hooks, Effects, Error Boundary behavior, native semantics, accessibility obligations, and performance
-planning. It does not cover the complete browser or installed-application experience, application integration,
-deployment, observability, packaging, release, updates, publication, or independent Evaluation.
-
-Route complete browser interface and experience design to `web-frontend` and browser identity, concept, and
-aesthetic judgment to `web-design`. Route authored element meaning to `html-css-semantics`, and keyboard,
-focus, and activation behavior to `web-interaction`. Route installed-application identity, concept, and
-aesthetic judgment to `desktop-interface`, and installed renderer view and state structure to
-`desktop-architecture`. React Native is outside this operation and requires project-specific guidance.
+Broader experience, application integration, delivery, release, observability, publication, independent evaluation, and React Native remain outside this operation.
 
 ## Principles
 

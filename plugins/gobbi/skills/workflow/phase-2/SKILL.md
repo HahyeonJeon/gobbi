@@ -1,6 +1,6 @@
 ---
 name: phase-2
-description: "MUST load when Workflow enters Phase 2. Turns the locked Ideation contract into an ordered plan, executes every task through one writer chain, and hands verified work to Wrap-up."
+description: "Workflow Phase 2 is the Workflow child operation that turns a locked Ideation contract into a dependency-valid plan and verified task commits for Wrap-up. The parent Workflow retains all shared contracts and transition authority."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,13 +8,7 @@ user-invocable: false
 
 # Workflow Phase 2
 
-
-The manager loads this child only after the parent [Workflow](../SKILL.md) activates `P2 · Planning`, or when
-recovery selects an unfinished Phase 2 item. Entry requires the verified Phase 1 Hand-off and locked Ideation
-contract. The parent remains loaded and owns all shared Workflow contracts.
-
-Phase 2 produces a dependency-valid plan, executes every task through one ordered writer chain, and proves the
-complete result ready for Wrap-up.
+Workflow Phase 2 turns the verified Phase 1 Ideation contract into a dependency-valid plan, executes every task through one ordered writer chain, and proves the complete result ready for Wrap-up. Use it after the parent Workflow activates `P2 · Planning` or recovery selects unfinished Phase 2 work, and before Phase 3 Wrap-up; the parent remains active and owns all shared Workflow contracts.
 
 ## Principles
 

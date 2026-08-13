@@ -1,18 +1,15 @@
 ---
 name: cli-architecture
-description: "MUST load when choosing or reviewing command hierarchy, command, option, or operand semantics, configuration sources or precedence, semantic result or error models, stream roles, exit-status contracts, public modes, compatibility, deprecation, or retirement for a line-oriented CLI."
+description: "CLI Architecture is a preference skill for the mechanism-free public contract of a line-oriented command."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # CLI Architecture
 
-CLI Architecture guides the product owner who chooses or reviews the mechanism-free public contract for a
-line-oriented command. Its result defines command meaning, input roles, configuration, semantic events,
-stream roles, public modes, state, exits, compatibility, deprecation, and retirement before implementation.
+CLI Architecture defines command hierarchy, grammar, inputs, configuration, semantic events and state, stream roles, result profiles, exits, compatibility, deprecation, and retirement.
 
-This skill does not choose help wording, terminal rendering, parser or runtime mechanisms, security assurance,
-tests, packages, delivery methods, or target support. Those results route to their named owners.
+Use it when choosing or reviewing command meaning before expression or implementation; terminal wording, current platform facts, assurance, realization, evidence, delivery, and support remain with their owners.
 
 ## Principles
 

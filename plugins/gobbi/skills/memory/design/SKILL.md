@@ -1,6 +1,6 @@
 ---
 name: design
-description: MUST load after the memory operation identifies content as design memory. Design is a preference skill for what design memory contains and how it is structured.
+description: "Design Memory is a preference skill for selecting and structuring current architecture, feature, process, and roadmap memory."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,9 +8,9 @@ user-invocable: false
 
 # Design Memory
 
-This internal category skill guides design-memory judgment after the parent memory operation identifies
-content as design memory. It owns the content and structure of `memory/design/`. The parent memory skill owns
-when and how records are read, created, updated, moved, or deleted.
+Design Memory defines the content and structure of `memory/design/` after the parent Memory operation classifies content as design memory. Use it for current architecture, feature, process, and roadmap intent, keeping significant decisions with the design they shape.
+
+The parent Memory operation owns when and how design records are read, created, updated, moved, or deleted.
 
 ## Principles
 

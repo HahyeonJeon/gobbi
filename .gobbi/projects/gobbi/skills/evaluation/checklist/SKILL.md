@@ -1,22 +1,13 @@
 ---
 name: checklist
-description: "MUST load when creating or revising an evaluation checklist. Checklist guides lifecycle categorization, recursive scenario decomposition, and unchecked condition authoring for an exact subject."
+description: "Evaluation Checklist is an operation for one reusable, unchecked evaluation source. It organizes lifecycle categories, scenario hierarchies, and independently evaluable conditions without executing or judging them."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Evaluation Checklist
 
-A Checklist author uses this operation to create or revise one reusable, unchecked evaluation source for an
-exact subject and context.
-
-The author studies the subject, categorizes its design, development, and product lifecycles, builds a complete
-top-down scenario hierarchy, and only then writes checklist conditions for independently evaluable leaves.
-Lifecycle categories follow the subject, while a scenario spectrum helps expose good, bad, and overlooked
-situations without becoming a required taxonomy.
-
-Checklist stops after source authoring. It does not execute conditions or judge the subject, and its delivered
-source remains unchecked and result-free.
+Evaluation Checklist creates or revises one reusable, unchecked evaluation source for an exact subject and context. Use it before Evaluation when lifecycle categories, top-down scenarios, and observable conditions must be defined; it stops before executing conditions or judging the subject.
 
 ## Principles
 

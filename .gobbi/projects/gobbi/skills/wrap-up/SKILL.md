@@ -1,18 +1,13 @@
 ---
 name: wrap-up
-description: "MUST load when accepted work must be closed with durable memory and an exact handoff. Wrap-up memorizes a caller-supplied session root, performs the authorized finalization sequence last, and displays an immutable handoff with a factual receipt."
+description: "Wrap-up is the terminal operation for closing accepted work with durable memory, an authorized finalization sequence, and an exact handoff with a factual receipt."
 allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
 
 # Wrap-up
 
-Wrap-up is the terminal operation for a manager closing accepted work. It produces current durable memory, a
-completed authorized finalization sequence, and an exact operator handoff followed by a factual receipt.
-
-The manager owns entry, the closure contract, user gates, the finalization sequence, acceptance, display, and
-recovery. One bounded writer memorizes selected durable value from the caller-supplied session root inside the project memory
-root before finalization begins.
+Wrap-up closes accepted work by memorizing durable project context, running the caller-authorized finalization sequence last, and displaying an immutable tracked handoff with a factual receipt. Use it only for terminal closure after the caller has accepted the work and supplied the session root, memory root, handoff path, and finalization authority.
 
 ## Principles
 

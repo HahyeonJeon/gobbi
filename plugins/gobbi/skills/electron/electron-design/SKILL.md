@@ -1,24 +1,15 @@
 ---
 name: electron-design
-description: "MUST load when choosing or reviewing Electron process architecture, security boundaries, project structure, preload bridges, IPC contracts, state ownership, window and view ownership, resource lifetimes, or technical failure isolation."
+description: "Electron Design is a preference skill for process architecture, security boundaries, project structure, preload bridges, IPC contracts, ownership, resource lifetimes, performance placement, and failure isolation."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Electron Design
 
-Use this preference skill to choose or review one Electron technical design. It owns process architecture,
-trust boundaries, project structure, preload bridges, IPC contracts, state and resource ownership, window and
-view ownership, performance placement, and technical failure isolation.
+Electron Design chooses or reviews one bounded technical design for an Electron application.
 
-Start from the accepted application intent and repository constraints. Resolve current API, version, process
-capability, and mechanism facts through [`electron-runtime`](../electron-runtime/SKILL.md) and current official
-Electron documentation before making a technical choice.
-
-This skill excludes product and interface judgment, installed application behavior and recovery promises,
-source implementation, test design or execution or interpretation, environment classification, evidence
-acceptance, diagnostic-emission policy, packaging, release, and delivery coordination. Rules override
-Preferences; a convenient implementation or a Preference cannot justify a Rule conflict.
+Use it when deciding process and trust boundaries, project structure, preload bridges, IPC contracts, state and resource ownership, window or view ownership, performance placement, or failure isolation.
 
 ## Principles
 

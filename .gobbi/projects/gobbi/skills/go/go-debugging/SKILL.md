@@ -1,21 +1,15 @@
 ---
 name: go-debugging
-description: "MUST load when reproducing, diagnosing, or isolating a Go failure, panic, deadlock, race symptom, leak, corruption, unexpected result, or tool diagnostic."
+description: "Go Debugging is an operation for reproducing failures, proving causal chains, and returning bounded diagnostic results."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Debugging
 
-Go Debugging reproduces, diagnoses, and isolates a named Go failure. It returns either a reproduced causal
-chain ending at the root cause, a bounded diagnostic plan when reproduction is impossible, or an exact block.
-It never turns an unproven cause into a fix recommendation.
+Use Go Debugging when reproducing, diagnosing, or isolating a named failure, panic, deadlock, race symptom, leak, corruption, unexpected result, or tool diagnostic.
 
-This operation owns the original symptom, exact reproducer, environment, first useful diagnostic, causal
-analysis, and diagnostic handoff. Project source remains read-only. `go-toolchain` owns project command and
-named-tool facts, `go-testing` owns evidence strength and design, `go-concurrency` owns race, deadlock, and
-concurrent-lifetime judgment, and each accepted project-source fix belongs to `go-development` and any
-applicable specialist.
+It returns a proven root-cause chain, a bounded diagnostic plan, or an exact block while leaving project source unchanged and every accepted repair to `go-development` and the applicable specialist.
 
 ## Principles
 

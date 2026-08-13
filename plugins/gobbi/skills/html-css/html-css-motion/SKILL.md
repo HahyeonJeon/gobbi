@@ -1,20 +1,15 @@
 ---
 name: html-css-motion
-description: "MUST load when choosing or reviewing declarative CSS motion mechanics or motion-system defaults for transitions, animations, timing, interruption, cancellation, reduced motion, or performance-sensitive motion choices."
+description: "HTML/CSS Motion is a preference skill for declarative motion mechanics and system defaults. It covers transitions, animations, timing, interruption, cancellation, reduced motion, and performance-sensitive source choices."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # HTML/CSS Motion
 
-Use this preference after `web-design` or `desktop-interface` has approved the need and intent for motion. Choose declarative
-transition and animation mechanics, timing defaults, start and restart behavior, interruption, cancellation,
-reduced-motion alternatives, and performance-sensitive source choices.
+HTML/CSS Motion guides declarative transition and animation mechanics after `web-design` or `desktop-interface` approves the need and intent for motion. Use it when choosing or reviewing timing, restart, interruption, cancellation, reduced-motion alternatives, or performance-sensitive CSS choices.
 
-This skill does not decide whether motion is warranted and does not promise compositor promotion or target
-performance. Route standards facts, direct target observations, and diagnosis to `html-css-platform`; route
-focused comparison design, assertions, and result claims to `html-css-testing`; route source changes to
-`html-css-development`; and route JavaScript interaction behavior to its Web or framework owner.
+It does not decide whether motion is warranted or establish target performance.
 
 ## Principles
 

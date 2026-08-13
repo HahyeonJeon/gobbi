@@ -1,20 +1,15 @@
 ---
 name: electron-runtime
-description: "MUST load when looking up or diagnosing Electron process capabilities, preload constraints, IPC mechanics, application lifecycle, power events, window and process failures, operating-system integrations, or version-specific behavior."
+description: "Electron Runtime is a tool skill for looking up and diagnosing process capabilities, loaders, IPC, lifecycle, power events, failures, operating-system integrations, and version-specific behavior."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # Electron Runtime
 
-Use this tool manual to look up or diagnose Electron mechanisms in main, preload, renderer, and utility
-processes. Start with the actual process, emitted module format, target operating system, lifecycle point, and
-the project's pinned Electron major.
+Electron Runtime is a mechanism reference and diagnostic manual for main, preload, renderer, utility, and external-observer boundaries.
 
-This skill explains mechanism availability, prerequisites, signals, target limits, and the earliest failure
-boundary. It does not own installed product behavior, source implementation, test design, test execution,
-test interpretation, environment classification, evidence acceptance, diagnostic-emission design, packaging
-procedure, or release-readiness decisions.
+Use it when an Electron API, process capability, loader, lifecycle event, cross-process value, target prerequisite, or failure signal must be resolved against actual runtime facts.
 
 ## Principles
 

@@ -1,25 +1,15 @@
 ---
 name: go-observability
-description: "MUST load when designing, implementing, reviewing, or verifying logs, metrics, traces, trace-context propagation, crash capture, diagnostic redaction, correlation, or runtime health signals in Go software."
+description: "Go Observability is an operation for designing, reviewing, changing, or verifying logs, metrics, traces, crash capture, correlation, redaction, and diagnostic arrival."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Observability
 
-Go Observability designs, reviews, coordinates changes to, or verifies the diagnostic output of Go software.
-It returns a confirmed design or review, a verified local change, or verified test-destination arrival in which
-the named log records, metrics, spans, and crash reports answer their diagnostic questions, correlate, contain
-no protected values, and retain explicit evidence limits.
+Use Go Observability when software needs logs, metrics, traces, trace-context propagation, crash capture, diagnostic redaction, correlation, runtime signals, or proof that bounded test diagnostics reached a destination.
 
-This operation owns diagnostic questions, concrete record schemas, emission points, correlation, sampling or
-aggregation, volume and cardinality bounds, diagnostic redaction at emission, and arrival evidence. General
-construction, concurrent lifetime and cancellation, protected-data classification, evidence design,
-project-command mechanics, causal diagnosis, and destination mutation remain with their named owners.
-
-This operation does not define Web policy, provision or configure a production destination, deploy or roll out
-software, make traffic or on-call decisions, interpret live health, or run generic incident response. Those
-results stay with the applicable Web, deployment, operations, or incident owner.
+It owns diagnostic questions, record schemas, emission points, bounds, redaction at emission, and arrival evidence, but not Web policy, production destination configuration, deployment, live-health decisions, on-call policy, or incident response.
 
 ## Principles
 

@@ -89,7 +89,12 @@ Mandatory load:
 Load when relevant:
 
 - Project skill — when the question is about project conventions or architecture.
-- The specific domain skill at `{gobbi-skills-root}/<skill>/SKILL.md` — `git`, `study`, `evaluation`, `delegation`, `discussion`, `memory`, and so on — if the question touches that domain. When the work touches runtime docs or agents, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) and load the skill that owns the surface — `{gobbi-skills-root}/skill-writing/SKILL.md`, `{gobbi-skills-root}/agent-writing/SKILL.md`, or `{gobbi-skills-root}/claude-plugin/SKILL.md`. The skill map in `{gobbi-skills-root}/gobbi/SKILL.md` § References is the live inventory of what exists.
+- The specific domain skill at `{gobbi-skills-root}/<skill>/SKILL.md` — `git`, `study`, `evaluation`,
+  `delegation`, `discussion`, `memory`, and so on — if the question touches that domain. When the work touches
+  runtime docs or agents, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`,
+  `.codex/`, and `plugins/gobbi/` for Codex). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
+  authoring; use direct repository and runtime evidence for role and package surfaces. The skill map in
+  `{gobbi-skills-root}/gobbi/SKILL.md` § References is the live inventory of what exists.
 
 You almost never need workflow phase docs. If the manager asks you to read one, do; otherwise skip.
 

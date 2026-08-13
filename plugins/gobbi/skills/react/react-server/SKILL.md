@@ -1,22 +1,15 @@
 ---
 name: react-server
-description: "MUST load when a React browser application or Electron renderer uses server rendering, hydration, Server Components, Server Functions, or client/server directives."
+description: "React Server is a tool skill for server rendering, hydration, Server Components, Server Functions, and client/server module and value boundaries."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # React Server
 
-Use this lookup tool only when a compatible framework or bundler supplies React server rendering, hydration,
-Server Components, Server Functions, or client/server directives. React's presence alone does not establish
-those features.
+React Server explains server rendering, hydration, Server Components, Server Functions, directives, transferred values, and server/client boundary cost. Use it when the installed framework or bundler supports those features in a React browser application or Electron renderer.
 
-This child answers module, value, endpoint, hydration, and server/client boundary performance questions.
-`react-development` remains responsible for the work sequence, while `react-design` remains responsible for
-React choice policy.
-
-Apply the exact installed React version and the framework's supported integration; do not infer behavior
-from a neighboring version or another framework.
+Implementation sequencing and React design choices remain with `react-development` and `react-design`.
 
 ## Principles
 

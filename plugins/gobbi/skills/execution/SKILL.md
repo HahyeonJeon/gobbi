@@ -1,14 +1,13 @@
 ---
 name: execution
-description: "MUST load when implementing a task. Execution is an operation skill for studying the task, applying a bounded change, verifying the result, and creating a focused local commit."
+description: "Execution is an operation for implementing one defined task, verifying the exact result, and creating a focused local commit."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Execution
 
-Execution is the implementation operation for one defined task. It produces the required implementation, a
-focused local commit, and verification evidence for handoff.
+Execution implements one defined task and returns a focused local commit with verification evidence. Use it after the outcome, scope, design, authority, and acceptance proof are defined; it does not publish, merge, clean up, or rewrite history.
 
 ## Principles
 

@@ -1,18 +1,13 @@
 ---
 name: docs-review
-description: "MUST load when reviewing one caller-named Markdown subject for reader-facing documentation quality and returning a file or response report without editing the subject."
+description: "Documentation Review inspects one caller-named Markdown subject for reader-facing quality. It returns an evidence-backed file or response report without editing the subject."
 allowed-tools: Read, Grep, Glob, Bash, Write
 skill-type: operation
 ---
 
 # Documentation Review
 
-A documentation reviewer uses this operation when a caller requests a reader-facing quality review of one
-exact Markdown subject. The result is one complete evidence-backed report bound to the reviewed content.
-
-The operation keeps the subject read-only, inspects four quality categories, and separates Defects, Optional
-Improvements, Strengths, and Evidence Gaps. The caller selects either a named report file or explicit
-response-only delivery, while specialized truth and acceptance stay with their owners.
+Documentation Review inspects one exact Markdown subject for reader-facing quality and returns a report bound to the reviewed content. Use it when a caller needs evidence-backed defects, optional improvements, strengths, and evidence gaps without editing the subject or deciding specialized truth or acceptance.
 
 ## Principles
 

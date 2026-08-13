@@ -5,8 +5,8 @@
 This review records the completed compatibility, implementation, static verification, and evaluation of the
 repository-local `gobbi-dev` family. The accepted task head is
 `9f6ea2f6db4c197f5f109756801242d7be747dd3`, with tree
-`539692d6dbab2d95aa8a7de1015c34262eda7de9`. The current intent is recorded in
-[Gobbi development lifecycle skill family](../../design/feature/gobbi-dev-skill-family.md).
+`539692d6dbab2d95aa8a7de1015c34262eda7de9`. The Gobbi development lifecycle skill family design recorded
+the intent at review time.
 
 The formal Task 2 evaluation returned PASS within the accepted static-only boundary. Production Claude and
 Codex PASS remains user-assumed. The latest real runtime observations exited `1` and were not relabeled.

@@ -1,23 +1,13 @@
 ---
 name: workflow
-description: How a manager runs one durable Gobbi session through three checkpointed phases using native TODO routing, policy-selected participants, verified records, and a terminal hand-off.
+description: "Workflow is a durable Gobbi mode that routes one isolated session through three checkpointed phases. It uses native TODOs, policy-selected participants, verified records, and a terminal handoff."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Workflow
 
-A Gobbi manager loads this skill to create or recover one isolated Workflow session and route it through
-Configuration, Ideation, Planning, Execution, Wrap-up, and Hand-off. The result is verified local history,
-recoverable evidence, and an exact terminal handoff.
-
-This parent owns the shared state machine: native TODOs, evidence, participants, assignments, gates, records,
-recovery, checkpoints, and transitions. Its internal phase children own phase-specific actions. Supporting
-operations own their mechanisms.
-
-The manager owns user discussion, routing, assignments, acceptance, and authority checks. The user owns Phase 1
-direction, changes outside its locked contract, new safety or external authority, destructive actions,
-publication, merge, and cleanup. Specialists own only their bounded work.
+Workflow is the durable Gobbi mode for creating or recovering one isolated session and routing it through Configuration, Ideation, Planning, Execution, Wrap-up, and Hand-off. Use it when work needs checkpointed evidence, policy-selected participants, verified local history, recovery, and a terminal handoff.
 
 ## Principles
 

@@ -1,22 +1,15 @@
 ---
 name: go-modules
-description: "MUST load when creating, changing, or validating a Go module, including its path, layout, go.mod, go.work, dependencies, tools, external-consumer validation, and compatibility analysis."
+description: "Go Modules is an operation for creating or validating module identity, layout, graph, workspace, dependencies, tools, consumer behavior, and compatibility."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Modules
 
-Go Modules creates, changes, or validates one Go module. It returns a coherent module path, layout, graph,
-workspace, dependencies, tools, exact public package paths and project commands, external-consumer result, and
-module consumer compatibility analysis.
+Use Go Modules when creating, changing, or validating a module path, layout, `go.mod`, `go.work`, dependency graph, tool declaration, external-consumer behavior, or module compatibility.
 
-The operation has author and validation modes. It owns the exact module facts release needs, but it owns no
-version or tag proposal or decision, tag or ref creation, publication, external mutation, or release recovery.
-`go-toolchain` owns project command syntax, exact package pattern semantics, the selected Go toolchain version,
-and project command effects. `go-testing` owns evidence selection and interpretation. `go-security` owns protected-data
-judgment. Binary and archive production belongs to `go-packaging`; release decisions and results belong to
-`go-release`.
+It returns exact module facts and consumer compatibility analysis while leaving version and tag decisions, artifact production, publication, external mutation, and release recovery to their named owners.
 
 ## Principles
 

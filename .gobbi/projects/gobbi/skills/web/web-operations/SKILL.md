@@ -1,23 +1,15 @@
 ---
 name: web-operations
-description: "MUST load when operating or reviewing a live web service, including health and support, incident response, routine maintenance, dependency and compatibility updates, deprecation, or retirement."
+description: "Web Operations is an operation skill for supporting a deployment-verified live service through health work, incidents, maintenance, compatibility updates, deprecation, and retirement."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebFetch
 skill-type: operation
 ---
 
 # Web Operations
 
-Use this operation after deployment has verified a live web service to keep that service supported through
-health and support work, incidents, routine maintenance, dependency and compatibility updates, deprecation,
-or retirement. It ends in supported continuation, an owned product change, or verified retirement.
+Web Operations supports a deployment-verified live service through health and support work, incidents, maintenance, compatibility updates, deprecation, and retirement. Use it when operating or reviewing any part of that supported service lifetime.
 
-This operation owns the supported live-service lifetime and the operational actions taken within it. It
-consumes telemetry, test, security, and design evidence from their owners; `web-development` coordinates any
-product change, and `web-release` and `web-deployment` produce and ship changed bytes.
-
-An operating route records authority gates but grants no authority itself. Destructive, external,
-irreversible, and user-impacting actions stop unless current authority covers that exact action and its stated
-impact.
+It records authority without granting it, routes product changes through development, and leaves changed bytes to release and deployment.
 
 ## Principles
 

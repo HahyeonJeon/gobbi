@@ -1,22 +1,15 @@
 ---
 name: go-toolchain
-description: "MUST load when using or diagnosing the Go distribution, go command, compiler, formatter, vet, generators, build constraints, GOOS/GOARCH targets, or project-pinned Go tools."
+description: "Go Toolchain is a tool manual for the Go distribution, project-selected tools, command mechanics, environment selection, diagnostics, build constraints, caches, downloads, and cgo."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # Go Toolchain
 
-Use this tool skill to inspect, use, or diagnose the Go distribution, the `go` command, and project-selected
-Go tools. It is a lookup manual for environment selection, project command mechanics, exact package patterns,
-`GOOS/GOARCH` targets, diagnostics, formatting, generation, build constraints, caches, downloads, and cgo.
+Use Go Toolchain when inspecting, using, or diagnosing the Go distribution, the `go` command, compiler, formatter, vet, generators, build constraints, `GOOS/GOARCH` targets, or project-pinned tools.
 
-This skill teaches command behavior and records observed effects. The owning operation decides why and whether
-a project command runs, supplies its authority, and owns the terminal result.
-
-Package and API design belongs to `go-design`; source form and generated provenance belong to `go-source`;
-naming and error text belong to `go-conventions`; comments belong to `go-documentation`; and credential or
-protected-data decisions belong to `go-security`.
+It explains command behavior and records observed effects, while the owning operation supplies purpose and authority and owns the terminal result and all design or security judgments.
 
 ## Principles
 

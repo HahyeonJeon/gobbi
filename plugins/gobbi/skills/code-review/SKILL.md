@@ -1,18 +1,13 @@
 ---
 name: code-review
-description: "MUST load when an exact code subject needs a read-only, evidence-backed review without correction, verdict, or acceptance authority."
+description: "Code Review is a read-only operation that produces an evidence-backed review of one exact code subject. It has no correction, verdict, acceptance, publication, or workflow authority."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
 
 # Code Review
 
-A code reviewer uses this operation to inspect one exact code subject and produce a reproducible review
-record. The record contains scoped evidence, coverage, Problems, Optional Improvements, Strengths, gaps,
-limits, and one next owner.
-
-Code Review protects the subject and inspects actual code before prepared claims. It never corrects the
-subject, issues a verdict, accepts or publishes work, changes workflow state, or replaces Evaluation.
+Code Review inspects one exact code subject and returns a reproducible record of evidence, coverage, problems, optional improvements, strengths, gaps, limits, and the next owner. Use it when code needs read-only review without correction, verdict, acceptance, publication, or workflow authority.
 
 ## Principles
 

@@ -1,22 +1,15 @@
 ---
 name: go-packaging
-description: "MUST load when producing or validating Go binaries or archives, including the project default build command, named GOOS/GOARCH targets, metadata, checksums, reproducibility, and artifact smoke checks."
+description: "Go Packaging is an operation for producing or validating local binaries and archives, their final-byte identities, and bounded readiness evidence."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Packaging
 
-Use this operation to produce or validate one caller-designated local Go binary or archive. It turns an exact
-project build contract into final artifact bytes, an identity for those bytes, and bounded readiness evidence,
-or it returns an explicit block without widening authority.
+Use Go Packaging when a caller designates one local Go binary or archive to produce or validate for a named build contract and `GOOS/GOARCH` target.
 
-This operation owns local binary and archive construction, archive assembly, embedded or adjacent metadata,
-inventory, checksums, reproducibility evidence, and isolated binary or archive smoke checks. It does not choose
-release classification, version, tag, destination, publication, credentials, authority, or a later action.
-
-Exactly two modes exist: **Produce** and **Validation**. Select one before any Packaging project command runs;
-never blend their write boundaries or infer a missing mode from the artifact path.
+It owns local construction, archive assembly, metadata, inventory, checksums, reproducibility evidence, and isolated smoke checks while keeping source read-only and release classification, versions, tags, destinations, credentials, publication, and external actions outside its scope.
 
 ## Principles
 

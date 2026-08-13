@@ -14,8 +14,6 @@ smoke_script="$repo_root/scripts/check-codex-plugin-smoke.sh"
 selected_codex=''
 canonical_codex=''
 expected_version='codex-cli 0.147.0'
-package_only_skill='gobbi-dev'
-package_only_skill_token_regex="(^|[^[:alnum:]_-])${package_only_skill}([^[:alnum:]_-]|$)"
 fd_closure_exec=$'import errno, os, sys\ntry:\n    names = os.listdir("/proc/self/fd")\nexcept OSError as exc:\n    print(f"fd-closure wrapper: cannot enumerate /proc/self/fd: {exc}", file=sys.stderr)\n    raise SystemExit(125)\nfds = []\nfor name in names:\n    try:\n        fd = int(name)\n    except ValueError:\n        print(f"fd-closure wrapper: unexpected /proc/self/fd entry: {name!r}", file=sys.stderr)\n        raise SystemExit(125)\n    if fd >= 3:\n        fds.append(fd)\nfor fd in sorted(set(fds), reverse=True):\n    try:\n        os.close(fd)\n    except OSError as exc:\n        if exc.errno != errno.EBADF:\n            print(f"fd-closure wrapper: cannot close inherited fd {fd}: {exc}", file=sys.stderr)\n            raise SystemExit(125)\nfor fd in fds:\n    try:\n        os.fstat(fd)\n    except OSError as exc:\n        if exc.errno == errno.EBADF:\n            continue\n        print(f"fd-closure wrapper: cannot verify inherited fd {fd}: {exc}", file=sys.stderr)\n        raise SystemExit(125)\n    print(f"fd-closure wrapper: inherited fd {fd} remained open", file=sys.stderr)\n    raise SystemExit(125)\ntry:\n    os.execv(sys.argv[1], sys.argv[1:])\nexcept OSError as exc:\n    print(f"fd-closure wrapper: exec failed: {exc}", file=sys.stderr)\n    raise SystemExit(126)'
 
 target="$(mktemp -d /tmp/gobbi-codex-plugin-smoke.XXXXXX)"
@@ -511,42 +509,6 @@ hookless_tree() {
   jq -e 'has("hooks") | not' "$root/.claude-plugin/plugin.json" >/dev/null 2>&1 || return 1
 }
 
-package_only_skill_absent() {
-  local root="$1" entry rel segment raw status=0 walk
-  local -a segments=()
-  walk="$(mktemp "$target/token-walk.XXXXXX")" || return 1
-  if ! find -P "$root" -mindepth 1 -print0 > "$walk"; then
-    printf 'package-only token traversal failed: %s\n' "$root" >&2
-    rm -f -- "$walk"
-    return 1
-  fi
-  while IFS= read -r -d '' entry; do
-    rel="${entry#"$root"/}"
-    IFS='/' read -r -a segments <<< "$rel"
-    for segment in "${segments[@]}"; do
-      if [[ "$segment" == "$package_only_skill" ]]; then
-        status=1
-        break 2
-      fi
-    done
-    if [[ -L "$entry" ]]; then
-      raw="$(readlink -n -- "$entry")" || {
-        status=1
-        break
-      }
-      if [[ "$raw" =~ $package_only_skill_token_regex ]]; then
-        status=1
-        break
-      fi
-    elif [[ -f "$entry" ]] && LC_ALL=C grep -aEq -- "$package_only_skill_token_regex" "$entry"; then
-      status=1
-      break
-    fi
-  done < "$walk"
-  rm -f -- "$walk"
-  [[ "$status" -eq 0 ]]
-}
-
 assert_invalid_usage_no_artifact() {
   local label="$1" status marker="$target/invalid-$1.mktemp" stdout="$target/invalid-$1.stdout"
   local stderr="$target/invalid-$1.stderr"
@@ -686,26 +648,11 @@ run_helper_self_tests() {
   mkdir -p "$fixture/package/.codex-plugin" "$fixture/package/.claude-plugin" "$fixture/package/skills"
   printf '{}\n' > "$fixture/package/.codex-plugin/plugin.json"
   printf '{}\n' > "$fixture/package/.claude-plugin/plugin.json"
-  printf '%s-extra x%s %sx\n' "$package_only_skill" "$package_only_skill" "$package_only_skill" \
-    > "$fixture/package/skills/neighbor"
   hookless_tree "$fixture/package" || fail 'hook guard rejected a hookless fixture'
-  package_only_skill_absent "$fixture/package" || fail 'token guard rejected valid prefixed identifiers'
-  mkdir "$fixture/package/skills/$package_only_skill"
-  printf 'exact path\n' > "$fixture/package/skills/$package_only_skill/SKILL.md"
-  ! package_only_skill_absent "$fixture/package" || fail 'token guard accepted the exact skills path segment'
-  rm -f "$fixture/package/skills/$package_only_skill/SKILL.md"
-  rmdir "$fixture/package/skills/$package_only_skill"
-  printf '\0%s\0' "$package_only_skill" > "$fixture/package/skills/exact.bin"
-  ! package_only_skill_absent "$fixture/package" || fail 'token guard accepted an exact binary token'
-  rm -f "$fixture/package/skills/exact.bin"
-  printf '%s\n' "$package_only_skill" > "$fixture/outside-token"
-  ln -s '../../outside-token' "$fixture/package/skills/safe-link"
-  package_only_skill_absent "$fixture/package" || fail 'token guard followed symlink target contents'
+  printf 'outside\n' > "$fixture/outside-file"
+  ln -s '../../outside-file' "$fixture/package/skills/safe-link"
   ! write_tree_inventory "$fixture/package" "$target/helper-package-symlink.inventory" >/dev/null 2>&1 \
     || fail 'inventory accepted the no-follow symlink fixture'
-  rm -f "$fixture/package/skills/safe-link"
-  ln -s "../$package_only_skill/target" "$fixture/package/skills/safe-link"
-  ! package_only_skill_absent "$fixture/package" || fail 'token guard accepted an exact token in a symlink target'
   rm -f "$fixture/package/skills/safe-link"
   mkdir "$fixture/package/hooks"
   ! hookless_tree "$fixture/package" || fail 'hook guard accepted a hooks directory'
@@ -1028,8 +975,6 @@ run_helper_self_tests() {
     || fail 'inventory lost a traversal failure'
   ! write_tree_manifest "$fixture/package" "$target/helper-find-manifest" >/dev/null 2>&1 \
     || fail 'manifest lost a traversal failure'
-  ! package_only_skill_absent "$fixture/package" >/dev/null 2>&1 \
-    || fail 'token guard lost a traversal failure'
   ! check_top_level_allow_set "$fixture/package" >/dev/null 2>&1 \
     || fail 'top-level guard lost a traversal failure'
   unset -f find
@@ -1093,13 +1038,12 @@ if [[ "$mode" == --self-test ]]; then
 fi
 select_codex_runtime || fail 'Codex disk executable selection failed'
 [[ -d "$package_root/skills" && ! -L "$package_root/skills" ]] \
-  || fail 'plugins/gobbi/skills is not a materialized filtered directory'
+  || fail 'plugins/gobbi/skills is not a materialized directory'
 [[ -d "$package_root/agents" && ! -L "$package_root/agents" ]] \
   || fail 'plugins/gobbi/agents is not a materialized directory'
 write_tree_inventory "$package_root" "$target/source.inventory" \
   || fail 'source package contains a symlink or unsupported entry'
 hookless_tree "$package_root" || fail 'source package contains a hooks field or hooks component'
-package_only_skill_absent "$package_root" || fail 'source package contains a registered package-only skill path or literal'
 run_source_check_stage source-precheck /usr/bin/bash "$repo_root/scripts/sync-plugin-package.sh" --check \
   || fail 'source package differs from canonical owners or repository source topology is invalid'
 freeze_package || fail 'source package could not be frozen before the first runtime stage'
@@ -1144,7 +1088,6 @@ write_tree_inventory "$installed_path" "$target/installed.inventory" \
   || fail 'installed cache contains a symlink or unsupported entry'
 check_top_level_allow_set "$installed_path" || fail 'installed cache top-level traversal or allow-set check failed'
 hookless_tree "$installed_path" || fail 'installed cache contains a hooks field or hooks component'
-package_only_skill_absent "$installed_path" || fail 'installed cache contains a registered package-only skill path or literal'
 verify_frozen_tree "$installed_path" installed-cache \
   || fail 'installed cache directory/file inventory or hashes differ from the frozen package'
 run_source_check_stage source-postcheck /usr/bin/bash "$repo_root/scripts/sync-plugin-package.sh" --check \

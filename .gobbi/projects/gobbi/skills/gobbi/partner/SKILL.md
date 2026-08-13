@@ -1,6 +1,6 @@
 ---
 name: partner
-description: "MUST load when a caller needs one independent result from the other runtime. Partner prepares, launches, validates, and returns one frozen external response."
+description: "Partner is an operation for obtaining one independent, read-only result from the runtime other than the active runtime. It returns one validated frozen response without owning durable placement, acceptance, or routing."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 user-invocable: false
@@ -8,17 +8,9 @@ user-invocable: false
 
 # Partner
 
-Use this skill when a caller needs one result from the runtime other than the active runtime. In Claude Code,
-Partner invokes Codex. In native Codex, Partner invokes Claude Code. One **partner run** is one bounded,
-read-only invocation of that other runtime.
+Partner runs one bounded, read-only invocation of the runtime other than the active runtime and returns its validated response as labeled frozen content. Use it when a caller needs one independent external draft, cross-review, or evaluation report after freezing the complete neutral input; the caller retains participants, scope, round assembly, acceptance, and every next action.
 
-The operation prepares one neutral envelope, launches one fresh process, validates its response, and returns
-that response as labeled frozen content. It may use a private runtime-temporary directory for prompt, stdout,
-and stderr capture. It writes no durable project or session state.
-
-The caller owns local participants, the complete subject, round assembly, policy, acceptance, and every next
-action. Partner neither creates active-runtime drafts or evaluators nor decides mode, scope, gates, coverage,
-waivers, finding disposition, or routing. Failure returns an exact pause instead of substitute content.
+Partner writes no durable project or session state and returns failures as exact pauses.
 
 ## Principles
 
@@ -26,7 +18,8 @@ waivers, finding disposition, or routing. Failure returns an exact pause instead
 
 An independent result is evidence only when nothing derived from the result it will be compared against
 reached it. Independence is built at launch — a fresh process, a new identity, and inputs carrying no content,
-summary, or hint from another run — because it cannot be restored afterwards.
+summary, or hint from another run — because it cannot be restored afterwards. The partner process identity is
+runtime evidence only; it never renames or replaces the Gobbi session UUID.
 
 ### Keep durable state read-only and the caller accountable
 
@@ -145,11 +138,13 @@ output:             exactly one self-contained report and nothing else
 
 | Direction | Installed version verified for this table | Partner command |
 |---|---|---|
-| Claude Code to Codex | Codex CLI 0.146.0 | `codex exec -C ROOT --ephemeral --sandbox read-only -` |
+| Claude Code to Codex | Codex CLI 0.147.0 | `codex exec -C ROOT --ephemeral --sandbox read-only -` |
 | Native Codex to Claude | Claude Code 2.1.220 | `claude -p --permission-mode plan --no-session-persistence --safe-mode --tools "Read,Grep,Glob"` |
 
 - Re-run `codex exec --help` and `claude --help` before changing a flag or relying on a later installed
   version. Installed help wins over this recorded table.
+- Installed Codex CLI 0.147.0 exposes no interactive approval prompt for `codex exec`; `--sandbox read-only`
+  is the permission boundary for this partner launch.
 - For Claude Code to Codex, run the form below.
 
 ```bash

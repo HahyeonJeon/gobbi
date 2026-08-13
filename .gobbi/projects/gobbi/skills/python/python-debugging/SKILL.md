@@ -1,19 +1,15 @@
 ---
 name: python-debugging
-description: "MUST load when a Python failure, unexpected result, diagnostic, or runtime symptom must be reproduced, isolated, or explained."
+description: "Python Debugging reproduces, isolates, and explains failures, unexpected results, diagnostics, and runtime symptoms."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Debugging
 
-Python Debugging reproduces, isolates, and explains one Python failure, unexpected result, diagnostic, or
-runtime symptom. It returns a verified causal explanation, a bounded diagnostic plan when reproduction is
-not possible, or an exact block; it does not turn an untested guess into a code change.
+Python Debugging reproduces, isolates, and explains one failure, unexpected result, diagnostic, or runtime symptom.
 
-The operation owns the symptom, its environment, the smallest reproducer, discriminating observations, and
-the diagnosis handoff. Project configuration selects concrete commands and tools. `python-development` owns
-an implementation change, and `python-testing` owns the design and strength of executable correctness evidence.
+Use it when evidence is needed to identify a root cause or define a bounded diagnostic plan before repair. It returns a causal explanation, a bounded plan, or an exact block without changing project source.
 
 ## Principles
 

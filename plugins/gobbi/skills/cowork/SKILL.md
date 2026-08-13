@@ -1,18 +1,13 @@
 ---
 name: cowork
-description: "Cowork is a user-led Gobbi orchestration mode for fast stepwise implementation in one isolated worktree, with optional Ideation and Planning and user-called evaluation."
+description: "Cowork is a user-led Gobbi mode for fast, stepwise implementation in one isolated worktree. It supports optional Ideation and Planning, user-called Evaluation, and explicit closure."
 allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Cowork
 
-Cowork is a user-led Gobbi orchestration mode for fast implementation after the user selects it at Gobbi
-entry.
-
-It takes one topic at a time through the smallest safe combination of optional Ideation, optional Planning,
-and verified Execution, then returns control to the user. A native runtime TODO route keeps the current
-session, topic stages, explicit evaluation, and explicit closure visible without creating Workflow evidence.
+Cowork is a user-led Gobbi mode used after selection at Gobbi entry for fast implementation in one isolated worktree. It takes one topic at a time through the smallest safe mix of Ideation, Planning, and Execution, then returns control to the user without creating Workflow evidence.
 
 ## Principles
 

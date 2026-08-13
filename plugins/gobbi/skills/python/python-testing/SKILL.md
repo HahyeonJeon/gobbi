@@ -1,19 +1,15 @@
 ---
 name: python-testing
-description: "MUST load when Python tests or other executable correctness evidence are designed, written, reviewed, or run."
+description: "Python Testing designs, writes, reviews, runs, and interprets executable correctness evidence for behavior and risks."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Testing
 
-Python Testing designs, writes, reviews, or runs executable correctness evidence for one Python behavior or risk.
-It returns the smallest repeatable evidence record that the selected tests can support, including explicit limits
-for unexercised behavior and unavailable prerequisites.
+Python Testing designs, writes, reviews, runs, and interprets executable correctness evidence for one behavior or risk.
 
-This operation owns test design, isolation, execution, and interpretation. `python-development` owns production
-implementation, `python-packaging` owns installed-distribution behavior, `python-performance` owns performance
-claims, and `python-toolchain` owns concrete project command and tool facts.
+Use it when tests or other repeatable checks must establish a bounded correctness claim. It owns evidence design, isolation, execution, and limits, not production changes, installed-distribution proof, performance claims, or tool selection.
 
 ## Principles
 

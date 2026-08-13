@@ -1,6 +1,6 @@
 ---
 name: phase-3
-description: "MUST load when Workflow enters Phase 3. Evaluates the actual terminal closure, seals PASS evidence, resumes authorized Git finalization, and ends with the exact Hand-off and factual receipt."
+description: "Workflow Phase 3 evaluates the pre-Git closure, records PASS evidence, completes authorized finalization, and displays the exact handoff and receipt. The parent Workflow retains shared contracts and terminal routing authority."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,14 +8,7 @@ user-invocable: false
 
 # Workflow Phase 3
 
-The manager loads this child only after the parent [Workflow](../SKILL.md) activates `P3 · Wrap-up`, or when
-recovery selects an unfinished Phase 3 item. Entry requires the
-verified Phase 2 Hand-off, completed task commits, and current finalization authority. The parent remains loaded
-and owns all shared Workflow contracts.
-
-Phase 3 adapts [Wrap-up](../../wrap-up/SKILL.md) to Workflow. It materializes and evaluates the actual pre-Git
-Memory and handoff result, records PASS, then resumes authorized finalization and exact display. Wrap-up and its
-[`handoff.md`](../../wrap-up/handoff.md) child retain their schemas and mechanics.
+Workflow Phase 3 adapts Wrap-up to Workflow by materializing and evaluating the actual Memory and handoff result before Git finalization, then completing authorized finalization and exact display. Use it after the verified Phase 2 Hand-off activates `P3 · Wrap-up` or recovery selects unfinished Phase 3 work, and before Workflow terminates; the parent remains active and owns shared contracts and routing.
 
 ## Principles
 

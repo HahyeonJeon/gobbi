@@ -1,19 +1,13 @@
 ---
 name: startup
-description: "Use when a caller needs one evidence-backed software-project design interview that produces six accepted phase documents and one accepted synthesis."
+description: "Startup is an operation for an evidence-backed software-project design interview. It produces six accepted phase documents and one accepted synthesis without entering implementation planning or delivery."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Startup
 
-Startup turns current project evidence and user decisions into a complete software-project design. It returns
-six accepted phase documents and one accepted `startup.md` synthesis to the caller.
-
-The interview uses `Project -> Product -> Implementation`. A Project owns one or more independently useful
-Products. Each Product owns exactly one complete-stack Implementation; technologies remain categorized entries
-inside it. Visual artifact forms remain evidence-selected overlays, never subjects. Startup produces design guidance
-and does not produce implementation tasks, plans, evaluation, memory, publication, or delivery work.
+Startup turns current project evidence and user decisions into a complete software-project design through a Project → Product → Implementation interview. Use it when a caller needs six accepted phase documents and an accepted `startup.md` synthesis; it does not produce implementation tasks, plans, evaluation, memory, publication, or delivery work.
 
 ## Principles
 

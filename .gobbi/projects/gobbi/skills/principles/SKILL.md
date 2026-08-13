@@ -1,8 +1,12 @@
 ---
 name: principles
-description: "MUST load for every agent before any work. Defines the 10 behavioral principles that override convenience, speed, and local judgment."
+description: "Principles defines the ten behavioral disciplines that govern every agent's work and override convenience, speed, and local judgment."
 allowed-tools: Read, Grep, Glob, Bash
 ---
+
+# Principles
+
+Principles is the behavioral foundation for every Gobbi agent. It applies to every task before governed work and gives the detailed guidance behind the governing principles summary.
 
 ## Principle 1 — Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST.
 

@@ -1,19 +1,15 @@
 ---
 name: python-development
-description: "MUST load when Python implementation requirements are studied or Python code is designed, changed, reviewed, or verified."
+description: "Python Development studies, implements, reviews, and verifies one accepted code change."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Development
 
-Python Development studies one accepted Python change, builds the smallest complete implementation, and returns
-verified change evidence or an exact block. It applies project configuration before generic guidance and keeps
-the affected tree coherent from requirements through review.
+Python Development studies one accepted change, builds the smallest complete implementation, and verifies the affected tree.
 
-This operation owns implementation and implementation review. `python-conventions`, `python-design`, and
-`python-typing` supply focused judgments; `python-testing` owns test strategy and correctness evidence;
-`python-packaging` owns distribution behavior; and `python-release` owns immutable-artifact release coordination.
+Use it when accepted implementation requirements are studied or Python code is designed, changed, reviewed, or verified. It returns bounded implementation evidence or an exact block while routing specialized concerns to their owners.
 
 ## Principles
 

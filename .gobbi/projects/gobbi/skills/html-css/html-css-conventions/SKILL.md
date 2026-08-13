@@ -1,18 +1,15 @@
 ---
 name: html-css-conventions
-description: "MUST load when choosing or reviewing binding presentation rules or overridable defaults for HTML/CSS source organization, cascade, selectors, public hooks, tokens, responsive adaptation, compatibility, or maintainability."
+description: "HTML/CSS Conventions is a preference skill for binding presentation rules and overridable project defaults. It covers source ownership, cascade, selectors, public hooks, tokens, adaptation, compatibility, and maintenance."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # HTML/CSS Conventions
 
-Use this preference to choose binding presentation rules and overridable defaults for source ownership,
-cascade layers, selectors, public hooks, tokens, responsive adaptation, compatibility, and maintenance. Apply
-project conventions first when they are explicit and compatible with the binding Rules below.
+HTML/CSS Conventions guides choices for source ownership, cascade layers, selectors, public hooks, tokens, responsive adaptation, compatibility, and maintenance. Use it when choosing or reviewing binding presentation rules or overridable defaults.
 
-This skill does not choose product aesthetics, execute source changes, prove browser facts, or define motion
-mechanics. Route those claims to their design, development, platform, or motion owners.
+It does not choose product aesthetics, make source changes, establish platform facts, or define motion mechanics.
 
 ## Principles
 

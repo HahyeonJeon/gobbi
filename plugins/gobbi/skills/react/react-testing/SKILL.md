@@ -1,24 +1,15 @@
 ---
 name: react-testing
-description: "MUST load when creating or revising React component or Hook tests."
+description: "React Testing is an operation skill that creates or revises verified component and Hook tests for browser applications and Electron renderers."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # React Testing
 
-Use this implementation operation to create or revise React component and Hook tests through a concrete
-Study → Design → Build → Run → Handoff lifecycle. It converts accepted behavior into verified test changes
-for a browser application or Electron renderer.
+React Testing turns accepted component or Hook behavior into verified test changes through a Study, Design, Build, Run, and Handoff lifecycle. Use it when creating or revising component or Hook tests with the project's installed runner, renderer, helpers, and conventions.
 
-This operation changes only React component and Hook tests and their test-local setup, fixtures, substitutes,
-and configuration, then self-verifies those changes. Route independent read-only judgment to
-[`Evaluation`](../../evaluation/SKILL.md). Route real-browser, full-application, Electron process, native, and
-packaged-application evidence to the named testing skills in the procedure.
-
-Use the project's installed runner, renderer, helpers, and conventions by default. React Native requires
-project-specific guidance. Dependency, runner, renderer, and test-architecture migrations require separate
-authority.
+It changes only React tests and test-local support; real-browser, full-application, Electron process, native, packaged-application, independent evaluation, migrations, and React Native work remain elsewhere.
 
 ## Principles
 

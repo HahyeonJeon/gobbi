@@ -1,19 +1,15 @@
 ---
 name: python-toolchain
-description: "MUST load when Python distribution tools, interpreter behavior, project-pinned tooling, or tool diagnostics are used or assessed."
+description: "Python Toolchain is a lookup manual for interpreters, isolated environments, and project-selected development and distribution tools."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # Python Toolchain
 
-Python Toolchain is the lookup manual for the Python interpreter, isolated environments, and the tools a
-project selects to install dependencies, check form or types, run tests, or build a distribution. It records
-which executable and configuration produced an observation, then keeps that observation within its actual scope.
+Python Toolchain is a lookup manual for interpreters, isolated environments, and project-selected tools for dependencies, checking, testing, and builds.
 
-Use this skill to establish or diagnose platform facts, not to select a universal third-party tool or complete a
-development, testing, packaging, performance, or release outcome. The repository's configuration, support
-policy, and documented commands override generic guidance.
+Use it when establishing or diagnosing the exact executable, configuration, effects, and limits behind a platform or tool observation. It supplies tool facts without selecting universal third-party tools or completing development, testing, packaging, performance, or release work.
 
 ## Principles
 

@@ -1,15 +1,13 @@
 ---
 name: discussion
-description: "MUST load when writing or reviewing a question for the user. Discussion is a preference skill for clear, evidence-backed, and decision-ready questions."
+description: "Discussion is a preference skill for writing or reviewing clear, evidence-backed, and decision-ready questions for the user."
 allowed-tools: Read, Grep, Glob, AskUserQuestion
 skill-type: preference
 ---
 
 # Discussion
 
-Discussion is a preference skill for writing clear, evidence-backed questions that help the user clarify a request, challenge a premise, or make a decision. Use it to make What, Why, and How concrete, ask for evidence or authority, and resolve user-owned choices without changing the user's accepted direction by assumption.
-
-The Principles explain the judgment behind a good question, the Rules bound what every question must and must not do, and the Preferences give the default Question Template and how to present it. The skill shapes the question only: it prescribes no ordered procedure and decides nothing the user has not decided.
+Discussion guides questions that help the user clarify a request, challenge a premise, or make a decision. Use it when What, Why, and How need to become concrete or user-owned choices remain unresolved; it shapes questions but makes no decisions.
 
 ## Principles
 

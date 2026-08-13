@@ -1,15 +1,15 @@
 ---
 name: typescript-typing
-description: "MUST load when writing or reviewing TypeScript code to model or inspect types, narrowing, generics, unions, assertions, public declarations, or external-input validation."
+description: "TypeScript Typing is a preference skill for state modeling, narrowing, generics, unions, assertions, public declarations, and runtime-validation boundaries."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # TypeScript Typing
 
-TypeScript Typing governs how code models states, narrows values, uses generics and assertions, and exposes declarations. It distinguishes compiler results from runtime validation and keeps unsound escape hatches visible.
+TypeScript Typing defines how code models states, narrows values, uses generics and assertions, and exposes declarations. Use it after runtime values and transitions are understood, when writing or reviewing type models or external-input validation.
 
-These preferences apply after the runtime values, allowed states, and state transitions are understood. The goal is the narrowest honest model, not the most elaborate type expression.
+The aim is the narrowest honest model; compiler types never replace runtime validation.
 
 ## Principles
 

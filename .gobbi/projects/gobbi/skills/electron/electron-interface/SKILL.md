@@ -1,24 +1,15 @@
 ---
 name: electron-interface
-description: "MUST load when choosing or reviewing an Electron application's identity, design evidence, interface concepts, information structure, interaction intent, accessibility, modality coverage, or success measures."
+description: "Electron Interface is a preference skill for choosing and reviewing an application's observable product identity, structure, interaction, accessibility, target adaptation, and success measures."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Electron Interface
 
-Use this preference skill to choose or review one observable Electron application design. It covers product
-identity, design evidence, interface concepts, information structure, visible states, interaction intent,
-accessibility, modalities, locale, success measures, and design handoff facts.
+Electron Interface chooses or reviews one observable application design from product, user, accessibility, platform, and authority evidence.
 
-This skill distinguishes current-product observation, representative-user evidence, accessibility evidence,
-official target guidance, cross-target task evidence, and accepted authority or requirements. It turns those
-inputs into observable judgment without treating any one class as proof of another.
-
-This skill owns no Electron API or mechanism selection, technical architecture, installed application
-contract, source implementation, test work, evidence acceptance, or delivery coordination. Rules define the
-valid choice space, every Rule overrides every conflicting Preference, and accepted product contract,
-accessibility, security, and user-authority boundaries remain controlling.
+Use it when deciding identity, concepts, information structure, visible states, content, feedback, interaction modalities, localization, target conventions, or success measures.
 
 ## Principles
 

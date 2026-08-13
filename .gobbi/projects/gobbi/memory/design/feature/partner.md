@@ -11,8 +11,9 @@ Fixed 2026-08-01/02 in the same session as [the locator](../architecture/plugin-
 ## Design
 
 `gobbi/partner/SKILL.md` now owns the whole system, both launch directions (Claude launching Codex, Codex
-launching Claude), as one canonical child. `codex/peer-adapters.md` is deleted; `codex/SKILL.md` is reduced to
-CLI usage only, 183 → 205 lines, dominated by its Manual section (137/205 lines).
+launching Claude), as one canonical child. The original migration deleted `codex/peer-adapters.md` and
+reduced `codex/SKILL.md` to CLI usage only. The later skill cleanup removed that CLI-only skill; Partner keeps
+only the partner-specific process-identity and permission-boundary facts.
 
 **Vocabulary fixed at first use**, closing the ambiguity that broke the naming migration:
 
@@ -50,20 +51,18 @@ label`; and "return to DISCUSSION" from the recovery list, replaced with the oth
 
 ## Codex CLI facts the partner design depends on
 
-Measured against installed Codex CLI `0.146.0`, not assumed from its documentation — see
+Originally measured against installed Codex CLI `0.146.0`, not assumed from its documentation — see
 [`learnings/codex/tips.md`](../../learnings/codex/tips.md) for the full detail:
 
 - `.codex/config.toml` at a repository root is **inert**; Codex loads only `$CODEX_HOME/config.toml`. It
   stayed invisible because both files happened to name the same model.
-- `codex exec` has no `-a`/`--ask-for-approval` flag and always runs with `approval: never` — **sandbox mode
-  is the entire permission boundary of a `codex exec` run**, directly relevant to launching a partner run
-  safely.
+- Installed Codex CLI `0.147.0` still exposes no interactive approval prompt for `codex exec`; **sandbox mode is
+  the permission boundary of a partner launch**, so the launch remains read-only.
 - `codex exec` did not block outside a git repository in `0.146.0` despite `--skip-git-repo-check` existing as
   a flag.
 
 ## References
 
 - `gobbi/partner/SKILL.md` — the canonical owner
-- `codex/SKILL.md` — CLI usage only, no partner policy
 - [`design/architecture/plugin-skill-locator.md`](../architecture/plugin-skill-locator.md) — the root-resolution contract both launch directions depend on
 - [`learnings/codex/tips.md`](../../learnings/codex/tips.md) — measured Codex CLI behavior

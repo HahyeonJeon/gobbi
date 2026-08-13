@@ -1,27 +1,15 @@
 ---
 name: git
-description: "MUST load when work needs an isolated branch and worktree, a focused local commit, publication, merge, or recovery."
+description: "Git manages one session's isolated branch, worktree, commits, publication, merge, cleanup, and recovery. It also executes one exact caller-supplied tag or ref action."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Git
 
-Use this skill for the Git lifecycle of one session. It creates or recovers one isolated branch and worktree,
-keeps an ordered local history of focused verified commits, and either retains that recovery path or performs
-only the external and destructive actions the supplied contract and the user authorize.
+Git manages one session's branch, isolated worktree, focused verified commits, publication path, merge, cleanup, and recovery under a caller-supplied contract. Use it when that lifecycle or one exact caller-supplied tag or ref action is required.
 
-The caller supplies one session contract with five properties: proved identity, an immutable base commit, a
-registered worktree outside the main checkout, declared publication intent, and the required repository layout.
-The manager owns session-level setup, acceptance, publication, merge, cleanup, and recovery. Any
-assignment-named writer role, including an assistant, owns only the writes and local commit that its focused
-assignment grants.
-[`conventions.md`](conventions.md) owns deterministic formats.
-
-A separate entry executes one caller-supplied tag/ref action without choosing its repository, ref, target,
-form, inputs, remote, or publication policy. It binds that exact action to current manager authority, changes
-only the named ref and the tag object its supplied form requires, verifies the requested result, and otherwise
-returns a recoverable stop.
+Local delivery does not depend on remote access; external or destructive actions remain bounded by supplied authority.
 
 ## Principles
 

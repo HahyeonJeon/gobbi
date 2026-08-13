@@ -1,18 +1,15 @@
 ---
 name: python-design
-description: "MUST load when Python APIs, modules, functions, classes, objects, errors, data ownership, or resource lifetimes are designed or reviewed."
+description: "Python Design provides overridable preferences for runtime and API behavior, including errors, data ownership, and resource lifetimes."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Python Design
 
-Python Design helps authors and reviewers choose coherent Python runtime and API behavior: modules, functions,
-classes, errors, data ownership, and resource lifetimes. It favors the smallest design that makes a caller's
-required behavior and failure paths explicit.
+Python Design guides coherent runtime and API choices for modules, functions, classes, errors, data ownership, and resource lifetimes.
 
-Project contracts and supported runtimes constrain every choice. This skill does not choose written form,
-static typing policy, workspace placement, package-distribution semantics, or project tools.
+Use it when authors or reviewers define observable behavior, failure paths, mutation, or cleanup under project and runtime constraints. It does not choose written form, static typing policy, placement, packaging, or tools.
 
 ## Principles
 
