@@ -56,6 +56,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   merges, reorganization, stale content, and duplicates before creating new memory. No-slug legacy session
   identities and their recovery routes are removed from the active Gobbi, Cowork, Workflow, Agent Teams,
   Memory, and Git contracts.
+- Discussion now understands the user's intent within the relevant project vision, roadmap, design,
+  architecture, and current state, using Who, What, When, Where, Why, and How to identify material gaps. It
+  studies evidence before proposing options and recommends the best-supported direction so the user can make a
+  concrete decision. Material design and decision advice actively uses available subagent, teammate, and enabled
+  Partner input through the active owner's participant contract, avoiding duplicate or out-of-policy runs.
+  Material decisions use one shared question template through `AskUserQuestion` in Claude Code or
+  `request_user_input` in Codex.
+- Delegation no longer classifies subagent results as `file`, `commit`, or `response-only`. Every brief now
+  names one authoritative result and its acceptance evidence directly. Its `Return` section requires the
+  subagent to write a final, verifiable Handoff for every terminal status and distinguishes durable locators from
+  response subjects without a result-kind field.
+- Study now frames reliable internal and external materials around the design, development approach, or
+  decision they must improve. It remains advisory, returns a defined concise response by default, or writes one
+  caller-authorized result from a compact template while keeping every studied material read-only.
+- Gobbi skill dependencies now preserve policy ownership instead of using a stale isolated-skill allowlist.
+  Internal References do not load their targets, and task triggers still control loading.
 - Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
   operations will be redesigned before they are reintroduced.
 

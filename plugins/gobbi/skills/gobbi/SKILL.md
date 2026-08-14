@@ -45,10 +45,9 @@ its owner without copying that owner's procedure or creating a second router.
 - **MUST load Principles before any governed action, then load Discussion and Delegation during entry.** Selected
   mode owners and phases load their remaining shared and phase-specific skills.
 
-- **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
-  `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
-  `planning`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only `memory`,
-  and nothing in that isolated set may reference `wrap-up`.
+- **MUST preserve ownership across skill dependencies.** A skill may reference an internal owner needed to use
+  or maintain it, but never copy, override, or bypass that owner's policy; entry and mode skills own routing and
+  participant policy, task skills own their capabilities, and no task skill may depend on `wrap-up`.
 
 - **MUST hold the session to its selected mode's participant and finding commitments.** Automatically correct
   a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside the locked contract;
@@ -61,11 +60,8 @@ its owner without copying that owner's procedure or creating a second router.
   [`delegation`](../delegation/SKILL.md), keep all worktree writes in one ordered writer chain, and
   parallelize only independent read-only analysis and fresh independent evaluation.
 
-Rule 4 names five linking skills, seven isolated skills, and `wrap-up`. Every skill it does not name is
-unclassified: the rule constrains it in no direction, and it may reference anything. The isolated seven are
-constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
-unclassified skill either. Runtime and project nouns — `Claude`, `Codex`, `Gobbi`, and `git` as a program —
-are not skill references.
+An internal reference creates an ownership edge but does not load the linked skill. Entry, mode, operation, and
+task triggers still control loading.
 
 ## Procedure
 
@@ -223,8 +219,8 @@ projects/*/worktrees/
   [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
   the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Before a specialist brief, load [Delegation](../delegation/SKILL.md), add the selected mode's fields, and
-  resolve every required skill and role from the validated root pair. After the report, reread the result and
-  reproduce its verification before another assignment.
+  resolve every required skill and role from the validated root pair. After the final handoff, reread the result
+  and reproduce its verification before another assignment.
 - Use the [skill map](#references) to find a further task-specific skill, then load that skill from its own
   trigger. The map indexes what exists for routing; it loads nothing itself and gives no skill a second entry
   point.
@@ -266,7 +262,7 @@ that has children routes to them from its own document.
 |---|---|
 | [`gobbi/partner`](partner/SKILL.md) | One external invocation: its preparation, launch, validation, and returned frozen content. |
 | [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
-| [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
+| [`study`](../study/SKILL.md) | Reliable internal or external Study for the best-supported design, development approach, or decision, with an optional saved result. |
 | [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces five accepted phase documents and one confirmed synthesis. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work, with general code, documentation, Ideation-result, and Planning-result checklists. |

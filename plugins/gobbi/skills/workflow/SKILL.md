@@ -40,8 +40,8 @@ after the Wrap-up Note agrees with the committed and merged result.
 - **MUST apply the recorded session-wide partner policy to every productive step.** Disabled invokes no
   external runtime; enabled adds each applicable external result through one
   [Partner](../gobbi/partner/SKILL.md) invocation while Workflow retains round assembly and acceptance.
-- **MUST keep worktree mutations in one ordered writer chain.** Parallel work is read-only study, factual
-  analysis, or critique.
+- **MUST keep worktree mutations in one ordered writer chain.** Parallel work is response-form Study, factual
+  analysis, or critique that does not write. A saved Study result joins the writer chain.
 - **MUST apply Gobbi's [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).**
   Every correction receives fresh evaluation, and only a verified PASS continues automatically.
 - **NEVER accept a report, idle signal, TODO status, or summary as completion evidence by itself.** Reread the
@@ -138,33 +138,38 @@ choose between both shapes when the accepted evidence does not identify one cano
   Add session UUID, runtime, absolute worktree and evidence root, branch, phase, exact TODO/status, step/stage,
   iteration/cap, task and assignment IDs, prerequisite evidence, role, outcome, locked Phase 1 terms, acceptance,
   authority, scope, allowed/protected paths, writer and external-effect boundaries, independence, stops, outputs,
-  checks, escape responses, and exactly one `result-kind: file | commit | response-only`.
+  checks, escape responses, exact result locators, and the required final handoff.
 - In `Resources`, provide the validated absolute root pair, then exact paths in this order: Principles; all
   project rules or `NO_PROJECT_RULES`; canonical role; this parent; active phase child; step/task skills; primary
   artifacts. Fresh specialists inherit no loaded skill. A continuation receives a new assignment ID, current
   TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
-- Make the result kind authoritative. Durable design and evaluation use `file` with an exact caller-named
-  absolute path, containment, rereading, and named checks. Commit-based Execution uses `commit` with the
-  assignment's branch, path, authority, provenance, and verification contract. Study, assistant lookup,
-  Partner, or another operation that intentionally consumes conversation content or forbids durable writes may
-  use `response-only` with its exact response shape and consumer.
-- An indexed Ideation or Planning result keeps `result-kind: file` and names its absolute root index as
-  `ARTIFACT`. The owning skill defines the complete result; Workflow validates and freezes every file reached
-  in declared order rather than treating the locator alone as the subject.
-- Require this base return prefix:
+- Make each required result and its acceptance evidence explicit. Durable design and evaluation name an exact
+  caller-owned absolute path with containment, rereading, and checks. Commit-based Execution names the branch,
+  assignment-owned paths, commit authority, provenance, and verification. Study names either an exact
+  caller-owned absolute destination with its allowed write boundary and checks, or its response subject, shape,
+  and consumer. Assistant lookup, Partner, or another conversation result names its subject, response shape,
+  and consumer.
+- An indexed Ideation or Planning result names its absolute root index as `RESULT`. The owning skill defines the
+  complete result; Workflow validates and freezes every file reached in declared order rather than treating the
+  locator alone as the subject.
+- Require this base handoff prefix:
 
 ```text
 STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
-RESULT-KIND: file | commit | response-only
-ARTIFACT: <exact absolute path | commit | response-only>
+RESULT: <exact absolute path | commit revision | concise response result>
 SKILLS LOADED:
   - <exact path, in read order>
+HANDOFF:
+  SUMMARY: <completed outcome or terminal state>
+  VERIFICATION: <fresh commands and results, or not run with reason>
+  CONCERNS: <remaining concerns or none>
+  NEXT ACTION: <next owner and action, or none>
 ```
 
 - A successful evaluator inserts `VERDICT: PASS | REVISE | FAIL` immediately after `STATUS`. An evaluator
   omits it for `NEEDS_CONTEXT`, `BLOCKED`, or an evidence gap that prevents a verdict. Other roles omit it.
-- Validate assignment, role, prefix, loaded paths, result kind, locator, acceptance proof, checks, scope, and
-  protected paths before routing. A printed response cannot substitute for a promised file or commit. In
+- Validate assignment, role, prefix, loaded paths, result locator, acceptance proof, handoff, checks, scope, and
+  protected paths before routing. A handoff cannot substitute for a promised file or commit. In
   Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader only within
   one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem, and an
   assistant only within one memorization chain.

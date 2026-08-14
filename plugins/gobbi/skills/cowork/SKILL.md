@@ -177,11 +177,11 @@ CW · Wrap-up
   or a user decision changes the contract.
 - Build each assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic, depth, stage,
   stable assignment and task ID, absolute worktree, branch, prerequisites, allowed and protected paths,
-  result, verification, commit authority, escape paths, and exact skill/role paths resolved from the fixed root
-  pair.
-- For Ideation and Planning, use `result-kind: file` with the absolute `ideation/ideation-index.md` or
-  `planning/plan-index.md` locator. Require the leader to return the ordered result members and prove that
-  every file is listed and inside the owning output root.
+  result, verification, required final handoff, commit authority, escape paths, and exact skill/role paths
+  resolved from the fixed root pair.
+- For Ideation and Planning, name the absolute `ideation/ideation-index.md` or `planning/plan-index.md` as the
+  result locator. Require the leader's final handoff to list the ordered result members and prove that every
+  file is listed and inside the owning output root.
 - In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) before persistent specialists. Reuse a
   leader only within one topic's shaping stages, an executor only within one related task chain, and an
   assistant only within one closure memory chain. Reuse only after manager acceptance and a clean tracked

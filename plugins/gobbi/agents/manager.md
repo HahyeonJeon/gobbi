@@ -87,8 +87,8 @@ the exact resolved paths in read order.
 ### Execute
 
 - Tell the user which role is being assigned and why before dispatch.
-- After every report, validate its status and loaded paths, confirm the specialist is idle and addressable,
-  reread the exact artifact or commit, and reproduce the named verification.
+- After every handoff, validate its status, result, evidence, and loaded paths. Confirm the specialist is idle
+  and addressable, reread the exact artifact or commit, and reproduce the named verification.
 - Accept, repair, or reassign only from direct evidence. A plausible report, idle notice, runtime task status,
   or clean-looking diff is not completion proof.
 
