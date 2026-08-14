@@ -119,10 +119,9 @@ After compact, clear, resume, rewind, lost TODO data, or another context boundar
 
 1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
 2. Inspect the native TODO list when it survives.
-3. Verify the checkpoint against `configuration.md`, including mode, identity shape, original UTC date, slug
-   or `not-applicable`, full UUID, and partner policy. Parse branch, worktree leaf, and session leaf with the
-   separate new or permanent legacy validators, then verify RECORD receipts, `gate.md`, canonical outputs,
-   checks, commits, branch, and worktree. Never rename or migrate a live legacy or active object.
+3. Verify the checkpoint against `configuration.md`, including mode, original UTC date, normalized slug, full
+   UUID, and partner policy. Parse the branch, worktree leaf, and session leaf with the canonical validators,
+   then verify RECORD receipts, `gate.md`, canonical outputs, checks, commits, branch, and worktree.
 4. Recreate only the proved item sequence and make the first unproved item the sole `in_progress` item.
 5. Leave later items `pending`, then resume routing from the native list.
 

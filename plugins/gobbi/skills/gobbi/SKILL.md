@@ -196,8 +196,7 @@ projects/*/worktrees/
   is empty, longer than 20 characters, or reserved; retain a valid partner answer. The second question asks
   whether to use a partner, never which runtime; the active runtime fixes the direction. General skips this
   question for the slug, records `slug: not-applicable`, creates no Gobbi identity, and asks only the partner
-  question. A recovered new session preserves its recorded normalized slug. A recovered legacy session
-  preserves `slug: not-applicable` and receives no slug question.
+  question. A recovered session preserves its recorded normalized slug and receives no replacement slug.
 - Record mode, applicable normalized slug, and partner policy together. Cowork and Workflow consume all three;
   General consumes mode and policy without creating session state. Enabled authorizes the owner to call
   [`partner`](partner/SKILL.md) whenever its mode requires; disabled authorizes none.
@@ -217,10 +216,10 @@ projects/*/worktrees/
 - **General:** hand `mode: General`, `slug: not-applicable`, and the partner policy to the task owner. Continue
   from Principles and load each task-specific skill when its trigger applies. Load neither orchestration owner
   — `cowork` and `workflow` — and create no Gobbi identity or session state.
-- **Cowork:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
+- **Cowork:** hand mode, the normalized slug and partner policy to
   [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner generates or recovers its identity, creates or
   recovers its isolated worktree before editing, and runs its user-topic loop.
-- **Workflow:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
+- **Workflow:** hand mode, the normalized slug and partner policy to
   [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
   the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Before a specialist brief, load [Delegation](../delegation/SKILL.md), add the selected mode's fields, and

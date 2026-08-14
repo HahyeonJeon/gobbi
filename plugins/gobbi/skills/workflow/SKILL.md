@@ -81,7 +81,7 @@ P3 · Note
 
 #### 1.2 Configure identity, isolation, and evidence
 
-- Enter Configuration with Gobbi's normalized slug or recovered `slug: not-applicable`, partner policy, and
+- Enter Configuration with Gobbi's normalized slug, partner policy, and
   validated `{gobbi-skills-root}` / `{gobbi-agents-root}` pair. Resolve the Execution cap, roles, required-system
   availability, narrow waivers, base revision, publication intent, merge authority, and cleanup authority. The
   Execution cap defaults to three total passes per task.
@@ -89,9 +89,9 @@ P3 · Note
 
 | Property | Workflow value |
 |---|---|
-| Proved identity | Runtime, original UTC start date, slug or `not-applicable`, full UUID, partner policy, and separately derived names. |
+| Proved identity | Runtime, original UTC start date, normalized slug, full UUID, partner policy, and separately derived names. |
 | Immutable base commit | The user-resolved clean head, or the one approved layout-bootstrap commit. |
-| Isolated worktree | A fresh free path or one exact registered new or permanent legacy pair outside the main checkout. |
+| Isolated worktree | A fresh free path or one exact registered canonical pair outside the main checkout. |
 | Publication intent | The configured local, push, or pull-request outcome; later actions cannot exceed it. |
 | Required layout | Gobbi Step 1.1 paths, tracked/ignored states, and exact ignore bytes. |
 
@@ -101,13 +101,12 @@ P3 · Note
 - Run Gobbi's layout resolver and Git bootstrap preflight before capturing the base. If repair is required,
   obtain explicit user approval for the sole tracked main-checkout write: one commit containing only the
   required directories and `.gobbi/.gitignore`. Never write the repository root `.gitignore`.
-- On recovery, require separately parsed branch, worktree, and session leaves to reproduce one new or legacy
-  tuple. Record `identity-shape: new|legacy`; never infer a legacy slug, rename or migrate live state, accept a
-  mixed shape, or choose among competing tuples.
+- On recovery, require separately parsed branch, worktree, and session leaves to reproduce one canonical
+  tuple. Never rename live state or choose among competing tuples.
 - Create or verify the isolated worktree through Git. Create the evidence root at
-  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`; the new worktree and session
-  leaves are byte-identical. Keep a recovered legacy `<YYYY-MM-DD>-<full-uuid>` root unchanged.
-- Write `configuration.md` with mode, identity shape, original UTC date, slug or `not-applicable`, UUID, partner
+  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`; the worktree and session
+  leaves are byte-identical.
+- Write `configuration.md` with mode, original UTC date, normalized slug, UUID, partner
   policy, settings, repository, base, branch, worktree leaf, session leaf, absolute worktree, runtime, validated
   root pair, and creation checks. Apply Memory `Temporary Record`, prove it ignored, and verify the tracked tree
   is unchanged.
@@ -124,10 +123,10 @@ Use these fixed evidence owners:
 Each owner uses `working/iteration-N/`, `evaluation/iteration-N/`, and `record/iteration-N.md`.
 `evaluation/iteration-N/` contains `gate.md` and only required `claude.md` or `codex.md` reports. PASS writes
 Ideation to `1-ideation/outputs/ideation/` with `ideation-index.md` as its locator and Planning to
-`2-planning/outputs/planning/` with `plan-index.md` as its locator; Execution outputs stay at tracked planned paths. `{evidence-root}/work/`
-holds other session-only work. Every evidence-root
-path is ignored, receives Memory `Temporary Record`, and is never staged. Wrap-up later applies `Memorize` to
-the full root, including readable legacy `memory/` input.
+`2-planning/outputs/planning/` with `plan-index.md` as its locator; Execution outputs stay at tracked planned
+paths. `{evidence-root}/work/` holds other session-only work. Every evidence-root path is ignored, receives
+Memory `Temporary Record`, and is never staged. Use `{evidence-root}/work/memory-change-points.md` only when
+Memory records a detected durable change point. Wrap-up later applies `Memorize` to the full root.
 
 New sessions use indexed Ideation and Planning results. Recovery may retain a receipt-proved legacy
 `1-ideation/outputs/ideation.md` or `2-planning/outputs/{tasks.md,plan.md}` pair; never migrate a legacy result or
@@ -192,8 +191,9 @@ acceptance checks.
    subject. Neither receives the other report. Each applies the complete Evaluation guidelines to the full
    frozen subject. Preserve each complete report and applicable verdict.
 4. **RECORD:** Classify every finding through Gobbi's finding gate, derive the applicable Workflow gate, and
-   apply Memory `Temporary Record` to the package, gate, canonical output, and receipt. Reread all promised
-   evidence before routing.
+   apply Memory `Temporary Record` to the ignored package, gate, receipt, and any detected change points.
+   Record a tracked canonical output only by its locator and hash in the receipt; never pass it to Temporary
+   Record. Reread all promised evidence before routing.
 
 A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
 `open-decisions.md`. The manager confirms the required local draft and self-review, synthesis, open decisions,

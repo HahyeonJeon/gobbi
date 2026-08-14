@@ -132,6 +132,7 @@ keep identities clear.
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
+| [Domain Skill checklist](checklist.md) | Reusable source for evaluating family boundaries, navigation roots, child ownership, naming, routing, and integration. |
 | [Naming Standard](naming-standard.md) | Reserved and free capability words plus canonical applicability and routing forms. |
 | [`Operation Skill`](../operation-skill/SKILL.md) | Guidance for writing each operation child as a straightforward SOP. |
 | [`Tool Skill`](../tool-skill/SKILL.md) | Guidance for writing each tool child and any direct Tool Skill children as direct-lookup manuals. |

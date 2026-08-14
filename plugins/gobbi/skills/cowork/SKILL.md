@@ -68,7 +68,7 @@ the manager may advance it, but never become a second route.
 
 - Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
   [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order. Enter only from Gobbi's
-  `mode: Cowork`, normalized slug or legacy `slug: not-applicable`, session-wide partner policy, and validated
+  `mode: Cowork`, normalized slug, session-wide partner policy, and validated
   `{gobbi-skills-root}` and `{gobbi-agents-root}` pair.
 - Use the runtime's native TODO control with only `pending`, `in_progress`, and `completed` and at most one
   active item. Gobbi publishes the complete fixed Cowork template immediately after mode selection; a fresh
@@ -81,9 +81,9 @@ the manager may advance it, but never become a second route.
 
 | Property | Cowork value |
 |---|---|
-| Proved identity | Runtime, original UTC date, normalized slug, full UUID, separately derived names, and matching provenance trailers; legacy recovery uses `slug: not-applicable`. |
+| Proved identity | Runtime, original UTC date, normalized slug, full UUID, separately derived names, and matching provenance trailers. |
 | Immutable base | The user-confirmed clean head before worktree creation, including an approved bootstrap commit when required. |
-| Isolated worktree | The unoccupied intended absolute path for fresh creation, or one exact registered new or permanent legacy branch/worktree pair for recovery. |
+| Isolated worktree | The unoccupied intended absolute path for fresh creation, or one exact registered canonical branch/worktree pair for recovery. |
 | Publication intent | Local retention. Publication, merge, and cleanup require a separate explicit Git operation and current user authority. |
 | Required layout | Gobbi [Step 1.1](../gobbi/SKILL.md#11-establish-the-entry-context-runtime-and-canonical-layout) paths, tracked-or-ignored states, and exact ignore bytes for the resolved project. |
 
@@ -93,20 +93,19 @@ the manager may advance it, but never become a second route.
   approval, stop. Otherwise the main checkout remains unchanged.
 - Fresh names derive separately from `(runtime, date, slug, UUID)`: branch
   `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and worktree leaf
-  `<YYYY-MM-DD>-<slug>-<full-uuid>`. Recovery accepts only one reproducible new or permanent legacy tuple and
-  never renames, migrates, rewrites, or replaces an active object.
+  `<YYYY-MM-DD>-<slug>-<full-uuid>`. Recovery accepts only one reproducible tuple and never renames, rewrites,
+  or replaces an active object.
 - Complete Configuration only after current evidence proves the UUID, repository, immutable base, branch,
-  registered absolute worktree, head, clean status, original date, slug, identity shape, partner policy, fixed
+  registered absolute worktree, head, clean status, original date, slug, partner policy, fixed
   root pair, unchanged main checkout except an approved bootstrap, and exact recovery point. Record those facts
   and stop on any unproved identity, isolation, provenance, base, writer, root, or recovery claim.
 
 #### 1.2 Establish the Cowork session locations
 
-- Root a new session at
-  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`. The new session leaf is
-  byte-identical to the new worktree leaf, not to the branch. A recovered legacy session keeps its permanent
-  `<YYYY-MM-DD>-<full-uuid>` leaf. Apply Memory's separate validators and report the exact retained root with
-  the Step 1.1 evidence.
+- Root the session at
+  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`. The session leaf is
+  byte-identical to the worktree leaf, not to the branch. Apply Memory's validator and report the exact root
+  with the Step 1.1 evidence.
 - Use these exact ignored temporary paths. Create a directory only when its first output needs it:
 
 | Content | Path below the session root |
@@ -117,6 +116,7 @@ the manager may advance it, but never become a second route.
 | Optional creation round | `work/topic-NN-slug/partner/creation/round-N/` |
 | Explicit evaluation | `work/evaluation/{whole-branch|subject-slug}/round-N/` |
 | Closure input | `work/wrap-up/closure.md` |
+| Memory change points | `work/memory-change-points.md` |
 
 - Supply each exact path to [Memory](../memory/SKILL.md) `Temporary Record`. Memory owns identity validation,
   containment, and no-Git capture; Cowork never stages a session path or writes outside the verified worktree.
@@ -235,14 +235,14 @@ CW · Wrap-up
 
 - Enter only for an explicit `wrap up`. Activate the fixed `CW · Wrap-up` item. Track MEMORY, FRESHNESS, and
   PASS as closure evidence, with only the current closure action active. Freeze the
-  accepted topics, scope, decisions, artifacts, commits, checks, coverage, exclusions, risks, current project
-  state, and existing memory. Apply [Memory](../memory/SKILL.md) directly; do not load Wrap-up or create
-  Workflow closure state.
+  accepted topics, scope, decisions, artifacts, commits, checks, coverage, exclusions, risks, recorded memory
+  change points, current project state, and existing memory. Apply [Memory](../memory/SKILL.md) directly; do not
+  load Wrap-up or create Workflow closure state.
 - Assign an assistant through Delegation with the Step 2.1 Cowork fields. It applies Memory `Memorize` to the
   full session root and frozen closure input, updates only durable current-project memory, verifies it, and
   creates one focused memory commit. Accept a verified no-change result. Stop and repair through that assignment
-  for missing category guidance, unresolved decisions, invalid paths, failed checks, wrong-tree evidence, or
-  unrelated work.
+  for missing category guidance, unresolved change points or decisions, invalid paths, failed checks,
+  wrong-tree evidence, or unrelated work.
 - Never create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Note. Cowork
   recovery never looks for `gate.md`, a RECORD receipt, or a Workflow Note.
 - After the accepted Memory pass, complete MEMORY, activate FRESHNESS, and check evaluation coverage against

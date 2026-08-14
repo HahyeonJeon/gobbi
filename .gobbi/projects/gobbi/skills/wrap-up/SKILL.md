@@ -111,9 +111,9 @@ altered completion claim.
 
 - Reread every changed path, related retained content, and required navigation. Confirm that the result stays
   inside the project memory root, follows each category owner, and matches the accepted work.
-- Confirm that every create, update, move, merge, reorganization, and removal has a present need and one owner.
-  Preserve completed point-in-time records, and reject session-shaped stacking, stale current facts, needless
-  fragments, unclear placement, and unexplained duplicates.
+- Confirm that every CRUD action has a present need and one owner, and every recorded memory change point was
+  applied or rejected with a reason. Preserve completed point-in-time records; reject stacking, stale facts,
+  needless fragments, unclear placement, duplicates, and unresolved change points.
 - When memory or its verification fails, stop before Git integration and continue to Step 3.4 with the exact
   retained worktree and recoverable state.
 

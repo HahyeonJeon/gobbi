@@ -1,196 +1,151 @@
 ---
 name: memory
-description: "Memory is an operation skill for writing compact temporary session records and selecting, routing, and updating durable project memory."
+description: "Memory is an operation for recording temporary session context and maintaining durable project knowledge."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Memory
 
-Memory records compact recovery state for active sessions and keeps durable project context current. Use **Temporary Record** after the worktree, project, session identity, and paths are known for caller-owned output below `sessions/*`; use **Memorize** to select durable value and update tracked `memory/*`.
-
-Cowork or Workflow owns each temporary schema, while Memory owns containment, write safety, durable judgment, and category routing.
+Memory records compact recovery context for active sessions and keeps durable project knowledge current and
+clear. Use **Temporary Record** for ignored recovery evidence and memory change points; use **Memorize** only
+on an explicit user request or at a loaded caller skill's named Memory stage.
 
 ## Principles
 
 ### Preserve only useful future context
 
-Temporary records preserve only accepted recovery context while their worktree remains. Durable memory should
-help future work understand or decide something; transient state and operational exhaust stay temporary.
+Temporary records preserve only accepted recovery context while their worktree remains. Durable memory keeps
+evidence-backed context that will help future work understand or decide something.
 
 ### Write simply and compactly
 
-Give each memory file a short, descriptive title and write compactly with short, direct sentences in plain
-language. Organize it with clear sections and headings, using lists for parallel points and tables for
-repeated fields or comparisons.
+Use short, descriptive titles, plain words, direct sentences, and a clear section hierarchy. Use lists for
+parallel points and tables only for repeated fields or comparisons.
 
-### Keep memory up to date
+### Keep memory current and clear
 
-Temporary records are inputs to later memorization, not durable memory. Revise, move, or remove stale durable
-content while preserving completed point-in-time records under their category rules.
+Durable memory is a current, navigable model of project knowledge, not a stack of session records. Use
+category-owned CRUD to update, move, merge, reorganize, or remove related content while preserving completed
+point-in-time records.
 
 ## Rules
 
-- **MUST select `Temporary Record` or `Memorize` from the active task and validate one caller-supplied new or
-  legacy session identity inside the verified worktree and project.** Stop without writing when format,
-  containment, UUID uniqueness, or ownership is ambiguous or conflicting.
-- **MUST keep every Temporary Record output below the active project's `sessions/*` tree and out of Git
-  history.** Cowork or Workflow owns the exact output; never judge durable value, route a memory category,
-  stage, or commit during this action.
-- **MUST read the full session root during Memorize, including readable legacy session
-  layouts.** Session placement is input evidence, not proof of durable value and not a required new layout.
-- **MUST load every applicable category skill before changing tracked `memory/*`.** Load both source and
-  destination categories for a move, and stop when required category guidance is incomplete.
+- **MUST take each action from an authorized call.** `Temporary Record` requires a caller skill that owns the
+  exact session path; `Memorize` requires an explicit user request or a loaded caller skill's named Memory
+  stage.
+- **MUST validate one caller-supplied canonical session identity when an action uses session state.** Stop
+  without writing when its format, containment, UUID uniqueness, or ownership is missing or conflicting.
+- **MUST keep every Temporary Record below the active project's `sessions/*` tree and out of Git history.**
+  During active work, record detected durable change points there instead of changing `memory/*`.
+- **MUST reconcile durable knowledge before creating memory.** Read the full session root and all related
+  project memory, then use category-owned CRUD to update, move, merge, reorganize, or remove existing content;
+  create only truly missing context.
 - **MUST verify and repair every write before returning.** Prove exact containment, content, affected paths,
-  and unchanged protected paths for the selected action.
-- **NEVER delete a session root or its contents directly.** A session may disappear only with separately
-  authorized worktree cleanup after its recovery value has been resolved.
+  navigation, and unchanged protected paths for the selected action.
+- **NEVER delete a session root or its contents directly.** A session may disappear only through separately
+  authorized worktree cleanup after its recovery value is resolved.
 
 ## Procedure
 
-### Phase 1 — Resolve the active memory context
+### Phase 1 — Bind the Memory Action
 
-#### 1.1 Select and validate the action
+#### 1.1 Accept an authorized action
 
-- Determine the action and verified worktree from the active task. Require the caller's full lowercase
-  hyphenated session UUID, original UTC session-start date, and exact session root. For a new identity, also
-  require its normalized slug. For a legacy identity, require `slug: not-applicable`. Memory validates those
-  values and never derives a branch, worktree leaf, or Git identity.
-- Inside the verified worktree, resolve `.gobbi/projects/<project>/sessions/` as `{sessions-root}`, the
-  caller-supplied `.gobbi/projects/<project>/sessions/<session>/` as `{session-root}`, and
-  `.gobbi/projects/<project>/memory/` as `{memory-root}`. Reject parent traversal, a symbolic-link path
-  component, a different project, and any resolved root outside the verified worktree.
-- Parse the session leaf with exactly one permanent grammar:
+- Accept `Temporary Record` only when a loaded caller skill names the exact ignored session path it owns.
+  Memory owns the compact change-point schema at the caller's fixed `work/memory-change-points.md` path.
+- Accept `Memorize` only on an explicit user request or when a loaded caller skill names its Memory stage and
+  supplies the durable write boundary. An agent's observation that memory should change is not authorization.
+- Require the action, caller, verified worktree, project, and exact output or input boundary. `Temporary Record`
+  and caller-skill `Memorize` require a session identity and root; direct user `Memorize` requires the selected
+  evidence and project memory root.
 
-```text
-new:    <YYYY-MM-DD>-<slug>-<full-uuid>
-legacy: <YYYY-MM-DD>-<full-uuid>
-```
+#### 1.2 Validate the canonical session identity when used
+
+- Enter when the action uses session state. Require the caller's original UTC session-start date, normalized
+  slug, full lowercase hyphenated UUID, and exact session root; Memory never derives Git identity.
+- Require the session leaf to match `<YYYY-MM-DD>-<slug>-<full-uuid>` and this exact grammar:
 
 ```regex
-new:    ^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-legacy: ^\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
 ```
 
-- Require the parsed date to be the real Gregorian calendar date of the original UTC session start. For a new
-  leaf, require the parsed date, slug, and UUID to equal the caller values. Require a 1-20
-  character slug and reject exactly `con`, `prn`, `aux`, `nul`, `com1` through `com9`, and `lpt1` through
-  `lpt9`, case-insensitively. For a legacy leaf, require the parsed date and UUID to equal the caller values
-  and require no slug. Keep a readable legacy root in its original shape; never rename, migrate, or rewrite
-  its leaf.
-- Inspect existing leaves below `{sessions-root}` before either action. The caller UUID may resolve to only
-  the supplied `{session-root}`. Reject another leaf containing that UUID, more than one root matching the
-  caller identity, a leaf that matches both classifications, or any competing date or slug. Report every
-  conflicting root; never choose one, append a suffix, or create a replacement.
-- For `Temporary Record`, use the exact output Cowork or Workflow owns below `{session-root}`. For `Memorize`,
-  use the full `{session-root}`, frozen closure evidence, and `{memory-root}`.
-- Evidence is the selected action, caller identity, matched format, resolved roots, containment checks, UUID
-  inventory, and exact output or input boundary. Stop without writing when any evidence is missing,
-  ambiguous, or conflicting.
+- Require a real Gregorian date and exact date, slug, and UUID equality with the caller. Require a 1–20
+  character slug and reject `con`, `prn`, `aux`, `nul`, `com1`–`com9`, and `lpt1`–`lpt9`, case-insensitively.
 
-### Phase 2 — Write a temporary record
+#### 1.3 Resolve and freeze the boundaries
 
-#### 2.1 Write, verify, and return the compact output
+- Resolve the project memory root for `Memorize`; when session state is used, also resolve
+  `.gobbi/projects/<project>/sessions/` and the caller-supplied session root below it. Reject parent traversal,
+  symbolic-link components, a different project, or any root outside the verified worktree.
+- When session state is used, require the caller UUID to identify only the supplied session root. Report every
+  conflict; never choose a root, append a suffix, or create a replacement.
+- Freeze the action, caller, applicable identity, roots, containment checks, UUID inventory, and exact output or
+  input boundary. On any pre-write stop, return those facts, the failed check, unchanged inputs, protected paths,
+  unresolved change points, and first safe recovery step.
 
-- Enter only for `Temporary Record`. Confirm the exact output resolves below `{session-root}` and no path below
-  that root is tracked.
-- Write the smallest accepted state needed for recovery or later Memorize, using the schema owned by Cowork or
-  Workflow. Exclude secrets, transcripts, raw logs, token data, private capture, and unsupported claims.
-- Reread the output and confirm its content and containment. Confirm no session path is tracked, staged, or
-  committed; repair an in-scope content defect and repeat this step, or stop on a boundary failure.
-- Return the action, session root, written path or explicit no-write result, checks, and recovery state.
+### Phase 2 — Record Temporary Context
 
-### Phase 3 — Memorize durable project context
+#### 2.1 Write and verify the temporary record
 
-#### 3.1 Review and route durable value
+- Enter only for `Temporary Record`. Confirm the exact output resolves below the session root and every
+  session path is ignored, untracked, unstaged, and uncommitted.
+- Write the smallest accepted recovery state and exclude secrets, transcripts, raw logs, token data, private
+  capture, and unsupported claims. For `work/memory-change-points.md`, use only the `# Memory Change Points`
+  heading and a `Change point | Evidence` table; merge repeats and treat each row as a later review candidate.
+- Reread the output and repeat its containment, ignore, index, staging, history, and tracked-tree checks.
+  Repair an in-scope content defect and repeat this step, or return the path or no-write result, failed check,
+  unchanged inputs, protected paths, and recovery state.
 
-- Enter only for `Memorize`. Read the full session root, frozen closure evidence, accepted commits, current
-  project state, and existing project memory. Read legacy `{session-root}/memory/` content as temporary input
-  without rewriting it.
+### Phase 3 — Memorize Durable Context
+
+#### 3.1 Select and route durable value
+
+- Enter only for an authorized `Memorize` call. Read the full session root and recorded change points when
+  present, supplied user or closure evidence, accepted commits when applicable, current project state, all
+  related project memory, and required navigation.
 - Keep only evidence-backed context that will help future work. Reject secrets, raw conversation, speculative
-  conclusions, temporary routing state, plans, evaluation packages, receipts, and other operational exhaust
+  conclusions, temporary routing state, plans, evaluation results, receipts, and other operational exhaust
   unless a category skill independently justifies their durable content.
-- Route each retained item through the applicable category skill:
+- Route every retained item through its category owner:
 
 | Durable content | Category skill | Home below the project memory root |
 |---|---|---|
-| Current project design and direction | [`design/SKILL.md`](design/SKILL.md) | `design/` |
-| Reusable knowledge and repeated mistakes | [`learnings/SKILL.md`](learnings/SKILL.md) | `learnings/` |
-| Completed work reports | [`reports/SKILL.md`](reports/SKILL.md) | `reports/` |
-| Completed session history and project progression | [`history/SKILL.md`](history/SKILL.md) | `history/` |
-| Durable sources and supporting inputs | [`materials/SKILL.md`](materials/SKILL.md) | `materials/` |
-| Deferred project or feature outcomes | [`backlogs/SKILL.md`](backlogs/SKILL.md) | `backlogs/` |
+| Current project design and direction | [`design`](design/SKILL.md) | `design/` |
+| Reusable knowledge and repeated mistakes | [`learnings`](learnings/SKILL.md) | `learnings/` |
+| Completed work reports | [`reports`](reports/SKILL.md) | `reports/` |
+| Completed session history and project progression | [`history`](history/SKILL.md) | `history/` |
+| Durable sources and supporting inputs | [`materials`](materials/SKILL.md) | `materials/` |
+| Deferred project or feature outcomes | [`backlogs`](backlogs/SKILL.md) | `backlogs/` |
 
-- Use this durable memory directory structure:
+#### 3.2 Reconcile category-owned memory
 
-```text
-.gobbi/projects/<project>/memory/
-├── design/
-│   ├── README.md
-│   ├── architecture/
-│   ├── feature/
-│   ├── process/
-│   └── roadmap/
-├── learnings/
-│   ├── design/
-│   │   ├── tips.md
-│   │   └── mistakes.md
-│   ├── work/
-│   │   ├── tips.md
-│   │   └── mistakes.md
-│   ├── memory/
-│   │   ├── tips.md
-│   │   └── mistakes.md
-│   ├── dev/
-│   │   ├── tips.md
-│   │   └── mistakes.md
-│   └── {domain}/
-│       ├── tips.md
-│       └── mistakes.md
-├── reports/
-│   ├── README.md
-│   ├── note/
-│   │   └── YYYY-MM-DD-{descriptive-title}.md
-│   ├── review/
-│   │   └── YYYY-MM-DD-{descriptive-title}.md
-│   └── analysis/
-│       └── YYYY-MM-DD-{descriptive-title}.md
-├── history/
-│   ├── README.md
-│   └── YYYY-MM-DD-{descriptive-title}.md
-├── materials/
-│   ├── README.md
-│   ├── references/
-│   ├── assets/
-│   ├── docs/
-│   └── data/
-└── backlogs/
-    ├── README.md
-    ├── project.md
-    └── {feature}.md
-```
+- Load every applicable category skill, including both owners for a cross-category change. Map each item to
+  related content, one owner, and one create, update, move, merge, reorganize, or remove action; before writing,
+  return the no-write failure result when a category owner or required user decision is missing.
+- Prefer updating or consolidating an existing source over creating another file. Create only missing
+  context, preserve unique current knowledge and completed point-in-time records, and remove stale or
+  duplicate current content.
+- Keep the resulting structure, indexes, and links clear and current. Create history only when the completed
+  session produced durable change, and stop when category guidance or a required user decision is missing.
 
-  The tree shows valid homes, not a scaffold; create only paths that hold real memory. Each category skill
-  remains the exact structure and naming owner.
-- Load each applicable category skill, review related records and navigation, then decide the exact create,
-  update, move, or delete set. At session close, create history only when the session produced durable change.
+#### 3.3 Verify and return the durable result
 
-#### 3.2 Update and verify durable memory
-
-- Update only files, indexes, and links below `{memory-root}` according to the loaded category skills. Preserve
-  unique current knowledge and completed point-in-time records.
-- Reread every changed path and related navigation. Confirm category compliance, tracked-root containment,
-  intended placement, no unexplained duplicate, and unchanged session input.
-- Repair each in-scope defect and repeat verification. Return the action, source session root, exact durable
-  path set or verified no-change result, loaded categories, checks, and any retained recovery state.
+- Reread every changed path, related retained content, and required navigation. Confirm category compliance,
+  tracked-root containment, one clear current home for each retained item, no unexplained duplicate, and
+  unchanged session input and protected paths.
+- Repair each in-scope defect and repeat verification. Stop when repair would cross the supplied scope,
+  authority, memory root, or category contract.
+- Return the source boundary and session root when used, exact durable path and action set or verified
+  no-change result, loaded categories, checks, unresolved change points, and retained recovery state.
 
 ## References
 
-| File | Description |
+| Name | Description |
 |---|---|
-| [`design/SKILL.md`](design/SKILL.md) | Defines current architecture, feature, process, and roadmap memory. |
-| [`learnings/SKILL.md`](learnings/SKILL.md) | Defines reusable knowledge and repeatable failure patterns. |
-| [`reports/SKILL.md`](reports/SKILL.md) | Defines durable notes, reviews, and analyses. |
-| [`history/SKILL.md`](history/SKILL.md) | Defines compact completed-session history. |
-| [`materials/SKILL.md`](materials/SKILL.md) | Defines durable source materials and supporting evidence. |
-| [`backlogs/SKILL.md`](backlogs/SKILL.md) | Defines deferred outcomes and their reasons. |
+| [`design`](design/SKILL.md) | Owns current architecture, feature, process, and roadmap memory. |
+| [`learnings`](learnings/SKILL.md) | Owns reusable knowledge and repeated failure patterns. |
+| [`reports`](reports/SKILL.md) | Owns durable notes, reviews, and analyses. |
+| [`history`](history/SKILL.md) | Owns compact completed-session history. |
+| [`materials`](materials/SKILL.md) | Owns durable sources and supporting evidence. |
+| [`backlogs`](backlogs/SKILL.md) | Owns deferred outcomes and their reasons. |

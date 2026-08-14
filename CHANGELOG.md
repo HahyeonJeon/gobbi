@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Renamed `skill-writing` to `gobbi-skill` with no compatibility alias. Its domain, operation, tool, and
   preference type guides are now direct child skills with their own `SKILL.md` files.
+- Gobbi Skill and each direct type-writing child now own a reusable checklist. The parent covers shared skill
+  design, compactness, and source ownership with independently answerable signs; the child checklists cover
+  exact operation SOPs, preference consistency, tool manuals and collections, and domain-family routing. The
+  shared References contract now explicitly exempts navigation-only domain roots.
+- The canonical Gobbi Skill source now includes a project-local helper that links every top-level skill into
+  both `.claude/skills/` and `.agents/skills/`. It accepts only one exact project-owned source tree, creates
+  missing relative directory links, and stops on conflicts without migrating existing directories or writing
+  to plugin or user-level locations.
 - Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
   the skill is and when to use it in one to three sentences across no more than two paragraphs.
 - Evaluation now uses four phases and a short report template: understand the target, prepare an
@@ -43,6 +51,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trees agree, and returns one response-only development, research, or work Note for every terminal state from
   `wrap-up/templates/note.md`. Its reusable checklist covers closure governance, Memory reconciliation,
   exact-tree integration, recovery, and factual Note reporting.
+- Memory now permits durable updates only on an explicit user call or a caller skill's named Memory stage.
+  Mid-session discoveries use one ignored change-point record, while Memorize reconciles category-owned CRUD,
+  merges, reorganization, stale content, and duplicates before creating new memory. No-slug legacy session
+  identities and their recovery routes are removed from the active Gobbi, Cowork, Workflow, Agent Teams,
+  Memory, and Git contracts.
 - Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
   operations will be redesigned before they are reintroduced.
 

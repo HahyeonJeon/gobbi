@@ -41,9 +41,10 @@ evidence so the cold reader reaches the intended understanding directly.
   only the most important mental models and move supporting detail to its owning section.
 - **MUST keep Rules to at most six semantic items and each Rule to at most two sentences.** Begin every Rule
   with a bold `MUST` or `NEVER` expression and keep it binding, self-contained, and testable.
-- **MUST write `## References` only as the fixed two-column internal-document table `Name | Description`.**
-  Include only internal documents needed to use or maintain the skill, link each document from `Name`, and
-  describe what it supplies in `Description`; cite external sources beside the claims they support.
+- **MUST write `## References` only as the fixed two-column internal-document table `Name | Description`;
+  omit it only from a domain navigation root.** Include only internal documents needed to use or maintain the
+  skill, link each document from `Name`, and describe what it supplies in `Description`; cite external sources
+  beside the claims they support.
 
 ---
 
@@ -144,6 +145,7 @@ skill-type: domain|operation|tool|preference
 
 | Name | Description |
 |---|---|
+| [Gobbi Skill checklist](checklist.md) | Reusable source for evaluating shared skill design, structure, minimality, language, references, and system boundaries. |
 | [`domain-skill`](domain-skill/SKILL.md) | Guidance for writing a navigation-only domain skill and its selected child family. |
 | [`operation-skill`](operation-skill/SKILL.md) | Guidance for writing a straightforward standard operating procedure with well-structured Phases and Steps. |
 | [`tool-skill`](tool-skill/SKILL.md) | Guidance for writing a direct-lookup manual for a named tool, platform, or cohesive tool collection. |

@@ -28,7 +28,10 @@ merge, clean up, or remove the retained Cowork branch or worktree.
 **Lookup mode** is for narrow factual support: "find every file referencing X", "fetch the upstream API surface for Y", "summarize what the README says about Z", "list the children of `<directory>`", "produce a short briefing on `<external concept>` from official docs", "verify that `<claim>` matches the code". You can be spawned in parallel for genuinely independent lookups.
 
 **Lifecycle phase ownership:**
-- **Workflow RECORD sub-phase (all loops):** Load `{gobbi-skills-root}/memory/SKILL.md` and apply `Temporary Record` to the exact `record/iteration-N.md` receipt Workflow Step 1.2 and the assignment name. Write PASS-only outputs only when the assignment names them. Prove every session path ignored and uncommitted.
+- **Workflow RECORD sub-phase (all loops):** Load `{gobbi-skills-root}/memory/SKILL.md` and apply `Temporary
+  Record` to the exact `record/iteration-N.md` receipt or `work/memory-change-points.md` path the assignment
+  names. Write PASS-only outputs only when the assignment names them. Prove every session path ignored and
+  uncommitted.
 - **Workflow Wrap-up WORK:** Apply `{gobbi-skills-root}/wrap-up/SKILL.md` and Memory `Memorize` to the full caller-supplied session root. Write only the caller-supplied project memory root under applicable category rules; the manager returns the response-only Note after Git integration.
 - **Cowork Memory closure:** Apply Memory `Memorize` directly to the full caller-supplied Cowork session root and closure input. Write only the caller-supplied current-project memory root, make one focused memory commit or prove no durable change, and return evidence for Cowork's later freshness check and conversation-only handoff.
 
@@ -144,7 +147,8 @@ In **lookup mode**, you write no memory directly. Suggest that the manager recor
 or repeatable failure pattern that will matter across sessions; do not write it yourself.
 
 In **Workflow mode**, Memory `Temporary Record` governs the exact ignored receipt or PASS output the
-assignment names. Project-memory writes are forbidden except during Workflow Wrap-up WORK, where
+assignment names, including the fixed change-point path when applicable. Project-memory writes are forbidden
+except during Workflow Wrap-up WORK, where
 `{gobbi-skills-root}/wrap-up/SKILL.md` Phase 2.1 and the Memory category skills govern every destination.
 
 In **Cowork Memory mode**, Memory `Memorize` and its applicable category skills govern every destination.

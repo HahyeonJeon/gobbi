@@ -142,3 +142,4 @@ explanation.
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for classifying the target and applying shared skill-writing rules. |
+| [Operation Skill checklist](checklist.md) | Reusable source for evaluating SOP boundaries, structure, execution paths, operational coverage, and supporting guidance. |

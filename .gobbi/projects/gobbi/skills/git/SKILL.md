@@ -80,7 +80,7 @@ pull-request head.
 
 | Property | What it must be |
 |---|---|
-| Proved identity | One runtime, original UTC session-start date, full session UUID, and normalized slug for a new identity. New names match that tuple; a legacy identity has no slug and retains its legacy names. The UUID matches every agent-authored commit trailer on the branch. |
+| Proved identity | One runtime, original UTC session-start date, normalized slug, and full session UUID. The branch and leaves match that tuple, and the UUID matches every agent-authored commit trailer on the branch. |
 | Immutable base commit | One commit hash the caller confirmed before the branch existed, still resolvable in this repository, and unchanged for the whole session. |
 | Isolated worktree outside the main checkout | One absolute path resolving outside the main checkout, in whichever lifecycle state the table below matches. |
 | Declared publication intent | One named external outcome — local retention, push, or pull request, with any issue action stated separately — declared before work and bounding every later external action. |
@@ -104,24 +104,22 @@ pull-request head.
   evidence and rebuild the contract through Step 1.2. Ask the user only when that evidence is missing,
   ambiguous, or conflicting; never search for a convenient alternative session. A rebuilt contract is always
   in the recovery state.
-- Parse the supplied branch and worktree leaf separately through the new or legacy validators in
-  [`conventions.md`](conventions.md). Require both to return one matching identity. For a new identity, require
-  exact runtime, date, slug, and UUID equality. For a legacy identity, require exact runtime, date, and UUID
-  equality with `slug: not-applicable`. Reject a mixed new/legacy pair, changed tuple, parse ambiguity, or
-  same-UUID competing branch, worktree, or session evidence.
-- Evidence is the contract source, lifecycle state, identity tuple and matched format, base commit, branch,
+- Parse the supplied branch and worktree leaf separately through the canonical validators in
+  [`conventions.md`](conventions.md). Require exact runtime, date, slug, and UUID equality; reject a changed
+  tuple, parse ambiguity, or same-UUID competing branch, worktree, or session evidence.
+- Evidence is the contract source, lifecycle state, parsed identity tuple, base commit, branch,
   absolute worktree, registered worktree record once it exists, head, status, and declared publication
   intent.
 
 #### 1.2 Rebuild an unproved contract from Git evidence
 
-- Parse the named branch and worktree leaf separately against both permanent formats in
-  [`conventions.md`](conventions.md). Confirm they produce one matching new tuple or one matching legacy
-  identity, the named worktree is registered to that exact branch, and it remains outside the main checkout.
+- Parse the named branch and worktree leaf separately against the canonical formats in
+  [`conventions.md`](conventions.md). Confirm they produce one matching tuple, the named worktree is registered
+  to that exact branch, and it remains outside the main checkout.
 - Collect current branch, worktree registration, session evidence, commit trailers, and retained caller
   records before asking for a fact. Reject multiple plausible parses or roots and any evidence that associates
   the same UUID with a different runtime, date, slug, branch, worktree, or session leaf. Never rename an
-  object, add a suffix, silently migrate a legacy identity, or create a second object for the UUID.
+  object, add a suffix, or create a second object for the UUID.
 - Inspect first-parent history for the earliest contiguous agent-authored commit whose `AI-Provenance-Record`
   carries the same session UUID. Its parent is the base commit; before the first session commit, the current
   clean head is the provisional base.

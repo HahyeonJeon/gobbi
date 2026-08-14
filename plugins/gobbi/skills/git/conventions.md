@@ -8,7 +8,7 @@ The session formats align with [Conventional Commits 1.0.0](https://www.conventi
 
 ## Session identity and naming
 
-One future session identity is the immutable tuple `(runtime, date, slug, UUID)`. `runtime` is the active
+One session identity is the immutable tuple `(runtime, date, slug, UUID)`. `runtime` is the active
 runtime system. `date` is the original session-start date in UTC, formatted as a real `YYYY-MM-DD` Gregorian
 calendar date, and never changes at a context boundary. `UUID` is the full 36-character lowercase hyphenated
 Gobbi session UUID. Generate the UUID before deriving either name.
@@ -31,7 +31,7 @@ Accept the normalized slug only when it is 1-20 characters, matches
 Re-ask with the failed condition when normalization is empty, longer than 20 characters, or reserved. Once a
 session object uses the normalized slug, the slug is immutable.
 
-### New formats
+### Session formats
 
 Derive the branch and leaf separately from the same tuple:
 
@@ -40,7 +40,7 @@ branch: <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
 leaf:   <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
 ```
 
-The complete new-format validators are:
+The complete validators are:
 
 ```regex
 branch: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
@@ -48,34 +48,15 @@ leaf:   ^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9
 ```
 
 Apply the 20-character slug limit and reserved-name rule after parsing; the regex alone does not enforce
-them. The worktree and session leaves are byte-identical for a new identity. For example:
+them. The worktree and session leaves are byte-identical. For example:
 
 - branch: `codex-2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 - leaf: `2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 
-### Permanent legacy formats
-
-Recovery permanently accepts these legacy formats:
-
-```text
-branch and worktree leaf: <runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
-session leaf:             <YYYY-MM-DD>-<gobbi-session-uuid>
-```
-
-```regex
-legacy branch and worktree leaf: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-legacy session leaf:             ^\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-```
-
-New creation uses only the new formats. Parse new and legacy names with separate validators and preserve the
-matched shape. Never infer a slug for a legacy identity, rename a legacy or active object, or convert one
-shape to another.
-
-Every successful new parse returns the exact `(runtime, date, slug, UUID)` tuple; a leaf parser receives the
-runtime from the caller's contract because a leaf does not encode it. A legacy parse returns its encoded
-runtime when present, date, and UUID, with `slug: not-applicable`. Re-deriving the matched branch or leaf from
-that result must reproduce the original bytes. The UUID is never a runtime ID, issue number, pull-request
-number, or task slug.
+Every successful parse returns the exact `(runtime, date, slug, UUID)` tuple; a leaf parser receives the
+runtime from the caller's contract because a leaf does not encode it. Re-deriving the branch or leaf from that
+result must reproduce the original bytes. The UUID is never a runtime ID, issue number, pull-request number,
+or task slug.
 
 Creation and recovery reject any existing branch, worktree leaf, or session leaf that conflicts with the
 tuple. Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict, not a
@@ -123,8 +104,7 @@ For project `gobbi` and the new example identity above:
 | Property | Mapping |
 |---|---|
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
-| New leaf | `<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>` |
-| Legacy leaf | exact legacy session branch; recovery only |
+| Leaf | `<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>` |
 | Source | the absolute normalized path the caller's contract supplies as its registered worktree |
 | Ignore check | `git check-ignore --no-index -v .gobbi/projects/<project>/worktrees`, with no trailing slash and only after that directory exists |
 | Project memory root | `.gobbi/projects/<project>/memory/`, tracked; git must never ignore it |

@@ -143,3 +143,4 @@ example alone does not establish prerequisites or limits.
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
+| [Tool Skill checklist](checklist.md) | Reusable source for evaluating tool boundaries, evidence, lookup coverage, examples, failures, and collections. |

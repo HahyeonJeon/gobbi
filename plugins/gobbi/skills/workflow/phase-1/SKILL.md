@@ -66,12 +66,11 @@ prove.
 #### 1.3 Recover an existing session
 
 - Read `configuration.md`, the latest verified checkpoint, native TODO, branch, worktree registration, session
-  root, packages, gates, and receipts. Require separate new or permanent legacy parsers to reproduce one tuple.
-  New state retains its slug; legacy state retains `slug: not-applicable` and its original names.
-- Reconstruct a missing shape, slug field, or partner policy only from the matched live tuple and valid Gobbi
-  entry state. Record the complete parent Step 1.2 Configuration schema through Memory `Temporary Record` and
-  keep the tracked tree unchanged. Never infer a legacy slug, rename or migrate live state, or create a second
-  object for the UUID.
+  root, packages, gates, and receipts. Require the canonical parsers to reproduce one date, slug, UUID, branch,
+  worktree, and session tuple.
+- Reconstruct a missing slug field or partner policy only from the matched live tuple and valid Gobbi entry
+  state. Record the complete parent Step 1.2 Configuration schema through Memory `Temporary Record`, keep the
+  tracked tree unchanged, and never rename live state or create a second object for the UUID.
 - Return to Gobbi entry when mode, applicable slug, or partner evidence is missing, ambiguous, or conflicting.
   Otherwise rebuild completed TODOs only from verified evidence, activate the first unproved item, and continue
   after TODO, evidence, branch, and worktree agree.
