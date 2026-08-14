@@ -1,164 +1,180 @@
 ---
 name: wrap-up
-description: "Wrap-up is the terminal operation for closing accepted work with durable memory, an authorized finalization sequence, and an exact handoff with a factual receipt."
+description: "Wrap-up is the terminal operation for preserving accepted work, committing closure changes, merging into the base branch, and returning one factual note."
 allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
 
 # Wrap-up
 
-Wrap-up closes accepted work by memorizing durable project context, running the caller-authorized finalization sequence last, and displaying an immutable tracked handoff with a factual receipt. Use it only for terminal closure after the caller has accepted the work and supplied the session root, memory root, handoff path, and finalization authority.
+Wrap-up keeps durable project context current, commits the complete closure, integrates the accepted work into
+its base branch through Git, and returns one development, research, or work note. Use it only after the caller
+accepts the work and supplies the session root, project memory root, complete Git identity, and authority.
 
 ## Principles
 
-### Memorizing makes session evidence durable
+### Keep project memory current
 
-A session's useful future context survives cleanup only once it is memorized into the project memory root. That durable
-memory preserves the completed work, current decisions, and session progression that future work needs.
+Memorize reconciles useful session context with existing project memory instead of adding a session-shaped
+record. Update current knowledge through category-owned CRUD, but preserve completed point-in-time records
+under their category rules.
 
-### Finalization is the final mutation
+### Integrate the exact accepted work
 
-All tracked content is complete and frozen before the authorized finalization sequence begins. Later evidence
-may be read and displayed, but it cannot be used to repair or decorate the result.
+The committed work tree and resulting base tree must match the closure tree that passed verification. Base
+drift, unrelated work, or a merge conflict stops integration without changing the accepted result.
 
-### Handoff and receipt contain different facts
+### Write one final note
 
-The tracked handoff describes delivered work and the intent known before finalization. The display-only
-receipt reports the outcomes that direct evidence proves afterward.
+One response-only Note records every terminal result, including a stop before or during Git integration. Write
+it after the last completed or attempted action so every claim comes from current evidence.
 
-### Recovery is more important than appearance
+### Preserve exact recovery evidence
 
-A recoverable stop with exact evidence is complete failure handling. Unsupported or altered completion text
-is not.
+A recoverable stop with exact evidence is valid failure handling. Never replace it with an unsupported or
+altered completion claim.
 
 ## Rules
 
-- **MUST freeze the exact closure inputs and authority before changing memory.** Wrong-worktree evidence,
-  unrelated changes, an active writer, or an unresolved decision stops the operation before finalization.
-- **MUST memorize the full caller-supplied session root before finalization and write the tracked handoff to the
-  caller-supplied handoff path.** Verify every affected memory path, index, and link before freezing the report.
-- **MUST make the caller-supplied authorized finalization sequence the final mutating operation.** Perform only
-  the actions that sequence authorizes, with current authority for every external or destructive action.
-- **MUST freeze the handoff bytes and SHA-256 digest before finalization, then reread and verify the exact
-  source afterward.** Display those bytes unchanged before appending a separate factual receipt.
-- **NEVER put final commit, publication, merge, branch-removal, or worktree-removal results in the tracked
-  handoff.** It may state only the intent known before finalization.
-- **NEVER repair, rewrite, or counterfeit completion after finalization begins.** Complete the authorized
-  sequence or stop with the exact failure, retained objects, and first safe recovery command.
+- **MUST freeze the closure subject, session and memory roots, complete Git identity, stable closure assignment
+  ID, and authority before changing memory.** Wrong-worktree evidence, unrelated changes, an active writer, or
+  an unresolved material decision stops mutation.
+- **MUST reconcile the full caller-supplied session root with related existing memory through category-owned
+  CRUD before Git integration.** Read before writing; create only missing content, update current facts, move,
+  merge, or reorganize overlaps, and remove stale or duplicate current content while preserving point-in-time
+  records under their category owners.
+- **MUST apply Git to commit every closure-owned tracked change and integrate the accepted work into the exact
+  caller-supplied base branch.** Reject base drift and prove the accepted work tree and resulting base tree are
+  equal from current Git evidence.
+- **MUST render one response-only Note for every terminal state.** Use the Note template to report context,
+  work, memory, verification, Git states, concerns, and recovery from direct evidence.
+- **NEVER resolve a merge conflict, rewrite accepted work, or absorb unrelated base changes inside Wrap-up.**
+  Retain the work branch and worktree for a separately authorized repair.
+- **NEVER report an intended, deferred, failed, or unproved action as completed.** Stop with the exact failure,
+  retained objects, and first safe recovery command.
 
 ## Procedure
 
-### Phase 1 — Freeze the closure contract
+### Phase 1 — Freeze Closure
 
-#### 1.1 Validate the completed work and session identity
+#### 1.1 Accept the completed work
 
 - Enter only when the calling manager identifies accepted work as ready for terminal closure. The caller owns
-  its trigger, acceptance gate, and any required evaluation or recorded evidence.
-- Read the accepted scope, outcomes, artifacts, commits, verification, evaluation coverage, user decisions,
-  exclusions, risks, and unresolved items. Reject an unsupported completion claim or an unresolved material
-  decision.
-- Resolve the caller context label, Gobbi UUID, repository root, base branch and commit, work branch, absolute
-  worktree, current head, and status from the current caller contract and direct evidence.
-- Prove that the worktree is registered to the expected branch, is not the main checkout, and contains no
-  unrelated change or concurrent writer. Stop before mutation with the observed root, branch, head, status,
-  and recovery point when any proof fails.
+  acceptance, required evaluation, and the evidence gate.
+- Read the accepted scope, results, artifacts, commits, verification, evaluation coverage, user decisions,
+  exclusions, risks, and unresolved items.
+- When a completion claim lacks evidence or a material decision remains unresolved, stop mutation and
+  continue to Step 3.4 with the exact unattempted state.
 
-#### 1.2 Resolve the caller-supplied inputs and authority
+#### 1.2 Bind the repository state
 
-- Take four properties from the caller and treat each as fixed for this closure:
+- Resolve the caller context label, Gobbi UUID, repository root, Git common directory, immutable base commit,
+  current base branch, head, tree, checkout path, and status, plus the work branch, head, tree, worktree, and
+  status from the caller contract and direct evidence.
+- Prove that the worktree belongs to the expected work branch, is not the main checkout, and has no unrelated
+  change or concurrent writer. Prove that the named base branch has one clean bound checkout with no active
+  Git operation.
+- Freeze the observed identity and state. On failure, stop mutation and continue to Step 3.4 with the exact
+  roots, branches, heads, trees, checkout states, and recovery point.
 
-| Property | Value |
+#### 1.3 Bind inputs and authority
+
+- Take these five fixed properties from the caller. On a missing, ambiguous, malformed, or incorrectly rooted
+  value, stop mutation and continue to Step 3.4 before changing memory.
+
+| Property | Required value |
 |---|---|
-| Session root | The full closing session root, read as temporary memorization input. |
-| Project memory root | The closing project's bounded `.gobbi/projects/<project>/memory/` root, under which every durable memory change must land; reject a value of any other shape. |
-| Handoff path | The exact repository-relative path the tracked handoff report is written to. |
-| Authorized finalization sequence | The ordered final actions the caller authorizes, with the authority already granted for each. |
+| Session root | Full closing session root used as temporary Memorize input. |
+| Project memory root | Closing project's `.gobbi/projects/<project>/memory/` root and the boundary for durable memory changes. |
+| Base branch | Exact local branch that receives the accepted work head. |
+| Git identity | Proved Git identity tuple and session contract, plus the stable closure assignment ID used for commit provenance. |
+| Git authority | Current authority to commit closure-owned changes and merge the work head into the base branch. |
 
-- Freeze the UTC completion time, descriptive outcome title, closure inputs, and those four properties. A
-  missing, relative, ambiguous, or unauthorized property stops the operation before any memory change.
-- Confirm that the manager owns user decisions, the finalization sequence, acceptance, display, and recovery.
-  Assign one bounded writer to the memorization; no other writer may run.
-- Treat every unperformed final action as intent, not outcome. Missing memory, external, destructive, or
-  finalization authority stops before finalization and preserves the current recovery state.
+- Freeze the UTC completion time, outcome title, closure evidence, and five properties. Confirm that the
+  manager owns acceptance, user decisions, integration, Note delivery, and recovery, then assign one writer.
+- Treat commit and merge as required but unproved until Git evidence confirms them. Missing commit or merge
+  authority stops mutation and continues to Step 3.4 with the current recovery state preserved.
 
-### Phase 2 — Memorize the session and write the handoff
+### Phase 2 — Reconcile Memory
 
-#### 2.1 Assign one bounded writer
+#### 2.1 Reconcile one bounded memory set
 
-- Give one writer everything it needs stated inline: the frozen closure inputs, the full session root
-  location, the exact project memory root, the caller-supplied handoff path, the allowed and protected paths,
-  the required actions, the expected report, and the verification contract. Name no other writer.
-- Require it to apply [Memory](../memory/SKILL.md) `Memorize` to the full caller-supplied session root together
-  with the frozen closure evidence. Session placement does not prove durable value; readable legacy session
-  layouts remain valid temporary input.
-- Require it to load every applicable category skill and create, update, move, or remove only the selected
-  durable context below the project memory root under that skill's rules.
-- Require it to write the tracked handoff report to the caller-supplied handoff path, and to keep every index
-  and link that the applied memory rules require current in the same update.
-- Require it to create, update, move, or remove only what the loaded category owners require, and to reread
-  every changed memory path and return the exact path set with its verification. A memory failure, an invalid
-  path, unrelated work, or an unexplained stale copy stops before finalization with the recoverable worktree
-  retained.
+- Give one writer the frozen closure evidence, session and memory roots, allowed and protected paths, required
+  actions, expected result, and verification contract.
+- Require the writer to apply [Memory](../memory/SKILL.md) `Memorize` to the full session root, load every
+  applicable category skill, and read related records and navigation before deciding what changes.
+- Require one category-owned CRUD set: create only missing context; update current facts; move, merge, or
+  reorganize overlapping content; and remove stale or duplicate content. Keep indexes and links current, then
+  return every changed path, action, reason, and verification.
 
-#### 2.2 Verify and freeze the handoff report
+#### 2.2 Accept current durable memory
 
-- Reread the complete memory result as manager. Confirm that every change stays under the bounded project
-  memory root, follows its category owner, keeps required navigation current, and matches the accepted work.
-- Populate the tracked report from [the handoff template](handoff.md). Use factual work evidence and
-  pre-finalization intent only; use `None` for mandatory empty content.
-- Confirm that the report is independently readable, contains no secret or transient exhaust, and makes no
-  unsupported finalization claim. Resolve an existing same-day filename with a more descriptive title, never a
-  sequence number or overwrite of another completed event.
-- Run the applicable memory, link, and repository checks. Compare the full worktree diff with the frozen
-  closure contract and stop before finalization if any changed path is unrelated, missing, or unverified.
-- Freeze the report's repository-relative path, exact bytes, and SHA-256 digest in manager runtime context.
-  Do not create a second tracked receipt or mutate any session record to hold the digest.
+- Reread every changed path, related retained content, and required navigation. Confirm that the result stays
+  inside the project memory root, follows each category owner, and matches the accepted work.
+- Confirm that every create, update, move, merge, reorganization, and removal has a present need and one owner.
+  Preserve completed point-in-time records, and reject session-shaped stacking, stale current facts, needless
+  fragments, unclear placement, and unexplained duplicates.
+- When memory or its verification fails, stop before Git integration and continue to Step 3.4 with the exact
+  retained worktree and recoverable state.
 
-### Phase 3 — Perform the authorized finalization
+#### 2.3 Verify the closure tree
 
-#### 3.1 Perform the caller-supplied sequence as the final mutation
+- Run the applicable memory, link, repository, and accepted-work checks against the complete current worktree.
+  Compare every changed path with the frozen closure contract.
+- Confirm that each tracked change is closure-owned, the work branch contains every accepted task commit, the
+  current base head equals the bound base head, and no protected or unrelated path changed.
+- Freeze the closure tree identity, changed paths, checks, work head and tree, base head and tree, base checkout
+  state, commit authority, and merge authority. Any later drift stops mutation and continues to Step 3.4.
 
-- Immediately before its first mutation, recheck the worktree root, branch, head, status, accepted diff, report
-  path, and frozen digest. Stop before mutation when any input drifted.
-- Perform the caller-supplied authorized finalization sequence and make it the last mutation of any filesystem,
-  memory, version-control, session-record, or external state. Stage only closure-owned paths, inspect the
-  staged diff, create the required focused local commit, and reread that commit.
-- Continue only through the publication, merge, and cleanup actions that sequence authorizes. Recheck mutable
-  evidence before each dependent action and retain unique work on ambiguity, refusal, unavailability, or
-  failure.
-- If the local commit fails, do not edit, restage, or retry by changing content. Retain the worktree, record
-  the failed command and evidence, and use the retained handoff path as the Phase 4 source.
-- Record each resulting state literally as `not configured`, `not authorized`, `not attempted`, `deferred`,
-  `failed`, `completed`, or `retained`; branch and worktree may be `removed` only when direct evidence proves
-  removal.
+### Phase 3 — Commit, Merge, and Note
 
-### Phase 4 — Display the exact handoff
+#### 3.1 Revalidate the accepted closure
 
-#### 4.1 Reread and verify the handoff
+- Immediately before Git mutation, reread the repository, worktree, branches, heads, status, complete diff,
+  accepted task commits, verification, and authority.
+- Require the current closure tree to equal the frozen tree and the current base head, tree, checkout path,
+  status, and operation state to equal the frozen base evidence.
+- When any input drifted, stop before mutation and continue to Step 3.4 with every Git action marked
+  `not attempted` and the exact recovery point.
 
-- When the local commit completed, reread the handoff from that accepted commit's stored object using its exact
-  repository-relative path. This remains the preferred source after publication, merge, or cleanup.
-- When the local commit failed, reread the exact retained worktree path without changing it. Do not fall back
-  to remembered text, a draft, another branch, or a generated substitute.
-- Compute SHA-256 from the reread bytes and compare it with the frozen digest. A missing source, byte
-  difference, digest mismatch, or evidence of a post-finalization mutation stops display without any repair.
-- On a stop, return the expected and observed source, path, digest, finalization state, retained objects, exact
-  failure, and first read-only recovery command.
+#### 3.2 Commit closure changes
 
-#### 4.2 Display the handoff and factual receipt
+- Apply [Git](../git/SKILL.md) to stage only closure-owned paths, inspect the staged paths and diff, and commit
+  every remaining tracked closure change on the work branch. When no change remains, prove that the existing
+  accepted work head already contains the complete verified tree.
+- Reread the resulting commit and prove that its tree equals the frozen closure tree and contains the required
+  provenance and every accepted task commit. Confirm that no closure-owned tracked change remains uncommitted.
+- On failure, do not edit, restage, or change content for a retry. Retain the work branch and worktree, then
+  continue to Step 3.4 with the failed command, current evidence, and first safe recovery command.
 
-- Display the verified tracked handoff byte-for-byte unchanged. Do not add a heading, annotation, status, or
-  finalization result inside its byte boundary.
-- After the complete handoff, append the separate conversation-only receipt from
-  [the handoff template](handoff.md). Keep every receipt row and derive its state and evidence from direct
-  current reads of the affected systems.
-- Give one exact first recovery command, or the template's explicit no-recovery value. Do not write the
-  receipt to the report, another memory file, a session record, or the repository.
-- Complete only when the exact handoff was displayed, the receipt reports every final action literally, no
-  post-finalization mutation occurred, and the result is either finalized or retained at an exact recovery
-  point.
+#### 3.3 Merge into the base branch
+
+- Recheck the exact work head and tree, unchanged base head and tree, clean bound base checkout, repository
+  identity, merge authority, and absence of an active Git operation immediately before the merge.
+- Apply [Git](../git/SKILL.md) to integrate the accepted work through its authorized merge path. If its current
+  contract cannot authorize and prove that path, stop without an independent merge, conflict resolution, or
+  accepted-work change.
+- Prove that the resulting base tree equals the accepted work tree. Record the base heads and trees before and
+  after, merge form, base checkout state, surviving branch and worktree, failure, and first safe recovery
+  command.
+
+#### 3.4 Return the Note
+
+- Enter after successful integration or any terminal stop in Phases 1 through 3. Select `Development`,
+  `Research`, or `Work` from the accepted result and render the [Note template](templates/note.md) as the
+  response body after any caller-required prefix; do not write it as a tracked artifact.
+- Complete every field from the accepted purpose, requirements, scope, exclusions, decisions, sources, and
+  direct closure, memory, verification, repository, commit, merge, base checkout, branch, and worktree
+  evidence. Use Git's exact action-state vocabulary and state the recovery owner and first safe command.
+- Complete Wrap-up only when Memory is verified, all closure-owned changes are committed, the work head is
+  integrated into the base branch, the resulting base tree equals the accepted work tree, and the Note reports
+  the same evidence. Otherwise return the exact stopped state.
 
 ## References
 
-- [Handoff template](handoff.md) defines the tracked operator brief and the separate display-only receipt.
-- [Memory operation](../memory/SKILL.md) owns the session-input review and durable memory rules.
+| Name | Description |
+|---|---|
+| [Wrap-up checklist](checklist.md) | Reusable unchecked source for evaluating closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting. |
+| [Note template](templates/note.md) | Response-only development, research, or work note for the final result, memory, verification, Git integration, and recovery. |
+| [Memory](../memory/SKILL.md) | Owns session review, durable memory selection, category routing, and memory verification. |
+| [Git](../git/SKILL.md) | Owns focused commits, base-branch merge, retained objects, and Git recovery evidence. |

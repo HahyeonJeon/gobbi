@@ -1,13 +1,13 @@
 ---
 name: workflow
-description: "Workflow is a durable Gobbi mode that routes one isolated session through three checkpointed phases. It uses native TODOs, policy-selected participants, verified records, and a terminal handoff."
+description: "Workflow is a durable Gobbi mode that routes one isolated session through three checkpointed phases. It uses native TODOs, policy-selected participants, verified records, and a terminal note."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Workflow
 
-Workflow is the durable Gobbi mode for creating or recovering one isolated session and routing it through Configuration, Ideation, Planning, Execution, Wrap-up, and Hand-off. Use it when work needs checkpointed evidence, policy-selected participants, verified local history, recovery, and a terminal handoff.
+Workflow is the durable Gobbi mode for creating or recovering one isolated session and routing it through Configuration, Ideation, Planning, Execution, Wrap-up, and Note. Use it when work needs checkpointed evidence, policy-selected participants, verified local history, recovery, and a terminal note.
 
 ## Principles
 
@@ -29,7 +29,7 @@ only their role, subject, output, gate, cap, and phase-specific checks.
 ### Make every boundary recoverable
 
 Every nonterminal checkpoint names verified evidence, Git location, and the exact next TODO. Phase 3 ends only
-after the Wrap-up handoff and factual Git receipt agree with current evidence.
+after the Wrap-up Note agrees with the committed and merged result.
 
 ## Rules
 
@@ -70,13 +70,13 @@ P2 · Planning
 P2 · Execution
 P2 · Hand-off
 P3 · Wrap-up
-P3 · Hand-off
+P3 · Note
 ```
 
 - Keep these titles stable. Store the current DISCUSSION, WORK, EVALUATION, RECORD, or PASS stage, iteration,
   task ID, and execution cap in the checkpoint and evidence record. On revision, update the evidence and status
   of the same template item; do not add a decision-shaped title field.
-- Recover through [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md): start at the latest verified Hand-off, walk records and
+- Recover through [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md): start at the latest verified checkpoint, walk records and
   task commits in order, reconstruct the first unproved TODO, correct the native list, and load its phase child.
 
 #### 1.2 Configure identity, isolation, and evidence
@@ -284,10 +284,10 @@ same turn. A context boundary preserves established mode, slug, partner policy, 
 
 - Load [`phase-3/SKILL.md`](phase-3/SKILL.md) only after the verified Phase 2 Hand-off activates Wrap-up, or
   when recovery selects an unfinished Phase 3 item.
-- Require fast-gate PASS over the actual frozen pre-Git closure before authorized finalization begins. Perform
-  only configured, currently authorized Git actions; retain exact recovery state for incomplete finalization.
-- End only after Wrap-up displays the immutable tracked handoff and factual Git receipt, `P3 · Hand-off` is
-  completed, all facts match direct evidence, and no next TODO remains.
+- Require fast-gate PASS over the actual frozen pre-Git closure before Git integration begins. Commit every
+  closure-owned change and merge the exact accepted work head into the configured base branch.
+- End only after Wrap-up returns the factual Note, `P3 · Note` is completed, its facts match the committed and
+  merged result, and no next TODO remains.
 
 ## References
 

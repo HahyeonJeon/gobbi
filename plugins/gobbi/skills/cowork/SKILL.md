@@ -58,7 +58,7 @@ the manager may advance it, but never become a second route.
   branch through its current head.
 - **MUST run Cowork closure only after an explicit `wrap up` call.** Apply the canonical Memory operation
   directly before the final evaluation-freshness decision; never load the Wrap-up skill or create
-  Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, a tracked handoff, or a Workflow Hand-off.
+  Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Note.
 
 ## Procedure
 
@@ -243,8 +243,8 @@ CW · Wrap-up
   creates one focused memory commit. Accept a verified no-change result. Stop and repair through that assignment
   for missing category guidance, unresolved decisions, invalid paths, failed checks, wrong-tree evidence, or
   unrelated work.
-- Never create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, a tracked handoff, or a
-  Workflow Hand-off. Cowork recovery never looks for `gate.md`, a RECORD receipt, or Workflow Hand-off.
+- Never create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Note. Cowork
+  recovery never looks for `gate.md`, a RECORD receipt, or a Workflow Note.
 - After the accepted Memory pass, complete MEMORY, activate FRESHNESS, and check evaluation coverage against
   the resulting head. When no independent verdict covers that whole branch, use
   [Discussion](../discussion/SKILL.md) to ask whether to evaluate or close with self-verification only; name

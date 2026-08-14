@@ -2,12 +2,12 @@
 
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Documentation work and documentation artifacts<br>
-> **Applicability:** General documentation evaluation; Evaluation binds the exact artifact, revision, and intended readers under review<br>
-> **Purpose:** Provide baseline coverage for trustworthy, clear, compact, usable, and maintainable documentation before target-specific checklist items are added<br>
+> **Applicability:** General documentation self-review and evaluation; the applying operation binds the exact artifact, revision, and intended readers under review<br>
+> **Purpose:** Provide baseline coverage for trustworthy, clear, compact, usable, and maintainable documentation during Execution self-review and independent Evaluation<br>
 > **Scope:** Purpose, scope, change coverage, content, structure, headings, prose, vocabulary, lists, tables, readability, complexity, reader use, reading contexts, and maintenance<br>
 > **Exclusions:** Product behavior beyond the documentation artifact; domain-, document-type-, accessibility-, locale-, safety-, privacy-, and sensitivity-specific expectations not activated by the target<br>
-> **Governing sources:** [Evaluation](../SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), the accepted work contract, and applicable project or document sources<br>
-> **Context:** Apply the intended readers, reader tasks, document type, affected set, and reading contexts current at the frozen evaluation state<br>
+> **Governing sources:** [Evaluation](../../evaluation/SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Execution](../SKILL.md), the accepted work contract, and applicable project or document sources<br>
+> **Context:** Apply the intended readers, reader tasks, document type, affected set, and reading contexts current at the bound review state<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle

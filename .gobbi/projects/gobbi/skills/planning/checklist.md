@@ -6,8 +6,8 @@
 > **Purpose:** Provide baseline coverage for Planning authority, decomposition, execution grouping, indexed integrity, downstream use, and safe change before target-specific items are added<br>
 > **Scope:** Work inputs and authority, hierarchy traceability and leaf boundaries, task-group composition and ownership, cross-view coverage, dependencies and parallelism, execution context and handoffs, indexed integrity, change, and recovery<br>
 > **Exclusions:** General documentation quality; retained legacy results; target-specific design, domain, implementation, security, accessibility, performance, and platform requirements; execution progress and operating product behavior; evaluation, acceptance, commit, and orchestration state<br>
-> **Governing sources:** [Evaluation](../SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Planning](../../planning/SKILL.md), the accepted work contract, accepted design and decisions, and applicable project sources<br>
-> **Context:** Evaluate the operation evidence, plan index, task index, and every listed part as one subject. Apply the [Documentation checklist](../docs/checklist.md) in parallel and add target-specific items after study.<br>
+> **Governing sources:** [Evaluation](../evaluation/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Planning](SKILL.md), the accepted work contract, accepted design and decisions, and applicable project sources<br>
+> **Context:** Evaluate the operation evidence, plan index, task index, and every listed part as one subject. Apply the [Documentation checklist](../execution/docs/checklist.md) in parallel and add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle

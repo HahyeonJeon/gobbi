@@ -2,12 +2,12 @@
 
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Code artifacts and code changes<br>
-> **Applicability:** General code evaluation; Evaluation binds the exact artifact, revision, and behavior under review<br>
-> **Purpose:** Provide baseline coverage for code quality before target-specific checklist items are added<br>
+> **Applicability:** General code self-review and evaluation; the applying operation binds the exact artifact, revision, and behavior under review<br>
+> **Purpose:** Provide baseline coverage for code quality during Execution self-review and independent Evaluation before target-specific items are added<br>
 > **Scope:** Project fit, affected surfaces, architecture, patterns, interfaces, complexity, modularity, reuse, implementation quality, correctness, verification, delivery, consumer use, operation, and evolution<br>
 > **Exclusions:** Language-, framework-, platform-, domain-, security-, accessibility-, and performance-specific expectations not activated by the target<br>
-> **Governing sources:** [Evaluation](../SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Execution](../../execution/SKILL.md), the accepted work contract, and applicable project, language, platform, or domain sources<br>
-> **Context:** Apply the governing sources and target behavior current at the frozen evaluation state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product.<br>
+> **Governing sources:** [Evaluation](../../evaluation/SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Execution](../SKILL.md), the accepted work contract, and applicable project, language, platform, or domain sources<br>
+> **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle

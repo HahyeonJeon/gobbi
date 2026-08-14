@@ -1,6 +1,6 @@
 ---
 name: phase-3
-description: "Workflow Phase 3 evaluates the pre-Git closure, records PASS evidence, completes authorized finalization, and displays the exact handoff and receipt. The parent Workflow retains shared contracts and terminal routing authority."
+description: "Workflow Phase 3 evaluates the actual Memory closure, records PASS evidence, commits and merges the accepted result, and returns one factual note."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,23 +8,27 @@ user-invocable: false
 
 # Workflow Phase 3
 
-Workflow Phase 3 adapts Wrap-up to Workflow by materializing and evaluating the actual Memory and handoff result before Git finalization, then completing authorized finalization and exact display. Use it after the verified Phase 2 Hand-off activates `P3 · Wrap-up` or recovery selects unfinished Phase 3 work, and before Workflow terminates; the parent remains active and owns shared contracts and routing.
+Workflow Phase 3 adapts Wrap-up to Workflow by materializing and evaluating durable Memory before Git
+integration, then committing, merging into the base branch, and returning one Note. Use it after the verified
+Phase 2 Hand-off activates `P3 · Wrap-up` or recovery selects unfinished Phase 3 work.
 
 ## Principles
 
 ### Freeze the terminal mutation boundary
 
-Memory changes, handoff bytes, and Git intent freeze before evaluation. Git begins only after RECORD proves
-PASS.
+Memory changes and the complete closure tree freeze before evaluation. Git integration begins only after the
+actual pre-Git result earns PASS and RECORD is complete.
 
-### Evaluate the actual pre-Git result
+### Evaluate the actual closure
 
-Evaluators judge the applied Memory changes, tracked handoff, commits, checks, and finalization plan, not an
-intended closure.
+Evaluators judge applied Memory, accepted task commits, checks, and the planned base merge. An intended or
+draft result is not the evaluation subject.
 
-### Keep handoff and Git facts separate
+### Report final integration together
 
-The tracked handoff contains only pre-finalization facts. The display-only receipt reports later Git outcomes.
+One response-only Note records the accepted work, Memory, verification, Git states, and recovery evidence for
+every terminal result. It is produced after the last completed or attempted action and never becomes part of
+the tracked closure.
 
 ## Rules
 
@@ -32,123 +36,119 @@ The tracked handoff contains only pre-finalization facts. The display-only recei
   Return to recovery when tasks, authority, branch, worktree, TODO, or evidence disagree.
 - **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle)
   and fast two-iteration gate to the actual closure.** Apply Gobbi's finding gate through the parent; only PASS
-  continues.
-- **MUST prohibit Git finalization before EVALUATION and RECORD accept the frozen pre-Git tree.** Any tracked
+  continues to Git integration.
+- **MUST prohibit Git integration before EVALUATION and RECORD accept the frozen closure tree.** Any tracked
   mutation after freeze returns to WORK and repeats the complete review.
-- **MUST use Wrap-up and `handoff.md` without copying their report or receipt schemas.** This child supplies
-  Workflow inputs, gates, records, transitions, and terminal checks only.
-- **MUST perform only currently configured and authorized Git actions.** Retain branch and worktree with an
-  exact recovery action when publication, merge, or cleanup cannot complete safely.
-- **NEVER report intended, deferred, failed, or unproved Memory or Git work as completed.** Every terminal
-  claim comes from current artifact, Git, and filesystem evidence.
+- **MUST use [Wrap-up](../../wrap-up/SKILL.md) and its [Note template](../../wrap-up/templates/note.md) without
+  copying their procedure or schema.** This child supplies Workflow inputs, gates, records, transitions, and
+  terminal checks, and routes every terminal state to the Note.
+- **MUST commit every closure-owned change and merge the accepted work head into the configured base branch.**
+  Retain the work branch and worktree with exact recovery evidence when either action fails.
+- **NEVER report an intended, deferred, failed, or unproved Memory or Git action as completed.** Build every
+  terminal claim from current artifact, Git, and filesystem evidence.
 
 ## Procedure
 
-### Phase 1 — Freeze the closure contract
+### Phase 1 — Freeze Closure
 
 #### 1.1 Enter and inventory accepted work
 
 - Confirm the parent and its owner-skill register, Phase 2 Hand-off, active Wrap-up TODO, accepted Ideation and
-  Planning outputs, every Execution task and focused commit, checks, evaluations, findings, decisions, waivers,
+  Planning results, every Execution task and focused commit, checks, evaluations, findings, decisions, waivers,
   amendments, exclusions, risks, and unresolved items.
-- Load [Wrap-up](../../wrap-up/SKILL.md). Resolve UUID, base branch/commit, session branch, absolute worktree,
-  head/status, project Memory root, tracked handoff path, configured publication, and actual external or
-  destructive authority from direct evidence.
-- Read current Memory, Wrap-up `handoff.md`, repository checks, and Git posture. Record every unconfigured or
-  unauthorized Git action literally. Stop before WORK for protected changes, an active writer, unsupported
-  completion, unresolved material decisions, wrong-tree evidence, or missing mandatory authority.
+- Load [Wrap-up](../../wrap-up/SKILL.md). Resolve UUID, immutable base commit, current base branch and head,
+  bound base checkout and status, session branch and head, absolute worktree, stable closure assignment ID,
+  project Memory root, complete Git identity, and current commit and merge authority from direct evidence.
+- Read current Memory, the [Note template](../../wrap-up/templates/note.md), repository checks, and Git posture.
+  For protected changes, an active writer, unsupported completion, unresolved material decisions, wrong-tree
+  evidence, or missing authority, stop before WORK and continue to Step 3.3 with exact evidence.
 
 #### 1.2 Supply Workflow's Wrap-up inputs
 
 - Build the assistant brief through [Delegation](../../delegation/SKILL.md) and
-  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments). Apply Wrap-up
-  Phase 1 using these four fixed properties:
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments). Apply Wrap-up Phase 1 with these
+  fixed properties:
 
 | Property | Workflow value |
 |---|---|
-| Session root | The full parent Step 1.2 evidence root. |
-| Project memory root | The current project's bounded `.gobbi/projects/{project}/memory/` root. |
-| Handoff path | `.gobbi/projects/{project}/memory/reports/note/YYYY-MM-DD-{descriptive-title}.md`. |
-| Authorized finalization sequence | Only parent Step 1.2 configured intent with current authority. |
+| Session root | Full parent Step 1.2 evidence root. |
+| Project memory root | Current project's bounded `.gobbi/projects/{project}/memory/` root. |
+| Base branch | Configured local base branch from the verified Git contract. |
+| Git identity | Proved Git identity tuple and session contract, plus the stable closure assignment ID used for commit provenance. |
+| Git authority | Current authority to commit closure changes and merge the session head into the base branch. |
 
-- Freeze the complete Memory review boundary, tracked handoff contract, verification, pre-Git evidence,
-  finalization intent, exclusions, risks, and recovery. The contract permits no post-evaluation tracked repair
-  and claims no final Git outcome.
+- Freeze the Memory review boundary, verification, accepted task commits, exact pre-Git evidence, base-merge
+  plan, exclusions, risks, and recovery state.
+- Claim no commit or merge outcome before Phase 3 proves it. The Note is response-only and outside the frozen
+  evaluation subject.
 
-### Phase 2 — Materialize, evaluate, and record closure
+### Phase 2 — Materialize and Evaluate
 
-#### 2.1 Produce, apply, and freeze Wrap-up Phase 2
+#### 2.1 Reconcile and freeze durable Memory
 
 - Invoke parent WORK with local role `assistant`, accepted Workflow evidence as the frozen subject, and the
-  Memory/handoff candidate as output. The assistant self-reviews and synthesizes the policy-selected drafts.
-- Give one authorized assistant the synthesis, exact Memory root, allowed/protected paths, and checks. Apply
-  Wrap-up Phase 2 through [Memory](../../memory/SKILL.md); every other process remains read-only.
-- Verify every Memory path, index, link, tracked handoff field, and complete worktree diff. Reject an unrelated
-  path, stale navigation, unsupported claim, or duplicate report.
-- Freeze the tracked handoff repository path, exact bytes, SHA-256 digest, actual pre-Git tree, and current Git
-  intent. Do not start Wrap-up Phase 3 or add a factual receipt. Read and accept the complete parent WORK
-  package before EVALUATION.
+  Memory candidate as output. The assistant self-reviews and synthesizes policy-selected drafts.
+- Give one authorized assistant the synthesis, exact Memory root, allowed and protected paths, and checks.
+  Apply Wrap-up Phase 2 through [Memory](../../memory/SKILL.md); every other process remains read-only.
+- Verify every changed and related retained Memory path, CRUD decision, index, link, and the complete worktree
+  diff. Reject stacked session records, stale facts, needless fragments, and unexplained duplicates, then freeze
+  the actual pre-Git tree, task commits, checks, heads, authority, risks, and recovery before EVALUATION.
 
 #### 2.2 Evaluate and record the actual closure
 
-- Complete parent EVALUATION over the creation package, actual pre-Git tree, Memory diff, handoff bytes and
-  digest, task commits, checks, finalization intent, authority, exclusions, risks, and recovery paths.
-- Apply the parent fast gate and RECORD schema. Seal reports, provenance, Memory verification, handoff path and
-  digest, checks, decisions, findings, Git intent, authority, and retained recovery state.
+- Complete parent EVALUATION over the actual pre-Git tree, Memory diff, task commits, checks, base-merge plan,
+  authority, exclusions, risks, and recovery paths.
+- Apply the parent fast gate and RECORD schema. Seal reports, provenance, Memory verification, tree identity,
+  checks, decisions, findings, Git authority, and retained recovery state.
 - On first-pass REVISE, create iteration 2 at DISCUSSION and repeat the complete cycle. On second-pass FAIL,
-  preserve evidence, branch, worktree, and recovery choices without a third iteration.
-- On PASS, verify canonical closure evidence, retitle Wrap-up to PASS, and keep it active. Git remains prohibited
-  until RECORD is complete. A failed partner run or specialist follows parent Step 1.5 and may not change the
-  frozen tree; any tracked mutation returns to Step 2.1.
+  preserve the branch, worktree, evidence, and recovery choices, then continue to Step 3.3; on PASS, retitle
+  Wrap-up to PASS and keep it active until RECORD completes.
 
-#### 2.5 Recover a failed partner run or specialist
+#### 2.3 Recover a failed participant
 
-- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
-  [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
-  step decides what the workflow does with the paused round.
-- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist under
-  Workflow's [`gobbi/agent-teams`](../../gobbi/agent-teams/SKILL.md) policy; use the
-  [Agent Teams manual](../../gobbi/agent-teams/SKILL.md) for Claude Code tool limits.
-- Continue only after the missing output validates. Use a single-system waiver only when existing authority
-  names the system, productive step, and iteration.
-- Treat an unavailable required system without that waiver as a critical blocker. Never let recovery change the
-  frozen pre-Git tree or the tracked handoff bytes; a tracked mutation returns to Step 2.2 and repeats the
-  complete review.
+- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. Use
+  [Partner](../../gobbi/partner/SKILL.md) to classify a failed external run.
+- Retry only the failed bounded operation when safe. Replace a stale specialist under Workflow's
+  [`gobbi/agent-teams`](../../gobbi/agent-teams/SKILL.md) policy and continue only after the output validates.
+- Use a single-system waiver only when existing authority names the system, productive step, and iteration.
+  Any tracked mutation returns to Step 2.1 and repeats the complete review.
 
-### Phase 3 — Finalize and finish
+### Phase 3 — Commit, Merge, and Note
 
-#### 3.1 Revalidate the immutable PASS subject
+#### 3.1 Revalidate the PASS subject
 
-- Reread closure evidence, reports, receipts, task commits, current tree, handoff bytes/digest, branch,
-  worktree, Git intent, authority, and active PASS item. Require the current tracked tree to equal the evaluated
-  tree exactly; otherwise return to the earliest responsible Wrap-up step.
-- Confirm every in-scope tracked change is in a verified focused commit or is the exact evaluated closure
-  content authorized for the final local commit.
+- Reread closure evidence, reports, records, task commits, current tree, branch and worktree state, base head,
+  checks, authority, and the active PASS item.
+- Require the current tracked tree to equal the evaluated tree. Confirm every accepted task change is committed
+  and each remaining tracked change is closure-owned; otherwise return to the responsible Wrap-up step.
 
-#### 3.2 Resume authorized finalization
+#### 3.2 Commit and merge the closure
 
-- Apply Wrap-up Phase 3 through [Git](../../git/SKILL.md). Recheck branch, worktree, publication, merge, and
-  cleanup evidence immediately before each dependent action. Perform only configured actions with current
-  authority.
-- Record each outcome literally as `not configured`, `not authorized`, `not attempted`, `deferred`, `failed`,
-  `completed`, or `retained`. Preserve exact recovery evidence when any object remains.
-- Complete the Wrap-up PASS item and activate `P3 · Hand-off` only after every authorized action reaches a
-  proved completed or recoverable terminal state.
+- Apply Wrap-up Steps 3.1 through 3.3 through [Git](../../git/SKILL.md). Commit every remaining closure-owned
+  change on the work branch, then merge the exact accepted work head into the configured base branch.
+- Recheck branch, worktree, base head, work head, clean state, and authority immediately before each mutation.
+  Reject a base head or tree that differs from the frozen evidence. Never resolve a conflict or change the
+  accepted tree inside Wrap-up.
+- Prove the closure commit tree and resulting base tree equal the evaluated closure tree. On failure, record
+  the bound base checkout state and retain every surviving branch and worktree with the exact failed action
+  and first safe recovery command.
 
-#### 3.3 Display and terminate
+#### 3.3 Return the Note and terminate
 
-- Apply Wrap-up Phase 4. Reread the tracked handoff from its accepted commit object, recompute its digest, and
-  require exact equality with the frozen bytes.
-- Display the tracked handoff byte-for-byte, then append the separate factual Git receipt defined by
-  `handoff.md`. Do not write the receipt to a tracked file.
-- Verify handoff, receipt, TODO, commits, publication state, branch, worktree, and recovery command against
-  direct evidence. Complete `P3 · Hand-off` only when they agree. Leave no next TODO and end Workflow.
+- Enter after successful integration or any terminal stop in Phases 1 through 3. Apply Wrap-up Step 3.4 and
+  render the [Note template](../../wrap-up/templates/note.md) as the response body with the accepted context,
+  result, Memory, verification, Git states, concerns, and recovery evidence.
+- Verify the Note, TODO, commits, base merge, branch, worktree, and recovery command against direct evidence.
+  Complete `P3 · Note` only when they agree.
+- Leave no next TODO and end Workflow. A failed integration ends at an exact recoverable state rather than a
+  false completion claim.
 
 ## References
 
-- [Parent Workflow](../SKILL.md) owns shared Workflow contracts and terminal routing.
-- [Wrap-up](../../wrap-up/SKILL.md) owns Memory-to-Git order, tracked handoff, finalization, display, and
-  recovery.
-- [Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked report and display-only Git receipt schemas.
-- [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md), and
-  [Git](../../git/SKILL.md) own their mechanisms.
+| Name | Description |
+|---|---|
+| [Parent Workflow](../SKILL.md) | Owns shared Workflow contracts, participant gates, records, and terminal routing. |
+| [Wrap-up](../../wrap-up/SKILL.md) | Owns durable Memory closure, commit, base-branch merge, Note delivery, and recovery. |
+| [Note template](../../wrap-up/templates/note.md) | Defines the response-only development, research, or work Note. |
+| [Memory](../../memory/SKILL.md) | Owns durable memory selection, category routing, and verification. |
+| [Git](../../git/SKILL.md) | Owns the closure commit, base-branch merge, retained state, and Git evidence. |

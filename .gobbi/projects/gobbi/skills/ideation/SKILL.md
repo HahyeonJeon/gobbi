@@ -173,6 +173,7 @@ explain why the selected direction wins and what evidence would change it.
 
 | Name | Description |
 |---|---|
+| [Ideation checklist](checklist.md) | Reusable unchecked source for evaluating Ideation work and complete current indexed results. |
 | [Ideation index](templates/ideation/ideation-index.md) | Root template for result authority, reading order, and optional snapshots. |
 | [Ideation part](templates/ideation/ideation-NN.md) | Repeatable template for one coherent authoritative content group. |
 | [Requirements index](templates/ideation/requirements/requirements-index.md) | Index template for an optional subordinate requirements snapshot. |

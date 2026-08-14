@@ -247,7 +247,7 @@ that has children routes to them from its own document.
 | [`principles`](../principles/SKILL.md) | The ten behavioral principles every agent applies. |
 | [`ideation`](../ideation/SKILL.md) | Exploring a problem with the user and locking what and why. |
 | [`planning`](../planning/SKILL.md) | Decomposing accepted work into an ordered executable plan. |
-| [`wrap-up`](../wrap-up/SKILL.md) | Closing accepted work with durable memory and an exact handoff. |
+| [`wrap-up`](../wrap-up/SKILL.md) | Closing accepted work with durable memory, base-branch integration, and a factual Note. |
 | [`delegation`](../delegation/SKILL.md) | The brief shape every specialist assignment uses. |
 | [`discussion`](../discussion/SKILL.md) | The shape of a question put to the user. |
 | [`memory`](../memory/SKILL.md) | Temporary session records and durable project memory. |

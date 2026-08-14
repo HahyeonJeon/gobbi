@@ -6,8 +6,8 @@
 > **Purpose:** Provide baseline coverage for Ideation authority, design integrity, indexed closure, downstream use, and safe change before target-specific items are added<br>
 > **Scope:** Authority and scope, problem and outcomes, evidence and prior art, topics and decisions, integrated design, risks and uncertainty, indexed integrity, planning use, handoff, and revision<br>
 > **Exclusions:** General documentation quality; retained legacy results; target-specific domain requirements and standards; Planning and implementation quality; operating product behavior; realized validation; Evaluation procedure, reports, and verdicts<br>
-> **Governing sources:** [Evaluation](../SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Ideation](../../ideation/SKILL.md), the accepted work contract, caller and user decisions, and applicable project sources and assessed prior art<br>
-> **Context:** Evaluate the operation evidence, root index, and every listed member as one subject. Authoritative parts supersede subordinate snapshots. Apply the [Documentation checklist](../docs/checklist.md) in parallel and add target-specific items after study.<br>
+> **Governing sources:** [Evaluation](../evaluation/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Ideation](SKILL.md), the accepted work contract, caller and user decisions, and applicable project sources and assessed prior art<br>
+> **Context:** Evaluate the operation evidence, root index, and every listed member as one subject. Authoritative parts supersede subordinate snapshots. Apply the [Documentation checklist](../execution/docs/checklist.md) in parallel and add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle

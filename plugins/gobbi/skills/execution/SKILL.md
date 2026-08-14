@@ -137,9 +137,10 @@ justifies it.
 - Run the task's required checks on the exact tree after the last edit and add targeted checks for risks found
   during study or implementation. Use only the tests, builds, type checks, validation, inspection, benchmarks,
   or security checks that apply.
-- Review the complete implementation and diff for task alignment, consistency across dependent surfaces,
-  unsupported complexity, stale or unsafe content, unexpected churn, and undocumented compatibility changes.
-  Inspect affected observable behavior directly and confirm unrelated work is unchanged.
+- Apply the [Code checklist](code/checklist.md) to code work and the
+  [Documentation checklist](docs/checklist.md) to documentation work. Review the complete implementation and
+  diff for task alignment, consistency, unsupported complexity, stale or unsafe content, unexpected churn,
+  and undocumented compatibility changes, then inspect affected behavior and unrelated work directly.
 
 #### 4.2 Repair and repeat verification
 
@@ -168,5 +169,7 @@ justifies it.
 
 | Name | Description |
 |---|---|
+| [Code checklist](code/checklist.md) | Reusable unchecked source for self-reviewing and evaluating general code-work quality. |
+| [Documentation checklist](docs/checklist.md) | Reusable unchecked source for self-reviewing and evaluating general documentation-work quality. |
 | [Execution handoff template](templates/handoff.md) | Response-only format for the task result, changes, verification, local delivery, concerns, and limits. |
 | [Git](../git/SKILL.md) | Operation that creates the focused local commit and returns its retained local state. |

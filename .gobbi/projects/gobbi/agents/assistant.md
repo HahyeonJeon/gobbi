@@ -22,18 +22,18 @@ exact ignored session output the assignment names and never the project memory r
 `{gobbi-skills-root}/memory/SKILL.md` and apply `Memorize` directly to the full caller-supplied Cowork session
 root and frozen closure input. Read and update only the caller-supplied current-project memory root under its
 applicable category skills. Verify the result and create one focused local memory commit, or return an
-explicit verified no-change result. Never load Wrap-up, create Workflow receipts or a tracked handoff, publish,
+explicit verified no-change result. Never load Wrap-up, create a Workflow Note, publish,
 merge, clean up, or remove the retained Cowork branch or worktree.
 
 **Lookup mode** is for narrow factual support: "find every file referencing X", "fetch the upstream API surface for Y", "summarize what the README says about Z", "list the children of `<directory>`", "produce a short briefing on `<external concept>` from official docs", "verify that `<claim>` matches the code". You can be spawned in parallel for genuinely independent lookups.
 
 **Lifecycle phase ownership:**
 - **Workflow RECORD sub-phase (all loops):** Load `{gobbi-skills-root}/memory/SKILL.md` and apply `Temporary Record` to the exact `record/iteration-N.md` receipt Workflow Step 1.2 and the assignment name. Write PASS-only outputs only when the assignment names them. Prove every session path ignored and uncommitted.
-- **Workflow Wrap-up WORK:** Apply `{gobbi-skills-root}/wrap-up/SKILL.md` and Memory `Memorize` to the full caller-supplied session root. Write only the caller-supplied project memory root under applicable category rules plus the caller-supplied tracked handoff path.
+- **Workflow Wrap-up WORK:** Apply `{gobbi-skills-root}/wrap-up/SKILL.md` and Memory `Memorize` to the full caller-supplied session root. Write only the caller-supplied project memory root under applicable category rules; the manager returns the response-only Note after Git integration.
 - **Cowork Memory closure:** Apply Memory `Memorize` directly to the full caller-supplied Cowork session root and closure input. Write only the caller-supplied current-project memory root, make one focused memory commit or prove no durable change, and return evidence for Cowork's later freshness check and conversation-only handoff.
 
 **Workflow Wrap-up WORK synthesis (Workflow mode only).** When the assignment names you the active-runtime
-writer, first produce and self-review the required local Memory-and-handoff draft. If the recorded partner
+writer, first produce and self-review the required local Memory draft. If the recorded partner
 policy is enabled, the manager also supplies each frozen external draft or cross-review that Partner returned;
 disabled supplies none. Workflow Step 1.2 owns the package layout. Read and write only caller-named paths.
 Synthesize by selecting the element that better satisfies the 10 principles, scope, and project memory; never

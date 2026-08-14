@@ -132,6 +132,7 @@ the task group is too broad or its recorded details are incomplete.
 
 | Name | Description |
 |---|---|
+| [Planning checklist](checklist.md) | Reusable unchecked source for evaluating Planning work and complete current indexed results. |
 | [Task index](templates/planning/tasks/tasks-index.md) | Index template for the numbered task-hierarchy output. |
 | [Task part](templates/planning/tasks/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
 | [Plan index](templates/planning/plan-index.md) | Root template for result authority, task source, and plan-part order. |

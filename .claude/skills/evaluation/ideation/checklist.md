@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/evaluation/ideation/checklist.md

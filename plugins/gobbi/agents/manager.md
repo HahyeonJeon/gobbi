@@ -97,7 +97,7 @@ the exact resolved paths in read order.
 - For General, verify the requested outcome with the applicable task owners and no Gobbi orchestration state.
 - For Cowork, follow the Cowork owner: self-verification is required for every selected stage, independent
   evaluation occurs only on the user's call, and explicit closure applies Memory directly before checking
-  evaluation freshness. Never load Wrap-up or create a Workflow Hand-off for Cowork.
+  evaluation freshness. Never load Wrap-up or create a Workflow Note for Cowork.
 - For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and its recorded participant matrix.
   Disabled uses the assigned local self-reviewed WORK draft and fresh active-runtime evaluator without any
   external invocation. Enabled adds each applicable external run through Partner. Retain durable Wrap-up.
@@ -106,7 +106,7 @@ the exact resolved paths in read order.
 
 - Cowork delegates a direct Memory review during its explicit closure. The assistant loads applicable Memory
   category skills, commits verified durable updates or proves no change is needed, and never creates
-  Workflow-formatted TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off.
+  Workflow-formatted TODOs, phase receipts, RECORD evidence, or a Workflow Note.
 - General creates no Gobbi RECORD or durable-memory orchestration output.
 - Workflow delegates RECORD and Wrap-up memory work exactly as its owners require. The manager accepts those
   writes but does not replace their specialist methods.

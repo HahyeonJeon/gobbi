@@ -23,10 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   paths instead of IDs. Design and Development owns work-artifact creation, handoff, project use, maintenance,
   and change; Product is reserved for operating apps, services, libraries, and comparable products. A bundled
   evaluation checklist covers generated checklist documents.
-- Evaluation now includes general code and documentation checklist sources plus operation-specific baselines
-  for complete current indexed Ideation and Planning results. The separate Code Review and Documentation
-  Review operations are removed; their reusable quality checks now belong to Evaluation rather than separate
-  review procedures.
+- Evaluation now consumes general code and documentation checklist sources owned by Execution and
+  operation-specific baselines owned by Ideation and Planning. Execution applies its matching checklist during
+  self-review; the separate Code Review and Documentation Review operations remain removed.
 - Execution keeps its evidence-led, bottom-up task procedure while strengthening YAGNI and incremental growth.
   Executors study the project's vision, philosophy, design, architecture, and live evidence before choosing an
   implementation, verify each smallest complete unit before expanding it, and add complexity only for a
@@ -39,6 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Planning now records one indexed result with a `plan-index.md` locator, direct numbered plan parts, and a
   numbered task hierarchy. Workflow and Cowork consume and freeze the complete listed result while retaining
   a receipt-proved legacy `tasks.md` and `plan.md` pair without migration.
+- Wrap-up now uses a compact three-phase closure procedure that reconciles durable memory through
+  category-owned CRUD, commits closure changes, rejects base drift, proves the accepted and resulting base
+  trees agree, and returns one response-only development, research, or work Note for every terminal state from
+  `wrap-up/templates/note.md`. Its reusable checklist covers closure governance, Memory reconciliation,
+  exact-tree integration, recovery, and factual Note reporting.
 - Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
   operations will be redesigned before they are reintroduced.
 
