@@ -37,7 +37,9 @@ point-in-time records.
 - **MUST validate one caller-supplied canonical session identity when an action uses session state.** Stop
   without writing when its format, containment, UUID uniqueness, or ownership is missing or conflicting.
 - **MUST keep every Temporary Record below the active project's `sessions/*` tree and out of Git history.**
-  During active work, record detected durable change points there instead of changing `memory/*`.
+  The caller names its exact path: unfinished inputs stay below `tmp/`, while an accepted record may use the
+  caller's owning phase directory; a mode's accepted Configuration record may sit directly below its session
+  root. Record durable change points below `tmp/` instead of changing `memory/*`.
 - **MUST reconcile durable knowledge before creating memory.** Read the full session root and all related
   project memory, then use category-owned CRUD to update, move, merge, reorganize, or remove existing content;
   create only truly missing context.
@@ -53,7 +55,9 @@ point-in-time records.
 #### 1.1 Accept an authorized action
 
 - Accept `Temporary Record` only when a loaded caller skill names the exact ignored session path it owns.
-  Memory owns the compact change-point schema at the caller's fixed `work/memory-change-points.md` path.
+  Unfinished inputs stay below `tmp/`, an accepted record may use the caller's phase directory, and Memory
+  owns the compact change-point schema while the caller owns its filename and directory. A mode may name its
+  accepted Configuration record directly below the session root.
 - Accept `Memorize` only on an explicit user request or when a loaded caller skill names its Memory stage and
   supplies the durable write boundary. An agent's observation that memory should change is not authorization.
 - Require the action, caller, verified worktree, project, and exact output or input boundary. `Temporary Record`
@@ -88,11 +92,13 @@ point-in-time records.
 
 #### 2.1 Write and verify the temporary record
 
-- Enter only for `Temporary Record`. Confirm the exact output resolves below the session root and every
-  session path is ignored, untracked, unstaged, and uncommitted.
+- Enter only for `Temporary Record`. Confirm the exact output resolves below the session root in the caller's
+  named `tmp/`, phase boundary, or accepted root-level Configuration boundary and every session path is ignored,
+  untracked, unstaged, and uncommitted.
 - Write the smallest accepted recovery state and exclude secrets, transcripts, raw logs, token data, private
-  capture, and unsupported claims. For `work/memory-change-points.md`, use only the `# Memory Change Points`
-  heading and a `Change point | Evidence` table; merge repeats and treat each row as a later review candidate.
+  capture, and unsupported claims. For a caller-designated change-point record, use only the
+  `# Memory Change Points` heading and a `Change point | Evidence` table; merge repeats and treat each row as a
+  later review candidate.
 - Reread the output and repeat its containment, ignore, index, staging, history, and tracked-tree checks.
   Repair an in-scope content defect and repeat this step, or return the path or no-write result, failed check,
   unchanged inputs, protected paths, and recovery state.

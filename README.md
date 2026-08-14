@@ -74,7 +74,7 @@ Codex:       $gobbi prepare the next release
 
 General   Ordinary assistance without Gobbi session state.
 Cowork    User-led, topic-by-topic implementation.
-Workflow  Durable five-phase orchestration with recorded evidence.
+Workflow  Durable checkpointed orchestration with recorded evidence.
 ```
 
 Gobbi presents all three modes and waits for your selection. For Cowork or Workflow, it next asks for a
@@ -82,9 +82,8 @@ privacy-safe session slug. It then asks whether the session-wide Partner policy 
 
 ## Cowork
 
-Cowork is the fast path for implementation work that you direct one topic at a time. Each topic uses the
-smallest safe depth: Direct, Light, or Structured. Ideation and Planning are optional; Execution is always
-verified.
+Cowork is the fast path for implementation work that you direct one topic at a time. Fast delivery skips
+Ideation and Planning; Light delivery runs a bounded version of both before verified Execution.
 
 Independent evaluation and closure run only when you explicitly request them. One isolated branch and linked
 worktree hold the session, keeping your main checkout separate from the ordered local commits.
@@ -103,8 +102,11 @@ Every productive step uses:
 DISCUSSION → WORK → EVALUATION → RECORD
 ```
 
-The recorded evidence can rebuild the active route after a context boundary. Each gate must accept the frozen
-result before work advances. Workflow also uses one isolated branch and linked worktree for the full session.
+Phase 1 studies the project and develops the design with the user, available subagents or teammates, and enabled
+Partner. Its handoff closes the user-decision window; later phases proceed autonomously within the accepted
+design or stop at a recoverable checkpoint instead of asking another Workflow question. Recorded evidence can
+rebuild the active route after a context boundary, and each gate must accept the frozen result before work
+advances. Workflow uses one isolated branch and linked worktree for the full session.
 
 ## Partner
 

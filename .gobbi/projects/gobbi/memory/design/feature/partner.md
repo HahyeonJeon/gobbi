@@ -42,10 +42,9 @@ label`; and "return to DISCUSSION" from the recovery list, replaced with the oth
 
 ## Wired into both modes
 
-- **Workflow.** All six partner-policy regions across `workflow` and its phase children now call the child
-  instead of restating policy; 14 duplicated regions retargeted. A five-row adapter table supplies Workflow's
-  caller-specific inputs, making good on the child's own claim that Workflow is one caller among several.
-- **Cowork.** Executable partner rounds; a user-called Structured-depth creation offer; commit-gated teammate
+- **Workflow.** The main Workflow skill routes enabled external contributions through the child while retaining
+  phase-specific participant, evaluation, and record ownership. Workflow remains one caller among several.
+- **Cowork.** Executable partner rounds; a user-called Light-depth creation offer; commit-gated teammate
   reuse, with a second form for read-only specialists; a recovery evidence set naming only Cowork constructs.
   Problem 4 of the original report ("both should work in Cowork") is closed by this wiring.
 

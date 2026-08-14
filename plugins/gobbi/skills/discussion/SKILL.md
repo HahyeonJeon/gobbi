@@ -49,7 +49,9 @@ best-supported option, explain why it fits, and state what evidence or changed c
 - **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
   through the active runtime's structured input tool and the Decision Question template.** Use `AskUserQuestion`
   in Claude Code or `request_user_input` in Codex; a delegated agent sends the populated template to the
-  user-facing manager instead of calling either tool.
+  user-facing manager instead of calling either tool. After a Complete Workflow Phase 1 handoff closes its
+  user-decision window, return later uncertainty to the Workflow manager, which decides from the accepted
+  contract and independent input or stops without asking the user.
 - **MUST write for quick understanding.** Expand each domain abbreviation on first use, explain project-specific
   names briefly, and cite evidence for numeric or project-specific claims.
 - **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary or missing
@@ -140,5 +142,4 @@ best-supported option, explain why it fits, and state what evidence or changed c
 | [`Gobbi Skill`](../gobbi-skill/SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
 | [Study](../study/SKILL.md) | Source-grounded investigation for a bounded evidence question. |
 | [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent and teammate assignments. |
-| [Agent Teams](../gobbi/agent-teams/SKILL.md) | Claude Code teammate availability, coordination, and ownership boundaries. |
 | [Partner](../gobbi/partner/SKILL.md) | Independent external-runtime invocation and availability contract. |

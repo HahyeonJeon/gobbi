@@ -170,7 +170,7 @@ projects/*/worktrees/
 |---|---|---|
 | **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Local participants and evaluation come only from the task owner; the partner policy applies only when that owner requires an external run. |
 | **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | Every selected stage self-reviews; explicit evaluation always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when partner is enabled. |
-| **Workflow** | The user wants the durable five-step recorded workflow. | Every WORK uses one assigned active-runtime draft with self-review and adds the applicable external draft or review only when partner is enabled; every EVALUATION always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when enabled. |
+| **Workflow** | The user wants a durable checkpointed workflow with automatic phase continuation. | Every WORK uses one assigned active-runtime draft with self-review and adds the applicable external draft or review only when partner is enabled; every EVALUATION always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when enabled. |
 
 - Present the commitment column. A request may support a recommendation but never records a fresh selection.
   On a boundary, preserve a validated selection and ask again only when its evidence is missing, ambiguous, or
@@ -204,8 +204,11 @@ projects/*/worktrees/
 - Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it remains
   inside the locked contract; and the correction is reversible, authority-neutral, non-destructive, and
   non-external.
-- Send every other finding to the user for accept, reject, or defer disposition. Every correction requires
-  fresh evaluation, and only a verified PASS continues automatically.
+- Send every other General, Cowork, and pre-handoff Workflow finding to the user for accept, reject, or defer
+  disposition. After Workflow Phase 1 completes, the Workflow manager uses the accepted design, authority,
+  available subagents or teammates, and enabled Partner to decide the disposition autonomously; when no safe
+  authorized disposition exists, Workflow stops without asking the user. Every correction requires fresh
+  evaluation, and only a verified PASS continues automatically.
 
 #### 1.5 Load the selected owner and hand off without mutation
 
@@ -215,7 +218,7 @@ projects/*/worktrees/
 - **Cowork:** hand mode, the normalized slug and partner policy to
   [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner generates or recovers its identity, creates or
   recovers its isolated worktree before editing, and runs its user-topic loop.
-- **Workflow:** hand mode, the normalized slug and partner policy to
+- **Workflow:** hand mode, the normalized slug, partner policy, runtime, and validated Gobbi root pair to
   [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
   the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Before a specialist brief, load [Delegation](../delegation/SKILL.md), add the selected mode's fields, and
@@ -253,8 +256,8 @@ that has children routes to them from its own document.
 | Skill | Owns |
 |---|---|
 | [`gobbi`](SKILL.md) | This entry: the system load, the mode selection, and the handoff. |
-| [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git configuration, evaluation policy, and session locations. |
-| [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and evidence layout. |
+| [`cowork`](../cowork/SKILL.md) | Cowork, with its own session configuration, evaluation policy, and topic route. |
+| [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and session evidence layout. |
 
 ### Work operations
 

@@ -110,18 +110,17 @@ One mutable item represents one productive-step iteration. The manager moves it 
 EVALUATION, and RECORD. A verified PASS completes the item; a revision creates a new iteration instead of
 rewriting the completed one.
 
-Task status is scheduling information. Workflow Step 1.3 alone validates a report and decides whether the TODO
-may advance.
+Task status is scheduling information. Workflow's active Procedure phase validates each report and decides
+whether the TODO may advance.
 
 #### Context-boundary recovery
 
 After compact, clear, resume, rewind, lost TODO data, or another context boundary:
 
-1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
+1. Read the latest completed `handoff.md`. If none exists, read and verify `configuration.md`.
 2. Inspect the native TODO list when it survives.
-3. Verify the checkpoint against `configuration.md`, including mode, original UTC date, normalized slug, full
-   UUID, and partner policy. Parse the branch, worktree leaf, and session leaf with the canonical validators,
-   then verify RECORD receipts, `gate.md`, canonical outputs, checks, commits, branch, and worktree.
+3. Verify the handoff against `configuration.md`, including identity, branch, registered worktree, absolute
+   worktree, and session root. Stop instead of creating or selecting another worktree or session directory.
 4. Recreate only the proved item sequence and make the first unproved item the sole `in_progress` item.
 5. Leave later items `pending`, then resume routing from the native list.
 
@@ -134,8 +133,8 @@ boundary still match the reconstructed Workflow evidence.
 
 #### Reuse and write safety
 
-Reuse a teammate only inside the role boundary in Workflow Step 1.3. Every continued assignment receives a
-new identifier and a complete re-anchored brief.
+Reuse a teammate only inside the role boundary in Workflow's active phase and Delegation contract. Every
+continued assignment receives a new identifier and a complete re-anchored brief.
 
 Permit one write-capable assignment at a time across the session worktree, evidence tree, Git branch, TODO
 route, and external systems. Parallel specialists must be independent and read-only.
@@ -152,10 +151,12 @@ gets a fresh replacement rather than inferred completion.
 
 #### Phase continuity
 
-During Phase 2 and Phase 3, activate the next dependency-ready stage immediately after verification. A Hand-off
-is a recovery checkpoint, not an idle wait. Stop only at Workflow's critical-blocker boundary.
+During Phase 2 and Phase 3, activate the next dependency-ready stage immediately after verification. A phase
+`handoff.md` is a recovery checkpoint, not an idle wait; stop only at Workflow's critical-blocker boundary.
 
 ## References
 
-- [Workflow](../../workflow/SKILL.md)
-- [Delegation](../../delegation/SKILL.md)
+| Name | Description |
+|---|---|
+| [Workflow](../../workflow/SKILL.md) | Owns phase routing, handoffs, recovery evidence, and acceptance. |
+| [Delegation](../../delegation/SKILL.md) | Owns each complete specialist assignment and final subagent handoff. |

@@ -19,16 +19,15 @@ definition to every design-bearing productive step.
 
 ## Delegated result contract
 
-Every specialist brief names exactly one result kind: `file`, `commit`, or `response-only`. The owning
-operation defines the locator and acceptance proof. Durable design and evaluation use an exact caller-named
-absolute file, with containment and rereading checks; a printed response cannot replace that file. Commit and
-response-only results remain valid only where their owning operation intentionally requires them.
+Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
+The owning operation defines whether the result is a durable file, commit, or response without a result-kind
+field. Durable design and evaluation use exact caller-named absolute paths with containment and rereading checks;
+a printed handoff references but never replaces a durable result.
 
 ## Ownership and protection
 
 The canonical [Cowork](../../../skills/cowork/SKILL.md),
-[Workflow](../../../skills/workflow/SKILL.md),
-[Workflow Phase 1](../../../skills/workflow/phase-1/SKILL.md), and
-[Delegation](../../../skills/delegation/SKILL.md) skills own these semantics. Generated plugin skills are
-projections of those canonical sources and must remain byte-equal. The package synchronization validator and
-its mutation tests protect both the semantic contract and canonical/generated ownership.
+[Workflow](../../../skills/workflow/SKILL.md), and
+[Delegation](../../../skills/delegation/SKILL.md) skills own these semantics. Workflow Phase 1 is now a section
+of the main Workflow skill. Generated plugin skills are projections of the canonical sources and must remain
+byte-equal.

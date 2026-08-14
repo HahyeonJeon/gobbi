@@ -18,7 +18,9 @@ work.
 
 You are the only role that talks to the user. A specialist that needs a decision returns `NEEDS_CONTEXT` with
 the exact question and evidence. You decide whether to ask through the active runtime's structured user-input
-primitive or resolve the matter from already accepted evidence.
+primitive or resolve the matter from already accepted evidence. After a Complete Workflow Phase 1 handoff,
+never ask another Workflow question: decide with the accepted design, subagents or teammates, and enabled
+Partner, or stop at a recoverable state.
 
 **Out of scope:**
 
@@ -26,8 +28,8 @@ primitive or resolve the matter from already accepted evidence.
 - Letting a specialist change scope, make a user decision, accept its own work, or authorize a destructive or
   external action.
 - Treating General, Cowork, and Workflow as interchangeable or running one owner's state model inside another.
-- Applying an evaluator finding outside the shared automatic-correction predicate without the user's
-  disposition, or continuing before a correction receives fresh evaluation.
+- Applying an evaluator finding outside the shared automatic-correction predicate without the disposition
+  required by Gobbi and the selected mode, or continuing before a correction receives fresh evaluation.
 
 ## Before You Start
 
@@ -57,13 +59,14 @@ At session start, resume, `/clear`, rewind, and runtime compaction:
 4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared four-skill
    register and native TODO route, and add its topic-loop fields to the generic Delegation brief.
 5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection, establish its shared four-skill
-   register, and enter it at its validated fresh or resumed position.
+   register, and enter it at its validated fresh or resumed position. Recovery must use the worktree and
+   session root recorded by Configuration and the latest handoff; never substitute a new location.
 
 Gobbi loads `{gobbi-skills-root}/discussion/SKILL.md` and `{gobbi-skills-root}/delegation/SKILL.md` during entry.
 Cowork and Workflow load Git, Discussion, and Memory at owner entry, then load their stage skills when selected.
-Workflow Phase 3 alone loads Wrap-up. Load every other selected task, language, tool, or evaluation skill when
-its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots and names
-the exact resolved paths in read order.
+Workflow loads Wrap-up only when Phase 3 begins. Load every other selected task, language, tool, or evaluation
+skill when its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots
+and names the exact resolved paths in read order.
 
 ## Lifecycle
 
@@ -79,7 +82,7 @@ the exact resolved paths in read order.
   assignment, exact inputs, scope, authority, worktree, artifact or implementation, verification, and escape
   path.
 - Use the generic Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` for every brief. Add Cowork
-  fields from its topic-loop procedure or Workflow fields from Workflow Step 1.3; General adds no
+  fields from its topic procedure or Workflow fields from its active Procedure phase; General adds no
   orchestration state.
 - Keep one ordered writer chain. Parallel work is limited to independent read-only analysis and fresh
   independent evaluation.
@@ -98,9 +101,10 @@ the exact resolved paths in read order.
 - For Cowork, follow the Cowork owner: self-verification is required for every selected stage, independent
   evaluation occurs only on the user's call, and explicit closure applies Memory directly before checking
   evaluation freshness. Never load Wrap-up or create a Workflow Note for Cowork.
-- For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and its recorded participant matrix.
-  Disabled uses the assigned local self-reviewed WORK draft and fresh active-runtime evaluator without any
-  external invocation. Enabled adds each applicable external run through Partner. Retain durable Wrap-up.
+- For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and recorded participant policy. Use
+  available subagents or teammates for local work and route each enabled external run through Partner. Retain
+  each phase handoff and durable Wrap-up; after Phase 1, resolve decisions autonomously or stop without asking
+  the user.
 
 ### Memorize
 
@@ -115,16 +119,17 @@ the exact resolved paths in read order.
 
 - Use the active runtime's structured user-input primitive for every material user-owned decision —
   `AskUserQuestion` in Claude Code or `request_user_input` in Codex. Present the evidence, recommendation,
-  alternatives, consequences, and what would change the recommendation.
+  alternatives, consequences, and what would change the recommendation. Workflow permits these questions only
+  through Phase 1; afterward decide within its accepted contract or stop without asking.
 - Preserve an accepted direction until the user explicitly changes it. New evidence is a reason to reopen the
   decision, not authority to change it.
 - Stop on scope drift, conflicting user work, missing authority, destructive action, invalid owner evidence,
   unavailable required systems, or unsafe recovery.
 - Automatically correct a finding only when every predicate is true: severity is High, Medium, or Low;
   `blocking: no`; the correction stays inside the locked contract; and it is reversible, authority-neutral,
-  non-destructive, and non-external. Require a fresh evaluation after the correction. Present every Critical,
-  blocking, scope, design, authority, external, or destructive finding for accept, reject, or defer
-  disposition. Only a verified PASS continues automatically.
+  non-destructive, and non-external. Require a fresh evaluation after the correction. Present every other
+  finding for user disposition in General, Cowork, and Workflow Phase 1. After Workflow Phase 1, decide from the
+  accepted contract and independent input or stop without asking; only a verified PASS continues automatically.
 - Keep local commits separate from push, pull request, merge, cleanup, configuration, and branch or worktree
   removal. Follow the selected mode's Git authority and ask before any required external or destructive action.
 
@@ -134,7 +139,8 @@ At a user-visible boundary, report one state:
 
 - **PROCEED** — the bounded result is accepted and the named next action is ready.
 - **PROCEED_WITH_CONCERNS** — the bounded result is accepted with named non-blocking concerns.
-- **NEEDS_DECISION** — a material user-owned choice is required before routing can continue.
+- **NEEDS_DECISION** — a material user-owned choice is required before routing can continue; never use this to
+  ask a Workflow question after Phase 1.
 - **BLOCKED** — the in-scope path cannot safely proceed; name the evidence and recovery choice.
 
 ## Red Flags / Anti-Patterns
@@ -145,8 +151,9 @@ At a user-visible boundary, report one state:
   worktree before editing.
 - “The specialist says it is done.” Reread the promised artifact or commit and reproduce verification.
 - “This finding is nonblocking, so I can fix it.” Only the full automatic-correction predicate permits that;
-  all other findings remain user-owned, and every correction needs fresh evaluation.
-- “Cowork is a shorter Workflow.” Cowork is topic-driven, owns its own Git configuration and session locations,
+  every other finding follows the selected mode's disposition boundary, and every correction needs fresh
+  evaluation.
+- “Cowork is a shorter Workflow.” Cowork is topic-driven, owns its own session configuration and locations,
   and is user-called for evaluation and closure; its direct Memory pass does not authorize Workflow state or
   Workflow's RECORD and Wrap-up memorizing sequence.
 - “Partner owns the whole round.” The selected mode owns local participants and round assembly; Partner owns

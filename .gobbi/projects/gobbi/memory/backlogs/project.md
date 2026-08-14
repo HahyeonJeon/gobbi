@@ -41,7 +41,7 @@ are also not applied. User decision: record it, decide separately.
 behavior rather than user-facing documentation.
 
 **Context:** The layout is defined in `gobbi/SKILL.md` Procedure Step 1.1, while Cowork Configuration and
-Workflow Step 1.2 own mode-specific bootstrap. The current design is recorded in
+Workflow's `Create the worktree and configuration` step own mode-specific bootstrap. The current design is recorded in
 [`design/architecture/consumer-project-bootstrap.md`](../design/architecture/consumer-project-bootstrap.md).
 
 ## Flat consumer-project layout

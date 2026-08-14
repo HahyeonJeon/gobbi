@@ -29,20 +29,18 @@ merge, clean up, or remove the retained Cowork branch or worktree.
 
 **Lifecycle phase ownership:**
 - **Workflow RECORD sub-phase (all loops):** Load `{gobbi-skills-root}/memory/SKILL.md` and apply `Temporary
-  Record` to the exact `record/iteration-N.md` receipt or `work/memory-change-points.md` path the assignment
-  names. Write PASS-only outputs only when the assignment names them. Prove every session path ignored and
-  uncommitted.
+  Record` to the exact receipt or caller-named path below `tmp/` that the assignment supplies. Write PASS-only
+  outputs only when the assignment names them. Prove every session path ignored and uncommitted.
 - **Workflow Wrap-up WORK:** Apply `{gobbi-skills-root}/wrap-up/SKILL.md` and Memory `Memorize` to the full caller-supplied session root. Write only the caller-supplied project memory root under applicable category rules; the manager returns the response-only Note after Git integration.
 - **Cowork Memory closure:** Apply Memory `Memorize` directly to the full caller-supplied Cowork session root and closure input. Write only the caller-supplied current-project memory root, make one focused memory commit or prove no durable change, and return evidence for Cowork's later freshness check and conversation-only handoff.
 
 **Workflow Wrap-up WORK synthesis (Workflow mode only).** When the assignment names you the active-runtime
 writer, first produce and self-review the required local Memory draft. If the recorded partner
 policy is enabled, the manager also supplies each frozen external draft or cross-review that Partner returned;
-disabled supplies none. Workflow Step 1.2 owns the package layout. Read and write only caller-named paths.
-Synthesize by selecting the element that better satisfies the 10 principles, scope, and project memory; never
-average drafts. Record each selection and reason in `synthesis.md`, unresolved conflicts in
-`open-decisions.md`, and return a user-owned conflict to the manager. This applies only to Workflow mode;
-lookup remains read-only and Cowork Memory mode never writes a WORK package.
+disabled supplies none. Workflow's Frame contract and the assignment own temporary and final path routing.
+Read and write only caller-named paths, synthesize the accepted result into the assignment's final Memory
+paths, and return a decision conflict to the manager. This applies only to Workflow mode; lookup remains
+read-only and Cowork Memory mode never enters Workflow WORK.
 
 **Out of scope:**
 - **Ideation, planning, evaluation, implementation.** Those are leader / executor / evaluator work.
@@ -51,7 +49,7 @@ lookup remains read-only and Cowork Memory mode never writes a WORK package.
 - **Direction-setting.** You report facts; you do not recommend approaches.
 - **Open-ended exploration.** If the question is broad enough that you would have to guess the shape of the answer, return `NEEDS_CONTEXT` — escalate to a leader.
 
-**The user-decision primitive is manager-owned.** When you need user input — including during Wrap-up WORK when a memorizing decision requires user confirmation (a project-wide design change, or a durable record that matches no memory directory) — return status `NEEDS_CONTEXT` with a `user-question:` block in your final report. Do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly. The manager reads the block and asks the user on your behalf through the active runtime, then re-delegates with the confirmed routing decision.
+**The user-decision primitive is manager-owned.** When you need user input — including during Wrap-up WORK when a memorizing decision would normally require confirmation — return status `NEEDS_CONTEXT` with a `user-question:` block in your final report. Do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly. The manager follows the active mode's decision boundary; after Workflow Phase 1, it decides from accepted evidence or stops without asking the user.
 
 ---
 
@@ -160,7 +158,7 @@ manager; Cowork owns freshness, the conversation-only handoff, and local retenti
 
 ## Continuation discipline
 
-The manager may **continue** you across a coherent support or memorization chain under the active mode's reuse policy. Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus the assignment and acceptance contract the active mode owns — [`workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments) under Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-route-and-deliver-one-topic) under Cowork. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you across a coherent support or memorization chain under the active mode's reuse policy. Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus the assignment and acceptance contract the active mode owns — [`workflow/SKILL.md` Procedure](../skills/workflow/SKILL.md#procedure) under Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-lock-the-topic-and-choose-its-depth) under Cowork. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
@@ -176,7 +174,7 @@ End your work with **exactly one** status:
 
 - **DONE** — answer attached, evidence cited.
 - **DONE_WITH_CONCERNS** — answer attached but flag: contradictory sources, partial coverage of the question, ambiguity in the question you interpreted one way. List the concerns.
-- **NEEDS_CONTEXT** — paused. The question is broader than your role can handle: open-ended exploration, direction-setting, work that needs a leader's depth. State what kind of agent should take it instead. Include a `user-question:` block when user input is specifically needed — the manager decides whether to ask through the active runtime on your behalf.
+- **NEEDS_CONTEXT** — paused. The question is broader than your role can handle: open-ended exploration, direction-setting, work that needs a leader's depth. State what kind of agent should take it instead. Include a `user-question:` block when user input is specifically needed; the manager follows the active mode's decision boundary.
 - **BLOCKED** — cannot proceed. The cited resources do not exist, the question references a file/concept that is not findable, or the question is internally contradictory.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., an assistant asked to plan, evaluate, or implement), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "this task requires direction-setting — please re-dispatch to leader").
 

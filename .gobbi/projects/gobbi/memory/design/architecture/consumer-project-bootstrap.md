@@ -57,7 +57,8 @@ an immutable base commit before the session worktree exists, but that base commi
 must already exist for the session to read it.
 
 Resolved with one user-approved bootstrap commit in the main checkout, made before the immutable base is
-captured; that bootstrap commit becomes the base. Cowork Rule 1 and Workflow Step 1.2 own this bounded
+captured; that bootstrap commit becomes the base. Cowork's isolated-worktree rule and Workflow's
+`Create the worktree and configuration` step own this bounded
 exception, while Git supplies repository-state, commit, and recovery preferences. The bootstrap commit is the
 only tracked write Gobbi makes outside a session worktree, and it covers only the required layout and its
 ignore file — nothing else.

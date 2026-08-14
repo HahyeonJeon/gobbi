@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Cowork now uses only Fast and Light delivery. Fast skips Ideation and Planning, while Light runs bounded
+  canonical Ideation and Planning before Execution. Cowork and Workflow now share session-root and
+  configuration vocabulary, use aligned owner-local configuration templates, and reference the skills that
+  own discussion, delegation, shaping, and runtime mechanics instead of repeating their procedures.
+- Cowork session records now use topic-owned `1-ideation/`, `2-planning/`, and `3-execution/` directories plus
+  a session `wrap-up/`; Workflow uses the same lifecycle directories without the topic wrapper. Both modes
+  write drafts and other unfinished inputs to caller-named paths below `tmp/`, then organize accepted results
+  and required evidence into the owning phase without a fixed temporary-package shape or filename.
+- Workflow now owns its three phase procedures in one skill instead of separate phase children. Each phase
+  applies `DISCUSSION → WORK → EVALUATION → RECORD` and writes a fixed `handoff.md` for completion or a safe
+  terminal stop. Phase 1 studies and designs with the user, available subagents or teammates, and enabled Partner;
+  after its Complete handoff, the manager proceeds autonomously from the accepted design or stops without asking
+  another Workflow question. Continuation and recovery stay in the worktree and session directory recorded by
+  Configuration and the latest handoff.
 - Renamed `skill-writing` to `gobbi-skill` with no compatibility alias. Its domain, operation, tool, and
   preference type guides are now direct child skills with their own `SKILL.md` files.
 - Gobbi Skill and each direct type-writing child now own a reusable checklist. The parent covers shared skill
@@ -41,11 +55,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   changes, verification, local delivery, concerns, and limits.
 - Ideation now records one indexed result with an `ideation-index.md` locator, coherent numbered design
   parts, and optional nested requirements and topics snapshots. Workflow and Cowork freeze, evaluate, recover,
-  and hand off the complete listed result while retaining receipt-proved legacy single-file results without
+  and hand off the complete listed result while retaining evidence-proved legacy single-file results without
   migration.
 - Planning now records one indexed result with a `plan-index.md` locator, direct numbered plan parts, and a
   numbered task hierarchy. Workflow and Cowork consume and freeze the complete listed result while retaining
-  a receipt-proved legacy `tasks.md` and `plan.md` pair without migration.
+  an evidence-proved legacy `tasks.md` and `plan.md` pair without migration.
 - Wrap-up now uses a compact three-phase closure procedure that reconciles durable memory through
   category-owned CRUD, commits closure changes, rejects base drift, proves the accepted and resulting base
   trees agree, and returns one response-only development, research, or work Note for every terminal state from

@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/workflow/phase-2/SKILL.md

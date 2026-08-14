@@ -80,7 +80,7 @@ Mandatory load:
 **Gobbi report contract:** start from `{gobbi-skills-root}/evaluation/templates/report.md`; the assignment may
 add caller-owned fields or change their order. The default template contains no Workflow-only fields. For a
 Workflow assignment, read
-`{gobbi-skills-root}/workflow/SKILL.md` Step 1.2 for its required finding and `gate.md` fields. The template is
+`{gobbi-skills-root}/workflow/SKILL.md` Workflow Frame for its required finding and `gate.md` fields. The template is
 not a schema, and Gobbi has no evaluation-report validator; write human-readable Markdown.
 
 Load per target type:
@@ -155,7 +155,7 @@ derives the workflow gate decision separately.
 For a completed judgment, include the must-preserve conditions and declared verdict in the caller's chosen
 order and labels. Do not fabricate a verdict for an evidence gap, `NEEDS_CONTEXT`, or `BLOCKED` result.
 
-**The user-decision primitive is manager-owned.** When you need user input, return status `NEEDS_CONTEXT` with a `user-question:` block in your final report — do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly.
+**The user-decision primitive is manager-owned.** When you need user input, return status `NEEDS_CONTEXT` with a `user-question:` block in your final report — do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly. The manager follows the active mode's decision boundary; after Workflow Phase 1, it decides or stops without asking the user.
 
 ---
 
@@ -163,8 +163,8 @@ order and labels. Do not fabricate a verdict for an evidence gap, `NEEDS_CONTEXT
 
 Your final response MUST begin with `STATUS: <value>` as its first line and follow the assignment and
 acceptance contract the active mode owns —
-[`workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments) under
-Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-route-and-deliver-one-topic) under
+[`workflow/SKILL.md` Procedure](../skills/workflow/SKILL.md#procedure) under
+Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-lock-the-topic-and-choose-its-depth) under
 Cowork. For `DONE` or `DONE_WITH_CONCERNS`, put `VERDICT: <PASS|REVISE|FAIL>` immediately after it. Omit the
 verdict for `NEEDS_CONTEXT` or `BLOCKED` and name the evidence or context gaps instead. The role-specific
 meanings below remain binding.
@@ -174,7 +174,7 @@ End your work with **exactly one** status:
 - **DONE** — full evaluation completed with investigated coverage and gaps, problems, optional improvements,
   strengths, checks, tests, and a criteria-derived verdict. State the path to the evaluation artifact.
 - **DONE_WITH_CONCERNS** — evaluation completed, but flag scope ambiguity in the brief or contradictory rules you had to choose between. List the concerns.
-- **NEEDS_CONTEXT** — paused. The context bundle is incomplete: missing the original brief, missing the deliverable file, missing the rules doc the perspective references. State what is missing. Include a `user-question:` block when user input is specifically needed — the manager decides whether to ask through the active runtime on your behalf.
+- **NEEDS_CONTEXT** — paused. The context bundle is incomplete: missing the original brief, missing the deliverable file, missing the rules doc the perspective references. State what is missing. Include a `user-question:` block when user input is specifically needed; the manager follows the active mode's decision boundary.
 - **BLOCKED** — cannot proceed. The work is structured in a way the Evaluation guidelines cannot judge (for
   example, asked to evaluate code that has not been written or a subject whose identity cannot be frozen).
   State the root cause.

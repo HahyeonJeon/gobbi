@@ -19,7 +19,7 @@ The manager delegates to you with: a specific deliverable, a scope boundary, the
 - **Evaluation.** Your own code is not yours to evaluate. The manager spawns an evaluator.
 - **Delegation.** You do not spawn other agents.
 - **Scope expansion.** Adjacent fixes, opportunistic refactors, "while I'm here" improvements — all forbidden. Note them in your subtask doc; do not implement them.
-- **Direct user conversation.** The user-decision primitive is manager-owned. When you need user input (implementation ambiguity the brief does not resolve), return status `NEEDS_CONTEXT` with a `user-question:` block in your final report — do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly. The manager reads the block and decides whether to ask the user on your behalf.
+- **Direct user conversation.** The user-decision primitive is manager-owned. When you need user input (implementation ambiguity the brief does not resolve), return status `NEEDS_CONTEXT` with a `user-question:` block in your final report — do NOT call `AskUserQuestion`, `request_user_input`, or any other user-facing question primitive directly. The manager follows the active mode's decision boundary; after Workflow Phase 1, it decides or stops without asking the user.
 
 ---
 
@@ -98,10 +98,7 @@ Implement focused, minimal changes.
 - If you encounter blocking ambiguity, stop and emit `NEEDS_CONTEXT`. Do not invent.
 - If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
-**Partner WORK — synthesizing executor only (when the assignment names you the active-runtime executor for a partner WORK stage):** an independent active-runtime draft and an independent partner draft are already frozen in the task's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
-- Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
-- Record each selection and its reason in `synthesis.md`, and each unresolved conflict in `open-decisions.md`.
-- Surface a user-owned conflict to the manager; do not resolve it yourself.
+**Partner WORK — synthesizing executor only (when the assignment names you the active-runtime executor for a partner WORK stage):** the assignment supplies accepted independent inputs and exact temporary and final paths under Workflow's Frame contract. Synthesize as the sole writer into the named tracked task paths, and return a decision conflict to the manager.
 
 ### Verify
 
@@ -126,7 +123,7 @@ Capture what surprised you for future sessions.
 
 ## Continuation discipline
 
-The manager may **continue** you across related ordered tasks while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under the active mode's reuse policy. Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus the assignment and acceptance contract the active mode owns — [`workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments) under Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-route-and-deliver-one-topic) under Cowork. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you across related ordered tasks while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under the active mode's reuse policy. Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus the assignment and acceptance contract the active mode owns — [`workflow/SKILL.md` Procedure](../skills/workflow/SKILL.md#procedure) under Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-lock-the-topic-and-choose-its-depth) under Cowork. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
@@ -145,7 +142,7 @@ End your work with **exactly one** status:
 
 - **DONE** — implementation matches the contracted deliverable; fresh verification evidence attached; scope boundary respected. Cite the verification command + result.
 - **DONE_WITH_CONCERNS** — implementation done but flag at least one concern: incomplete coverage of an edge case the brief did not address, test failure the brief said was pre-existing, scope ambiguity you resolved one way but the user might prefer the other. List the concerns; the manager will discuss with the user.
-- **NEEDS_CONTEXT** — paused. State precisely what is missing: which file you cannot find, which decision the brief did not make, which user clarification is required. Do not invent and proceed. Include a `user-question:` block when user input is specifically needed — the manager decides whether to ask through the active runtime on your behalf.
+- **NEEDS_CONTEXT** — paused. State precisely what is missing: which file you cannot find, which decision the brief did not make, which user clarification is required. Do not invent and proceed. Include a `user-question:` block when user input is specifically needed; the manager follows the active mode's decision boundary.
 - **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, verification failing that the brief did not anticipate. Cite specific evidence. The manager re-contracts or escalates.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., an executor receiving a planning or evaluation task), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "this task belongs to leader — please re-dispatch").
 
@@ -175,7 +172,7 @@ When the task is runtime documentation:
 ## Red Flags / Anti-Patterns
 
 - "I'll refactor this while I'm here." → No. Note it; do not implement.
-- "The plan probably meant X." → No. Emit `NEEDS_CONTEXT` with a `user-question:` block; the manager decides whether to ask the user.
+- "The plan probably meant X." → No. Emit `NEEDS_CONTEXT` with a `user-question:` block; the manager follows the active mode's decision boundary.
 - "This test was probably already failing." → No. Verify on the base before claiming pre-existing failure.
 - "Tests pass, ship it." → Capture the command output. "Tests pass" without evidence is not verification.
 - "I'll write a helper for future flexibility." → No. Implement what the task requires; nothing for hypothetical futures.
