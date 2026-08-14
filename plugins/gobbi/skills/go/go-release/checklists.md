@@ -67,22 +67,22 @@ receipt silently fills another record.
 - [ ] GOREL-CK-STRUCTURE-01-01 — The release contract names the acting agent, caller, trigger, requested result, decision authority, manager, exact subject, consumers, destinations, write boundary, non-goals, terminal result, and recovery boundary.
 - [ ] GOREL-CK-STRUCTURE-01-02 — The action specification is a complete record independent of readiness and authority.
 - [ ] GOREL-CK-STRUCTURE-01-03 — The manager authority record names the unchanged action identity, exact authorized effects, credential authority, network authority, publication authority, mutation authority, current validity, and withdrawal state.
-- [ ] GOREL-CK-STRUCTURE-01-04 — Every requested effect has one named Git or non-Git executor.
+- [ ] GOREL-CK-STRUCTURE-01-04 — Every requested effect has one named executor.
 - [ ] GOREL-CK-STRUCTURE-01-05 — The unchanged input, action identity, expected states, named executor, and current authority are each rechecked immediately before handoff.
 - [ ] GOREL-CK-STRUCTURE-01-06 — No readiness result, complete specification, prior grant, executor name, or acknowledgment is represented as current action authority or returned execution evidence.
 
-### GOREL-SC-STRUCTURE-02 — Edge case: A Git tag or ref action is supplied without defaults
+### GOREL-SC-STRUCTURE-02 — Edge case: A Git tag action is incomplete or implicit
 
-The release requires an exact Git tag/ref action, including a compatible existing ref when applicable. The
-caller-neutral specification should contain every Git-owned input and use the bounded one-way interface; a
-direct command, wildcard, implicit configuration value, or guessed project policy fails.
+The release requires one exact tag action, including a compatible existing tag when applicable. The action
+should name every value that changes the result; a wildcard, inferred target, implicit remote, or guessed
+project policy fails.
 
 #### Checklist
 
-- [ ] GOREL-CK-STRUCTURE-02-01 — The Git action specification supplies `callerIdentity`, `repository`, `refName`, `targetObject`, `remote`, `tagForm`, `annotationInput`, `taggerIdentity`, `taggerTime`, `tagObjectInputs`, `signingInput`, `publicationTarget`, `expectedLocalState`, `expectedRemoteState`, and `requestedEffects` verbatim.
-- [ ] GOREL-CK-STRUCTURE-02-02 — Every absent optional Git value uses its required literal `none` or `not-applicable` form without an omitted value, wildcard, revision expression, or implicit configuration default.
+- [ ] GOREL-CK-STRUCTURE-02-01 — The tag action names the repository, fully qualified tag, target object, tag form, remote destination, expected states, and requested effects; an annotated or signed tag also names exact annotation bytes, tagger identity, tagger timestamp and offset, and project-required signing input, while a lightweight tag marks those inputs not applicable.
+- [ ] GOREL-CK-STRUCTURE-02-02 — The tag action uses no wildcard, inferred `HEAD`, implicit remote, guessed signing policy, or additional effect.
 - [ ] GOREL-CK-STRUCTURE-02-03 — The semantic version tag, fully qualified ref name, module-subdirectory prefix, applicable major-version suffix, tag form, target object, repository, remote, and publication target agree with the current release decision and caller-supplied project policy.
-- [ ] GOREL-CK-STRUCTURE-02-04 — Go Release supplies the unchanged action specification and separate current manager authority to Git Phase 5 without issuing a direct Git command or receiving Git's execution authority.
+- [ ] GOREL-CK-STRUCTURE-02-04 — The named executor applies Git preferences under current manager authority and returns exact before, action, after, verification, and recovery evidence.
 
 ### GOREL-SC-STRUCTURE-03 — Normal case: A non-Git destination action has an exact owner contract
 
@@ -156,7 +156,7 @@ its external consumer; an acknowledgment or local-only receipt is insufficient.
 #### Checklist
 
 - [ ] GOREL-CK-USAGE-02-01 — The manager authority remains current and unwithdrawn for the unchanged action immediately before executor handoff.
-- [ ] GOREL-CK-USAGE-02-02 — An existing Git ref counts as `compatible-no-op` only when every supplied target, form, annotation, tagger, signing, expected-state, and requested-effect value matches.
+- [ ] GOREL-CK-USAGE-02-02 — An existing Git tag counts as `compatible-no-op` only when every supplied target, form, annotation byte, tagger identity, tagger timestamp and offset, signing input, expected-state, and requested-effect value matches.
 - [ ] GOREL-CK-USAGE-02-03 — A non-Git destination result matches its named executor, action, destination, unchanged input identity, current authority, attempted effect, before state, after state, result, evidence limits, retained state, recovery, and handoff.
 - [ ] GOREL-CK-USAGE-02-04 — `verified` requires every requested effect to be `completed` or `compatible-no-op` and every required local, destination, and external-consumer observation to match the unchanged release subject.
 

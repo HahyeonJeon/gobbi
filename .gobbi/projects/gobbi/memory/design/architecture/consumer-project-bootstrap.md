@@ -57,26 +57,25 @@ an immutable base commit before the session worktree exists, but that base commi
 must already exist for the session to read it.
 
 Resolved with one user-approved bootstrap commit in the main checkout, made before the immutable base is
-captured; that bootstrap commit becomes the base. `git` Rule `G-2` ("Validate every writer root") and
-`cowork` Rule 1 were both amended with this bounded exception rather than adding a new rule. The bootstrap
-commit is the only tracked write Gobbi ever makes outside a session worktree, and it covers only the required
-layout and its ignore file — nothing else.
+captured; that bootstrap commit becomes the base. Cowork Rule 1 and Workflow Step 1.2 own this bounded
+exception, while Git supplies repository-state, commit, and recovery preferences. The bootstrap commit is the
+only tracked write Gobbi makes outside a session worktree, and it covers only the required layout and its
+ignore file — nothing else.
 
 ## Stop conditions
 
-`git/SKILL.md` Step 2.1 verifies the layout before recommending a base, in this order: an ancestor ignores
-`.gobbi/` (unrepairable from inside `.gobbi/`, since a nested `.gobbi/.gitignore` under an ignored ancestor is
-never read, not even a self-negating `!.gobbi/`); a file is already tracked under a path the layout requires
-to be ignored (detected with `git ls-files`, because `git check-ignore` only answers "would this be ignored,"
-not "is this tracked"); a conflicting or partial ignore file already exists at the layout's path; and a
-required path component exists as a file or a symbolic link instead of a directory. See
-[`learnings/git/tips.md`](../../learnings/git/tips.md) for the verification mechanics behind these checks, and
-[`backlogs/project.md`](../../backlogs/project.md) for the one stop condition still missing a named detection
-command.
+Gobbi Step 1.1 and the selected Cowork or Workflow configuration preflight verify the layout before capturing
+the base. They stop when an ancestor ignores `.gobbi/`; a file is already tracked where the layout requires
+ignored state; the existing `.gobbi/.gitignore` has conflicting or partial bytes; or a required path component
+is a file or symbolic link instead of a directory. Use `git check-ignore --no-index -v` for ignore behavior,
+`git ls-files` for tracked state, exact-byte comparison for the ignore file, and `test -e`, `test -d`, and
+`test -L` for existing path components. See [`learnings/git/tips.md`](../../learnings/git/tips.md) for the
+verification mechanics behind these checks.
 
 ## References
 
 - `gobbi/SKILL.md` Procedure Step 1.1 — canonical layout definition
-- `git/SKILL.md` § G-2, Step 2.1 — bootstrap authorization and verification
-- `cowork/SKILL.md` Rule 1 — bootstrap exception
+- `cowork/SKILL.md` Rule 1 and Step 1.1 — Cowork bootstrap authority and verification
+- `workflow/SKILL.md` Step 1.2 — Workflow bootstrap authority and verification
+- `git/SKILL.md` — repository-state, commit, and recovery preferences
 - `.gobbi/.gitignore` — canonical ignore rules

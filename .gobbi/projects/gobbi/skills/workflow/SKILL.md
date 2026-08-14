@@ -85,25 +85,26 @@ P3 · Note
   validated `{gobbi-skills-root}` / `{gobbi-agents-root}` pair. Resolve the Execution cap, roles, required-system
   availability, narrow waivers, base revision, publication intent, merge authority, and cleanup authority. The
   Execution cap defaults to three total passes per task.
-- Supply [Git](../git/SKILL.md) these five contract properties:
+- Bind these five Workflow configuration properties:
 
 | Property | Workflow value |
 |---|---|
-| Proved identity | Runtime, original UTC start date, normalized slug, full UUID, partner policy, and separately derived names. |
+| Proved identity | Original UTC start date, normalized slug, full UUID, partner policy, purpose-based branch, and byte-matching worktree and session leaves. |
 | Immutable base commit | The user-resolved clean head, or the one approved layout-bootstrap commit. |
 | Isolated worktree | A fresh free path or one exact registered canonical pair outside the main checkout. |
 | Publication intent | The configured local, push, or pull-request outcome; later actions cannot exceed it. |
 | Required layout | Gobbi Step 1.1 paths, tracked/ignored states, and exact ignore bytes. |
 
 - For a fresh session, generate one full lowercase hyphenated UUID and capture the original UTC start date
-  before deriving names. Derive branch and leaf separately through [Git conventions](../git/conventions.md):
-  `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and `<YYYY-MM-DD>-<slug>-<full-uuid>`.
+  before deriving the worktree and session names. Through [Git](../git/SKILL.md), name the branch
+  `<type>/<slug>`, or `<type>/<issue>-<slug>` when a real issue exists. Name both leaves
+  `<YYYY-MM-DD>-<slug>-<full-uuid>`.
 - Run Gobbi's layout resolver and Git bootstrap preflight before capturing the base. If repair is required,
   obtain explicit user approval for the sole tracked main-checkout write: one commit containing only the
   required directories and `.gobbi/.gitignore`. Never write the repository root `.gitignore`.
-- On recovery, require separately parsed branch, worktree, and session leaves to reproduce one canonical
-  tuple. Never rename live state or choose among competing tuples.
-- Create or verify the isolated worktree through Git. Create the evidence root at
+- On recovery, require the recorded branch, exact registered worktree, and byte-matching worktree and session
+  leaves. Do not parse or migrate a legacy branch name, rename live state, or choose among competing records.
+- Create or verify the isolated worktree while applying Git preferences. Create the evidence root at
   `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`; the worktree and session
   leaves are byte-identical.
 - Write `configuration.md` with mode, original UTC date, normalized slug, UUID, partner
@@ -145,7 +146,7 @@ choose between both shapes when the accepted evidence does not identify one cano
   TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
 - Make each required result and its acceptance evidence explicit. Durable design and evaluation name an exact
   caller-owned absolute path with containment, rereading, and checks. Commit-based Execution names the branch,
-  assignment-owned paths, commit authority, provenance, and verification. Study names either an exact
+  assignment-owned paths, commit authority, and verification. Study names either an exact
   caller-owned absolute destination with its allowed write boundary and checks, or its response subject, shape,
   and consumer. Assistant lookup, Partner, or another conversation result names its subject, response shape,
   and consumer.
@@ -300,6 +301,6 @@ same turn. A context boundary preserves established mode, slug, partner policy, 
 - [`phase-2/SKILL.md`](phase-2/SKILL.md) owns Phase 2 Planning and Execution actions.
 - [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the Phase 3 Workflow adapter to Wrap-up.
 - [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md) owns TODO-based assignment recovery and context-boundary continuity.
-- [Git](../git/SKILL.md), [Memory](../memory/SKILL.md), [Delegation](../delegation/SKILL.md),
+- [Git](../git/SKILL.md) supplies Git preferences. [Memory](../memory/SKILL.md), [Delegation](../delegation/SKILL.md),
   [Partner](../gobbi/partner/SKILL.md), [Evaluation](../evaluation/SKILL.md), and
   [Wrap-up](../wrap-up/SKILL.md) own their named mechanisms.

@@ -76,29 +76,28 @@ the manager may advance it, but never become a second route.
   current evidence. In Claude Code use the native task controls; in Codex publish the same ordered list with
   `update_plan`.
 - For a fresh identity, generate one full lowercase hyphenated UUID and capture the original UTC session-start
-  date before deriving names. Retain both across boundaries. Supply [Git](../git/SKILL.md) its five-property
-  contract:
+  date before deriving the worktree and session names. Retain both across boundaries. Bind these five Cowork
+  configuration properties:
 
 | Property | Cowork value |
 |---|---|
-| Proved identity | Runtime, original UTC date, normalized slug, full UUID, separately derived names, and matching provenance trailers. |
+| Proved identity | Original UTC date, normalized slug, full UUID, purpose-based branch, and byte-matching worktree and session leaves. |
 | Immutable base | The user-confirmed clean head before worktree creation, including an approved bootstrap commit when required. |
 | Isolated worktree | The unoccupied intended absolute path for fresh creation, or one exact registered canonical branch/worktree pair for recovery. |
-| Publication intent | Local retention. Publication, merge, and cleanup require a separate explicit Git operation and current user authority. |
+| Publication intent | Local retention. Publication, merge, and cleanup require a separate explicit user request and current authority. |
 | Required layout | Gobbi [Step 1.1](../gobbi/SKILL.md#11-establish-the-entry-context-runtime-and-canonical-layout) paths, tracked-or-ignored states, and exact ignore bytes for the resolved project. |
 
-- Let Git validate posture, identity, derivation, collision, creation, writer authorization, and recovery. If
-  the required layout is absent, obtain explicit approval for its one allowed bootstrap commit in the main
-  checkout before fixing the base. This exception covers only Gobbi's namespace roots and ignore file; without
-  approval, stop. Otherwise the main checkout remains unchanged.
-- Fresh names derive separately from `(runtime, date, slug, UUID)`: branch
-  `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and worktree leaf
-  `<YYYY-MM-DD>-<slug>-<full-uuid>`. Recovery accepts only one reproducible tuple and never renames, rewrites,
-  or replaces an active object.
+- Apply [Git](../git/SKILL.md) while Cowork validates repository state, branch and worktree targets, collisions,
+  creation, writer ownership, and recovery. If the required layout is absent, obtain explicit approval for its
+  one allowed bootstrap commit in the main checkout before fixing the base. This exception covers only Gobbi's
+  namespace roots and ignore file; without approval, stop. Otherwise the main checkout remains unchanged.
+- Name a fresh branch `<type>/<slug>`, or `<type>/<issue>-<slug>` when a real issue exists, from Git's
+  branch preference. Name the worktree and session leaves `<YYYY-MM-DD>-<slug>-<full-uuid>`. Recovery requires
+  the recorded branch and exact registered worktree; it neither parses nor migrates a legacy branch name.
 - Complete Configuration only after current evidence proves the UUID, repository, immutable base, branch,
   registered absolute worktree, head, clean status, original date, slug, partner policy, fixed
   root pair, unchanged main checkout except an approved bootstrap, and exact recovery point. Record those facts
-  and stop on any unproved identity, isolation, provenance, base, writer, root, or recovery claim.
+  and stop on any unproved identity, isolation, base, writer, root, or recovery claim.
 
 #### 1.2 Establish the Cowork session locations
 
@@ -254,14 +253,14 @@ CW · Wrap-up
 - Require current Execution and Git evidence, a clean Cowork worktree, and an unchanged main checkout. PASS
   returns a conversation-only handoff with outcome, scope, topics, artifacts, commits, memory result, checks,
   coverage and dispositions, exclusions, risks, UUID, base, branch, worktree, head, status, and first recovery
-  command. Retain local objects; publication, merge, and cleanup require a separate explicit Git operation.
+  command. Retain local objects; publication, merge, and cleanup require a separate explicit user request.
 
 ## References
 
 | Owner | Boundary |
 |---|---|
 | [Gobbi](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate) | Owns the finding predicate, user boundary, fresh-evaluation rule, and PASS-only continuation. |
-| [Git](../git/SKILL.md) | Owns identity and isolation validation, name derivation, collision handling, writer authorization, commits, publication, merge, cleanup, and Git recovery. |
+| [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, publication, cleanup, and recovery preferences; Cowork owns its ordered Git actions. |
 | [Memory](../memory/SKILL.md) | Owns session identity and containment validation, Temporary Record safety, durable judgment, and category routing. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist brief; Cowork adds the Step 2.1 fields. |
 | [Partner](../gobbi/partner/SKILL.md) | Owns each enabled external invocation and frozen return; Cowork owns participants, round assembly, acceptance, and routing. |

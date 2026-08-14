@@ -8,8 +8,9 @@ skill-type: operation
 # Wrap-up
 
 Wrap-up keeps durable project context current, commits the complete closure, integrates the accepted work into
-its base branch through Git, and returns one development, research, or work note. Use it only after the caller
-accepts the work and supplies the session root, project memory root, complete Git identity, and authority.
+its base branch while applying Git preferences, and returns one development, research, or work note. Use it
+only after the caller accepts the work and supplies the session root, project memory root, complete Git state,
+and authority.
 
 ## Principles
 
@@ -36,7 +37,7 @@ altered completion claim.
 
 ## Rules
 
-- **MUST freeze the closure subject, session and memory roots, complete Git identity, stable closure assignment
+- **MUST freeze the closure subject, session and memory roots, complete Git state, stable closure assignment
   ID, and authority before changing memory.** Wrong-worktree evidence, unrelated changes, an active writer, or
   an unresolved material decision stops mutation.
 - **MUST reconcile the full caller-supplied session root with related existing memory through category-owned
@@ -87,7 +88,7 @@ altered completion claim.
 | Session root | Full closing session root used as temporary Memorize input. |
 | Project memory root | Closing project's `.gobbi/projects/<project>/memory/` root and the boundary for durable memory changes. |
 | Base branch | Exact local branch that receives the accepted work head. |
-| Git identity | Proved Git identity tuple and session contract, plus the stable closure assignment ID used for commit provenance. |
+| Git state | Exact repository, base, branch, worktree, accepted heads, and current status from the caller contract. |
 | Git authority | Current authority to commit closure-owned changes and merge the work head into the base branch. |
 
 - Freeze the UTC completion time, outcome title, closure evidence, and five properties. Confirm that the
@@ -139,11 +140,12 @@ altered completion claim.
 
 #### 3.2 Commit closure changes
 
-- Apply [Git](../git/SKILL.md) to stage only closure-owned paths, inspect the staged paths and diff, and commit
-  every remaining tracked closure change on the work branch. When no change remains, prove that the existing
-  accepted work head already contains the complete verified tree.
+- Apply [Git](../git/SKILL.md) preferences while Wrap-up stages only closure-owned paths, inspects the staged
+  paths and diff, and commits every remaining tracked closure change on the work branch. When no change remains,
+  prove that the existing accepted work head already contains the complete verified tree.
 - Reread the resulting commit and prove that its tree equals the frozen closure tree and contains the required
-  provenance and every accepted task commit. Confirm that no closure-owned tracked change remains uncommitted.
+  closure changes and every accepted task commit. Confirm that no closure-owned tracked change remains
+  uncommitted.
 - On failure, do not edit, restage, or change content for a retry. Retain the work branch and worktree, then
   continue to Step 3.4 with the failed command, current evidence, and first safe recovery command.
 
@@ -151,9 +153,9 @@ altered completion claim.
 
 - Recheck the exact work head and tree, unchanged base head and tree, clean bound base checkout, repository
   identity, merge authority, and absence of an active Git operation immediately before the merge.
-- Apply [Git](../git/SKILL.md) to integrate the accepted work through its authorized merge path. If its current
-  contract cannot authorize and prove that path, stop without an independent merge, conflict resolution, or
-  accepted-work change.
+- Apply [Git](../git/SKILL.md) preferences while Wrap-up integrates the accepted work through its authorized
+  merge path. If the caller contract cannot authorize and prove that path, stop without an independent merge,
+  conflict resolution, or accepted-work change.
 - Prove that the resulting base tree equals the accepted work tree. Record the base heads and trees before and
   after, merge form, base checkout state, surviving branch and worktree, failure, and first safe recovery
   command.
@@ -177,4 +179,4 @@ altered completion claim.
 | [Wrap-up checklist](checklist.md) | Reusable unchecked source for evaluating closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting. |
 | [Note template](templates/note.md) | Response-only development, research, or work note for the final result, memory, verification, Git integration, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns session review, durable memory selection, category routing, and memory verification. |
-| [Git](../git/SKILL.md) | Owns focused commits, base-branch merge, retained objects, and Git recovery evidence. |
+| [Git](../git/SKILL.md) | Supplies focused-commit, integration, retained-object, and recovery preferences; Wrap-up owns the ordered Git actions. |

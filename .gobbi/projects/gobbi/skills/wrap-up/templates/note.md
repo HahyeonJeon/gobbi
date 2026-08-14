@@ -55,7 +55,7 @@ update was needed.}
 | Item | Result | Evidence |
 |---|---|---|
 | Accepted work | {Full head and tree IDs, or not observed} | {Frozen closure tree and accepted task commits.} |
-| Closure commit | {not configured, not authorized, not attempted, deferred, failed, completed, or retained} | {Full commit and tree IDs, provenance, status, or failure evidence.} |
+| Closure commit | {not configured, not authorized, not attempted, deferred, failed, completed, or retained} | {Full commit and tree IDs, changed scope, status, or failure evidence.} |
 | Base before | {Exact branch and full head, or not observed} | {Tree ID, bound checkout path and status, and drift result.} |
 | Base merge | {not configured, not authorized, not attempted, deferred, failed, completed, or retained} | {Merge form, authority, resulting head, or failure evidence.} |
 | Base after | {Full head and tree IDs, or not observed} | {Accepted/base tree comparison and checkout operation state.} |

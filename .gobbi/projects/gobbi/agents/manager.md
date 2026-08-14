@@ -146,7 +146,7 @@ At a user-visible boundary, report one state:
 - “The specialist says it is done.” Reread the promised artifact or commit and reproduce verification.
 - “This finding is nonblocking, so I can fix it.” Only the full automatic-correction predicate permits that;
   all other findings remain user-owned, and every correction needs fresh evaluation.
-- “Cowork is a shorter Workflow.” Cowork is topic-driven, owns its own Git contract and session locations,
+- “Cowork is a shorter Workflow.” Cowork is topic-driven, owns its own Git configuration and session locations,
   and is user-called for evaluation and closure; its direct Memory pass does not authorize Workflow state or
   Workflow's RECORD and Wrap-up memorizing sequence.
 - “Partner owns the whole round.” The selected mode owns local participants and round assembly; Partner owns

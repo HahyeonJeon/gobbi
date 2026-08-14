@@ -60,7 +60,7 @@ receipt, task, or commit.
   context-coherent groups with stable `task-NN-slug` IDs; each leaf's path, title, work, boundary, and output;
   combination reason and outcome; accepted design and repository context; dependencies, roles, skills, inputs,
   constraints, writer boundaries, handoffs, verification, and coverage of every Ideation obligation.
-  Workflow retains TODO expansion, evaluation, RECORD, scheduling, and commit provenance. Freeze the Planning
+  Workflow retains TODO expansion, evaluation, RECORD, scheduling, and commit evidence. Freeze the Planning
   contract only after hierarchy, dependencies, scope, acceptance, and authority are explicit.
 
 #### 1.2 Run the Planning cycle and expand the route
@@ -112,9 +112,9 @@ P2 · Execution
 - Invoke the parent WORK stage with local role `executor`, the frozen task contract and worktree preimage, the
   planned tracked outputs, and task verification. The assigned executor synthesizes and implements as sole
   writer; all helpers remain read-only.
-- Run required checks, inspect the complete diff against allowed/protected paths, and create one focused local
-  task commit through [Git](../../git/SKILL.md). Reread commit, diff, checks, and creation package before
-  EVALUATION.
+- Run required checks, inspect the complete diff against allowed/protected paths, and have Execution create one
+  focused local task commit while applying [Git](../../git/SKILL.md) preferences. Reread commit, diff, checks,
+  and creation package before EVALUATION.
 
 #### 2.4 Evaluate, record, and route the task
 
@@ -124,7 +124,7 @@ P2 · Execution
   [Partner](../../gobbi/partner/SKILL.md); disabled invokes no external runtime.
 - Verify only authorized paths changed, the focused commit exists in the exact worktree, and checks describe
   the committed tree. Seal package, reports, gate, findings, dispositions, commit, verification, output pointers,
-  and provenances in the parent receipt schema.
+  and source evidence in the parent receipt schema.
 - On PASS, complete the task and activate the next. On REVISE below cap, create the next iteration at
   DISCUSSION. On FAIL or cap exhaustion, try every safe in-contract recovery, then preserve route, evidence,
   branch, worktree, and choices at the critical-blocker boundary.
@@ -152,4 +152,5 @@ P2 · Execution
 
 - [Parent Workflow](../SKILL.md) owns shared Workflow contracts and transitions.
 - [Planning](../../planning/SKILL.md) owns hierarchy and execution-plan construction.
-- [Execution](../../execution/SKILL.md) and [Git](../../git/SKILL.md) own implementation and focused commits.
+- [Execution](../../execution/SKILL.md) owns implementation and focused commits; [Git](../../git/SKILL.md)
+  supplies the applied commit preferences.

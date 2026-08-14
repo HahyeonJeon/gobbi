@@ -246,14 +246,14 @@ that has children routes to them from its own document.
 | [`delegation`](../delegation/SKILL.md) | The brief shape every specialist assignment uses. |
 | [`discussion`](../discussion/SKILL.md) | The shape of a question put to the user. |
 | [`memory`](../memory/SKILL.md) | Temporary session records and durable project memory. |
-| [`git`](../git/SKILL.md) | Branch, worktree, commit, publication, merge, and recovery. |
+| [`git`](../git/SKILL.md) | Branch, worktree, commit, integration, publication, cleanup, and recovery preferences. |
 
 ### Entry and mode owners
 
 | Skill | Owns |
 |---|---|
 | [`gobbi`](SKILL.md) | This entry: the system load, the mode selection, and the handoff. |
-| [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git contract, evaluation policy, and session locations. |
+| [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git configuration, evaluation policy, and session locations. |
 | [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and evidence layout. |
 
 ### Work operations

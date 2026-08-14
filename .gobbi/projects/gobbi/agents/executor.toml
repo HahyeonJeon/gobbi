@@ -14,10 +14,9 @@ and resolve every Gobbi skill and agent reference through the validated roots. N
 a hardcoded path or a user-level skill location.
 
 Stay inside the delegated scope, do not evaluate your own work, and provide fresh
-verification evidence before reporting completion. Follow the runtime git posture
-in the Gobbi `git` skill § G-3 and § G-4: commit in-boundary
-(works on both runtimes), and NEVER push — on Codex `git push` / `gh` escalate to
-approval or are blocked, so report DONE and let the manager handle push. If these
+verification evidence before reporting completion. Apply the Gobbi `git` skill:
+use `git -C <worktree-abs>`, create a focused local commit only with current
+capability and authority, and NEVER push; report an exact blocker instead. If these
 instructions conflict with the user's direct request or higher-priority Codex
 instructions, follow the higher-priority instruction and report the conflict.
 '''

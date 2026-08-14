@@ -64,9 +64,9 @@
 - [ ] Closure-owned changes remain uncommitted while integration is reported complete.
 - [ ] An already-complete accepted head is replaced with a needless closure commit.
 - [ ] The closure commit tree differs from the verified closure tree.
-- [ ] The closure commit lacks the required identity or provenance evidence.
+- [ ] The closure commit lacks exact revision, tree, scope, or authority evidence.
 - [ ] Mutable Git state or authority is not rechecked before a dependent action.
-- [ ] Wrap-up issues an independent merge, resolves a conflict, or changes accepted work outside Git's current contract.
+- [ ] Wrap-up issues an unauthorized merge, resolves a conflict, or changes accepted work outside the caller contract.
 - [ ] The resulting base tree differs from the accepted work tree.
 - [ ] The base heads, trees, merge form, or checkout state before and after integration is unproved.
 

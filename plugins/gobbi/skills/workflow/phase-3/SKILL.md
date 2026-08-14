@@ -58,8 +58,8 @@ the tracked closure.
   amendments, exclusions, risks, and unresolved items.
 - Load [Wrap-up](../../wrap-up/SKILL.md). Resolve UUID, immutable base commit, current base branch and head,
   bound base checkout and status, session branch and head, absolute worktree, stable closure assignment ID,
-  project Memory root, complete Git identity, and current commit and merge authority from direct evidence.
-- Read current Memory, the [Note template](../../wrap-up/templates/note.md), repository checks, and Git posture.
+  project Memory root, complete Git state, and current commit and merge authority from direct evidence.
+- Read current Memory, the [Note template](../../wrap-up/templates/note.md), repository checks, and Git state.
   For protected changes, an active writer, unsupported completion, unresolved material decisions, wrong-tree
   evidence, or missing authority, stop before WORK and continue to Step 3.3 with exact evidence.
 
@@ -73,8 +73,8 @@ the tracked closure.
 |---|---|
 | Session root | Full parent Step 1.2 evidence root. |
 | Project memory root | Current project's bounded `.gobbi/projects/{project}/memory/` root. |
-| Base branch | Configured local base branch from the verified Git contract. |
-| Git identity | Proved Git identity tuple and session contract, plus the stable closure assignment ID used for commit provenance. |
+| Base branch | Configured local base branch from the verified Workflow configuration. |
+| Git state | Exact repository, base, branch, worktree, accepted heads, and current status from the verified session contract. |
 | Git authority | Current authority to commit closure changes and merge the session head into the base branch. |
 
 - Freeze the Memory review boundary, verification, accepted task commits, exact pre-Git evidence, base-merge
@@ -98,7 +98,7 @@ the tracked closure.
 
 - Complete parent EVALUATION over the actual pre-Git tree, Memory diff, task commits, checks, base-merge plan,
   authority, exclusions, risks, and recovery paths.
-- Apply the parent fast gate and RECORD schema. Seal reports, provenance, Memory verification, tree identity,
+- Apply the parent fast gate and RECORD schema. Seal reports, source evidence, Memory verification, tree identity,
   checks, decisions, findings, Git authority, and retained recovery state.
 - On first-pass REVISE, create iteration 2 at DISCUSSION and repeat the complete cycle. On second-pass FAIL,
   preserve the branch, worktree, evidence, and recovery choices, then continue to Step 3.3; on PASS, retitle
@@ -124,8 +124,9 @@ the tracked closure.
 
 #### 3.2 Commit and merge the closure
 
-- Apply Wrap-up Steps 3.1 through 3.3 through [Git](../../git/SKILL.md). Commit every remaining closure-owned
-  change on the work branch, then merge the exact accepted work head into the configured base branch.
+- Apply Wrap-up Steps 3.1 through 3.3 while using [Git](../../git/SKILL.md) preferences. Commit every remaining
+  closure-owned change on the work branch, then merge the exact accepted work head into the configured base
+  branch.
 - Recheck branch, worktree, base head, work head, clean state, and authority immediately before each mutation.
   Reject a base head or tree that differs from the frozen evidence. Never resolve a conflict or change the
   accepted tree inside Wrap-up.
@@ -151,4 +152,4 @@ the tracked closure.
 | [Wrap-up](../../wrap-up/SKILL.md) | Owns durable Memory closure, commit, base-branch merge, Note delivery, and recovery. |
 | [Note template](../../wrap-up/templates/note.md) | Defines the response-only development, research, or work Note. |
 | [Memory](../../memory/SKILL.md) | Owns durable memory selection, category routing, and verification. |
-| [Git](../../git/SKILL.md) | Owns the closure commit, base-branch merge, retained state, and Git evidence. |
+| [Git](../../git/SKILL.md) | Supplies commit, integration, retained-state, and recovery preferences; Wrap-up owns the ordered Git actions. |

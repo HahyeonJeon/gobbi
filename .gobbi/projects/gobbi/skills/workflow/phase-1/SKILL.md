@@ -30,7 +30,7 @@ prove.
 - **MUST enter through the parent route with exactly one Phase 1 item active.** Stop when TODO, branch,
   worktree, evidence root, or prior checkpoint cannot be reconciled safely.
 - **MUST confirm the parent's Delegation, Discussion, Git, and Memory load register before acting.** Generate
-  the UUID before deriving either Git name.
+  the UUID before deriving the worktree and session leaves.
 - **MUST resolve every material Ideation unknown with the user or assign an explicit owner.** Never infer
   scope, authority, success, or a material design choice.
 - **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle)
@@ -49,26 +49,26 @@ prove.
 - Confirm the parent is loaded, its four owner skills are registered in order, and only `P1 · Configuration`
   is active on fresh entry. Inspect repository, branch, worktrees, TODOs, evidence, explicit recovery identity,
   and protected user work without mutation.
-- Apply [Git](../../git/SKILL.md) before any branch or worktree action. Classify the session as fresh only when
-  no verified identity exists; otherwise recover through Step 1.3.
+- Apply [Git](../../git/SKILL.md) preferences to every branch or worktree action. Classify the session as fresh
+  only when no verified identity exists; otherwise recover through Step 1.3.
 
 #### 1.2 Configure a fresh session
 
 - Resolve the Execution cap, roles, required-system availability, narrow waivers, Git finalization, base, and
   protected work with the user. Consume Gobbi's normalized slug and partner policy.
 - Apply parent Step 1.2 completely: run layout bootstrap preflight; generate the full UUID and capture the
-  original UTC date; derive branch and worktree leaf separately; create and verify one isolated branch and
-  worktree; then create the byte-matching session leaf and `configuration.md`.
+  original UTC date; select the purpose-based branch and derive the worktree leaf; create and verify one
+  isolated branch and worktree; then create the byte-matching session leaf and `configuration.md`.
 - Verify base, registration, clean worktree, ignore posture, evidence directories, initial TODO route, identity,
   settings, validated root pair, and creation checks. Apply [Memory](../../memory/SKILL.md) `Temporary Record`,
   prove the receipt ignored and the tracked tree unchanged, then activate `P1 · Ideation`.
 
 #### 1.3 Recover an existing session
 
-- Read `configuration.md`, the latest verified checkpoint, native TODO, branch, worktree registration, session
-  root, packages, gates, and receipts. Require the canonical parsers to reproduce one date, slug, UUID, branch,
-  worktree, and session tuple.
-- Reconstruct a missing slug field or partner policy only from the matched live tuple and valid Gobbi entry
+- Read `configuration.md`, the latest verified checkpoint, native TODO, recorded branch, worktree registration,
+  session root, packages, gates, and receipts. Require one matching date, slug, UUID, branch, worktree, and
+  session record; do not parse or migrate a legacy branch name.
+- Reconstruct a missing slug field or partner policy only from the matched live record and valid Gobbi entry
   state. Record the complete parent Step 1.2 Configuration schema through Memory `Temporary Record`, keep the
   tracked tree unchanged, and never rename live state or create a second object for the UUID.
 - Return to Gobbi entry when mode, applicable slug, or partner evidence is missing, ambiguous, or conflicting.
@@ -144,4 +144,5 @@ prove.
 
 - [Parent Workflow](../SKILL.md) owns all shared Workflow contracts and transitions.
 - [Ideation](../../ideation/SKILL.md) owns the canonical design operation.
-- [Git](../../git/SKILL.md) and [Memory](../../memory/SKILL.md) own isolation and temporary-record mechanisms.
+- [Git](../../git/SKILL.md) supplies isolation preferences; this phase owns the ordered Git actions, and
+  [Memory](../../memory/SKILL.md) owns Temporary Record.

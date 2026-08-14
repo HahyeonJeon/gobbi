@@ -159,8 +159,8 @@ justifies it.
 - Confirm that the worktree has not changed since verification. Review the branch, status, changed paths, and
   task ownership, preserve unrelated work, and stop when safe isolation is no longer provable.
 - For a completed implementation, load [Git](../git/SKILL.md), stage only task-owned paths, inspect the staged
-  diff, and create one focused local commit with the required provenance. Confirm its tree contains the exact
-  verified result; for a stopped task, retain and report the local state without committing incomplete work.
+  diff, and create one focused local commit. Confirm its tree contains the exact verified result; for a stopped
+  task, retain and report the local state without committing incomplete work.
 - After any caller-required prefix, render the [Execution handoff template](templates/handoff.md) as the
   response body and complete every field. Do not write it as a tracked task artifact; a caller may add fields
   without replacing its core meanings.
@@ -172,4 +172,4 @@ justifies it.
 | [Code checklist](code/checklist.md) | Reusable unchecked source for self-reviewing and evaluating general code-work quality. |
 | [Documentation checklist](docs/checklist.md) | Reusable unchecked source for self-reviewing and evaluating general documentation-work quality. |
 | [Execution handoff template](templates/handoff.md) | Response-only format for the task result, changes, verification, local delivery, concerns, and limits. |
-| [Git](../git/SKILL.md) | Operation that creates the focused local commit and returns its retained local state. |
+| [Git](../git/SKILL.md) | Preferences for staging, focused commits, verification, and retained local state. |

@@ -21,7 +21,7 @@ input invalidates every dependent decision, action specification, authority reco
 ### Keep readiness separate from authority
 
 Compatibility, exact version and tag decisions, readiness evidence, and a complete action specification can
-justify an authority request. They never grant manager, Git, credential, network, publication, or mutation
+justify an authority request. They never grant execution, credential, network, publication, or mutation
 authority.
 
 ### Coordinate through the effect owner
@@ -144,15 +144,14 @@ incomplete requested effect after mutation is always a `recoverable partial stat
 
 ### Phase 3 — Specify Authority and Coordinate the Named Executor
 
-#### 3.1 Build and supply the Git-owned action specification
+#### 3.1 Define the Git tag action
 
-- For a Git tag/ref effect, build the caller-neutral action specification owned by the
-  [Git tag/ref action contract](../../git/conventions.md#caller-supplied-tagref-action-contract). Supply every
-  required field verbatim: `callerIdentity`, `repository`, `refName`, `targetObject`, `remote`, `tagForm`,
-  `annotationInput`, `taggerIdentity`, `taggerTime`, `tagObjectInputs`, `signingInput`, `publicationTarget`,
-  `expectedLocalState`, `expectedRemoteState`, and `requestedEffects`.
-- Use the contract's exact named `none` and `not-applicable` values. Supply no default, wildcard, revision
-  expression, implicit configuration value, direct Git command, or additional effect.
+- Apply [Git](../../git/SKILL.md) tag preferences while recording the exact repository, fully qualified tag,
+  target object, annotated or lightweight form, remote destination, expected local and remote states, and
+  requested creation or publication effects.
+- For an annotated or signed tag, also record the exact annotation bytes, tagger identity, tagger timestamp and
+  offset, and project-required signing input; mark them not applicable for a lightweight tag. Use no wildcard,
+  inferred `HEAD`, implicit remote, or additional effect.
 - Bind the action identity to the unchanged Go release subject and decision record. If any supplied field or
   expected state changes, discard the old action identity and rebuild the specification before authority.
 
@@ -168,10 +167,9 @@ incomplete requested effect after mutation is always a `recoverable partial stat
 
 #### 3.3 Bind current manager authority separately
 
-- Obtain a current manager authority record for the unchanged action. For Git, require `authoritySource`, the
-  verbatim `authorizedAction`, `networkAuthority`, `credentialAuthority`, and `authorityState` from the Git
-  contract; for non-Git work, require equally exact action identity, destination, credential, network,
-  publication, mutation, validity, and withdrawal facts.
+- Obtain current manager authority for the unchanged action. For Git, bind the exact executor, repository, tag,
+  target, local and remote effects, credential and network scope, validity, and withdrawal state; require equally
+  exact authority facts for non-Git work.
 - Record credential use, network access, publication, and external mutation as four separate facts. `none` in
   one fact neither implies nor authorizes another.
 - Stop before executor coordination when authority is missing, stale, withdrawn, incomplete, broader than the
@@ -182,33 +180,30 @@ incomplete requested effect after mutation is always a `recoverable partial stat
 
 - Immediately before handoff, recheck the immutable input, action identity, expected states, named executor,
   and current authority. A withdrawal or change stops the handoff without an external effect.
-- For a Git tag/ref action, supply the specification and authority to the named Git executor through
-  [Git Phase 5](../../git/SKILL.md#phase-5--execute-one-caller-supplied-tagref-action). The Git operation alone
-  preflights, creates an exact local ref or compatible no-op, performs any exact non-force publication, and
-  verifies local and remote state.
+- For a Git tag action, the named executor applies [Git](../../git/SKILL.md): inspect the exact before state,
+  accept a matching tag as a compatible no-op or create the tag at the named target, publish only the authorized
+  tag ref, and verify local and remote state.
 - For a non-Git action or destination read, supply the exact specification and authority to its named
   external-action owner. Go Release performs neither the action nor the read and receives no credential or
-  network authority.
-- Record the handoff identity and wait for the exact returned result. An executor name or acknowledgment is not
-  execution evidence.
+  network authority. Record the handoff identity and wait for the exact returned result; an executor name or
+  acknowledgment is not execution evidence.
 
 ### Phase 4 — Verify Returned State and Bound Recovery
 
 #### 4.1 Validate the executor-returned result
 
-- Require the Git result fields exactly: `actionAndAuthority`, `preflight`, attempted `actions`, `localAfter`,
-  `remoteAfter`, per-effect `result`, `evidenceLimits`, `failure`, `recovery`, and `handoff`. Require each effect
-  result to be exactly `completed`, `compatible-no-op`, `failed`, or `verification-mismatch`.
-- Require the Git preflight and result to name the repository, target object, ref name, form, annotation,
-  tagger identity and time, other tag-object inputs, signing state, local and remote before and after states,
-  credential and network readiness, attempted commands or API actions, retained unique objects, first failure,
-  affected obligation, risk, recovery owner, first non-mutating recovery action, separate mutation authority,
-  and next handoff.
+- Require the Git result to name the action and authority, repository, tag, target, form, exact commands, and
+  local and remote before and after states. For an annotated or signed tag, require the tag object ID,
+  annotation bytes, tagger identity, tagger timestamp and offset, and signing state; mark them not applicable
+  for a lightweight tag.
+- Require evidence limits, retained objects, first failure, affected obligation, risk, recovery owner, first
+  non-mutating recovery action, authority still needed, next handoff, and each effect as `completed`,
+  `compatible-no-op`, `failed`, or `verification-mismatch`.
 - Require a non-Git result to match its exact executor, action, destination, unchanged input identity, current
   authority, attempted effect, before state, after state, result, evidence limits, retained state, first failure,
-  recovery owner and action, authority still needed, and handoff.
-- Reject an omitted, stale, mismatched, ambiguous, or recreated result. Use the literal `recoverable partial
-  state` whenever a requested effect is incomplete after any mutation.
+  recovery owner and action, authority still needed, and handoff. Reject an omitted, stale, mismatched,
+  ambiguous, or recreated result; use `recoverable partial state` when an effect remains incomplete after
+  mutation.
 
 #### 4.2 Perform post-action and external-consumer verification
 

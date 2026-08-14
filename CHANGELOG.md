@@ -70,6 +70,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Study now frames reliable internal and external materials around the design, development approach, or
   decision they must improve. It remains advisory, returns a defined concise response by default, or writes one
   caller-authorized result from a compact template while keeping every studied material read-only.
+- Git is now a preference skill for common repository inspection, purpose-based branches, optional worktrees,
+  focused commits, explicit integration and publication, tags, recovery, and cleanup. Cowork and Workflow own
+  session Git actions, Execution owns task commits, Wrap-up owns closure integration, Go Release owns tag
+  specification and verification, and its named executor owns mutation. Compact issue and pull-request
+  templates provide repository-agnostic fallback bodies when a project supplies no applicable template.
+- New branches use `<type>/<slug>` or `<type>/<issue>-<slug>`; runtime-specific prefixes, date and session
+  identifiers, agent provenance trailers, their legacy recovery paths, the separate Git conventions document,
+  and the runtime posture probe are removed without migration.
 - Gobbi skill dependencies now preserve policy ownership instead of using a stale isolated-skill allowlist.
   Internal References do not load their targets, and task triggers still control loading.
 - Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
