@@ -8,7 +8,8 @@ skill-type: operation
 # Cowork
 
 Cowork takes one user-supplied topic at a time through Fast or Light delivery in one isolated worktree. Use it
-after Gobbi selects Cowork and before any Cowork topic, explicit evaluation, or explicit closure action.
+after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit evaluation, or explicit
+closure action.
 
 ## Principles
 
@@ -20,7 +21,8 @@ manager makes each topic concrete, returns accepted evidence, and waits at topic
 ### Keep one inspectable local history
 
 One linked worktree and one ordered writer chain keep tracked results attributable. Ignored shaping results
-remain recoverable in the retained worktree, while implementation and durable Memory use focused commits.
+remain recoverable in the retained worktree; implementation commits happen only after an explicit user
+`commit`, and durable Memory commits still happen on `wrap up`.
 
 ### Separate stage quality from evaluation
 
@@ -39,16 +41,18 @@ route.
   change nothing else in the main checkout.
 - **MUST continue and recover only in the registered Cowork worktree and session root.** Never create or select
   a replacement worktree or session directory for the same Cowork identity.
-- **MUST use the native TODO list to select Configuration, topic stages, explicit Evaluation, and explicit
-  Wrap-up.** Use only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
+- **MUST use the native TODO list to select Configuration, topic stages, Commit, Evaluation, and Wrap-up.**
+  Use only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
 - **MUST select and report Fast or Light delivery while the user owns every material decision.** Fast skips
   Ideation and Planning; Light runs bounded canonical Ideation and Planning before Execution.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
-  results, executors own implementation commits, and assistants own direct-Memory closure commits.
-- **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
-  active-runtime evaluator and one Partner wrapper subagent per remaining runtime.
-- **MUST run Cowork closure only after an explicit `wrap up` call.** Apply Memory directly and never load
-  Wrap-up or create Workflow TODOs, gates, RECORD receipts, or a Workflow Note.
+  results; executors own implementation writes and, only after `commit` authority, implementation commits;
+  assistants own direct-Memory closure commits.
+- **MUST run evaluation, implementation commit, and Cowork closure only after the matching explicit user
+  `evaluate`, `commit`, or `wrap up` call.** One `evaluate` authorizes one fresh active-runtime evaluator and
+  one Partner wrapper per remaining runtime; one `commit` authorizes focused implementation commits; one
+  `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow TODOs, gates, RECORD receipts,
+  or a Workflow Note.
 
 ## Procedure
 
@@ -104,6 +108,7 @@ CW · Topic · IDEATION
 CW · Topic · PLANNING
 CW · Topic · EXECUTION
 CW · Topic · PASS
+CW · Commit
 CW · Evaluation
 CW · Wrap-up
 ```
@@ -134,10 +139,11 @@ CW · Wrap-up
 
 - For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution. For
   Light, activate Ideation, Planning, Execution, and PASS in order; neither shaping stage is optional.
-- Build every assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic ID, depth,
+- Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, and exact role and
-  skill paths.
+  skill paths. Execution assignments set commit authority to none unless the assignment is the user-called
+  `commit`.
 - Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
   fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
   launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
@@ -164,17 +170,31 @@ CW · Wrap-up
   manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted Planning result.
 - Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
   work. Return failures, scope drift, or changed decisions to the earliest responsible stage.
-- Complete PASS only after every selected result or focused commit is accepted and the worktree is clean.
-  Report outcome, scope, results, commits, checks, exclusions, concerns, partner evidence, and evaluation
-  coverage separately, then wait with no active item.
+- Complete PASS only after every selected result is accepted and verified. Do not require a focused
+  implementation commit or a clean tracked tree; report outcome, scope, results, commits, checks, exclusions,
+  concerns, partner evidence, and evaluation coverage separately, then wait with no active item.
 
-### Phase 3 — Evaluate on User Call
+### Phase 3 — Commit on User Call
 
-#### 3.1 Freeze and evaluate one subject
+#### 3.1 Commit accepted implementation changes
 
-- Enter only for an explicit `evaluate`. Freeze the user-named subject, or the clean whole branch from the
-  immutable base through the current head when no subset is named; an indexed result includes its index and
-  every listed member.
+- Enter only for an explicit `commit` and activate only `CW · Commit`. Do not render the diff; the call is the
+  confirmation.
+- Assign the owning executor through [Delegation](../delegation/SKILL.md) to create focused commit(s) of
+  accepted uncommitted tracked implementation changes. Use one commit in the normal case, or one commit per
+  accepted topic when the dirty set spans more than one topic.
+- Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
+  Complete `CW · Commit` and wait with no active item.
+
+### Phase 4 — Evaluate on User Call
+
+#### 4.1 Freeze and evaluate one subject
+
+- Enter only for an explicit `evaluate` and freeze the user-named subject, or the whole branch from the
+  immutable base through the current head when no subset is named and no uncommitted tracked implementation
+  changes exist; an indexed result includes its index and every listed member. If uncommitted tracked
+  implementation changes exist and the user did not name a subset, stop and ask for `commit` or a named
+  subject.
 - Activate only `CW · Evaluation`, define the decision criteria and report aggregation rule, assign one unique
   caller-named directory below `tmp/`, and apply Memory `Temporary Record` to each exact Evaluation output path.
 - Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. For each remaining
@@ -183,19 +203,21 @@ CW · Wrap-up
   evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager
   validates and assembles reports only through the recorded criteria and aggregation rule.
 
-#### 3.2 Apply findings and coverage
+#### 4.2 Apply findings and coverage
 
 - Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction returns
-  to its owning writer, creates a focused commit when tracked content changes, and makes prior coverage stale.
+  to its owning writer and waits for `commit` when it changes tracked files; it does not auto-commit, and it
+  makes prior coverage stale.
 - Complete Evaluation only when every finding has a disposition and no correction remains unevaluated. Another
   corrected subject requires another explicit `evaluate` call.
 
-### Phase 4 — Close on User Call
+### Phase 5 — Close on User Call
 
-#### 4.1 Reconcile durable Memory
+#### 5.1 Reconcile durable Memory
 
-- Enter only for an explicit `wrap up`, activate only `CW · Wrap-up`, and organize the accepted closure input
-  under `wrap-up/` from caller-named temporary sources. Freeze topics, decisions, results, commits, checks,
+- Enter only for an explicit `wrap up` and activate only `CW · Wrap-up`. If uncommitted tracked implementation
+  changes remain, stop and require `commit` first; otherwise organize the accepted closure input under
+  `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
 - Assign one assistant through Delegation to apply Memory `Memorize` to the full session root and closure input.
   Supply the exact absolute current-project Memory root, update only that boundary, verify it, and create one
@@ -203,11 +225,11 @@ CW · Wrap-up
 - Stop on invalid paths, unresolved decisions, failed checks, wrong-worktree evidence, or unrelated work.
   Never create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Note.
 
-#### 4.2 Check freshness and return the result
+#### 5.2 Check freshness and return the result
 
 - After the accepted Memory pass, compare evaluation coverage with the resulting head. When no verdict covers
   the whole branch, use Discussion to ask whether to evaluate or close with self-verification only; an
-  evaluation choice runs Phase 3, then repeats this check without rerunning unchanged Memory work.
+  evaluation choice runs Phase 4, then repeats this check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence, a clean Cowork worktree, and an unchanged main checkout. Stop at
   the exact retained recovery state when any claim is unproved.
 - Return one compact conversation handoff with outcome, scope, topics, results, commits, Memory result, checks,
