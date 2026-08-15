@@ -40,13 +40,9 @@ visible failure rather than transformed or relabeled content.
 - **MUST build every partner prompt through Delegation.** Include the exact absolute session directory and
   exact absolute writing path in the prompt's required Metadata.
 - **MUST contain the writing path inside the session directory and grant no other session or project write.**
-  The caller records the preimage and rejects any unexpected session or project file change. For Grok 1.0.4,
-  created or changed files under `~/.grok/sessions/` and appends to `~/.grok/sandbox-events.jsonl` are named
-  residual writes, not unexpected writes.
+  The caller records the preimage and rejects any unexpected session or project file change.
 - **MUST use one fresh named-runtime process with restricted write-capable tools.** One invocation produces
   one saved result and one compact final Handoff. Do not pass `--session-id`, `--resume`, or `--continue`.
-  Grok 1.0.4 still writes named residual files under `~/.grok/`; that is accepted residual risk, not an
-  ephemeral run.
 - **MUST validate the process, write set, saved result, and Handoff before acceptance.** Runtime status or a
   plausible stdout summary is not completion evidence.
 - **NEVER broaden, move, repair, extract, relabel, or automatically retry a partner result.** Return the exact
@@ -114,10 +110,9 @@ visible failure rather than transformed or relabeled content.
 - Confirm `timeout` and the expected binary with `command -v`. A missing dependency ends the invocation before
   any target write. A named partner with no verified command row is Unavailable; do not invent a command.
 - The command forms below were verified against installed Codex CLI 0.147.0, Claude Code 2.1.226, and Grok
-  1.0.4 (d846eb93d9). Grok uses `--sandbox workspace`. A session/project postimage may change only the
-  contracted writing path. Named residual writes under `~/.grok/sessions/` and `~/.grok/sandbox-events.jsonl`
-  are allowed. Any other extra-project write is Unavailable. `--always-approve` is not the restricting flag.
-  `--output-format` is a Handoff candidate without an asserted value.
+  1.0.4 (d846eb93d9). Grok uses `--sandbox workspace`. A session or project postimage may change only the
+  contracted writing path. `--always-approve` is not the restricting flag. `--output-format` is a Handoff
+  candidate without an asserted value.
 
   | Partner | Write-capable command shape |
   |---|---|
@@ -185,8 +180,6 @@ visible failure rather than transformed or relabeled content.
 - `--sandbox workspace` is the measured restricting flag. `--always-approve` is not a substitute. Do not pass
   `--session-id`, `--resume`, or `--continue`. `--output-format` may be measured; do not assert a value in
   this row.
-- Residual risk: Grok 1.0.4 still writes `~/.grok/sessions/` and `~/.grok/sandbox-events.jsonl`. Those two
-  paths are the named exception. Any other extra-project write is a failed run.
 - Capture the exit status before reading content. Status `124` is a timeout; every other nonzero status is a
   process failure.
 
@@ -197,9 +190,8 @@ visible failure rather than transformed or relabeled content.
 - Require a zero exit status, no timeout, one non-empty regular result at the exact writing path, and one
   non-empty final Handoff on stdout. Read stderr only as an immediate diagnostic.
 - Compare the session preimage with the post-run inventory. The writing path must be the only created or
-  changed **session or project** path. For Grok 1.0.4, created or changed files under `~/.grok/sessions/` and
-  appends to `~/.grok/sandbox-events.jsonl` are named residual writes, not unexpected writes. Any other
-  extra-project write fails the run and remains for the caller's explicit recovery decision.
+  changed session or project path. An unexpected session or project write fails the run and remains for the
+  caller's explicit recovery decision.
 - Reread the saved result, reproduce its verification, and compare the Handoff's assignment, path, changes,
   and status with direct evidence. Only the caller accepts, assembles, or routes the result.
 

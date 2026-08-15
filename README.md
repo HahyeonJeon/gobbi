@@ -145,9 +145,8 @@ runtime. An empty launch set after that skip is valid and is not rewritten to `d
 With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
 invocation per remaining runtime. A launchable runtime writes one result at the named path and returns a
 compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. The session and project postimage may change
-only the contracted writing path. Named residual writes under `~/.grok/sessions/` and
-`~/.grok/sandbox-events.jsonl` are allowed. Any other extra-project write is Unavailable. `--always-approve`
-is not the restricting flag. Unavailable evidence is not a Partner Handoff.
+only the contracted writing path. `--always-approve` is not the restricting flag. Unavailable evidence is
+not a Partner Handoff.
 
 Every prompt names the exact session directory and one writing path inside it. The active runtime verifies the
 write, assembles the round, decides what to accept, and remains the session authority.

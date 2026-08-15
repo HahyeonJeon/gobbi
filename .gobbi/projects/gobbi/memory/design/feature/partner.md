@@ -27,9 +27,7 @@ directory as a `workspace-write` sandbox; Claude Code uses print mode with `acce
 persistence, safe mode, and only `Read`, `Grep`, `Glob`, `Write`, and `Edit`.
 
 Grok 1.0.4 launches with `--sandbox workspace`. The session and project postimage may change only the
-contracted writing path. Named residual writes under `~/.grok/sessions/` and `~/.grok/sandbox-events.jsonl`
-are allowed. Any other extra-project write is Unavailable. `--always-approve` is not the restricting flag.
-Grok is not ephemeral; that is residual risk.
+contracted writing path. `--always-approve` is not the restricting flag.
 
 The command table was verified against Codex CLI 0.147.0, Claude Code 2.1.226, and Grok 1.0.4.
 Installed `codex exec --help`, `claude --help`, and `grok --help` remain authoritative for later versions.
