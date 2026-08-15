@@ -38,10 +38,9 @@ context.
   then the owning mode or operation and the role-specific additions; use this base where those owners are silent.
 - **MUST give the subagent one bounded assignment with one authoritative result.** Name the outcome, purpose,
   scope, authority, starting state, result, acceptance evidence, verification, stop conditions, and prohibited work.
-- **MUST name required skills-to-load in `## Context` and keep `## Materials` required.** Put working state,
-  accepted decisions, and exact skill paths with read order in `## Context`, and put remaining sources, read
-  order, purpose, and conflict precedence in `## Materials`; do not rely on conversation history or inherited
-  skill loads.
+- **MUST name required skills-to-load in `## Materials` and keep `## Materials` required.** Put working state
+  and accepted decisions in `## Context`, and put exact skill paths with read order, remaining sources, purpose,
+  and conflict precedence in `## Materials`; do not rely on conversation history or inherited skill loads.
 - **MUST include a `## Return` section in every delegation prompt.** The delegating agent defines the return
   contract there, and the subagent writes the final Handoff for every terminal status.
 - **MUST make the final handoff verifiable.** Require its status, summary, exact durable locator or response
@@ -71,7 +70,7 @@ context.
   - iteration: <current iteration>
 
   ## Context
-  <State working state, accepted decisions, and required skills-to-load with exact paths and read order.>
+  <State working state and accepted decisions.>
 
   ## Task
   <Command one outcome. State its purpose, scope, exclusions, required result, and completion evidence.>
@@ -80,7 +79,7 @@ context.
   <State rules, authority, constraints, independence, method, verification, stops, and prohibited work.>
 
   ## Materials
-  <List exact sources, read order, purpose, and precedence for conflicts.>
+  <List required skills-to-load with exact paths and read order, remaining sources, purpose, and conflict precedence.>
 
   ## Return
   <Require the subagent to write a final Handoff for every terminal status. Name the owning status format,

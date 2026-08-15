@@ -90,7 +90,7 @@ remaining runtimes may run in parallel.
   - iteration: <caller iteration>
 
   ## Context
-  <State working state, accepted decisions, and required skills-to-load with exact paths and read order.>
+  <State working state and accepted decisions.>
 
   ## Task
   <Command one result, its purpose, scope, exclusions, and acceptance evidence.>
@@ -99,7 +99,7 @@ remaining runtimes may run in parallel.
   <Require writing only writing-path, named verification, independence, and exact stop conditions.>
 
   ## Materials
-  <List exact sources, read order, frozen inputs, and conflict precedence.>
+  <List required skills-to-load with exact paths and read order, remaining sources, purpose, and conflict precedence.>
 
   ## Return
   <Require one compact final Handoff on stdout for every status. It names writing-path, changed paths,
