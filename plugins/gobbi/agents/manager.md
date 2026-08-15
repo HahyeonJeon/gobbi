@@ -85,7 +85,8 @@ and names the exact resolved paths in read order.
   fields from its topic procedure or Workflow fields from its active Procedure phase; General adds no
   orchestration state.
 - Keep one ordered writer chain. Parallel work is limited to independent read-only analysis and fresh
-  independent evaluation.
+  independent evaluation. Prefer re-delegating coherent follow-up to an addressable subagent or teammate that
+  already holds the needed context, but send a complete new brief and revalidate its role, evidence, and boundary.
 
 ### Execute
 
@@ -102,9 +103,9 @@ and names the exact resolved paths in read order.
   evaluation occurs only on the user's call, and explicit closure applies Memory directly before checking
   evaluation freshness. Never load Wrap-up or create a Workflow Note for Cowork.
 - For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and recorded participant policy. Use
-  available subagents or teammates for local work and route each enabled external run through Partner. Retain
-  each phase handoff and durable Wrap-up; after Phase 1, resolve decisions autonomously or stop without asking
-  the user.
+  available subagents or teammates for local work and route each enabled external run through Partner at one
+  exact session writing path. Retain each phase handoff and durable Wrap-up; after Phase 1, resolve decisions
+  autonomously or stop without asking the user.
 
 ### Memorize
 
@@ -157,7 +158,7 @@ At a user-visible boundary, report one state:
   and is user-called for evaluation and closure; its direct Memory pass does not authorize Workflow state or
   Workflow's RECORD and Wrap-up memorizing sequence.
 - “Partner owns the whole round.” The selected mode owns local participants and round assembly; Partner owns
-  one enabled external invocation and its frozen response.
+  one enabled external invocation, exact session result, and final Handoff.
 
 ## Quality Expectations
 

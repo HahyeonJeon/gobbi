@@ -1,67 +1,45 @@
-# Partner — the Claude-and-Codex dual system
+# Partner
 
-## Problem
+## Intent
 
-Gobbi's Claude-and-Codex dual-system requirement did not work. Its policy was split between
-`codex/SKILL.md` and `codex/peer-adapters.md`, named around "peer" — a word that also means agent-to-agent
-collaboration inside Agent Teams, so a scripted rename risked corrupting the unrelated sense (see
-[`learnings/design/mistakes.md`](../../learnings/design/mistakes.md) for the guard that protected this).
-Fixed 2026-08-01/02 in the same session as [the locator](../architecture/plugin-skill-locator.md).
+Partner is Gobbi's Tool Manual for using the runtime opposite the active runtime through
+[Delegation](../../../skills/delegation/SKILL.md). Claude Code invokes Codex, and Codex invokes Claude Code.
+The caller retains participant selection, scope, synthesis, acceptance, and every next action.
 
-## Design
+## Write contract
 
-`gobbi/partner/SKILL.md` now owns the whole system, both launch directions (Claude launching Codex, Codex
-launching Claude), as one canonical child. The original migration deleted `codex/peer-adapters.md` and
-reduced `codex/SKILL.md` to CLI usage only. The later skill cleanup removed that CLI-only skill; Partner keeps
-only the partner-specific process-identity and permission-boundary facts.
+Every Partner prompt names two required absolute paths:
 
-**Vocabulary fixed at first use**, closing the ambiguity that broke the naming migration:
+- the Gobbi session directory that contains the external run;
+- one writing path inside that session directory for the authoritative result.
 
-- **partner** — the system, and the opposite runtime's role in it
-- **partner run** — one bounded invocation
-- **partner round** — a composed set of partner runs
+The external process receives write permission only to produce that result. It returns a compact final Handoff
+on stdout that references the saved file instead of reproducing it. The caller records the preimage, verifies
+that no other session path changed, rereads the result, reproduces verification, and compares the Handoff with
+direct evidence.
 
-**Four carry-forward elements**, verified live in the child before the source was deleted:
+## Runtime boundary
 
-1. The version-verified surface table — Codex CLI `0.146.0`, Claude Code `2.1.220` — one row per launch
-   direction with its command form. Re-verified at authoring time against installed `--help` output; no drift
-   from the recorded values.
-2. The instruction that installed help wins over the recorded table — re-run `codex exec --help` and
-   `claude --help` before trusting a flag.
-3. Per-row mutation rules from the failure matrix, 7 rows plus header, each with an evidence-to-surface
-   mapping and a mutation rule.
-4. The six-step response-handling check order — "no later check compensates for a failed earlier one."
+Each run uses a fresh, non-persistent opposite-runtime process. Codex uses `codex exec` with the session
+directory as a `workspace-write` sandbox; Claude Code uses print mode with `acceptEdits`, no session
+persistence, safe mode, and only `Read`, `Grep`, `Glob`, `Write`, and `Edit`.
 
-**Deliberately not carried forward**, because both would have bound the child to a Workflow caller: the
-envelope's `step: ideation|planning|execution|wrap-up` enum, replaced with `stage: the caller's stage or topic
-label`; and "return to DISCUSSION" from the recovery list, replaced with the other four recovery options
-(retry, bounded input repair, user-approved one-system waiver, abort), which generalize across callers.
+The command table in the canonical skill was verified against Codex CLI 0.147.0 and Claude Code 2.1.226.
+Installed `codex exec --help` and `claude --help` remain authoritative for later versions.
 
-**Rule 4's temp-capture boundary** states explicitly that the child writes `prompt_file`/`response_file`/
-`stderr_file` — a flat "writes no file" would have contradicted its own Procedure.
+## Failure boundary
 
-## Wired into both modes
+A missing binary, timeout, process error, missing result, unexpected write, or Handoff mismatch ends the run.
+Partner never repairs, extracts, relabels, moves, or automatically retries the result. The caller decides
+whether to retry with a new assignment, repair bounded input, continue without Partner when authorized, or
+stop.
 
-- **Workflow.** The main Workflow skill routes enabled external contributions through the child while retaining
-  phase-specific participant, evaluation, and record ownership. Workflow remains one caller among several.
-- **Cowork.** Executable partner rounds; a user-called Light-depth creation offer; commit-gated teammate
-  reuse, with a second form for read-only specialists; a recovery evidence set naming only Cowork constructs.
-  Problem 4 of the original report ("both should work in Cowork") is closed by this wiring.
-
-## Codex CLI facts the partner design depends on
-
-Originally measured against installed Codex CLI `0.146.0`, not assumed from its documentation — see
-[`learnings/codex/tips.md`](../../learnings/codex/tips.md) for the full detail:
-
-- `.codex/config.toml` at a repository root is **inert**; Codex loads only `$CODEX_HOME/config.toml`. It
-  stayed invisible because both files happened to name the same model.
-- Installed Codex CLI `0.147.0` still exposes no interactive approval prompt for `codex exec`; **sandbox mode is
-  the permission boundary of a partner launch**, so the launch remains read-only.
-- `codex exec` did not block outside a git repository in `0.146.0` despite `--skip-git-repo-check` existing as
-  a flag.
+Partner is not a persistent teammate. Context-aware re-delegation belongs to Agent Teams and other active
+runtime subagent controls; every Partner invocation starts fresh to preserve opposite-runtime independence.
 
 ## References
 
-- `gobbi/partner/SKILL.md` — the canonical owner
-- [`design/architecture/plugin-skill-locator.md`](../architecture/plugin-skill-locator.md) — the root-resolution contract both launch directions depend on
-- [`learnings/codex/tips.md`](../../learnings/codex/tips.md) — measured Codex CLI behavior
+- [Canonical Partner skill](../../../skills/gobbi/partner/SKILL.md)
+- [Agent Teams](../../../skills/gobbi/agent-teams/SKILL.md)
+- [Plugin skill locator](../architecture/plugin-skill-locator.md)
+- [Measured Codex CLI behavior](../../learnings/codex/tips.md)

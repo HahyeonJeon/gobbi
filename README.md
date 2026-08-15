@@ -114,8 +114,10 @@ Partner is an optional session-wide policy selected after the mode and applicabl
 fixes the direction: Claude Code uses Codex as its partner, while Codex uses Claude Code.
 
 With `partner: disabled`, Gobbi makes no external runtime calls. With `partner: enabled`, applicable steps add
-external drafts, reviews, or evaluators. The active runtime still assembles the complete round, decides what
-to accept, and remains the session authority.
+external drafts, reviews, or evaluators through a complete Delegation prompt. Every prompt names the exact
+session directory and one writing path inside it; the external agent writes only that result and returns a
+compact Handoff. The active runtime verifies the write, assembles the round, decides what to accept, and
+remains the session authority.
 
 ## License
 

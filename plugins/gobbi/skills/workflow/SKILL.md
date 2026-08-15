@@ -52,7 +52,7 @@ only in the worktree and session root recorded by Configuration and the latest h
   fresh active-runtime evaluator and, when enabled, one fresh Partner evaluator.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Continue or recover
   only in its recorded worktree and session root; never create a replacement for the same Workflow identity.
-- **MUST apply Gobbi's [finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).** Every
+- **MUST apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate).** Every
   correction receives fresh evaluation, and only verified PASS continues automatically.
 - **NEVER ask the user a Workflow question after Phase 1 completes.** The manager decides from the accepted
   design, authority, evidence, and independent input; when no safe authorized decision exists, write a stopped
@@ -74,7 +74,9 @@ by Execution tasks, completes the frame for each unit before starting its depend
 
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
 policy, iteration cap, report paths, `gate.md` path, receipt path, checks, authority, and recovery boundary.
-Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`.
+Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. Every Partner prompt
+also names `{session-root}` as the exact session directory and one exact absolute writing path below `tmp/`;
+the manager validates that sole write and the final Handoff before synthesis.
 
 The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
 criteria, reports, findings and dispositions, decision, and next action. PASS means the criteria are satisfied
@@ -176,6 +178,8 @@ P3 · Note
 
 Phase 2 applies `DISCUSSION → WORK → EVALUATION → RECORD` first to Planning and then to every Execution task.
 The manager, subagents or teammates, and enabled Partner make later decisions from the locked Phase 1 design.
+Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its role, evidence,
+addressability, and write boundary and issuing a complete new Delegation brief.
 
 #### 2.1 Run the Planning frame
 
@@ -266,7 +270,7 @@ evaluated tree and records the terminal handoff and Note.
 |---|---|
 | [Configuration template](templates/configuration.md) | Defines the ignored Workflow configuration and its fixed worktree and session identity. |
 | [Handoff template](templates/handoff.md) | Defines each ignored phase-completion and recovery checkpoint. |
-| [Gobbi](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate) | Owns entry, the Phase 1 user boundary, and the session-wide finding gate. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the Phase 1 user boundary, and the session-wide finding gate. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist brief and final assignment handoff. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, evidence-backed options, recommendations, and Phase 1 user decisions. |
 | [Ideation](../ideation/SKILL.md) | Owns design work and its indexed result. |
@@ -276,4 +280,4 @@ evaluated tree and records the terminal handoff and Note.
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
-| [Partner](../gobbi/partner/SKILL.md) | Owns each enabled external invocation and frozen response. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each enabled external invocation, exact session write, and final Handoff. |

@@ -82,7 +82,7 @@ route.
 #### 1.3 Establish topic and session locations
 
 - Create each ignored directory only when its first result needs it, and name every temporary directory and
-  file in its owning assignment. Drafts, subagent or teammate responses, Partner responses, reviews, scratch
+  file in its owning assignment. Drafts, subagent or teammate responses, Partner results, reviews, scratch
   work, and user-called evaluation material start below `tmp/`; accepted session records go in their topic
   phase or session wrap-up directory, while tracked results stay at their owner-defined paths.
 
@@ -138,9 +138,10 @@ CW · Wrap-up
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, and exact role and
   skill paths.
-- Use available subagents or teammates through Delegation and apply [Partner](../gobbi/partner/SKILL.md) for
-  each enabled external run. Cowork retains participant selection, ordering, assembly, acceptance, and
-  routing; every temporary output stays below `tmp/`, and disabled invokes no external runtime.
+- Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
+  fit, and always issue a complete new Delegation brief. For each enabled [Partner](../gobbi/partner/SKILL.md)
+  run, name the exact session directory and one exact absolute writing path below its `tmp/`; Cowork validates
+  the sole write and final Handoff before assembly, while disabled invokes no external runtime.
 
 #### 2.3 Accept the shaping results
 
@@ -173,13 +174,13 @@ CW · Wrap-up
 - Activate only `CW · Evaluation`, define the decision criteria and report aggregation rule, assign one unique
   caller-named directory below `tmp/`, and apply Memory `Temporary Record` to each exact Evaluation output path.
 - Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. When partner is
-  enabled, add one fresh isolated external evaluator through Partner over the same frozen subject; the manager
-  assembles their independent reports and derives the result only through the recorded criteria and aggregation
-  rule.
+  enabled, add one fresh isolated external evaluator through Partner over the same frozen subject at one exact
+  caller-named writing path below `tmp/`; the manager validates and assembles the independent reports only
+  through the recorded criteria and aggregation rule.
 
 #### 3.2 Apply findings and coverage
 
-- Apply Gobbi's [finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate). A correction returns
+- Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction returns
   to its owning writer, creates a focused commit when tracked content changes, and makes prior coverage stale.
 - Complete Evaluation only when every finding has a disposition and no correction remains unevaluated. Another
   corrected subject requires another explicit `evaluate` call.
@@ -212,7 +213,7 @@ CW · Wrap-up
 
 | Name | Description |
 |---|---|
-| [Gobbi](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate) | Owns mode entry, the finding predicate, user boundary, and fresh-evaluation rule. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry, the finding predicate, user boundary, and fresh-evaluation rule. |
 | [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, design options, recommendations, and user decisions. |
@@ -222,4 +223,4 @@ CW · Wrap-up
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
 | [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete report. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
-| [Partner](../gobbi/partner/SKILL.md) | Owns each enabled external invocation and frozen response. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each enabled external invocation, exact session write, and final Handoff. |

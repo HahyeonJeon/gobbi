@@ -2,36 +2,37 @@
 
 ## Intent
 
-Agent Teams is Gobbi's compact tool manual for the experimental Claude Code team interface. It explains how
-to enable, choose, create, coordinate, recover, and clean up a team. Native Codex has no Agent Teams interface
-and uses Gobbi's repository custom-agent roles instead.
+Agent Teams is Gobbi's Tool Manual for Claude Code's experimental multi-session team interface. Native Codex
+uses its available subagent controls under the same Delegation contract.
 
 ## Design
 
-[`gobbi/agent-teams/SKILL.md`](../../../skills/gobbi/agent-teams/SKILL.md) is a 101-line, 576-word tool skill.
-Its body is limited to an introduction, Principles, Rules, Manual, and References. It has no Procedure or
-child document.
+The canonical [Agent Teams skill](../../../skills/gobbi/agent-teams/SKILL.md) owns only runtime setup,
+selection, coordination, context-aware re-delegation, write safety, result verification, and recovery limits.
+Cowork and Workflow retain participant policy, assignments, acceptance, and session recovery.
 
-The manual keeps only Claude Code tool behavior and durable safety constraints:
+The current design follows the official Claude interface described as of 2.1.178:
 
-- enable Agent Teams before starting Claude Code;
-- use teams for independent work that benefits from shared tasks or teammate discussion;
-- give parallel writers separate files or worktrees because the tool does not isolate edits;
-- keep team creation, coordination, shutdown, and cleanup with the lead; and
-- verify returned work independently because task and idle states are scheduling signals, not acceptance
-  evidence.
+- enable `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before starting Claude Code;
+- ask the main session to spawn named teammates, which creates team state automatically;
+- let Claude manage generated team and task files and automatic session-exit cleanup;
+- give concurrent writers exclusive files or worktrees; and
+- verify results directly because task and idle states are scheduling evidence.
 
-## Ownership boundary
+The removed `TeamCreate` and `TeamDelete` mechanics are not part of the active design.
 
-The tool skill does not own Gobbi orchestration policy. [`Cowork`](../../../skills/cowork/SKILL.md) and
-[`Workflow`](../../../skills/workflow/SKILL.md) own assignment fields, role reuse boundaries, write ordering,
-acceptance, and recovery evidence for their modes. The manual owns only Agent Teams setup, use, limits, and
-cleanup.
+## Context reuse
 
-This boundary keeps the tool explanation usable outside either mode and prevents mode-specific orchestration
-policy from returning to the manual.
+The lead prefers re-delegating coherent follow-up work to an available teammate that already understands the
+subject. Every follow-up still receives a new complete Delegation prompt with a stable assignment identifier,
+current resources, changed context, authority, result, verification, and Handoff.
+
+A fresh specialist is required when independent judgment matters or the previous teammate's role, evidence,
+addressability, context, or write boundary no longer fits. Partner always remains a fresh external process and
+is never reused as a teammate.
 
 ## References
 
-- [Agent Teams compact tool skill review](../../reports/review/2026-08-02-agent-teams-tool-skill-review.md)
-- [Plugin skill and agent locator](../architecture/plugin-skill-locator.md)
+- [Official Agent Teams documentation](https://code.claude.com/docs/en/agent-teams)
+- [Delegation](../../../skills/delegation/SKILL.md)
+- [Plugin skill locator](../architecture/plugin-skill-locator.md)

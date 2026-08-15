@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and permission
+  settings; Codex agent, feature, skill, and instruction settings; the project-keyed `.gobbi/` layout; effective
+  `.gitignore` ownership; and installed Claude Code and Codex CLIs.
+- Gobbi, Partner, and Agent Teams now follow the compact Gobbi Skill structures. Gobbi retains only entry and
+  routing, Partner is a write-capable Tool Manual that requires one exact session directory and writing path
+  in every Delegation prompt, and Agent Teams prefers re-delegating coherent follow-up work to a context-ready
+  teammate under a fresh complete brief.
+- Partner now saves one authoritative result inside the caller's session directory and returns a separate
+  compact final Handoff. Codex and Claude Code launches use restricted non-persistent write-capable modes, and
+  any unexpected write, invalid result, or Handoff mismatch stops acceptance.
 - Cowork now uses only Fast and Light delivery. Fast skips Ideation and Planning, while Light runs bounded
   canonical Ideation and Planning before Execution. Cowork and Workflow now share session-root and
   configuration vocabulary, use aligned owner-local configuration templates, and reference the skills that

@@ -4,8 +4,8 @@
 
 Gobbi treats every choice of structure, meaning, or contract as design work. This includes architecture,
 strategy, naming, vocabulary, functions, classes, interfaces, data shapes, and small local choices. Cowork
-may use Direct delivery only when its unresolved design-choice inventory is empty. Workflow applies the same
-definition to every design-bearing productive step.
+uses Fast only when no design or decomposition choice remains; Light applies Ideation and Planning to bounded
+remaining choices. Workflow applies the same definition to every design-bearing productive step.
 
 ## Design participation
 
@@ -15,14 +15,15 @@ definition to every design-bearing productive step.
 - Keep one local creator as the sole writer and synthesizer. That creator receives the selected inputs,
   produces and self-reviews the draft, and completes the synthesis.
 - When the session policy is enabled, obtain at least one independent Partner draft and one Partner
-  cross-review over frozen input before synthesis. When it is disabled, invoke no external runtime.
+  cross-review over frozen input before synthesis. Each Partner prompt names the exact session directory and
+  one exact writing path for its result; when the policy is disabled, invoke no external runtime.
 
 ## Delegated result contract
 
 Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
 The owning operation defines whether the result is a durable file, commit, or response without a result-kind
-field. Durable design and evaluation use exact caller-named absolute paths with containment and rereading checks;
-a printed handoff references but never replaces a durable result.
+field. Durable design, evaluation, and Partner results use exact caller-named absolute paths with containment
+and rereading checks; a printed Handoff references but never replaces a durable result.
 
 ## Ownership and protection
 

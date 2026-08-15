@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-15 — Gobbi skill system redesign completed](2026-08-15-gobbi-skill-system-redesign.md)
 - [2026-08-12 — Code-review skill session completed](2026-08-12-code-review-skill.md)
 - [2026-08-12 — Documentation-review operation completed](2026-08-12-docs-review-skill.md)
 - [2026-08-10 — Gobbi development lifecycle skill family completed](2026-08-10-gobbi-dev-skill-family.md)

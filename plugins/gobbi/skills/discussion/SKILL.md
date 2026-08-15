@@ -142,4 +142,4 @@ best-supported option, explain why it fits, and state what evidence or changed c
 | [`Gobbi Skill`](../gobbi-skill/SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
 | [Study](../study/SKILL.md) | Source-grounded investigation for a bounded evidence question. |
 | [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent and teammate assignments. |
-| [Partner](../gobbi/partner/SKILL.md) | Independent external-runtime invocation and availability contract. |
+| [Partner](../gobbi/partner/SKILL.md) | Write-bounded external-runtime invocation and final Handoff contract. |

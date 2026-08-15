@@ -36,8 +36,9 @@ merge, clean up, or remove the retained Cowork branch or worktree.
 
 **Workflow Wrap-up WORK synthesis (Workflow mode only).** When the assignment names you the active-runtime
 writer, first produce and self-review the required local Memory draft. If the recorded partner
-policy is enabled, the manager also supplies each frozen external draft or cross-review that Partner returned;
-disabled supplies none. Workflow's Frame contract and the assignment own temporary and final path routing.
+policy is enabled, the manager also supplies each validated external draft or cross-review that Partner wrote
+at its contracted session path; disabled supplies none. Workflow's Frame contract and the assignment own
+temporary and final path routing.
 Read and write only caller-named paths, synthesize the accepted result into the assignment's final Memory
 paths, and return a decision conflict to the manager. This applies only to Workflow mode; lookup remains
 read-only and Cowork Memory mode never enters Workflow WORK.
@@ -94,8 +95,8 @@ Load when relevant:
   `delegation`, `discussion`, `memory`, and so on — if the question touches that domain. When the work touches
   runtime docs or agents, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`,
   `.codex/`, and `plugins/gobbi/` for Codex). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
-  authoring; use direct repository and runtime evidence for role and package surfaces. The skill map in
-  `{gobbi-skills-root}/gobbi/SKILL.md` § References is the live inventory of what exists.
+  authoring; use direct repository and runtime evidence for role and package surfaces. Load other task skills
+  only from the manager's exact paths or their applicable triggers.
 
 You almost never need workflow phase docs. If the manager asks you to read one, do; otherwise skip.
 
