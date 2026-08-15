@@ -109,19 +109,19 @@ visible failure rather than transformed or relabeled content.
 
 - Confirm `timeout` and the expected binary with `command -v`. A missing dependency ends the invocation before
   any target write. A named partner with no verified command row is Unavailable; do not invent a command.
-- The command forms below were verified against installed Codex CLI 0.147.0, Claude Code 2.1.226, and Grok
-  1.0.4, including Grok `--sandbox workspace` and a session-directory write test that changed only the
-  contracted path.
+- The command forms below were verified against installed Codex CLI 0.147.0 and Claude Code 2.1.226. Grok
+  1.0.4 (d846eb93d9) is Unavailable: `grok --help` names `--sandbox <PROFILE>` and no ephemeral flag, the
+  installed sandbox manual says `workspace` writes CWD and `~/.grok/`, headless sessions persist under
+  `~/.grok/sessions/`, and the write test appended `~/.grok/sandbox-events.jsonl`. That record is Unavailable
+  evidence, not a Partner Handoff or a launch command from invented profile values.
 
   | Partner | Write-capable command shape |
   |---|---|
   | Codex | `codex exec -C SESSION --ephemeral --sandbox workspace-write -` |
   | Claude Code | `claude -p --permission-mode acceptEdits --no-session-persistence --safe-mode --tools "Read,Grep,Glob,Write,Edit"` |
-  | Grok | `grok -p --cwd SESSION --sandbox workspace --permission-mode acceptEdits` |
 
-- Re-run `codex exec --help`, `claude --help`, or `grok --help` before changing a flag or relying on another
-  installed version. Installed help is the command authority, and Grok `--output-format` is a Handoff
-  candidate without an asserted value.
+- Re-run `codex exec --help` or `claude --help` before changing a flag or relying on another installed version.
+  Installed help is the command authority.
 
 ### Launch
 
@@ -181,7 +181,7 @@ visible failure rather than transformed or relabeled content.
 
   | Failure | Required evidence | Prohibited response |
   |---|---|---|
-  | Unavailable | Binary or dependency and `command -v` result | Launch or substitute output |
+  | Unavailable | Missing binary or dependency and `command -v` result; or a named runtime whose write-bound measurement failed, with version, help excerpt, and write-test result | Launch or substitute output |
   | Timeout or process error | Exit status, bound, and immediate diagnostic | Partial-result acceptance |
   | Missing or invalid result | Exact path and observed file state | Extraction or repair |
   | Unexpected write | Preimage and changed-path inventory | Silent cleanup or acceptance |
