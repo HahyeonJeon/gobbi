@@ -398,6 +398,9 @@ if [[ -f "$codex_config" && -r "$codex_config" ]]; then
 fi
 
 check_real_directory ".grok directory" "$project_root/.grok"
+check_real_directory ".grok/skills directory" "$project_root/.grok/skills"
+check_readable_file ".grok/skills/gobbi/SKILL.md" "$project_root/.grok/skills/gobbi/SKILL.md"
+check_readable_file ".grok/skills/principles/SKILL.md" "$project_root/.grok/skills/principles/SKILL.md"
 check_real_directory ".grok/agents directory" "$project_root/.grok/agents"
 check_real_directory ".agents/agents directory" "$project_root/.agents/agents"
 

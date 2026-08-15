@@ -106,7 +106,11 @@ if (( skill_count == 0 )); then
   fail "no skills with SKILL.md were found under $skills_relative"
 fi
 
-for discovery_root in "$project_root/.claude/skills" "$project_root/.agents/skills"; do
+for discovery_root in \
+  "$project_root/.claude/skills" \
+  "$project_root/.agents/skills" \
+  "$project_root/.grok/skills"
+do
   check_discovery_root "${discovery_root%/skills}"
   check_discovery_root "$discovery_root"
 done
@@ -116,16 +120,24 @@ for skill_path in "${skill_paths[@]}"; do
   expected_target="../../$skills_relative/$skill_name"
   check_skill_link "$project_root/.claude/skills/$skill_name" "$expected_target"
   check_skill_link "$project_root/.agents/skills/$skill_name" "$expected_target"
+  check_skill_link "$project_root/.grok/skills/$skill_name" "$expected_target"
 done
 
-mkdir -p "$project_root/.claude/skills" "$project_root/.agents/skills"
+mkdir -p \
+  "$project_root/.claude/skills" \
+  "$project_root/.agents/skills" \
+  "$project_root/.grok/skills"
 
 created_count=0
 for skill_path in "${skill_paths[@]}"; do
   skill_name="${skill_path##*/}"
   expected_target="../../$skills_relative/$skill_name"
 
-  for discovery_root in "$project_root/.claude/skills" "$project_root/.agents/skills"; do
+  for discovery_root in \
+    "$project_root/.claude/skills" \
+    "$project_root/.agents/skills" \
+    "$project_root/.grok/skills"
+  do
     link_path="$discovery_root/$skill_name"
     if [[ -L "$link_path" ]]; then
       continue
