@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   loads the checkout package through `.grok/plugins/gobbi` pointing at `../../plugins/gobbi`, and installs
   from the official Marketplace tab or `[[marketplace.sources]]` in `~/.grok/config.toml`.
 - Partner policy is now `disabled` or one or two of `{claude-code,codex,grok}`. Launch set is the selected
-  names minus the active runtime. An empty launch set after skip stays valid. Naming Grok is Unavailable
-  evidence on Grok 1.0.4 until an extra-project-free bound is measured.
+  names minus the active runtime. An empty launch set after skip stays valid. Grok 1.0.4 launches with
+  `--sandbox workspace`. Session and project writes stay limited to the contracted path. Named residual
+  writes under `~/.grok/sessions/` and `~/.grok/sandbox-events.jsonl` are allowed.
 - Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and permission
   settings; Codex agent, feature, skill, and instruction settings; Grok agent, skill, and `.agents/agents`
   sibling settings; the project-keyed `.gobbi/` layout; effective `.gitignore` ownership; and installed
