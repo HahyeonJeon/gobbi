@@ -60,9 +60,9 @@ visible failure rather than transformed or relabeled content.
 
 - Start from [Delegation](../../delegation/SKILL.md) and add every required Partner field. Give the external
   agent one bounded assignment and one authoritative result. The caller computes launch set as the recorded
-  set minus the active runtime and loops this manual once per remaining runtime. `{grok}` on Grok launches
-  nothing; `{claude-code,grok}` on Grok launches Claude Code only; do not rewrite an empty launch set to
-  `disabled`. One prompt names one `expected-partner`.
+  set minus the active runtime and loops this manual once per remaining runtime. If that set is empty,
+  launch nothing and do not rewrite the recorded policy to `disabled`. One prompt names one
+  `expected-partner`.
 - Use this prompt shape:
 
   ```markdown

@@ -76,8 +76,8 @@ by Execution tasks, completes the frame for each unit before starting its depend
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
 policy, iteration cap, report paths, `gate.md` path, receipt path, checks, authority, and recovery boundary.
 Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. The Partner launch set
-is the recorded set minus the active runtime; `{grok}` on Grok launches nothing, and `{claude-code,grok}` on
-Grok launches Claude Code only, without rewriting the recorded set. Each remaining runtime receives one
+is the recorded set minus the active runtime. If that set is empty, launch nothing and do not rewrite the
+recorded policy to `disabled`. Each remaining runtime receives one
 attempted invocation with its own `tmp/` path, Delegation prompt, and `expected-partner`. A launchable runtime
 produces an evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 The manager validates each sole write and Handoff before synthesis.

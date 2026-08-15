@@ -140,8 +140,8 @@ CW · Wrap-up
   skill paths.
 - Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
   fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
-  launch set as the recorded set minus the active runtime; `{grok}` on Grok launches nothing, and
-  `{claude-code,grok}` on Grok launches Claude Code only, without rewriting the recorded set. For each
+  launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
+  not rewrite the recorded policy to `disabled`. For each
   remaining runtime, make one attempted invocation with its own `tmp/` path, Delegation prompt, and
   `expected-partner`; Cowork validates each sole write and Handoff, or records Unavailable evidence when the
   attempt cannot launch. `disabled` invokes no external runtime.
