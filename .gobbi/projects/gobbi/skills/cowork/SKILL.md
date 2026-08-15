@@ -46,7 +46,7 @@ route.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
   results, executors own implementation commits, and assistants own direct-Memory closure commits.
 - **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
-  active-runtime evaluator and, only when partner is enabled, one fresh external evaluator.
+  active-runtime evaluator and one attempted Partner invocation per remaining runtime.
 - **MUST run Cowork closure only after an explicit `wrap up` call.** Apply Memory directly and never load
   Wrap-up or create Workflow TODOs, gates, RECORD receipts, or a Workflow Note.
 
@@ -139,9 +139,12 @@ CW · Wrap-up
   exact temporary and final paths, authoritative result, verification, commit authority, and exact role and
   skill paths.
 - Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
-  fit, and always issue a complete new Delegation brief. For each enabled [Partner](../gobbi/partner/SKILL.md)
-  run, name the exact session directory and one exact absolute writing path below its `tmp/`; Cowork validates
-  the sole write and final Handoff before assembly, while disabled invokes no external runtime.
+  fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
+  launch set as the recorded set minus the active runtime; `{grok}` on Grok launches nothing, and
+  `{claude-code,grok}` on Grok launches Claude Code only, without rewriting the recorded set. For each
+  remaining runtime, make one attempted invocation with its own `tmp/` path, Delegation prompt, and
+  `expected-partner`; Cowork validates each sole write and Handoff, or records Unavailable evidence when the
+  attempt cannot launch. `disabled` invokes no external runtime.
 
 #### 2.3 Accept the shaping results
 
@@ -173,10 +176,11 @@ CW · Wrap-up
   every listed member.
 - Activate only `CW · Evaluation`, define the decision criteria and report aggregation rule, assign one unique
   caller-named directory below `tmp/`, and apply Memory `Temporary Record` to each exact Evaluation output path.
-- Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. When partner is
-  enabled, add one fresh isolated external evaluator through Partner over the same frozen subject at one exact
-  caller-named writing path below `tmp/`; the manager validates and assembles the independent reports only
-  through the recorded criteria and aggregation rule.
+- Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. For each remaining
+  runtime, make one attempted Partner invocation over the same frozen subject, each with its own `tmp/` path,
+  Delegation prompt, and `expected-partner`. A launchable runtime produces an evaluator report; an Unavailable
+  attempt produces Unavailable evidence, not a Partner Handoff. The manager validates and assembles reports
+  only through the recorded criteria and aggregation rule.
 
 #### 3.2 Apply findings and coverage
 
@@ -223,4 +227,4 @@ CW · Wrap-up
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
 | [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete report. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each enabled external invocation, exact session write, and final Handoff. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, exact session write, and final Handoff. |

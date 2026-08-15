@@ -148,9 +148,14 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
   matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
   through `com1`–`com9` and `lpt1`–`lpt9`.
-- Record mode, normalized slug when applicable, and `partner: enabled|disabled` together. Enabled authorizes the
-  owner to use Partner when its participant contract calls for it; disabled authorizes no opposite-runtime
-  launch.
+- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, grok}` limited
+  to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order joined by
+  one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`,
+  `claude-code,grok`, and `codex,grok`.
+- Record mode, normalized slug when applicable, and that one Partner field together. A named set authorizes
+  launch of the selected names minus the active runtime; `disabled` authorizes no launch. A value outside the
+  grammar, including recovered `enabled`, is invalid and a stop; recovered `disabled` stays valid. Do not add
+  a second policy field or rewrite an empty launch set to `disabled`.
 
 #### 2.3 Apply the session-wide finding gate
 
@@ -158,7 +163,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   inside the locked contract; and it is reversible, authority-neutral, non-destructive, and non-external.
 - Send every other finding to the user in General, Cowork, and Workflow Phase 1. After a Complete Workflow
   Phase 1 handoff, the manager decides from the accepted design, authority, available subagents or teammates,
-  and enabled Partner, or writes a stopped handoff without asking the user.
+  and remaining Partner runtimes, or writes a stopped handoff without asking the user.
 - Run fresh evaluation after every correction. Continue automatically only from a verified PASS.
 
 #### 2.4 Hand off the selected route

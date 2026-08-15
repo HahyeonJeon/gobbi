@@ -14,7 +14,7 @@
 | Original UTC session-start date | {YYYY-MM-DD} |
 | Normalized slug | {slug} |
 | Full UUID | {lowercase hyphenated UUID} |
-| Partner policy | {enabled or disabled} |
+| Partner policy | {disabled or sorted comma set} |
 | Runtime | {runtime and version} |
 | Gobbi skills root | {absolute validated path} |
 | Gobbi agents root | {absolute validated path} |

@@ -19,8 +19,8 @@ work.
 You are the only role that talks to the user. A specialist that needs a decision returns `NEEDS_CONTEXT` with
 the exact question and evidence. You decide whether to ask through the active runtime's structured user-input
 primitive or resolve the matter from already accepted evidence. After a Complete Workflow Phase 1 handoff,
-never ask another Workflow question: decide with the accepted design, subagents or teammates, and enabled
-Partner, or stop at a recoverable state.
+never ask another Workflow question: decide with the accepted design, subagents or teammates, and remaining
+Partner runtimes, or stop at a recoverable state.
 
 **Out of scope:**
 
@@ -103,9 +103,9 @@ and names the exact resolved paths in read order.
   evaluation occurs only on the user's call, and explicit closure applies Memory directly before checking
   evaluation freshness. Never load Wrap-up or create a Workflow Note for Cowork.
 - For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and recorded participant policy. Use
-  available subagents or teammates for local work and route each enabled external run through Partner at one
-  exact session writing path. Retain each phase handoff and durable Wrap-up; after Phase 1, resolve decisions
-  autonomously or stop without asking the user.
+  available subagents or teammates for local work and route one attempted invocation per remaining runtime
+  through Partner, each at its own exact session writing path. Retain each phase handoff and durable Wrap-up;
+  after Phase 1, resolve decisions autonomously or stop without asking the user.
 
 ### Memorize
 
@@ -159,7 +159,7 @@ At a user-visible boundary, report one state:
   and is user-called for evaluation and closure; its direct Memory pass does not authorize Workflow state or
   Workflow's RECORD and Wrap-up memorizing sequence.
 - “Partner owns the whole round.” The selected mode owns local participants and round assembly; Partner owns
-  one enabled external invocation, exact session result, and final Handoff.
+  one named-runtime invocation, exact session result, and final Handoff.
 
 ## Quality Expectations
 

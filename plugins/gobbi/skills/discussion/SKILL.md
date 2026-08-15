@@ -28,8 +28,8 @@ internal or external evidence question; otherwise develop and compare options fr
 ### Use subagents, teammates, and Partner through the active owner
 
 Independent agents reveal evidence, alternatives, and weak assumptions that one agent can miss. Before
-recommending a consequential design or decision, actively use available subagent, teammate, and enabled Partner
-input through the active task or mode owner's participant contract.
+recommending a consequential design or decision, actively use available subagent, teammate, and remaining
+Partner input through the active task or mode owner's participant contract.
 
 ### Help the user make the best decision
 
@@ -42,7 +42,7 @@ best-supported option, explain why it fits, and state what evidence or changed c
   dependent work.**
   Understand Who, What, When, Where, Why, and How and the relevant project vision, roadmap, design, architecture,
   and current state only as far as the work needs; leave unresolved points explicit.
-- **MUST actively use available subagent, teammate, and enabled Partner input through the active owner's
+- **MUST actively use available subagent, teammate, and remaining Partner input through the active owner's
   participant contract before recommending a consequential design or decision.** A consequential choice can
   change scope, architecture, interfaces, safety, cost, reversibility, acceptance, or a user-visible result; the
   owner selects eligible participants and timing.
@@ -89,8 +89,8 @@ best-supported option, explain why it fits, and state what evidence or changed c
   safety, cost, reversibility, acceptance, or a user-visible result. Identify the evidence, alternatives, or
   assumptions where an independent perspective could improve it.
 - Ask the active owner to give available subagents or teammates separate bounded questions before exposing the
-  leading recommendation. Use Partner only when that owner's partner policy enables it and the runtime is
-  available.
+  leading recommendation. Use Partner only for each remaining runtime in the launch set. A launchable runtime
+  produces an independent result; an Unavailable attempt produces Unavailable evidence, not a silent skip.
 - Compare the returned evidence and reasoning, resolve conflicts against the user's intent and project context,
   and synthesize the best-supported options. When no eligible participant is available, state the evidence limit
   instead of implying independent review.

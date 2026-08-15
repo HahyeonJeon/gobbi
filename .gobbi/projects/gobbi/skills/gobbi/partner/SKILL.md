@@ -1,6 +1,6 @@
 ---
 name: partner
-description: "Partner is guidance for using the opposite runtime as one delegated, write-capable external agent."
+description: "Partner is guidance for using a named runtime as one delegated, write-capable external agent."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: tool
 user-invocable: false
@@ -8,15 +8,15 @@ user-invocable: false
 
 # Partner
 
-Partner is a Tool Manual for invoking Codex from Claude Code or Claude Code from Codex through Delegation.
-Use it when an enabled participant policy needs one independent external result at an exact session path.
+Partner is a Tool Manual for invoking one named runtime from `{claude-code, codex, grok}` through Delegation.
+Use it when the recorded policy names that runtime and the launch set includes it.
 
 ## Principles
 
 ### Keep the caller in control
 
 The caller selects the participant, freezes the assignment, and accepts or rejects the result. Partner owns
-one opposite-runtime invocation, not the round or next action.
+one named-runtime invocation, not the round or next action.
 
 ### Grant one exact write
 
@@ -35,13 +35,13 @@ visible failure rather than transformed or relabeled content.
 
 ## Rules
 
-- **MUST derive the partner from the active runtime and recorded policy.** Claude Code launches Codex, Codex
-  launches Claude Code, and a disabled policy launches nothing.
+- **MUST launch only a recorded named runtime that is not the active runtime.** Accept `claude-code`, `codex`,
+  and `grok`; `disabled` or an empty launch set after skip launches nothing and is not rewritten to `disabled`.
 - **MUST build every partner prompt through Delegation.** Include the exact absolute session directory and
   exact absolute writing path in the prompt's required Metadata.
 - **MUST contain the writing path inside the session directory and grant no other write.** The caller records
   the preimage and rejects any unexpected file change.
-- **MUST use one fresh, non-persistent opposite-runtime process with restricted write-capable tools.** One
+- **MUST use one fresh, non-persistent named-runtime process with restricted write-capable tools.** One
   invocation produces one saved result and one compact final Handoff.
 - **MUST validate the process, write set, saved result, and Handoff before acceptance.** Runtime status or a
   plausible stdout summary is not completion evidence.
@@ -55,7 +55,10 @@ visible failure rather than transformed or relabeled content.
 #### Build the Delegation prompt
 
 - Start from [Delegation](../../delegation/SKILL.md) and add every required Partner field. Give the external
-  agent one bounded assignment and one authoritative result.
+  agent one bounded assignment and one authoritative result. The caller computes launch set as the recorded
+  set minus the active runtime and loops this manual once per remaining runtime. `{grok}` on Grok launches
+  nothing; `{claude-code,grok}` on Grok launches Claude Code only; do not rewrite an empty launch set to
+  `disabled`. One prompt names one `expected-partner`.
 - Use this prompt shape:
 
   ```markdown
@@ -64,8 +67,8 @@ visible failure rather than transformed or relabeled content.
 
   - agent: partner
   - assignment: <stable one-use assignment>
-  - active-runtime: <claude-code or codex>
-  - expected-partner: <codex or claude-code>
+  - active-runtime: <claude-code, codex, or grok>
+  - expected-partner: <claude-code, codex, or grok>
   - session-directory: <exact absolute session directory>
   - writing-path: <exact absolute result file inside session-directory>
 
@@ -102,16 +105,16 @@ visible failure rather than transformed or relabeled content.
 
 ### Availability
 
-#### Select the opposite runtime
+#### Select the named runtime
 
 - Confirm `timeout` and the expected binary with `command -v`. A missing dependency ends the invocation before
-  any target write.
+  any target write. A named partner with no verified command row is Unavailable; do not invent a command.
 - The command forms below were verified against installed Codex CLI 0.147.0 and Claude Code 2.1.226:
 
-  | Active runtime | Partner | Write-capable command shape |
-  |---|---|---|
-  | Claude Code | Codex | `codex exec -C SESSION --ephemeral --sandbox workspace-write -` |
-  | Codex | Claude Code | `claude -p --permission-mode acceptEdits --no-session-persistence --safe-mode --tools "Read,Grep,Glob,Write,Edit"` |
+  | Partner | Write-capable command shape |
+  |---|---|
+  | Codex | `codex exec -C SESSION --ephemeral --sandbox workspace-write -` |
+  | Claude Code | `claude -p --permission-mode acceptEdits --no-session-persistence --safe-mode --tools "Read,Grep,Glob,Write,Edit"` |
 
 - Re-run `codex exec --help` or `claude --help` before changing a flag or relying on another installed version.
   Installed help is the command authority.

@@ -21,13 +21,13 @@ iteration and proves transitions, but it never becomes another route.
 ### Design together before autonomous delivery
 
 Phase 1 studies the project and develops the best design with the user, main agent, available subagents or
-teammates, and enabled Partner. It locks the decisions, authority, and evidence that later phases need.
+teammates, and remaining Partner runtimes. It locks the decisions, authority, and evidence that later phases need.
 
 ### Continue autonomously after Phase 1
 
 After the Phase 1 handoff, the manager resolves in-contract choices with available subagents or teammates and
-enabled Partner. The manager never asks the user another Workflow question; work either continues within the
-locked contract or stops at an exact recovery point.
+remaining Partner runtimes. The manager never asks the user another Workflow question; work either continues
+within the locked contract or stops at an exact recovery point.
 
 ### Apply one frame in every phase
 
@@ -44,12 +44,13 @@ only in the worktree and session root recorded by Configuration and the latest h
 - **MUST use the native TODO list to select the current phase and stage.** Use only `pending`, `in_progress`, and
   `completed`, with at most one item `in_progress`; keep task, iteration, cap, and decision data in session evidence.
 - **MUST complete every material user decision in Phase 1.** Study the project and actively use available
-  subagents or teammates and enabled Partner before the manager recommends a design for the user's decision.
+  subagents or teammates and remaining Partner runtimes before the manager recommends a design for the user's
+  decision.
 - **MUST run `DISCUSSION → WORK → EVALUATION → RECORD` in every phase.** Planning and each Execution task
   complete the frame before dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
-  self-reviews; independent local and enabled Partner inputs stay separate until synthesis; EVALUATION uses a
-  fresh active-runtime evaluator and, when enabled, one fresh Partner evaluator.
+  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION uses
+  a fresh active-runtime evaluator and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Continue or recover
   only in its recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **MUST apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate).** Every
@@ -67,16 +68,19 @@ by Execution tasks, completes the frame for each unit before starting its depend
 
 | Stage | Required action |
 |---|---|
-| `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later phases use the manager, subagents or teammates, and enabled Partner without a user question. |
+| `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later phases use the manager, subagents or teammates, and remaining Partner runtimes without a user question. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and, when enabled, one fresh Partner evaluator at exact report paths. |
+| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one attempted invocation per remaining runtime at exact report paths. |
 | `RECORD` | Reread the result and reports, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
 policy, iteration cap, report paths, `gate.md` path, receipt path, checks, authority, and recovery boundary.
-Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. Every Partner prompt
-also names `{session-root}` as the exact session directory and one exact absolute writing path below `tmp/`;
-the manager validates that sole write and the final Handoff before synthesis.
+Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. The Partner launch set
+is the recorded set minus the active runtime; `{grok}` on Grok launches nothing, and `{claude-code,grok}` on
+Grok launches Claude Code only, without rewriting the recorded set. Each remaining runtime receives one
+attempted invocation with its own `tmp/` path, Delegation prompt, and `expected-partner`. A launchable runtime
+produces an evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+The manager validates each sole write and Handoff before synthesis.
 
 The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
 criteria, reports, findings and dispositions, decision, and next action. PASS means the criteria are satisfied
@@ -152,9 +156,9 @@ P3 · Note
 #### 1.4 Run the Ideation frame and lock direction
 
 - **DISCUSSION:** Study the request, users, project vision, roadmap, design, architecture, current behavior,
-  prior decisions, evidence, constraints, and alternatives. Use available subagents or teammates and enabled
-  Partner for independent research and design suggestions, then recommend the best-supported options and obtain
-  every material user decision about What, Why, How, scope, success, risk, authority, and deferrals.
+  prior decisions, evidence, constraints, and alternatives. Use available subagents or teammates and remaining
+  Partner runtimes for independent research and design suggestions, then recommend the best-supported options
+  and obtain every material user decision about What, Why, How, scope, success, risk, authority, and deferrals.
 - **WORK:** Apply [Ideation](../ideation/SKILL.md) through Delegation with the absolute output root
   `{session-root}/1-ideation/outputs/ideation/` and exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`. One leader synthesizes and self-reviews the
@@ -177,15 +181,16 @@ P3 · Note
 ### Phase 2 — Plan and Execute
 
 Phase 2 applies `DISCUSSION → WORK → EVALUATION → RECORD` first to Planning and then to every Execution task.
-The manager, subagents or teammates, and enabled Partner make later decisions from the locked Phase 1 design.
+The manager, subagents or teammates, and remaining Partner runtimes make later decisions from the locked
+Phase 1 design.
 Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its role, evidence,
 addressability, and write boundary and issuing a complete new Delegation brief.
 
 #### 2.1 Run the Planning frame
 
-- **DISCUSSION:** Enter only from a Complete Phase 1 handoff. The manager uses independent local and enabled
-  Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted design;
-  an unresolvable authority or contract conflict stops without a user question.
+- **DISCUSSION:** Enter only from a Complete Phase 1 handoff. The manager uses independent local and remaining
+  Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted
+  design; an unresolvable authority or contract conflict stops without a user question.
 - **WORK:** Apply [Planning](../planning/SKILL.md) through Delegation with absolute output root
   `{session-root}/2-planning/outputs/planning/` and exact locator
   `{session-root}/2-planning/outputs/planning/plan-index.md`. One leader writes and self-reviews the indexed plan
@@ -197,8 +202,8 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 #### 2.2 Run each Execution task frame
 
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
-  available subagents or teammates and enabled Partner to settle the in-contract approach, then gives one
-  executor exact inputs, paths, authority, criteria, checks, and protected work.
+  available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
+  gives one executor exact inputs, paths, authority, criteria, checks, and protected work.
 - **WORK:** Apply [Execution](../execution/SKILL.md) through Delegation with one active writer and read-only
   helpers. Require self-review, fresh verification, and one focused local commit for the accepted task.
 - **EVALUATION → RECORD:** Freeze the commit and result, run fresh evaluation, and record the gate and receipt
@@ -226,9 +231,9 @@ evaluated tree and records the terminal handoff and Note.
 - Enter only from a Complete Phase 2 handoff in the configured worktree and session root. Load
   [Wrap-up](../wrap-up/SKILL.md) and inventory accepted results, commits, checks, findings, decisions, exclusions,
   risks, Memory, Git state, authority, and open items.
-- Use available subagents or teammates and enabled Partner to review the closure route, merge plan, risks, and
-  recovery choices. The manager resolves every in-contract choice from the accepted design and stops without a
-  user question when authority, safety, or the locked contract cannot support one route.
+- Use available subagents or teammates and remaining Partner runtimes to review the closure route, merge plan,
+  risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
+  stops without a user question when authority, safety, or the locked contract cannot support one route.
 - Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
   final paths, report paths, gate and receipt paths, cap, checks, merge authority, and protected state.
 
@@ -245,8 +250,9 @@ evaluated tree and records the terminal handoff and Note.
 #### 3.3 Run closure EVALUATION
 
 - Freeze the actual closure tree and evaluate it with the Memory diff, accepted commits, checks, merge plan,
-  authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and, when enabled,
-  one fresh Partner evaluator over the same subject and criteria.
+  authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and one attempted
+  invocation per remaining runtime over the same subject and criteria. A launchable runtime produces an
+  evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
   changed WORK; FAIL preserves the branch, worktree, session root, reports, and exact stopped state.
 - Any tracked correction makes prior coverage stale and repeats WORK and EVALUATION. Retry a bounded agent or
@@ -280,4 +286,4 @@ evaluated tree and records the terminal handoff and Note.
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each enabled external invocation, exact session write, and final Handoff. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, exact session write, and final Handoff. |
