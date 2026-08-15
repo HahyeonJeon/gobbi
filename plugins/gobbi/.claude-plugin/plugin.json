@@ -1,10 +1,10 @@
 {
   "name": "gobbi",
   "version": "1.1.2",
-  "description": "Gobbi workflow skills and agents for Configuration, Ideation, Planning, Execution, and Wrap-up in Claude Code",
+  "description": "Gobbi workflow skills and agents for Configuration, Ideation, Planning, Execution, and Wrap-up in Claude Code, Codex, and Grok",
   "author": {
     "name": "HahyeonJeon"
   },
   "license": "MIT",
-  "keywords": ["gobbi", "workflow", "orchestration", "evaluation", "planning", "claude-code"]
+  "keywords": ["gobbi", "workflow", "orchestration", "evaluation", "planning", "claude-code", "codex", "grok"]
 }

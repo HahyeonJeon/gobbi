@@ -4,11 +4,11 @@
     "name": "HahyeonJeon",
     "email": "jeonhh0061@gmail.com"
   },
-  "description": "Gobbi workflow plugins for Claude Code.",
+  "description": "Gobbi workflow plugins for Claude Code, Codex, and Grok.",
   "plugins": [
     {
       "name": "gobbi",
-      "description": "Structured orchestration, planning, execution, evaluation, temporary session evidence, durable memory, and terminal notes for Claude Code.",
+      "description": "Structured orchestration, planning, execution, evaluation, temporary session evidence, durable memory, and terminal notes for Claude Code, Codex, and Grok.",
       "version": "1.1.2",
       "source": "./plugins/gobbi"
     }
