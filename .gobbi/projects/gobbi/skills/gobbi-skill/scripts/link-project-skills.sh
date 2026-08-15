@@ -3,7 +3,7 @@
 set -euo pipefail
 export LC_ALL=C
 
-# Initialize missing Claude Code and Codex links for canonical project skills.
+# Initialize missing Claude Code, Codex, and Grok skill links for canonical project skills.
 # Existing discovery directories are not migrated or deleted.
 
 fail() {

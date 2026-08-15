@@ -35,8 +35,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 - **NEVER mutate from Gobbi entry.** Create no branch, worktree, session record, artifact, configuration, or
   implementation.
-- **MUST obtain an explicit mode selection at every fresh entry.** Use `AskUserQuestion` in Claude Code or
-  `request_user_input` in Codex; a recommendation cannot select the mode.
+- **MUST obtain an explicit mode selection at every fresh entry.** Use `AskUserQuestion` in Claude Code,
+  `request_user_input` in Codex, or `ask_user_question` in Grok; a recommendation cannot select the mode.
 - **MUST validate one Gobbi root pair and load the entry foundation before routing.** Hold the pair unchanged
   for the session and carry it into every specialist brief.
 - **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
@@ -103,8 +103,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   |---|---|
   | Claude Code | Team environment and display settings, role and skill discovery, and entry permissions. |
   | Codex | Agent definitions, agent settings, skill discovery, and instruction entrypoints. |
+  | Grok | Agent definitions under `.grok/agents`, skill discovery, and the `.agents/agents` root-pair sibling. |
   | Gobbi | The project namespace and tracked or ignored state, including effective `.gitignore` ownership. |
-  | Both runtimes | Installed `claude` and `codex` CLIs respond to a version probe. |
+  | All runtimes | Installed `claude`, `codex`, and `grok` CLIs respond to a version probe. |
 
 - For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:leader)` and
   `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
@@ -187,4 +188,4 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
 | [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
-| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Git-ignore, and CLI prerequisites without mutation. |
+| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Grok, Git-ignore, and CLI prerequisites without mutation. |

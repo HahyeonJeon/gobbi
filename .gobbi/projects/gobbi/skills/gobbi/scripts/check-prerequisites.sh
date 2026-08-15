@@ -397,7 +397,17 @@ if [[ -f "$codex_config" && -r "$codex_config" ]]; then
   fi
 fi
 
+check_real_directory ".grok directory" "$project_root/.grok"
+check_real_directory ".grok/agents directory" "$project_root/.grok/agents"
+check_real_directory ".agents/agents directory" "$project_root/.agents/agents"
+
+for role in "${roles[@]}"; do
+  check_readable_file ".grok/agents/$role.md" "$project_root/.grok/agents/$role.md"
+  check_readable_file ".agents/agents/$role.md" "$project_root/.agents/agents/$role.md"
+done
+
 check_cli claude
 check_cli codex
+check_cli grok
 
 finish

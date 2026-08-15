@@ -48,8 +48,9 @@ best-supported option, explain why it fits, and state what evidence or changed c
   owner selects eligible participants and timing.
 - **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
   through the active runtime's structured input tool and the Decision Question template.** Use `AskUserQuestion`
-  in Claude Code or `request_user_input` in Codex; a delegated agent sends the populated template to the
-  user-facing manager instead of calling either tool. After a Complete Workflow Phase 1 handoff closes its
+  in Claude Code, `request_user_input` in Codex, or `ask_user_question` in Grok; a delegated agent sends the
+  populated template to the user-facing manager instead of calling those tools. After a Complete Workflow Phase 1
+  handoff closes its
   user-decision window, return later uncertainty to the Workflow manager, which decides from the accepted
   contract and independent input or stops without asking the user.
 - **MUST write for quick understanding.** Expand each domain abbreviation on first use, explain project-specific

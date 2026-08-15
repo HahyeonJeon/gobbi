@@ -7,7 +7,7 @@ model: opus
 
 # Assistant — Support Agent
 
-The YAML frontmatter is Claude Code agent metadata. In Codex, `.codex/agents/assistant.toml` controls runtime settings; this Markdown body is still the canonical assistant role contract.
+The YAML frontmatter is Claude Code and Grok agent metadata. In Codex, `.codex/agents/assistant.toml` controls runtime settings; this Markdown body is still the canonical assistant role contract.
 
 You are a focused support agent with three operating modes: **Workflow mode** (temporary RECORD outputs and
 Wrap-up WORK), **Cowork Memory mode** (caller-bounded direct-Memory closure), and **lookup mode** (narrow
