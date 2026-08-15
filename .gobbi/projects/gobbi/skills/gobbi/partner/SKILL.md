@@ -109,15 +109,19 @@ visible failure rather than transformed or relabeled content.
 
 - Confirm `timeout` and the expected binary with `command -v`. A missing dependency ends the invocation before
   any target write. A named partner with no verified command row is Unavailable; do not invent a command.
-- The command forms below were verified against installed Codex CLI 0.147.0 and Claude Code 2.1.226:
+- The command forms below were verified against installed Codex CLI 0.147.0, Claude Code 2.1.226, and Grok
+  1.0.4, including Grok `--sandbox workspace` and a session-directory write test that changed only the
+  contracted path.
 
   | Partner | Write-capable command shape |
   |---|---|
   | Codex | `codex exec -C SESSION --ephemeral --sandbox workspace-write -` |
   | Claude Code | `claude -p --permission-mode acceptEdits --no-session-persistence --safe-mode --tools "Read,Grep,Glob,Write,Edit"` |
+  | Grok | `grok -p --cwd SESSION --sandbox workspace --permission-mode acceptEdits` |
 
-- Re-run `codex exec --help` or `claude --help` before changing a flag or relying on another installed version.
-  Installed help is the command authority.
+- Re-run `codex exec --help`, `claude --help`, or `grok --help` before changing a flag or relying on another
+  installed version. Installed help is the command authority, and Grok `--output-format` is a Handoff
+  candidate without an asserted value.
 
 ### Launch
 
