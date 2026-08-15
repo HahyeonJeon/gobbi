@@ -47,12 +47,9 @@ best-supported option, explain why it fits, and state what evidence or changed c
   change scope, architecture, interfaces, safety, cost, reversibility, acceptance, or a user-visible result; the
   owner selects eligible participants and timing.
 - **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
-  through the active runtime's structured input tool and the Decision Question template.** Use `AskUserQuestion`
+  through the Decision Question template, then the active runtime's structured input tool.** Use `AskUserQuestion`
   in Claude Code, `request_user_input` in Codex, or `ask_user_question` in Grok; a delegated agent sends the
-  populated template to the user-facing manager instead of calling those tools. After a Complete Workflow Phase 1
-  handoff closes its
-  user-decision window, return later uncertainty to the Workflow manager, which decides from the accepted
-  contract and independent input or stops without asking the user.
+  populated template to the user-facing manager instead of calling those tools.
 - **MUST write for quick understanding.** Expand each domain abbreviation on first use, explain project-specific
   names briefly, and cite evidence for numeric or project-specific claims.
 - **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary or missing
@@ -131,10 +128,10 @@ best-supported option, explain why it fits, and state what evidence or changed c
   >   - **Cons:** <specific costs, risks, or limits>
   ```
 
-- Deliver the card through the required runtime tool. Map `Topic` to the short header, `Description` to the
-  one-sentence question, and each option name to its label; combine its Description, Pros, and Cons into one
-  compact native option description, keep the recommendation first, and ask a direct question instead when no
-  meaningful options exist.
+- Render the populated Question card in the conversation first, then call the required runtime tool. Map `Topic`
+  to the short header, `Description` to the one-sentence question, and each option name to its label; combine
+  its Description, Pros, and Cons into one compact native option description, keep the recommendation first,
+  and ask a direct question instead when no meaningful options exist.
 
 ## References
 
