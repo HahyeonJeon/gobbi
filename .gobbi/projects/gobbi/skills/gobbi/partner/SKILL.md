@@ -39,8 +39,10 @@ visible failure rather than transformed or relabeled content.
   and `grok`; `disabled` or an empty launch set after skip launches nothing and is not rewritten to `disabled`.
 - **MUST build every partner prompt through Delegation.** Include the exact absolute session directory and
   exact absolute writing path in the prompt's required Metadata.
-- **MUST contain the writing path inside the session directory and grant no other write.** The caller records
-  the preimage and rejects any unexpected file change.
+- **MUST contain the writing path inside the session directory and grant no other session or project write.**
+  The caller records the preimage and rejects any unexpected session or project file change. For Grok 1.0.4,
+  created or changed files under `~/.grok/sessions/` and appends to `~/.grok/sandbox-events.jsonl` are named
+  residual writes, not unexpected writes.
 - **MUST use one fresh named-runtime process with restricted write-capable tools.** One invocation produces
   one saved result and one compact final Handoff. Do not pass `--session-id`, `--resume`, or `--continue`.
   Grok 1.0.4 still writes named residual files under `~/.grok/`; that is accepted residual risk, not an
