@@ -68,7 +68,7 @@ Load per phase:
 
 Load when relevant: `{gobbi-skills-root}/startup/SKILL.md` (when the brief calls for a software-project design
 interview). When the work touches runtime docs or agents, read the active surfaces directly
-(`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex). Load
+(`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for Grok). Load
 `{gobbi-skills-root}/gobbi-skill/SKILL.md` when authoring a skill; use direct repository and runtime evidence
 for role and package surfaces. For a language or platform, load the exact task skill named by the brief or its
 applicable trigger.
@@ -122,7 +122,7 @@ Refine, study, or decompose — per the phase brief.
   through the manager as Planning requires.
 - Output: the complete indexed Planning result at the caller-specified absolute `plan-index.md` locator.
 
-**Partner WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a partner WORK stage):** the assignment supplies accepted independent inputs and exact temporary and final paths under Workflow's Frame contract. Synthesize as the sole writer into the caller-named indexed result, and return a decision conflict to the manager.
+**Partner WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a partner WORK stage):** the assignment supplies each validated external draft and exact temporary and final paths under Workflow's Frame contract. When policy is `disabled`, the assignment supplies no external draft. Synthesize as the sole writer into the caller-named indexed result, and return a decision conflict to the manager.
 
 ### Verify
 

@@ -22,8 +22,8 @@ Four steps, run once at the Gobbi entry:
    variable, config file, or filesystem search is needed, and **none exists to supply one** — confirmed on
    both runtimes, see Measured facts below.
 2. **Derive two candidates, not one.** The reported path may name the skill's own directory (Claude Code) or
-   the skills root directly (Codex CLI) — the two runtimes disagree on shape. Build one candidate for each
-   shape and let the sentinels decide which is real: "never decide which from its spelling."
+   the skills root directly (Codex CLI and Grok) — the runtimes disagree on shape. Build one candidate for
+   each shape and let the sentinels decide which is real: "never decide which from its spelling."
 3. **Validate.** All three sentinels must exist and be readable, in order:
    `{gobbi-skills-root}/gobbi/SKILL.md`, `{gobbi-skills-root}/principles/SKILL.md`,
    `{gobbi-agents-root}/manager.md` — `{gobbi-agents-root}` is the `agents/` sibling of `{gobbi-skills-root}`.
@@ -50,6 +50,7 @@ tokens discriminate the stop reason: `partial-pair`, `not-an-absolute-path`, `ab
 | Claude Code, skill's own dir (`…/skills/principles`) | `…/skills/principles` | `…/skills` | readable |
 | Codex CLI, skills root (`…/skills`) | `…/1.0.1` | `…/skills` | readable |
 | This repository (`.claude/skills/gobbi`) | `.claude/skills/gobbi` | `.claude/skills` | readable |
+| Grok 1.0.4, skills root (`.agents/skills`) | `.agents/skills/gobbi` | `.agents/skills` | readable |
 
 ## Measured runtime facts backing the design
 
@@ -70,6 +71,10 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
 - **A spawned specialist (leader, executor, evaluator, assistant) has no `Skill` tool** unless its role's
   `tools:` frontmatter grants one, so it cannot itself read the "Base directory" report. It receives the
   resolved pair from its brief instead; the root-pair invariant above is what makes that safe.
+- **Grok entry uses the `.agents` pair, not `.grok/skills`.** This Workflow entered on Grok 1.0.4 with
+  `{gobbi-skills-root}` `.agents/skills` and `{gobbi-agents-root}` `.agents/agents`. The
+  `.agents/skills/gobbi` candidate failed all three sentinels. `.grok/skills` is a project discovery mirror
+  of 26 directory links, including `gobbi`, and is not the Gobbi skills root.
 - Claude Code appends `<plugin-root>/bin` onto `PATH` for a session with the plugin active — a real,
   undocumented side effect usable as a fallback signal, not the primary mechanism.
 - `~/.claude/plugins/marketplaces/<name>/` is a full git clone of the marketplace source repository, created

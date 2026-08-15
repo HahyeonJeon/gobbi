@@ -2,9 +2,11 @@
 
 ## Intent
 
-Partner is Gobbi's Tool Manual for using the runtime opposite the active runtime through
-[Delegation](../../../skills/delegation/SKILL.md). Claude Code invokes Codex, and Codex invokes Claude Code.
-The caller retains participant selection, scope, synthesis, acceptance, and every next action.
+Partner is Gobbi's Tool Manual for invoking one named runtime from `{claude-code, codex, grok}` through
+[Delegation](../../../skills/delegation/SKILL.md). The recorded policy is `disabled` or one or two of those
+names. Launch set is the selected names minus the active runtime. An empty launch set after skip stays valid
+and is not rewritten to `disabled`. The caller retains participant selection, scope, synthesis, acceptance,
+and every next action.
 
 ## Write contract
 
@@ -20,11 +22,17 @@ direct evidence.
 
 ## Runtime boundary
 
-Each run uses a fresh, non-persistent opposite-runtime process. Codex uses `codex exec` with the session
+Each run uses a fresh, non-persistent named-runtime process. Codex uses `codex exec` with the session
 directory as a `workspace-write` sandbox; Claude Code uses print mode with `acceptEdits`, no session
 persistence, safe mode, and only `Read`, `Grep`, `Glob`, `Write`, and `Edit`.
 
-The command table in the canonical skill was verified against Codex CLI 0.147.0 and Claude Code 2.1.226.
+Grok 1.0.4 is Unavailable. Installed help names `--sandbox <PROFILE>` and no ephemeral flag. The installed
+sandbox manual says `workspace` writes CWD and `~/.grok/`. Headless sessions persist under
+`~/.grok/sessions/`. A write test appended `~/.grok/sandbox-events.jsonl`. Naming Grok therefore yields
+Unavailable evidence, not a launch or a Partner Handoff, until a later measured extra-project-free bound
+exists.
+
+The Claude and Codex command table was verified against Codex CLI 0.147.0 and Claude Code 2.1.226.
 Installed `codex exec --help` and `claude --help` remain authoritative for later versions.
 
 ## Failure boundary
@@ -35,7 +43,7 @@ whether to retry with a new assignment, repair bounded input, continue without P
 stop.
 
 Partner is not a persistent teammate. Context-aware re-delegation belongs to Agent Teams and other active
-runtime subagent controls; every Partner invocation starts fresh to preserve opposite-runtime independence.
+runtime subagent controls; every Partner invocation starts fresh to preserve named-runtime independence.
 
 ## References
 

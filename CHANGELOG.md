@@ -9,9 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Gobbi now presents three runtimes: Claude Code, Codex, and Grok. Grok discovers skills from `.grok/skills`,
+  loads the checkout package through `.grok/plugins/gobbi` pointing at `../../plugins/gobbi`, and installs
+  from the official Marketplace tab or `[[marketplace.sources]]` in `~/.grok/config.toml`.
+- Partner policy is now `disabled` or one or two of `{claude-code,codex,grok}`. Launch set is the selected
+  names minus the active runtime. An empty launch set after skip stays valid. Naming Grok is Unavailable
+  evidence on Grok 1.0.4 until an extra-project-free bound is measured.
 - Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and permission
-  settings; Codex agent, feature, skill, and instruction settings; the project-keyed `.gobbi/` layout; effective
-  `.gitignore` ownership; and installed Claude Code and Codex CLIs.
+  settings; Codex agent, feature, skill, and instruction settings; Grok agent, skill, and `.agents/agents`
+  sibling settings; the project-keyed `.gobbi/` layout; effective `.gitignore` ownership; and installed
+  Claude Code, Codex, and Grok CLIs.
 - Gobbi, Partner, and Agent Teams now follow the compact Gobbi Skill structures. Gobbi retains only entry and
   routing, Partner is a write-capable Tool Manual that requires one exact session directory and writing path
   in every Delegation prompt, and Agent Teams prefers re-delegating coherent follow-up work to a context-ready
@@ -29,10 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and required evidence into the owning phase without a fixed temporary-package shape or filename.
 - Workflow now owns its three phase procedures in one skill instead of separate phase children. Each phase
   applies `DISCUSSION → WORK → EVALUATION → RECORD` and writes a fixed `handoff.md` for completion or a safe
-  terminal stop. Phase 1 studies and designs with the user, available subagents or teammates, and enabled Partner;
-  after its Complete handoff, the manager proceeds autonomously from the accepted design or stops without asking
-  another Workflow question. Continuation and recovery stay in the worktree and session directory recorded by
-  Configuration and the latest handoff.
+  terminal stop. Phase 1 studies and designs with the user, available subagents or teammates, and the remaining
+  Partner launch set; after its Complete handoff, the manager proceeds autonomously from the accepted design
+  or stops without asking another Workflow question. Continuation and recovery stay in the worktree and
+  session directory recorded by Configuration and the latest handoff.
 - Renamed `skill-writing` to `gobbi-skill` with no compatibility alias. Its domain, operation, tool, and
   preference type guides are now direct child skills with their own `SKILL.md` files.
 - Gobbi Skill and each direct type-writing child now own a reusable checklist. The parent covers shared skill
@@ -40,9 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exact operation SOPs, preference consistency, tool manuals and collections, and domain-family routing. The
   shared References contract now explicitly exempts navigation-only domain roots.
 - The canonical Gobbi Skill source now includes a project-local helper that links every top-level skill into
-  both `.claude/skills/` and `.agents/skills/`. It accepts only one exact project-owned source tree, creates
-  missing relative directory links, and stops on conflicts without migrating existing directories or writing
-  to plugin or user-level locations.
+  `.claude/skills/`, `.agents/skills/`, and `.grok/skills/`. It accepts only one exact project-owned source
+  tree, creates missing relative directory links, and stops on conflicts without migrating existing
+  directories or writing to plugin or user-level locations.
 - Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
   the skill is and when to use it in one to three sentences across no more than two paragraphs.
 - Evaluation now uses four phases and a short report template: understand the target, prepare an
@@ -85,8 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   studies evidence before proposing options and recommends the best-supported direction so the user can make a
   concrete decision. Material design and decision advice actively uses available subagent, teammate, and enabled
   Partner input through the active owner's participant contract, avoiding duplicate or out-of-policy runs.
-  Material decisions use one shared question template through `AskUserQuestion` in Claude Code or
-  `request_user_input` in Codex.
+  Material decisions use one shared question template through `AskUserQuestion` in Claude Code,
+  `request_user_input` in Codex, or `ask_user_question` in Grok.
 - Delegation no longer classifies subagent results as `file`, `commit`, or `response-only`. Every brief now
   names one authoritative result and its acceptance evidence directly. Its `Return` section requires the
   subagent to write a final, verifiable Handoff for every terminal status and distinguishes durable locators from

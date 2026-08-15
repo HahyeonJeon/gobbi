@@ -3,7 +3,8 @@
 ## Intent
 
 Agent Teams is Gobbi's Tool Manual for Claude Code's experimental multi-session team interface. Native Codex
-uses its available subagent controls under the same Delegation contract.
+uses its available subagent controls under the same Delegation contract. Grok uses official native subagents
+and project `.grok/agents`; there is no Agent Teams port.
 
 ## Design
 

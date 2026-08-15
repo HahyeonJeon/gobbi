@@ -35,10 +35,10 @@ merge, clean up, or remove the retained Cowork branch or worktree.
 - **Cowork Memory closure:** Apply Memory `Memorize` directly to the full caller-supplied Cowork session root and closure input. Write only the caller-supplied current-project memory root, make one focused memory commit or prove no durable change, and return evidence for Cowork's later freshness check and conversation-only handoff.
 
 **Workflow Wrap-up WORK synthesis (Workflow mode only).** When the assignment names you the active-runtime
-writer, first produce and self-review the required local Memory draft. If the recorded partner
-policy is enabled, the manager also supplies each validated external draft or cross-review that Partner wrote
-at its contracted session path; disabled supplies none. Workflow's Frame contract and the assignment own
-temporary and final path routing.
+writer, first produce and self-review the required local Memory draft. If the recorded partner policy is
+`disabled`, the manager supplies no external draft. Otherwise the manager supplies each validated external
+draft or cross-review that Partner wrote at its contracted session path. Workflow's Frame contract and the
+assignment own temporary and final path routing.
 Read and write only caller-named paths, synthesize the accepted result into the assignment's final Memory
 paths, and return a decision conflict to the manager. This applies only to Workflow mode; lookup remains
 read-only and Cowork Memory mode never enters Workflow WORK.
@@ -94,7 +94,7 @@ Load when relevant:
 - The specific domain skill at `{gobbi-skills-root}/<skill>/SKILL.md` — `git`, `study`, `evaluation`,
   `delegation`, `discussion`, `memory`, and so on — if the question touches that domain. When the work touches
   runtime docs or agents, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`,
-  `.codex/`, and `plugins/gobbi/` for Codex). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
+  `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for Grok). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
   authoring; use direct repository and runtime evidence for role and package surfaces. Load other task skills
   only from the manager's exact paths or their applicable triggers.
 

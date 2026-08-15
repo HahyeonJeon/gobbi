@@ -2,11 +2,12 @@
 
 ## Problem
 
-Gobbi v1.0.0 ships as a Claude Code and Codex plugin with no bootstrap CLI. v0.5.0 had a `packages/cli`
-binary that created `.gobbi/` in a consumer project on first use; v1.0.0 deleted that CLI and no skill
-absorbed the responsibility. A user hit this directly: `.gobbi/` was never created in their project, and its
-runtime state directories were not ignored, so session and worktree churn could be committed. Fixed
-2026-08-01 across 13 commits (`b375c1eb..b26f08b0`).
+Gobbi v1.0.0 shipped as a Claude Code and Codex plugin with no bootstrap CLI. Grok is now a third consumer
+runtime and uses the same `.gobbi/` layout. v0.5.0 had a `packages/cli` binary that created `.gobbi/` in a
+consumer project on first use; v1.0.0 deleted that CLI and no skill absorbed the responsibility. A user hit
+this directly: `.gobbi/` was never created in their project, and its runtime state directories were not
+ignored, so session and worktree churn could be committed. Fixed 2026-08-01 across 13 commits
+(`b375c1eb..b26f08b0`).
 
 ## Canonical layout
 

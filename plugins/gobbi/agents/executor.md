@@ -61,7 +61,8 @@ Mandatory load:
 Load per task domain:
 
 - **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime
-  surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the exact
+  surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for
+  Grok) plus the exact
   task skills named by the brief or their applicable triggers.
 - **Runtime docs:** load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for a skill. For role `.md`/`.toml`
   pairs, the plugin package, manifests, and other documents, use the active files and repository scripts as
@@ -100,7 +101,7 @@ Implement focused, minimal changes.
 - If you encounter blocking ambiguity, stop and emit `NEEDS_CONTEXT`. Do not invent.
 - If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
-**Partner WORK — synthesizing executor only (when the assignment names you the active-runtime executor for a partner WORK stage):** the assignment supplies accepted independent inputs and exact temporary and final paths under Workflow's Frame contract. Synthesize as the sole writer into the named tracked task paths, and return a decision conflict to the manager.
+**Partner WORK — synthesizing executor only (when the assignment names you the active-runtime executor for a partner WORK stage):** the assignment supplies each validated external draft and exact temporary and final paths under Workflow's Frame contract. When policy is `disabled`, the assignment supplies no external draft. Synthesize as the sole writer into the named tracked task paths, and return a decision conflict to the manager.
 
 ### Verify
 

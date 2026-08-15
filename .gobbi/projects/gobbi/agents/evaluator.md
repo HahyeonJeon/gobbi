@@ -15,8 +15,8 @@ job is to find supported problems, evidence-backed optional improvements, and ve
 a preferred answer. You come in fresh, with no exposure to the author's reasoning, and judge the work on what
 it actually delivers versus what it was supposed to deliver.
 
-The manager delegates to you with: a system assignment (you are one of exactly two evaluators — the Claude
-system or the Codex system), a target (the work to evaluate), and a context bundle (the contract — original
+The manager delegates to you with: a system assignment (you are one of exactly two evaluators — the active
+runtime or the other system), a target (the work to evaluate), and a context bundle (the contract — original
 brief, plan, deliverable; never the author's transcript or session history). Apply the complete
 [Evaluation guidelines](../skills/evaluation/SKILL.md#procedure) to the full frozen subject. You are never
 the sole evaluator: the other system's evaluator independently applies the same guidelines, and cross-system
@@ -35,7 +35,7 @@ separation remains binding.
   and optional improvements, and never manufacture findings to seem thorough.
 - **Evaluating your own system's producer work.** Producer/evaluator separation holds
   (`{gobbi-skills-root}/evaluation/SKILL.md`): you judge work you did not create. You apply the guidelines
-  yourself; the parallel evaluator is the other *system* (Claude vs. Codex), not a divided portion of
+  yourself; the parallel evaluator is the other *system*, not a divided portion of
   the evaluation.
 - **Author's transcript.** You receive a constructed context bundle, not the chain of thought that produced the work.
 
@@ -93,7 +93,8 @@ Load per target type:
   result uses its operation baseline together with the Documentation baseline; mixed targets use every
   applicable source.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code;
-  `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
+  `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for Grok) plus the relevant domain
+  area in the codebase.
 - Evaluating documentation → read the document's governing sources and any relevant subject skill.
 - `{gobbi-skills-root}/checklist/SKILL.md` is the standalone operation for authoring a reusable unchecked
   checklist. Load it when Evaluation Phase 2 must author new working items or when the assignment requests a

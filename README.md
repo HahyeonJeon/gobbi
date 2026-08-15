@@ -2,11 +2,11 @@
 
 # Gobbi
 
-Open-source orchestration for Claude Code and Codex.
+Open-source orchestration for Claude Code, Codex, and Grok.
 
 <p>
   <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.2-blue" alt="Version 1.1.2"></a>
-  <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex-black" alt="Runtimes: Claude Code and Codex">
+  <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
@@ -64,6 +64,31 @@ codex plugin add gobbi@gobbi-workspace
 Codex needs no Claude Code Agent Teams or permission configuration. A repository checkout also includes local
 entrypoints, so contributors working in the clone do not need to install the plugin.
 
+### Grok
+
+Use Grok's Marketplace tab to browse and install Gobbi from a configured source. Add this repository in
+`~/.grok/config.toml`:
+
+```toml
+[[marketplace.sources]]
+name = "gobbi"
+git = "https://github.com/HahyeonJeon/gobbi.git"
+```
+
+Installed Grok 1.0.4 also accepts the same source as GitHub shorthand:
+
+```text
+grok plugin marketplace add HahyeonJeon/gobbi
+```
+
+Then install Gobbi from the Marketplace tab. Do not use Claude `/plugin` as the Grok install path.
+
+A repository checkout already exposes the package through `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove
+that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
+`enabled` true, and `path` ending in `.grok/plugins/gobbi`.
+
+Grok participants are the project `.grok/agents` roles plus official Grok subagents. Agent Teams is Claude-only.
+
 ## Start your first session
 
 Give Gobbi a concrete objective:
@@ -71,14 +96,17 @@ Give Gobbi a concrete objective:
 ```text
 Claude Code: /gobbi prepare the next release
 Codex:       $gobbi prepare the next release
-
-General   Ordinary assistance without Gobbi session state.
-Cowork    User-led, topic-by-topic implementation.
-Workflow  Durable checkpointed orchestration with recorded evidence.
+Grok:        /local:gobbi prepare the next release
+             After a marketplace or `.grok/plugins` install, use /gobbi:gobbi
 ```
 
+After `.grok/skills/gobbi` exists, checkout-local Grok invokes Gobbi as `/local:gobbi`. A marketplace or
+project-plugin load invokes it as `/gobbi:gobbi`. The two forms differ; do not invent a `$gobbi` alias for
+Grok.
+
 Gobbi presents all three modes and waits for your selection. For Cowork or Workflow, it next asks for a
-privacy-safe session slug. It then asks whether the session-wide Partner policy is `enabled` or `disabled`.
+privacy-safe session slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of
+`claude-code`, `codex`, and `grok`.
 
 ## Cowork
 
@@ -102,22 +130,26 @@ Every productive step uses:
 DISCUSSION → WORK → EVALUATION → RECORD
 ```
 
-Phase 1 studies the project and develops the design with the user, available subagents or teammates, and enabled
-Partner. Its handoff closes the user-decision window; later phases proceed autonomously within the accepted
-design or stop at a recoverable checkpoint instead of asking another Workflow question. Recorded evidence can
-rebuild the active route after a context boundary, and each gate must accept the frozen result before work
-advances. Workflow uses one isolated branch and linked worktree for the full session.
+Phase 1 studies the project and develops the design with the user, available subagents or teammates, and the
+remaining Partner launch set. Its handoff closes the user-decision window; later phases proceed autonomously
+within the accepted design or stop at a recoverable checkpoint instead of asking another Workflow question.
+Recorded evidence can rebuild the active route after a context boundary, and each gate must accept the frozen
+result before work advances. Workflow uses one isolated branch and linked worktree for the full session.
 
 ## Partner
 
-Partner is an optional session-wide policy selected after the mode and applicable slug. The active runtime
-fixes the direction: Claude Code uses Codex as its partner, while Codex uses Claude Code.
+Partner is an optional session-wide policy selected after the mode and applicable slug. The policy is
+`disabled` or one or two of `{claude-code,codex,grok}`. Launch set is the selected names minus the active
+runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
-With `partner: disabled`, Gobbi makes no external runtime calls. With `partner: enabled`, applicable steps add
-external drafts, reviews, or evaluators through a complete Delegation prompt. Every prompt names the exact
-session directory and one writing path inside it; the external agent writes only that result and returns a
-compact Handoff. The active runtime verifies the write, assembles the round, decides what to accept, and
-remains the session authority.
+With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
+invocation per remaining runtime. A launchable runtime writes one result at the named path and returns a
+compact Handoff. Naming Grok on Grok 1.0.4 yields Unavailable evidence, not a launch, because a write-capable
+Grok process still writes outside the session directory under `~/.grok/`. That bound stays until a later
+measured extra-project-free command exists. Unavailable evidence is not a Partner Handoff.
+
+Every prompt names the exact session directory and one writing path inside it. The active runtime verifies the
+write, assembles the round, decides what to accept, and remains the session authority.
 
 ## License
 
