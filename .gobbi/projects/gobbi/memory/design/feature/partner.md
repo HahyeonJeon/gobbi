@@ -39,8 +39,11 @@ Partner never repairs, extracts, relabels, moves, or automatically retries the r
 whether to retry with a new assignment, repair bounded input, continue without Partner when authorized, or
 stop.
 
-Partner is not a persistent teammate. Context-aware re-delegation belongs to Agent Teams and other active
-runtime subagent controls; every Partner invocation starts fresh to preserve named-runtime independence.
+The caller starts each launch through one local wrapper subagent using the active runtime's ordinary
+execute-capable spawn. Wrappers for different remaining runtimes may run in parallel. The wrapper only runs
+the Partner command and returns the Handoff. Partner is not a persistent teammate. Context-aware
+re-delegation belongs to Agent Teams and other active-runtime subagent controls; every Partner process
+starts fresh to preserve named-runtime independence.
 
 ## References
 

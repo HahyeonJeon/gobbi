@@ -148,8 +148,10 @@ compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. The session and
 only the contracted writing path. `--always-approve` is not the restricting flag. Unavailable evidence is
 not a Partner Handoff.
 
-Every prompt names the exact session directory and one writing path inside it. The active runtime verifies the
-write, assembles the round, decides what to accept, and remains the session authority.
+Every prompt names the exact session directory and one writing path inside it. The caller starts each launch
+through one local wrapper subagent. Wrappers for different remaining runtimes may run in parallel. The
+active runtime verifies the write after the wrapper returns, assembles the round, decides what to accept,
+and remains the session authority.
 
 ## License
 

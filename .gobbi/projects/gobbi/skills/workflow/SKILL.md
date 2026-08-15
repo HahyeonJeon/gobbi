@@ -70,17 +70,18 @@ by Execution tasks, completes the frame for each unit before starting its depend
 |---|---|
 | `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later phases use the manager, subagents or teammates, and remaining Partner runtimes without a user question. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one attempted invocation per remaining runtime at exact report paths. |
+| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact report paths. |
 | `RECORD` | Reread the result and reports, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
 policy, iteration cap, report paths, `gate.md` path, receipt path, checks, authority, and recovery boundary.
 Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. The Partner launch set
 is the recorded set minus the active runtime. If that set is empty, launch nothing and do not rewrite the
-recorded policy to `disabled`. Each remaining runtime receives one
-attempted invocation with its own `tmp/` path, Delegation prompt, and `expected-partner`. A launchable runtime
-produces an evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
-The manager validates each sole write and Handoff before synthesis.
+recorded policy to `disabled`. Each remaining runtime receives one Partner wrapper subagent through the
+active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and `expected-partner`.
+Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces an evaluator
+report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager validates
+each sole write and Handoff after the wrapper returns.
 
 The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
 criteria, reports, findings and dispositions, decision, and next action. PASS means the criteria are satisfied
@@ -250,8 +251,8 @@ evaluated tree and records the terminal handoff and Note.
 #### 3.3 Run closure EVALUATION
 
 - Freeze the actual closure tree and evaluate it with the Memory diff, accepted commits, checks, merge plan,
-  authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and one attempted
-  invocation per remaining runtime over the same subject and criteria. A launchable runtime produces an
+  authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and one Partner
+  wrapper subagent per remaining runtime over the same subject and criteria. A launchable runtime produces an
   evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
   changed WORK; FAIL preserves the branch, worktree, session root, reports, and exact stopped state.

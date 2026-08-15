@@ -24,8 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in every Delegation prompt, and Agent Teams prefers re-delegating coherent follow-up work to a context-ready
   teammate under a fresh complete brief.
 - Partner now saves one authoritative result inside the caller's session directory and returns a separate
-  compact final Handoff. Codex and Claude Code launches use restricted non-persistent write-capable modes, and
-  any unexpected write, invalid result, or Handoff mismatch stops acceptance.
+  compact final Handoff. The caller starts each launch through one local wrapper subagent so remaining
+  runtimes can run in parallel. Codex, Claude Code, and Grok launches use the measured write-capable
+  commands, and any unexpected session or project write, invalid result, or Handoff mismatch stops
+  acceptance.
 - Cowork now uses only Fast and Light delivery. Fast skips Ideation and Planning, while Light runs bounded
   canonical Ideation and Planning before Execution. Cowork and Workflow now share session-root and
   configuration vocabulary, use aligned owner-local configuration templates, and reference the skills that

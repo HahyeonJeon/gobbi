@@ -30,13 +30,22 @@ Independence is fixed before launch and cannot be repaired afterward.
 
 ### Return evidence, not a substitute
 
-The saved result and final Handoff must agree. A failed launch, unexpected write, or invalid result remains a
+The saved result and the final Handoff must agree. A failed launch, unexpected write, or invalid result remains a
 visible failure rather than transformed or relabeled content.
+
+### Route each launch through one local wrapper
+
+The caller starts one ordinary execute-capable subagent per remaining runtime. That wrapper only runs the
+Partner command. The Partner process is still the named-runtime CLI, not the wrapper. Wrappers for different
+remaining runtimes may run in parallel.
 
 ## Rules
 
 - **MUST launch only a recorded named runtime that is not the active runtime.** Accept `claude-code`, `codex`,
   and `grok`; `disabled` or an empty launch set after skip launches nothing and is not rewritten to `disabled`.
+- **MUST start each remaining-runtime launch through one local wrapper subagent.** Use the active runtime's
+  ordinary execute-capable subagent spawn. Start one wrapper per remaining runtime. When two runtimes remain,
+  start both wrappers in the same parallel panel.
 - **MUST build every partner prompt through Delegation.** Include the exact absolute session directory and
   exact absolute writing path in the prompt's required Metadata.
 - **MUST contain the writing path inside the session directory and grant no other session or project write.**
@@ -45,6 +54,9 @@ visible failure rather than transformed or relabeled content.
   one saved result and one compact final Handoff. Do not pass `--session-id`, `--resume`, or `--continue`.
 - **MUST validate the process, write set, saved result, and Handoff before acceptance.** Runtime status or a
   plausible stdout summary is not completion evidence.
+- **NEVER treat the wrapper as Partner or as a teammate.** The wrapper only runs the named command, captures
+  stdout and stderr, and returns the Handoff to the caller. It does not talk to other specialists or reuse a
+  prior Partner process.
 - **NEVER broaden, move, repair, extract, relabel, or automatically retry a partner result.** Return the exact
   failure and let the caller decide the next action.
 
@@ -102,6 +114,28 @@ visible failure rather than transformed or relabeled content.
   exact readable resources, timeout, expected result shape, and verification in the assignment.
 - Keep `prompt_file`, `handoff_file`, and `stderr_file` in one private temporary capture directory outside the
   project and session roots. Remove the captures after their required evidence is read.
+
+### Route
+
+#### Spawn the wrapper
+
+- After the Partner prompt and write surface are bound, spawn one ordinary execute-capable subagent through
+  the active runtime. Do not run the Partner command in the caller process when a subagent spawn is available.
+- Give the wrapper a complete Delegation brief with `agent: partner-wrapper`, the frozen `expected-partner`,
+  the exact command from this manual, `session-directory`, `writing-path`, and the three capture paths. The
+  brief that the Partner process receives remains `agent: partner`.
+- When two runtimes remain, spawn both wrappers in one parallel panel. Each wrapper has its own writing path
+  and capture directory. Dependent synthesis waits until every wrapper has returned.
+
+#### Limit the wrapper
+
+- The wrapper's only work is to run the exact command, write stdout to `handoff_file` and stderr to
+  `stderr_file`, and return that Handoff to the caller. It does not change the Partner prompt, invent flags,
+  or write the authoritative result; the Partner process writes `writing-path`.
+- The wrapper does not message other subagents, teammates, or the user. Communication with the caller is the
+  returned Handoff only.
+- The wrapper is one-shot. Do not resume it for another Partner run. A retry is a new wrapper and a new
+  Partner assignment.
 
 ### Availability
 
@@ -187,8 +221,8 @@ visible failure rather than transformed or relabeled content.
 
 #### Validate the result and Handoff
 
-- Require a zero exit status, no timeout, one non-empty regular result at the exact writing path, and one
-  non-empty final Handoff on stdout. Read stderr only as an immediate diagnostic.
+- Wait for the wrapper to return. Require a zero exit status, no timeout, one non-empty regular result at the
+  exact writing path, and one non-empty final Handoff on stdout. Read stderr only as an immediate diagnostic.
 - Compare the session preimage with the post-run inventory. The writing path must be the only created or
   changed session or project path. An unexpected session or project write fails the run and remains for the
   caller's explicit recovery decision.

@@ -103,8 +103,9 @@ and names the exact resolved paths in read order.
   evaluation occurs only on the user's call, and explicit closure applies Memory directly before checking
   evaluation freshness. Never load Wrap-up or create a Workflow Note for Cowork.
 - For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and recorded participant policy. Use
-  available subagents or teammates for local work and route one attempted invocation per remaining runtime
-  through Partner, each at its own exact session writing path. Retain each phase handoff and durable Wrap-up;
+  available subagents or teammates for local work and route each remaining runtime through one Partner
+  wrapper subagent, each at its own exact session writing path. Wrappers may run in parallel. Retain each
+  phase handoff and durable Wrap-up;
   after Phase 1, resolve decisions autonomously or stop without asking the user.
 
 ### Memorize

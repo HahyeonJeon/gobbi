@@ -46,7 +46,7 @@ route.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
   results, executors own implementation commits, and assistants own direct-Memory closure commits.
 - **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
-  active-runtime evaluator and one attempted Partner invocation per remaining runtime.
+  active-runtime evaluator and one Partner wrapper subagent per remaining runtime.
 - **MUST run Cowork closure only after an explicit `wrap up` call.** Apply Memory directly and never load
   Wrap-up or create Workflow TODOs, gates, RECORD receipts, or a Workflow Note.
 
@@ -141,10 +141,11 @@ CW · Wrap-up
 - Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
   fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
   launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
-  not rewrite the recorded policy to `disabled`. For each
-  remaining runtime, make one attempted invocation with its own `tmp/` path, Delegation prompt, and
-  `expected-partner`; Cowork validates each sole write and Handoff, or records Unavailable evidence when the
-  attempt cannot launch. `disabled` invokes no external runtime.
+  not rewrite the recorded policy to `disabled`. For each remaining runtime, spawn one Partner wrapper
+  subagent through the active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and
+  `expected-partner`. Wrappers for different remaining runtimes may run in parallel. Cowork validates each
+  sole write and Handoff after the wrapper returns, or records Unavailable evidence when the attempt cannot
+  launch. `disabled` invokes no external runtime.
 
 #### 2.3 Accept the shaping results
 
@@ -177,10 +178,10 @@ CW · Wrap-up
 - Activate only `CW · Evaluation`, define the decision criteria and report aggregation rule, assign one unique
   caller-named directory below `tmp/`, and apply Memory `Temporary Record` to each exact Evaluation output path.
 - Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. For each remaining
-  runtime, make one attempted Partner invocation over the same frozen subject, each with its own `tmp/` path,
-  Delegation prompt, and `expected-partner`. A launchable runtime produces an evaluator report; an Unavailable
-  attempt produces Unavailable evidence, not a Partner Handoff. The manager validates and assembles reports
-  only through the recorded criteria and aggregation rule.
+  runtime, spawn one Partner wrapper subagent over the same frozen subject, each with its own `tmp/` path,
+  Delegation prompt, and `expected-partner`. Wrappers may run in parallel. A launchable runtime produces an
+  evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager
+  validates and assembles reports only through the recorded criteria and aggregation rule.
 
 #### 3.2 Apply findings and coverage
 

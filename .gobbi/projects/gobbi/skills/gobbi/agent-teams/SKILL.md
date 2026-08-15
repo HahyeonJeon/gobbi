@@ -100,8 +100,9 @@ Task and idle states support scheduling. Direct result and verification evidence
   prevent file conflicts.
 - Keep one write-capable assignment active across any shared file, branch, session record, TODO route, or
   external system. Independent read-only work may run in parallel.
-- Route opposite-runtime work through [Partner](../partner/SKILL.md) when that runtime remains in the launch
-  set. Partner is a fresh process with one exact session writing path, not a teammate to continue.
+- Route remaining-runtime work through [Partner](../partner/SKILL.md) when that runtime remains in the launch
+  set. Spawn one Partner wrapper subagent per remaining runtime. The Partner process is still a fresh CLI
+  with one exact session writing path, not a teammate to continue.
 
 ### Acceptance
 
