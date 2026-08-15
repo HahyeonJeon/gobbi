@@ -89,13 +89,16 @@ remaining runtimes may run in parallel.
   - stage: <caller stage>
   - iteration: <caller iteration>
 
+  ## Context
+  <State working state, accepted decisions, and required skills-to-load with exact paths and read order.>
+
   ## Task
   <Command one result, its purpose, scope, exclusions, and acceptance evidence.>
 
   ## Instructions
   <Require writing only writing-path, named verification, independence, and exact stop conditions.>
 
-  ## Resources
+  ## Materials
   <List exact sources, read order, frozen inputs, and conflict precedence.>
 
   ## Return
@@ -104,7 +107,7 @@ remaining runtimes may run in parallel.
   ```
 
 - State that the saved file is the authoritative result and stdout is only its final Handoff. Require the
-  partner to stop before writing when the brief, resource, boundary, or authority is incomplete.
+  partner to stop before writing when the brief, material, boundary, or authority is incomplete.
 
 #### Bind the write surface
 

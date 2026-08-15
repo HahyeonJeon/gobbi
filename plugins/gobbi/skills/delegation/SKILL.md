@@ -16,7 +16,7 @@ can verify the result.
 ### Give the subagent enough context
 
 State the purpose, current state, scope, decisions, and terms that change the work. Treat context absent from the
-prompt or its named resources as unknown to the subagent.
+prompt or its named materials as unknown to the subagent.
 
 ### Command the task directly
 
@@ -38,8 +38,10 @@ context.
   then the owning mode or operation and the role-specific additions; use this base where those owners are silent.
 - **MUST give the subagent one bounded assignment with one authoritative result.** Name the outcome, purpose,
   scope, authority, starting state, result, acceptance evidence, verification, stop conditions, and prohibited work.
-- **MUST provide exact resources and context needed for the assignment.** Name paths, read order, relevant
-  decisions, and conflict precedence instead of relying on conversation history or inherited skill loads.
+- **MUST name required skills-to-load in `## Context` and keep `## Materials` required.** Put working state,
+  accepted decisions, and exact skill paths with read order in `## Context`, and put remaining sources, read
+  order, purpose, and conflict precedence in `## Materials`; do not rely on conversation history or inherited
+  skill loads.
 - **MUST include a `## Return` section in every delegation prompt.** The delegating agent defines the return
   contract there, and the subagent writes the final Handoff for every terminal status.
 - **MUST make the final handoff verifiable.** Require its status, summary, exact durable locator or response
@@ -68,13 +70,16 @@ context.
   - stage: <work stage>
   - iteration: <current iteration>
 
+  ## Context
+  <State working state, accepted decisions, and required skills-to-load with exact paths and read order.>
+
   ## Task
   <Command one outcome. State its purpose, scope, exclusions, required result, and completion evidence.>
 
   ## Instructions
   <State rules, authority, constraints, independence, method, verification, stops, and prohibited work.>
 
-  ## Resources
+  ## Materials
   <List exact sources, read order, purpose, and precedence for conflicts.>
 
   ## Return
@@ -87,7 +92,7 @@ context.
 - Add `###` subsections only when one template section contains distinct task-specific subjects. Keep `agent`
   and `assignment`; omit an optional Metadata field unless the assignment uses it or an owning contract requires
   it.
-- Remove instructions already owned by an exact named resource unless the subagent needs the brief to resolve
+- Remove instructions already owned by an exact named material unless the subagent needs the brief to resolve
   precedence, authority, or a task-specific exception.
 
 ### Handoff Content
