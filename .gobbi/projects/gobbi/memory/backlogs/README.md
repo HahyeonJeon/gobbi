@@ -12,6 +12,7 @@ each group. Order implies no priority, readiness, or sequence.
 
 - `check-markdown-links.sh never inspects the plugin mirror` → `project.md#check-markdown-linkssh-never-inspects-the-plugin-mirror`
 - `.codex/config.toml is inert` → `project.md#codexconfigtoml-is-inert`
+- `Project .grok/config.toml` → `project.md#project-grokconfigtoml`
 - `Consumer-project README setup section` → `project.md#consumer-project-readme-setup-section`
 - `Flat consumer-project layout` → `project.md#flat-consumer-project-layout`
 - `Guardrail gaps in two .toml role wrappers` → `project.md#guardrail-gaps-in-two-toml-role-wrappers`

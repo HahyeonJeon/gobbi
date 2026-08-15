@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Grok system integration](note/2026-08-15-grok-system-integration.md)
 - [Code-review skill handoff](note/2026-08-12-code-review-skill-handoff.md)
 - [Gobbi development lifecycle skill family handoff](note/2026-08-10-gobbi-dev-skill-family-handoff.md)
 - [CLI skill family handoff](note/2026-08-09-cli-skill-family-handoff.md)

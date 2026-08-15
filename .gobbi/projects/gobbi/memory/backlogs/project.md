@@ -31,6 +31,21 @@ are also not applied. User decision: record it, decide separately.
 **Context:** Measured fact recorded in
 [`learnings/codex/tips.md`](../learnings/codex/tips.md#codexconfigtoml-at-a-repository-root-is-inert).
 
+## Project `.grok/config.toml`
+
+**Backlogged at:** 2026-08-15T14:49:00Z
+
+**What:** Decide whether Gobbi should add a repository `.grok/config.toml`.
+
+**Why backlogged:** The 2026-08-15 DISCUSSION lock deferred it. Official Grok config is user-level
+`~/.grok/config.toml`. Codex already showed that a repository config can be unused. Measure before adding a
+project file.
+
+**Context:** Official marketplace sources use `[[marketplace.sources]]` in `~/.grok/config.toml`. This
+checkout already has a project plugin pointer at `.grok/plugins/gobbi`. User-level
+`[toolset.bash] timeout_secs` is a Grok host setting, not a reason to add a project config. Revisit if
+measurement shows Grok reads a project config that Gobbi needs.
+
 ## Consumer-project README setup section
 
 **Backlogged at:** 2026-08-01T15:05:03Z
