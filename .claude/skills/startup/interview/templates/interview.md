@@ -1,0 +1,1 @@
+../../../../../.gobbi/projects/gobbi/skills/startup/interview/templates/interview.md
