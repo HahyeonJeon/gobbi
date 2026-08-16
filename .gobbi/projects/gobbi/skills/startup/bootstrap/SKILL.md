@@ -21,8 +21,8 @@ README, root `.gitignore`, or stack manifest.
 
 ### Do not choose a stack
 
-Bootstrap reads local-stack rows from the accepted platform draft. It stops
-when those rows are missing or conflicting.
+Bootstrap reads local-stack rows and the First check heading from the
+accepted system draft. It stops when those inputs are missing or conflicting.
 
 ### First-check is completion
 
@@ -40,14 +40,14 @@ theater, Memory, or `.gobbi/.gitignore`.
 - **MUST stop if session root, target root, or project key is missing.** Do
   not derive a replacement identity.
 
-- **MUST read accepted local-stack rows from
-  `{session-root}/tmp/startup/design/architecture/platform.md` and stop if
+- **MUST read accepted local-stack rows and the First check heading from
+  `{session-root}/tmp/startup/design/architecture/system.md` and stop if
   they are missing or conflicting.** Do not choose a stack.
 
 - **MUST run `git init` only when `{target}` is not a repository, create
   `{target}/.gitignore` and the stack manifest only if missing, and create
-  `{target}/.env.example` only when platform or interview says configuration
-  is required and that file is missing.**
+  `{target}/.env.example` only when the system draft or interview says
+  configuration is required and that file is missing.**
 
 - **MUST create `{target}/README.md` with project purpose and one first-check
   command only if it is missing, and treat an existing README with no
@@ -74,10 +74,10 @@ theater, Memory, or `.gobbi/.gitignore`.
 #### 1.2 Require the local stack
 
 - Require accepted
-  `{session-root}/tmp/startup/design/architecture/platform.md` and read only
-  its local-stack rows.
-- Stop and name the missing path, missing local row, or conflict if the local
-  stack is absent or conflicting.
+  `{session-root}/tmp/startup/design/architecture/system.md` and read its
+  local-stack rows and First check heading.
+- Stop and name the missing path, missing local row, missing First check
+  heading, or conflict if those inputs are absent or conflicting.
 - Do not choose a stack.
 
 #### 1.3 Inspect the target
@@ -85,7 +85,7 @@ theater, Memory, or `.gobbi/.gitignore`.
 - Inspect whether `{target}` is a git repository and whether
   `{target}/README.md`, `{target}/.gitignore`, the stack manifest, and
   `{target}/.env.example` exist.
-- Read `{session-root}/interview.md` and the platform draft to see whether
+- Read `{session-root}/interview.md` and the system draft to see whether
   configuration or secrets are required.
 - If `{target}/README.md` exists and does not name a first-check command,
   stop and name that conflict.
@@ -109,10 +109,11 @@ theater, Memory, or `.gobbi/.gitignore`.
 #### 2.3 Create env example and README if needed
 
 - Create `{target}/.env.example` with names only, never secrets, only when
-  platform or interview says configuration or secrets are required and that
-  file is missing.
+  the system draft or interview says configuration or secrets are required
+  and that file is missing.
 - If `{target}/README.md` is missing, create it with project purpose and one
-  exact first-check command derived from the local stack.
+  exact first-check command derived from the First check heading and
+  local-stack rows.
 - Allow only extra files an official init or manifest command must create for
   that check, and do not hand-author empty `src/`, `lib/`, `app/`, or
   `tests/` trees.
@@ -146,5 +147,5 @@ theater, Memory, or `.gobbi/.gitignore`.
 
 | Name | Description |
 |---|---|
-| [Platform template](../project-design/templates/platform.md) | Stack table whose local rows are Bootstrap's only design input. |
+| [System template](../project-design/templates/system.md) | Stack table and First check heading that are Bootstrap's only design inputs. |
 | [Git](../../git/SKILL.md) | Conventions for `git init` and the optional local bootstrap commit. |

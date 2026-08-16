@@ -93,7 +93,7 @@ not the Wrap-up skill.
 - Otherwise load [Project Design](project-design/SKILL.md) and pass the same
   identity. Start only after accepted `{session-root}/interview.md` exists.
 - Continue only after `{session-root}/tmp/startup/design/` holds overview,
-  platform, product, and the feature set or an explicit zero-feature statement.
+  system, product, and the feature set or an explicit zero-feature statement.
   The user must accept those drafts.
 
 #### 2.3 Load Roadmap
@@ -111,8 +111,8 @@ not the Wrap-up skill.
   succeeded.
 - Otherwise load [Bootstrap](bootstrap/SKILL.md) and pass the same identity.
   Start only after accepted
-  `{session-root}/tmp/startup/design/architecture/platform.md` records the
-  local stack.
+  `{session-root}/tmp/startup/design/architecture/system.md` records the
+  local stack and First check heading.
 - Continue only after that first-check succeeds.
 
 ### Phase 3 — Memory Wrap-up
@@ -122,9 +122,11 @@ not the Wrap-up skill.
 - Load [Memory](../memory/SKILL.md) and
   [Design Memory](../memory/design/SKILL.md). This named Memory stage
   authorizes `Memorize` with write boundary
-  `{target}/.gobbi/projects/<key>/memory/design/`.
+  `{target}/.gobbi/projects/<key>/memory/design/` and session identity
+  from the session-root leaf: original UTC start date, normalized slug,
+  full lowercase hyphenated UUID, and exact session root.
 - Memorize from `{session-root}/tmp/startup/design/` into
-  `architecture/overview.md`, `architecture/platform.md`,
+  `architecture/overview.md`, `architecture/system.md`,
   `process/product.md`, each listed `feature/<feature>.md` or none, and
   `roadmap/project.md`.
 - Stop and name a missing required session draft.
@@ -135,7 +137,7 @@ not the Wrap-up skill.
   create it with title `Design Memory` and the role "Recursive navigation
   across design memory, grouped by category."
 - Add or refresh `[Overview](architecture/overview.md)`,
-  `[Platform](architecture/platform.md)`, `[Product](process/product.md)`,
+  `[System](architecture/system.md)`, `[Product](process/product.md)`,
   one Feature bullet per feature file, and `## Roadmap` with
   `[Project](roadmap/project.md)` from the session README or the
   session roadmap draft. Keep unrelated bullets.
@@ -155,7 +157,7 @@ not the Wrap-up skill.
 
 | Name | Description |
 |---|---|
-| [Interview](interview/SKILL.md) | Walks 24 topics and writes `{session-root}/interview.md`. |
+| [Interview](interview/SKILL.md) | Walks 42 core topics and triggered children and writes `{session-root}/interview.md`. |
 | [Project Design](project-design/SKILL.md) | Writes session design drafts and creates the Gobbi namespace. |
 | [Roadmap](roadmap/SKILL.md) | Writes the session project-horizon draft. |
 | [Bootstrap](bootstrap/SKILL.md) | Creates the smallest local repository that can pass a first-check. |

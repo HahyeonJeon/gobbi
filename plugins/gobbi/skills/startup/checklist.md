@@ -107,6 +107,7 @@
 #### The interview is too thin for later work
 
 - [ ] A core needed for stack, first-check, first-horizon order, or first useful outcome is absent.
+- [ ] A family file states a topic count that the topic bank does not own.
 - [ ] Recursion has no parent-before-child order.
 - [ ] The subject set that later branches walk is never named.
 
@@ -198,12 +199,12 @@
 #### The smallest repository cannot be created or proved
 
 - [ ] Completion rests on files existing rather than on a check that runs.
-- [ ] The first-check command cannot be derived from recorded local-stack rows.
+- [ ] The first-check command cannot be derived from recorded local-stack rows and the First check heading.
 - [ ] A command that ignores the toolchain can satisfy first-check.
 - [ ] No stated behavior covers a check that fails.
 - [ ] A failing check can be retried without limit.
 - [ ] The bootstrap chooses a stack that design did not record.
-- [ ] The bootstrap proceeds when the recorded stack is absent or self-contradictory.
+- [ ] The bootstrap proceeds when the recorded stack or First check heading is absent or self-contradictory.
 
 #### Bootstrap damages or ignores what the target already has
 

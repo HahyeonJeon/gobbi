@@ -44,7 +44,7 @@ Stop when the ignore file exists and its bytes conflict.
   is missing; never invent it.
 
 - **MUST write session Temporary Records at `{session-root}/tmp/startup/design/`
-  using Memory path names `architecture/overview.md`, `architecture/platform.md`,
+  using Memory path names `architecture/overview.md`, `architecture/system.md`,
   `process/product.md`, and `feature/<feature>.md`.**
 
 - **MUST fill every required heading with a derived statement,
@@ -88,22 +88,30 @@ Stop when the ignore file exists and its bytes conflict.
 
 - Write `{session-root}/tmp/startup/design/architecture/overview.md` from the
   [overview template](templates/overview.md) using Branch 1.
-- Fill every overview heading from the matching topic id, or mark it
-  `Not applicable` or `Open`.
+- Fill Purpose from `purpose` and `why-now`, Problem from `problem-evidence`,
+  Outcome from `durable-outcome`, `success-and-stop`, and `current-baseline`,
+  and Constraints from `constraints` and `quality-priority`. Mark a heading
+  `Not applicable` or `Open` when the topic does not resolve it.
 
-#### 2.2 Write platform
+#### 2.2 Write system
 
-- Write `{session-root}/tmp/startup/design/architecture/platform.md` from the
-  [platform template](templates/platform.md) using Branch 2.
-- Fill the Stack table, treating local-stack rows as the only Bootstrap input
-  from design.
+- Write `{session-root}/tmp/startup/design/architecture/system.md` from the
+  [system template](templates/system.md) using Branch 2.
+- After `## Products`, write one `### {Product}` subsection under every
+  remaining system heading. Start an inherited answer with `Inherited — `.
+- Fill the Stack table with a Product column from `stack` and
+  `local-or-cloud`, and fill `## First check` from `first-check` as its own
+  heading, not a Stack column. Local-stack rows and that heading are the
+  Bootstrap inputs from design.
 
 #### 2.3 Write product
 
 - Write `{session-root}/tmp/startup/design/process/product.md` from the
   [product template](templates/product.md) using Branch 3 except `core-tasks`
-  detail, plus Branch 2 `experience-direction` for Audience and experience
-  direction.
+  detail, plus Branch 2 `experience-direction`. Fill First useful outcome
+  from `first-use` and `current-alternative`, Refused uses from `refused-use`
+  and `boundary`, and Audience from `experience-direction` and
+  `accessibility-needs`.
 - Keep one product file. If several products exist, keep `## Products` as the
   inventory and add one subsection per product under the remaining product
   headings.
@@ -118,18 +126,30 @@ Stop when the ignore file exists and its bytes conflict.
   feature file.
 - Name `<feature>` in kebab-case matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`. If two
   products share a task name, use `{product}-{task}`.
-- Fill Behavior subheadings Normal, Alternate, Invalid, Failure, and Recovery.
+- Fill Purpose from `core-tasks`, Actors from `task-actors`, Scope from
+  `task-scope` and `refused-use`, Behavior from `task-behavior`, and
+  Failure / Recovery from `failure-recovery`. Treat Open Actors, Scope, or
+  Behavior on a feature that can sit in the first horizon as blocking, and
+  ask before leaving those Open.
 
 #### 2.5 Complete every heading
 
 - Confirm every required heading in the written drafts is filled,
   `Not applicable — {reason}`, or `Open — {what would resolve it}`.
 - Ask one user question through AskUserQuestion when a lifecycle answer is
-  missing and would otherwise be invented.
+  missing and would otherwise be invented, including Actors, Scope, or
+  Behavior on a feature that can sit in the first horizon.
 - List cited topic ids in each draft, including Interview sources on every
-  feature file.
+  feature file, and mark Blocking on the feature Open-questions table.
 
-### Phase 3 — Create namespace and return
+#### 2.6 Write acceptance placeholders
+
+- Write the session `## Acceptance` block on every written draft with
+  `User accepted this draft: no`.
+- Do not treat file existence as acceptance.
+- Memorize later omits `## Acceptance`.
+
+### Phase 3 — Create namespace, obtain acceptance, and return
 
 #### 3.1 Create `.gobbi/.gitignore` if missing
 
@@ -154,12 +174,18 @@ projects/*/worktrees/
   README.
 - Do not call Memorize.
 
-#### 3.3 Return the drafts
+#### 3.3 Obtain acceptance
+
+- Present the written drafts as session-only drafts.
+- On rejection, revise the disputed draft in place.
+- On acceptance, write the same user and date into every written draft and
+  set `User accepted this draft: yes`. File existence is not acceptance.
+
+#### 3.4 Return the drafts
 
 - Return the absolute session draft paths and remaining Open items.
-- State that Project Design is complete only when every required heading is
-  filled, marked not applicable, or marked open, and the namespace rule
-  succeeded.
+- State that Project Design is complete only when every written draft has
+  `User accepted this draft: yes` and the namespace rule succeeded.
 - Do not start Roadmap, Bootstrap, or planning.
 
 ## References
@@ -167,7 +193,7 @@ projects/*/worktrees/
 | Name | Description |
 |---|---|
 | [Overview template](templates/overview.md) | Session draft sections for `{session-root}/tmp/startup/design/architecture/overview.md`. |
-| [Platform template](templates/platform.md) | Session draft sections and Stack table for `{session-root}/tmp/startup/design/architecture/platform.md`. |
+| [System template](templates/system.md) | Session draft sections, Stack table, and First check for `{session-root}/tmp/startup/design/architecture/system.md`. |
 | [Product template](templates/product.md) | Session draft sections and Feature index for `{session-root}/tmp/startup/design/process/product.md`. |
 | [Feature template](templates/feature.md) | Per-feature specification for `{session-root}/tmp/startup/design/feature/<feature>.md`. |
-| [Interview topics](../interview/topics.md) | The 24 topic ids Project Design cites as sources. |
+| [Interview topics](../interview/topics.md) | The 42 topic ids Project Design cites as sources. |

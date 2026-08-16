@@ -39,8 +39,9 @@ check is mechanical.
   not derive a replacement identity.
 
 - **MUST require accepted Project Design session drafts at
-  `{session-root}/tmp/startup/design/` for overview, platform, product, and the
-  feature set or an explicit zero-feature statement.**
+  `{session-root}/tmp/startup/design/` for overview, system, product, and the
+  feature set or an explicit zero-feature statement.** Acceptance is the
+  Acceptance block on each written draft, not file existence.
 
 - **MUST write the session Temporary Record
   `{session-root}/tmp/startup/design/roadmap/project.md` from the
@@ -72,11 +73,12 @@ check is mechanical.
 #### 1.2 Require Project Design drafts
 
 - Require `{session-root}/tmp/startup/design/architecture/overview.md`,
-  `architecture/platform.md`, and `process/product.md` to exist.
+  `architecture/system.md`, and `process/product.md` to exist and record
+  `User accepted this draft: yes`.
 - Require the product Feature index or an explicit zero-feature statement, plus
   each listed `{session-root}/tmp/startup/design/feature/<feature>.md`.
-- Stop and name the missing draft or acceptance if the caller cannot confirm
-  the drafts were accepted.
+- Stop and name the missing draft or acceptance if either is absent. File
+  existence is not acceptance.
 
 #### 1.3 Read the sources
 
@@ -85,7 +87,8 @@ check is mechanical.
 - Read `{session-root}/interview.md` when the local-versus-cloud rule or
   Bootstrap state is still open.
 - Stop and name a blocking open design item that prevents a safe horizon
-  statement.
+  statement, including a Blocking-open Actors, Scope, or Behavior heading on a
+  feature that would enter the first included horizon.
 
 ### Phase 2 — Write the session draft
 
@@ -94,17 +97,19 @@ check is mechanical.
 - Write `{session-root}/tmp/startup/design/roadmap/project.md` from the
   [project template](templates/project.md).
 - Keep every required heading. Fill it, mark `Not applicable — {reason}`, or
-  mark `Open — {what would resolve it}`.
+  mark `Open — {what would resolve it}`. Write `## Acceptance` with
+  `User accepted this draft: no`.
 - Confirm the live path is that session tmp path and that no Memory path was
   written.
 
 #### 2.2 Record direction and current position
 
-- Write Direction in two to four sentences. Use local single-user or local
-  first check before cloud or multi-user unless Interview recorded a different
-  rule.
-- Write Current position from what is true now: local versus cloud, and whether
-  Bootstrap has already run, using target files and session drafts without Bash.
+- Write Direction in two to four sentences from `horizon-direction` and
+  `success-and-stop`. Use local first then cloud unless Interview recorded a
+  different rule.
+- Write Current position from what is true now, citing `local-or-cloud` and
+  `first-check`, and whether Bootstrap has already run, using target files
+  and session drafts without Bash.
 
 #### 2.3 Record horizons
 
@@ -114,6 +119,8 @@ check is mechanical.
   condition, Exit evidence, Deliberately deferred, and Costly decision.
 - Ask one AskUserQuestion at a time only to resolve feature-to-horizon
   placement or the local-versus-cloud rule when Interview left them open.
+  Do not place a feature with Blocking-open Actors, Scope, or Behavior in the
+  first included horizon.
 
 #### 2.4 Complete the remaining sections
 
@@ -121,7 +128,8 @@ check is mechanical.
   files in exactly one horizon or in Not scheduled. If the Feature index is
   explicitly none, write no feature ids.
 - Fill Replan and stop with observations that require the horizon order to be
-  revised or that require a horizon or the project to stop.
+  revised or that require a horizon or the project to stop, citing
+  `success-and-stop`.
 - Confirm the file has no dates, estimates, assignees, sprints, or tasks.
 
 ### Phase 3 — Navigate, accept, and return
@@ -142,8 +150,8 @@ check is mechanical.
   hierarchy.
 - On rejection, return to the earliest disputed placement or rule and revise
   the draft in place.
-- On acceptance, treat user acceptance of this file as completion, and do not
-  copy it into Design Memory.
+- On acceptance, write `User accepted this draft: yes` with the user and
+  date. File existence is not acceptance.
 
 #### 3.3 Return the draft
 
@@ -151,14 +159,17 @@ check is mechanical.
   `{session-root}/tmp/startup/design/roadmap/project.md` and remaining Open
   items.
 - State that Roadmap is complete only when every feature id is placed, every
-  required heading is filled or marked, and the user accepted the draft.
-- Do not start Bootstrap, write durable Memory, or call Memorize. These session
-  files are later Memorize inputs for `{memory}/design/roadmap/project.md` and
-  the durable README `## Roadmap` heading.
+  required heading is filled or marked, and the Acceptance block records
+  `User accepted this draft: yes`.
+- Do not start Bootstrap, write durable Memory, or call Memorize. These
+  session files are later Memorize inputs for `{memory}/design/roadmap/project.md`
+  and the durable README `## Roadmap` heading; Memorize later omits
+  `## Acceptance`.
 
 ## References
 
 | Name | Description |
 |---|---|
 | [Project template](templates/project.md) | Session draft sections Roadmap fills at `{session-root}/tmp/startup/design/roadmap/project.md`. |
+| [System template](../project-design/templates/system.md) | First check and stack sources Roadmap cites for Current position. |
 | [Product template](../project-design/templates/product.md) | Feature index and zero-feature statement Roadmap uses to place feature ids. |
