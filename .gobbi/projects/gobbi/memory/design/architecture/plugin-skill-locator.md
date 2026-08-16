@@ -37,11 +37,13 @@ Four steps, run once at the Gobbi entry:
 **Divergence rule.** The resolved pair is fixed for the whole session — "one session runs against exactly one
 pair" — re-derived at every entry and compared against the recorded pair.
 
-**Root-pair invariant** (in every role contract, not just the entry): the two roots are one pair, never one
-value. Either the brief supplies both or supplies neither, and a specialist derives both from its own
-contract's location only in the neither case. A supplied root is never trusted unvalidated. Four failure
-tokens discriminate the stop reason: `partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`,
-`location-underivable`.
+**Root-pair invariant:** the two roots are one pair, never one value. Gobbi 1.1 still owns manager entry
+resolution in this document. Delegation owns the specialist protocol, including the four failure tokens
+`partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`, and `location-underivable`. Role contracts are
+now [identity-and-load maps](../process/identity-and-load-role-contracts.md): specialists load Delegation and
+validate the supplied or derived pair; they do not restate the protocol. Either the brief supplies both roots
+or supplies neither. A specialist derives both from its own contract's location only in the neither case. A
+supplied root is never trusted unvalidated.
 
 ### Verified topology trace
 
@@ -87,13 +89,10 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
   determine that location itself. The design holds today because the manager always carries both roots in
   every brief, so the fallback path is never exercised in practice. Recorded, not fixed; see
   [`backlogs/project.md`](../../backlogs/project.md).
-- Four role-contract surfaces still name paths or files that do not exist in a consumer project, outside the
-  locator conversion's own scope: `plugins/gobbi/` cited as a Codex runtime surface, a nonexistent "Project
-  skill", the user's own unreachable auto-memory file, and one cosmetic stale frontmatter line. See
-  [`backlogs/project.md`](../../backlogs/project.md).
 
 ## References
 
 - `gobbi/SKILL.md` Procedure Step 1.1 — the locator contract
-- Five role contracts (`.gobbi/projects/gobbi/agents/*.md`) — the root-pair invariant and failure tokens
+- [Delegation](../../../skills/delegation/SKILL.md) — specialist root-pair protocol and `NO_GOBBI_ROOT`
+- [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) — current role-file shape
 - [`reports/review/2026-08-02-locator-partner-agentteams-review.md`](../../reports/review/2026-08-02-locator-partner-agentteams-review.md) — evaluation and probe evidence

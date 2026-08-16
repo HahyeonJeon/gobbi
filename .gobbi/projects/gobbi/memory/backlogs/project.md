@@ -132,23 +132,3 @@ and assigning bootstrap to the selected Cowork or Workflow owner instead, withou
 **Context:** `packages/cli` was deleted when Gobbi moved to plugin-only distribution for v1.0.0; that
 deletion is the root cause analyzed in
 [`reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md`](../reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md).
-
-## Role-contract references to nonexistent consumer-project surfaces
-
-**Backlogged at:** 2026-08-02T12:16:00Z
-
-**What:** Fix four remaining role-contract gaps, same defect class as the 2026-08-02 locator fix but outside
-that fix's scope: `plugins/gobbi/` is cited as a Codex runtime surface in `leader.md`, `executor.md`,
-`evaluator.md`, and `assistant.md`, though that directory does not exist in a consumer project;
-`executor.md` cites the user's own auto-memory file (`feedback_path_formatting`) as a memory rule, unreachable
-from any consumer project; `assistant.md` names a "Project skill" that does not exist anywhere in the tree;
-`assistant.md`'s frontmatter description still names `record/SKILL.md` and `wrap-up/SKILL.md Phase 2.1` by an
-older convention.
-
-**Why backlogged:** Each was raised during the 2026-08-02 locator session as a finding with no owning task and
-was still present in the tree at session end. The first is the strongest candidate, being the same defect
-class as the session's own reported cause; the "Project skill" gap would require inventing a destination
-rather than converting an existing reference, so it needs a design decision, not a mechanical fix.
-
-**Context:** Raised as findings F3, F4, F5, and F6 during the session that produced
-[`design/architecture/plugin-skill-locator.md`](../design/architecture/plugin-skill-locator.md).

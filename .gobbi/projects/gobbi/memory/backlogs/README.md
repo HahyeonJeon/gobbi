@@ -19,7 +19,6 @@ each group. Order implies no priority, readiness, or sequence.
 - `Locator no-brief fallback unverified for a spawned specialist` → `project.md#locator-no-brief-fallback-unverified-for-a-spawned-specialist`
 - `Reconsider plugin-only distribution` → `project.md#reconsider-plugin-only-distribution`
 - `Revive a bootstrap CLI` → `project.md#revive-a-bootstrap-cli`
-- `Role-contract references to nonexistent consumer-project surfaces` → `project.md#role-contract-references-to-nonexistent-consumer-project-surfaces`
 
 ## Stop reminder
 
