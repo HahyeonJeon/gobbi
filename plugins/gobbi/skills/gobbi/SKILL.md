@@ -61,7 +61,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   |---|---|
   | `{gobbi-skills-root}/gobbi/SKILL.md` | The entry skill resolves from the skills root. |
   | `{gobbi-skills-root}/principles/SKILL.md` | A sibling skill resolves from the same root. |
-  | `{gobbi-agents-root}/manager.md` | Role contracts resolve from the agents root. |
+  | `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md` | Role contracts resolve from a runtime-flat or runtime-folder agents root. |
 
 - Expand and record the accepted pair with the runtime and entry trigger. Re-derive it after every context
   boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed pair appears.
@@ -118,7 +118,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - Read [Principles](../principles/SKILL.md), [Discussion](../discussion/SKILL.md), and
   [Delegation](../delegation/SKILL.md), in that order.
 - Read applicable repository instructions, every applicable project rule, and the canonical
-  [manager role](../../agents/manager.md). Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
+  [manager role](../../agents/manager.md) for Claude and Grok. Codex custom agents are not a plugin component; load the project `.codex/agents/manager.toml` when that file exists. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
   directory is absent or empty.
 - Confirm the foundation and fixed root pair. Defer every other skill to the selected mode or its own trigger.
 
@@ -188,7 +188,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
 | [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
 | [Delegation](../delegation/SKILL.md) | Defines every specialist prompt and final Handoff. |
-| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance. |
+| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance for Claude and Grok plugin consumers. Codex roles load from the project `.codex/agents/manager.toml`, not from this package. |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
