@@ -1,1 +1,1 @@
-../../.gobbi/projects/gobbi/agents/leader.md
+../../.gobbi/projects/gobbi/agents/grok/leader.md

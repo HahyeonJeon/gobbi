@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The published plugin `agents/` directory is a flat Claude/Grok projection (`{role}.md` only). Canonical
+  runtime folders stay under `.gobbi/projects/gobbi/agents/{claude,grok,codex}/`. Codex custom agents remain
+  repository-local `.codex/agents/{role}.toml` and are not a plugin component. The Claude plugin description
+  names skills for all three runtimes and plugin agents only for Claude Code and Grok.
+
 - Gobbi now presents three runtimes: Claude Code, Codex, and Grok. Grok discovers skills from `.grok/skills`,
   loads the checkout package through `.grok/plugins/gobbi` pointing at `../../plugins/gobbi`, and installs
   from the official Marketplace tab or `[[marketplace.sources]]` in `~/.grok/config.toml`.

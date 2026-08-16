@@ -227,11 +227,26 @@ roles=()
 if [[ -n "$role_owner" && -d "$role_owner" && ! -L "$role_owner" ]]; then
   pass "Gobbi agent source: $role_owner"
   shopt -s nullglob
-  role_files=("$role_owner"/*.toml)
+  role_files=("$role_owner"/codex/*.toml)
+  if ((${#role_files[@]} == 0)); then
+    role_files=("$role_owner"/*.toml)
+  fi
+  if ((${#role_files[@]} == 0)); then
+    role_files=("$role_owner"/*.md)
+  fi
   shopt -u nullglob
   for role_file in "${role_files[@]}"; do
-    role="$(basename "$role_file" .toml)"
-    role_name="$(sed -n 's/^[[:space:]]*name[[:space:]]*=[[:space:]]*"\([^"]*\)"[[:space:]]*$/\1/p' "$role_file")"
+    base="$(basename "$role_file")"
+    if [[ "$base" == "README.md" ]]; then
+      continue
+    fi
+    if [[ "$role_file" == *.toml ]]; then
+      role="${base%.toml}"
+      role_name="$(sed -n 's/^[[:space:]]*name[[:space:]]*=[[:space:]]*"\([^"]*\)"[[:space:]]*$/\1/p' "$role_file")"
+    else
+      role="${base%.md}"
+      role_name="$(sed -n 's/^name:[[:space:]]*//p' "$role_file" | head -n 1 | tr -d '\r')"
+    fi
     if [[ "$role_name" == "$role" ]]; then
       roles+=("$role")
     else
@@ -239,7 +254,7 @@ if [[ -n "$role_owner" && -d "$role_owner" && ! -L "$role_owner" ]]; then
     fi
   done
   if ((${#roles[@]} == 0)); then
-    fail "Gobbi agent source contains no valid role TOML files"
+    fail "Gobbi agent source contains no valid role files"
   fi
 else
   fail "Gobbi agent source is missing, unreadable, or a symbolic link"

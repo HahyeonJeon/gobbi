@@ -1,1 +1,1 @@
-../../.gobbi/projects/gobbi/agents/evaluator.md
+../../.gobbi/projects/gobbi/agents/claude/evaluator.md
