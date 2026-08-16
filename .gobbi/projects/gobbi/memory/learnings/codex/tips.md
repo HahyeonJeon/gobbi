@@ -57,3 +57,16 @@ runtime wrapper and environment, then gate effectful stages on the exact expecte
 
 **Application:** Do not treat a shell alias, function, unresolved link, or repeated per-stage lookup as the
 runtime identity. Keep source and fixture checks aligned with the same selection and version contract.
+
+## Codex Stop continues only through decision block
+
+**Context:** Writing or evaluating a Codex Stop hook, or assuming Claude and Grok `additionalContext` works on
+Codex.
+
+**Tip:** Codex CLI Stop continuation uses `{decision: "block", reason: ...}` only. Enable
+`[features] hooks = true` in the Codex config that Codex actually loads. Project hook registration is
+`.codex/hooks.json`, not the inert repository `.codex/config.toml`.
+
+**Application:** Detect Codex as `turn_id` present and no `GROK_HOOK_EVENT`. Do not emit both payload shapes.
+See [stop reminder](../../design/feature/stop-reminder.md) and
+[`.codex/config.toml` is inert](#codexconfigtoml-at-a-repository-root-is-inert).

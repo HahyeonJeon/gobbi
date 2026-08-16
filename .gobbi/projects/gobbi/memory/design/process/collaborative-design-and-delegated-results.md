@@ -25,6 +25,19 @@ The owning operation defines whether the result is a durable file, commit, or re
 field. Durable design, evaluation, and Partner results use exact caller-named absolute paths with containment
 and rereading checks; a printed Handoff references but never replaces a durable result.
 
+## Delegation brief
+
+The base brief order is Metadata, Context, Task, Instructions, Materials, Return.
+
+- Context sits above Task. It holds working state and accepted decisions only.
+- Materials is required and replaces Resources. It lists required skills-to-load with exact paths and read
+  order, remaining sources, purpose, and conflict precedence.
+- The Partner prompt template uses the same section names.
+
+Do not rely on conversation history or inherited skill loads. The canonical
+[Delegation](../../../skills/delegation/SKILL.md) and
+[Partner](../../../skills/gobbi/partner/SKILL.md) skills own these section names.
+
 ## Ownership and protection
 
 The canonical [Cowork](../../../skills/cowork/SKILL.md),

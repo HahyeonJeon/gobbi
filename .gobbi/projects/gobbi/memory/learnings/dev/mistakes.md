@@ -35,3 +35,13 @@ correct in isolation.
 
 **Correction:** Before changing one copy of a value an identity check depends on, find every other copy the
 check compares it against and change them together, or leave all of them alone.
+
+## Joining two identifiers with a delimiter that can appear in them
+
+**Context:** Building a lock key, filename, or cache key from two independent strings.
+
+**Mistake:** Concatenating the strings with `-`, `_`, or `/` lets distinct pairs collide. `prompt/a` and
+`prompt_a` became the same key. `(a-b, c)` and `(a, b-c)` did too.
+
+**Correction:** Hash the pair with a separator that cannot appear in the values, such as
+`sha256(session + NUL + prompt)`.
