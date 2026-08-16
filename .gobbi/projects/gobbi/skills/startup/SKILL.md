@@ -162,3 +162,4 @@ not the Wrap-up skill.
 | [Memory](../memory/SKILL.md) | Owns Memorize from session Temporary Records into durable design. |
 | [Design Memory](../memory/design/SKILL.md) | Owns design path names and category structure. |
 | [Git](../git/SKILL.md) | Conventions for the Memory-only local commit. |
+| [Startup checklist](checklist.md) | Reusable unchecked source for evaluating Startup family readiness. |
