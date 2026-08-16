@@ -116,6 +116,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
   operations will be redesigned before they are reintroduced.
 
+## 1.1.3 - 2026-08-09
+
+### Added
+
+- Added a navigation-only Python skill family with eleven focused children covering conventions,
+  debugging, design, development, packaging, performance, project structure, release, testing,
+  toolchain, and typing.
+- Added a navigation-only CLI skill family for line-oriented TypeScript and Bun tools with six
+  focused children covering architecture, development, interface, platform, release, and security.
+  The family keeps semantic results separate from terminal presentation and requires named evidence
+  for Node.js compatibility.
+- Materialized both families in the Claude Code and Codex package views and verified canonical,
+  discovery, package, and installed-cache parity.
+
 ## 1.1.2 - 2026-08-08
 
 ### Changed

@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.2-blue" alt="Version 1.1.2"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.3-blue" alt="Version 1.1.3"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
