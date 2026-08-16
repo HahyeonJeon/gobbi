@@ -58,3 +58,4 @@ starts fresh to preserve named-runtime independence.
 - [Agent Teams](../../../skills/gobbi/agent-teams/SKILL.md)
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
+- [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)
