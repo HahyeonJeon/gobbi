@@ -6,9 +6,6 @@ answer. Fill each heading, write `Not applicable — {reason}`, or write
 several products, keep `## Products` as the inventory and add one subsection per
 product under the remaining product headings.
 
-Sources: Branch 3 except `core-tasks` detail, plus Branch 2 `experience-direction`
-for Audience and experience direction.
-
 ## Products
 
 - Products:
@@ -19,22 +16,22 @@ for Audience and experience direction.
 
 ### {Product}
 
-- Statement: {from `first-use`}
-- Source: `first-use`
+- Statement: {from `first-use` and `current-alternative`}
+- Source: `first-use`, `current-alternative`
 
 ## Refused uses
 
 ### {Product}
 
 - Statement: {use the product will not serve}
-- Source: `boundary`
+- Source: `refused-use`, `boundary`
 
 ## Audience and experience direction
 
 ### {Product}
 
-- Statement: {from `experience-direction`}
-- Source: `experience-direction`
+- Statement: {from `experience-direction` and `accessibility-needs`}
+- Source: `experience-direction`, `accessibility-needs`
 
 ## Access and data promises
 
@@ -74,8 +71,20 @@ feature files and say so here. Roadmap owns feature-to-horizon placement.
 |---|---|---|---|---|
 | {kebab} | {name} | {product} | {who} | `core-tasks` |
 
+- Source: `core-tasks`
+
 ## Open questions
 
 | Id | Question | What would resolve it |
 |---|---|---|
 | {topic-id} | {question} | {evidence or decision} |
+
+- Source: open topic ids
+
+## Acceptance
+
+- User accepted this draft: {yes | no}
+- Accepted by: {user}
+- Date: {date}
+- Session-only: this file is not Memory.
+- Source: session record; not a topic

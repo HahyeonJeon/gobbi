@@ -6,13 +6,18 @@ answer. Fill each heading, write `Not applicable — {reason}`, or write
 
 ## Purpose
 
-- Statement: {from `purpose`}
-- Source: `purpose`
+- Statement: {from `purpose` and `why-now`}
+- Source: `purpose`, `why-now`
+
+## Problem
+
+- Statement: {from `problem-evidence`}
+- Source: `problem-evidence`
 
 ## Outcome
 
-- Statement: {from `durable-outcome` and `success-and-stop`}
-- Source: `durable-outcome`, `success-and-stop`
+- Statement: {from `durable-outcome`, `success-and-stop`, and `current-baseline`}
+- Source: `durable-outcome`, `success-and-stop`, `current-baseline`
 
 ## Scope and non-goals
 
@@ -28,8 +33,8 @@ answer. Fill each heading, write `Not applicable — {reason}`, or write
 
 ## Constraints
 
-- Statement: {from `constraints`}
-- Source: `constraints`
+- Statement: {from `constraints` and `quality-priority`}
+- Source: `constraints`, `quality-priority`
 
 ## Authority and maintenance
 
@@ -42,8 +47,20 @@ answer. Fill each heading, write `Not applicable — {reason}`, or write
 |---|---|---|
 | {term} | {meaning} | {topic-id} |
 
+- Source: each row's topic-id
+
 ## Open questions
 
 | Id | Question | What would resolve it |
 |---|---|---|
 | {topic-id} | {question} | {evidence or decision} |
+
+- Source: open topic ids
+
+## Acceptance
+
+- User accepted this draft: {yes | no}
+- Accepted by: {user}
+- Date: {date}
+- Session-only: this file is not Memory.
+- Source: session record; not a topic
