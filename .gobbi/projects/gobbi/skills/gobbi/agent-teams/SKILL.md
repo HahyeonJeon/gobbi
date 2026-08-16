@@ -62,6 +62,7 @@ Task and idle states support scheduling. Direct result and verification evidence
   teammate starts and cleans it automatically when the session exits.
 - Native Codex has no Claude Agent Teams interface. Use its available subagent controls under Delegation
   instead.
+- Native Cursor has no Claude Agent Teams interface and uses ordinary subagents.
 
 ### Selection
 

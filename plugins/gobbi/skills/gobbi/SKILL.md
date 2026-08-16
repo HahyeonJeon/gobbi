@@ -36,7 +36,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - **NEVER mutate from Gobbi entry.** Create no branch, worktree, session record, artifact, configuration, or
   implementation.
 - **MUST obtain an explicit mode selection at every fresh entry.** Use `AskUserQuestion` in Claude Code,
-  `request_user_input` in Codex, or `ask_user_question` in Grok; a recommendation cannot select the mode.
+  `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending), or
+  `ask_user_question` in Grok; a recommendation cannot select the mode.
 - **MUST validate one Gobbi root pair and load the entry foundation before routing.** Hold the pair unchanged
   for the session and carry it into every specialist brief.
 - **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
@@ -104,8 +105,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | Claude Code | Team environment and display settings, role and skill discovery, and entry permissions. |
   | Codex | Agent definitions, agent settings, skill discovery, and instruction entrypoints. |
   | Grok | Agent definitions under `.grok/agents`, skill discovery, and the `.agents/agents` root-pair sibling. |
+  | Cursor | Agent definitions under `.cursor/agents`, skill discovery under `.cursor/skills`, and the `.cursor` pair. |
   | Gobbi | The project namespace and tracked or ignored state, including effective `.gitignore` ownership. |
-  | All runtimes | Installed `claude`, `codex`, and `grok` CLIs respond to a version probe. |
+  | All runtimes | Installed `claude`, `codex`, `cursor-agent`, and `grok` CLIs respond to a version probe. |
 
 - For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:leader)` and
   `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
@@ -118,7 +120,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - Read [Principles](../principles/SKILL.md), [Discussion](../discussion/SKILL.md), and
   [Delegation](../delegation/SKILL.md), in that order.
 - Read applicable repository instructions, every applicable project rule, and the canonical
-  [manager role](../../agents/manager.md) for Claude and Grok. Codex custom agents are not a plugin component; load the project `.codex/agents/manager.toml` when that file exists. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
+  [manager role](../../agents/manager.md) for Claude and Grok. Codex custom agents are not a plugin component; load the project `.codex/agents/manager.toml` when that file exists. Cursor custom agents are not a plugin component; load the project `.cursor/agents/manager.md` when that file exists. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
   directory is absent or empty.
 - Confirm the foundation and fixed root pair. Defer every other skill to the selected mode or its own trigger.
 
@@ -148,10 +150,11 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
   matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
   through `com1`–`com9` and `lpt1`–`lpt9`.
-- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, grok}` limited
-  to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order joined by
-  one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`,
-  `claude-code,grok`, and `codex,grok`.
+- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, cursor, grok}`
+  limited to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order
+  joined by one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `cursor`, `grok`,
+  `claude-code,codex`, `claude-code,cursor`, `claude-code,grok`, `codex,cursor`, `codex,grok`, and
+  `cursor,grok`.
 - Record mode, normalized slug when applicable, and that one Partner field together. A named set authorizes
   launch of the selected names minus the active runtime; `disabled` authorizes no launch. A value outside the
   grammar, including recovered `enabled`, is invalid and a stop; recovered `disabled` stays valid. Do not add
@@ -188,9 +191,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
 | [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
 | [Delegation](../delegation/SKILL.md) | Defines every specialist prompt and final Handoff. |
-| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance for Claude and Grok plugin consumers. Codex roles load from the project `.codex/agents/manager.toml`, not from this package. |
+| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance for Claude and Grok plugin consumers. Codex roles load from the project `.codex/agents/manager.toml`, not from this package. Cursor roles load from the project `.cursor/agents/manager.md`, not from this package. |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
 | [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
-| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Grok, Git-ignore, and CLI prerequisites without mutation. |
+| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Cursor, Grok, Git-ignore, and CLI prerequisites without mutation. |

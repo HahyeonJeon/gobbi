@@ -48,8 +48,9 @@ best-supported option, explain why it fits, and state what evidence or changed c
   owner selects eligible participants and timing.
 - **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
   through the Decision Question template, then the active runtime's structured input tool.** Use `AskUserQuestion`
-  in Claude Code, `request_user_input` in Codex, or `ask_user_question` in Grok; a delegated agent sends the
-  populated template to the user-facing manager instead of calling those tools.
+  in Claude Code, `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending),
+  or `ask_user_question` in Grok; a delegated agent sends the populated template to the user-facing manager
+  instead of calling those tools.
 - **MUST write for quick understanding.** Expand each domain abbreviation on first use, explain project-specific
   names briefly, and cite evidence for numeric or project-specific claims.
 - **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary or missing

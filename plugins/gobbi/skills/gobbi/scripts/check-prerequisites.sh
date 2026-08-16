@@ -424,8 +424,49 @@ for role in "${roles[@]}"; do
   check_readable_file ".agents/agents/$role.md" "$project_root/.agents/agents/$role.md"
 done
 
+check_real_directory ".cursor directory" "$project_root/.cursor"
+
+for role in "${roles[@]}"; do
+  agent_path="$project_root/.cursor/agents/$role.md"
+  check_readable_file ".cursor/agents/$role.md" "$agent_path"
+  if [[ -f "$agent_path" && -r "$agent_path" ]]; then
+    agent_name="$(sed -n 's/^name:[[:space:]]*//p' "$agent_path" | head -n 1 | tr -d '\r')"
+    if [[ "$agent_name" == "$role" ]]; then
+      pass ".cursor/agents/$role.md name matches its filename"
+    else
+      fail ".cursor/agents/$role.md must declare name \"$role\" exactly once"
+    fi
+  fi
+done
+
+check_readable_file ".cursor/skills/gobbi/SKILL.md" "$project_root/.cursor/skills/gobbi/SKILL.md"
+check_readable_file ".cursor/skills/principles/SKILL.md" "$project_root/.cursor/skills/principles/SKILL.md"
+
+if [[ -n "$role_owner" && -d "$role_owner/cursor" ]]; then
+  for role in "${roles[@]}"; do
+    agent_path="$role_owner/cursor/$role.md"
+    check_readable_file "Gobbi agent source cursor/$role.md" "$agent_path"
+    if [[ -f "$agent_path" && -r "$agent_path" ]]; then
+      agent_name="$(sed -n 's/^name:[[:space:]]*//p' "$agent_path" | head -n 1 | tr -d '\r')"
+      if [[ "$agent_name" == "$role" ]]; then
+        pass "Gobbi agent source cursor/$role.md name matches its filename"
+      else
+        fail "Gobbi agent source cursor/$role.md must declare name \"$role\" exactly once"
+      fi
+    fi
+  done
+fi
+
+warn "Cursor parent session must start as grok-4.6[effort=xhigh]"
+
 check_cli claude
 check_cli codex
+check_cli cursor-agent
 check_cli grok
+
+agent_path="$(command -v agent 2>/dev/null || true)"
+if [[ -n "$agent_path" ]]; then
+  warn "bare agent resolves to $agent_path"
+fi
 
 finish
