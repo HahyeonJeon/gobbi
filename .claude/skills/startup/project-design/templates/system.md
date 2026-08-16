@@ -1,0 +1,1 @@
+../../../../../.gobbi/projects/gobbi/skills/startup/project-design/templates/system.md
