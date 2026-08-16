@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gobbi Stop hook: inject remind.txt once per turn on Claude, Codex, and Grok.
+# Gobbi Stop hook: inject remind.txt once per turn on currently wired consumers.
 set +e
 
 DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 0
