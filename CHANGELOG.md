@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exact operation SOPs, preference consistency, tool manuals and collections, and domain-family routing. The
   shared References contract now explicitly exempts navigation-only domain roots.
 - The canonical Gobbi Skill source now includes a project-local helper that links every top-level skill into
-  `.claude/skills/`, `.agents/skills/`, and `.grok/skills/`. It accepts only one exact project-owned source
+  `.claude/skills/`, `.agents/skills/`, `.grok/skills/`, and `.cursor/skills/`. It accepts only one exact project-owned source
   tree, creates missing relative directory links, and stops on conflicts without migrating existing
   directories or writing to plugin or user-level locations.
 - Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
@@ -116,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   concrete decision. Material design and decision advice actively uses available subagent, teammate, and enabled
   Partner input through the active owner's participant contract, avoiding duplicate or out-of-policy runs.
   Material decisions use one shared question template through `AskUserQuestion` in Claude Code,
-  `request_user_input` in Codex, or `ask_user_question` in Grok.
+  `request_user_input` in Codex, the official Ask questions tool in Cursor, or
+  `ask_user_question` in Grok.
 - Delegation no longer classifies subagent results as `file`, `commit`, or `response-only`. Every brief now
   names one authoritative result and its acceptance evidence directly. Its `Return` section requires the
   subagent to write a final, verifiable Handoff for every terminal status and distinguishes durable locators from
