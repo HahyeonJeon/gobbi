@@ -1,15 +1,15 @@
 ---
 name: delegation
-description: "Delegation is guidance for writing concise subagent prompts that define context, authority, verification, and handoff expectations."
+description: "Delegation is guidance for writing concise subagent prompts that define context, authority, verification, and handoff expectations, and for validating a specialist Gobbi root pair."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # Delegation
 
-Delegation standardizes the prompt a manager gives a subagent and the handoff the subagent returns. Use it when
-assigning bounded work across runtimes or roles so the subagent can act without private context and the manager
-can verify the result.
+Delegation standardizes the prompt a manager gives a subagent, the specialist Gobbi root-pair protocol, and the
+handoff the subagent returns. Use it when assigning bounded work across runtimes or roles so the subagent can
+act without private context and the manager can verify the result.
 
 ## Principles
 
@@ -105,6 +105,32 @@ context.
   references that result instead of reproducing or replacing it; otherwise the response is the result.
 - Require the subagent to report fresh verification, concerns, remaining work, and the next owner or action. For
   missing context or a blocker, it names the cause, evidence, safe retained state, and resumption condition.
+
+### Specialist root pair
+
+#### Hold one pair
+
+- The two roots are one pair. A brief supplies both as absolute expanded paths, or supplies neither.
+- A specialist that holds neither derives `{gobbi-agents-root}` from its own contract location and
+  `{gobbi-skills-root}` from the sibling `skills/` directory.
+- Never guess a root. Never substitute a hardcoded repository path.
+
+#### Validate the sentinels
+
+- Validate whichever pair the specialist holds before any other Gobbi skill load against
+  `{gobbi-skills-root}/gobbi/SKILL.md`, `{gobbi-skills-root}/principles/SKILL.md`, and
+  `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md`.
+- Each held value must be an absolute expanded path. The three sentinels must exist and be readable.
+
+#### Report a defective pair
+
+- Report the exact token and stop:
+  - exactly one root → `NO_GOBBI_ROOT: <missing-root> partial-pair`
+  - relative, unexpanded, or placeholder value → `NO_GOBBI_ROOT: <root> <value> not-an-absolute-path`
+  - missing or unreadable sentinel → `NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`
+  - neither root and location underivable → `NO_GOBBI_ROOT: both-roots location-underivable`
+- A brief that carries one root, a relative value, an unexpanded value, or a placeholder is a defect.
+  The manager repairs it before reassigning.
 
 ## References
 

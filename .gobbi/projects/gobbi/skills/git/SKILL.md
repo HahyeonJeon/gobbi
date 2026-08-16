@@ -8,8 +8,9 @@ skill-type: preference
 # Git
 
 Git defines common conventions for inspecting repositories, naming branches, committing changes, integrating
-work, publishing refs, and recovering safely. Use it whenever an agent selects or runs Git commands; the active
-operation and current project or user authority own the ordered work and external effects.
+work, publishing refs, and recovering safely. Use it whenever an agent selects or runs Git commands, and for
+continuation write-safety in a worktree; the active operation and current project or user authority own the
+ordered work and external effects.
 
 ## Principles
 
@@ -225,6 +226,25 @@ Stop when authority is missing or conflicting instead of choosing a convenient G
   preview only when that separate scope is required ([Git clean](https://git-scm.com/docs/git-clean)).
 - Run no deleting clean command without reviewing its exact preview and obtaining current authority. Preserve
   every unowned, unique, or recovery-relevant file.
+
+### Continuation write-safety
+
+#### Re-establish the worktree path
+
+- Re-`cd` to the worktree at the start of every continuation turn. A note that cwd is unchanged is not an
+  action.
+- Use the absolute worktree path on every Write and Edit. Re-`cd` alone is not enough because `cd` does not
+  persist across tool boundaries.
+- Use `git -C <worktree-abs>` for every Git command.
+
+#### Re-anchor and re-state
+
+- Re-anchor when rules or scope change by naming the changed file. Prose that nothing changed is not a load.
+- Re-state the scope boundary and the status enum each continuation turn, with the status enum last.
+
+#### Commit without publishing
+
+- Commit only with current capability and authority. Never push from a specialist continuation.
 
 ## References
 
