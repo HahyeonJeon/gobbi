@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Gobbi now presents four runtimes: Claude Code, Codex, Cursor, and Grok. Cursor participants are
+  checkout-local `.cursor/agents` and `.cursor/skills`. Start the parent as `grok-4.6[effort=xhigh]`.
+  The binary is `cursor-agent`, never bare `agent`; official help uses `agent`. No Cursor
+  marketplace plugin is added. Agent Teams stays Claude-only.
+- Partner policy now accepts `cursor` under the existing one-or-two cap: `disabled` or one or two of
+  `{claude-code,codex,cursor,grok}`. Cursor is a named partner and Unavailable. Do not invoke `agent`
+  as Gobbi Partner.
+- Plugin skill wording now names Cursor. Plugin agents remain Claude Code and Grok. Stop-hook headers
+  name currently wired consumers and do not claim Cursor hook support.
+
 - The published plugin `agents/` directory is a flat Claude/Grok projection (`{role}.md` only). Canonical
   runtime folders stay under `.gobbi/projects/gobbi/agents/{claude,grok,codex}/`. Codex custom agents remain
   repository-local `.codex/agents/{role}.toml` and are not a plugin component. The Claude plugin description

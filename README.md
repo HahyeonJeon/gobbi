@@ -2,11 +2,11 @@
 
 # Gobbi
 
-Open-source orchestration for Claude Code, Codex, and Grok.
+Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
   <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.3-blue" alt="Version 1.1.3"></a>
-  <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, and Grok">
+  <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
@@ -89,6 +89,15 @@ that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`
 
 Grok participants are the project `.grok/agents` roles plus official Grok subagents. Agent Teams is Claude-only.
 
+### Cursor
+
+A repository checkout already exposes Cursor participants through `.cursor/agents` and `.cursor/skills`. Start
+the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/skills`. The required binary is
+`cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
+
+Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
+plus official Cursor subagents. Agent Teams is Claude-only.
+
 ## Start your first session
 
 Give Gobbi a concrete objective:
@@ -106,7 +115,7 @@ Grok.
 
 Gobbi presents all three modes and waits for your selection. For Cowork or Workflow, it next asks for a
 privacy-safe session slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of
-`claude-code`, `codex`, and `grok`.
+`claude-code`, `codex`, `cursor`, and `grok`.
 
 ## Cowork
 
@@ -139,14 +148,14 @@ result before work advances. Workflow uses one isolated branch and linked worktr
 ## Partner
 
 Partner is an optional session-wide policy selected after the mode and applicable slug. The policy is
-`disabled` or one or two of `{claude-code,codex,grok}`. Launch set is the selected names minus the active
+`disabled` or one or two of `{claude-code,codex,cursor,grok}`. Launch set is the selected names minus the active
 runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
 With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
 invocation per remaining runtime. A launchable runtime writes one result at the named path and returns a
-compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. The session and project postimage may change
-only the contracted writing path. `--always-approve` is not the restricting flag. Unavailable evidence is
-not a Partner Handoff.
+compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. Cursor is a named partner and Unavailable;
+do not invoke `agent` as Gobbi Partner. The session and project postimage may change only the contracted
+writing path. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner Handoff.
 
 Every prompt names the exact session directory and one writing path inside it. The caller starts each launch
 through one local wrapper subagent. Wrappers for different remaining runtimes may run in parallel. The

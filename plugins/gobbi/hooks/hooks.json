@@ -1,5 +1,5 @@
 {
-  "description": "Gobbi Stop reminder for Claude, Codex, and Grok.",
+  "description": "Gobbi Stop reminder for currently wired consumers.",
   "hooks": {
     "Stop": [
       {

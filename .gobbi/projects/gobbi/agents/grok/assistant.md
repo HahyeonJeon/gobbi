@@ -96,7 +96,7 @@ Load when relevant:
 - The specific domain skill at `{gobbi-skills-root}/<skill>/SKILL.md` — `git`, `study`, `evaluation`,
   `delegation`, `discussion`, `memory`, and so on — if the question touches that domain. When the work touches
   runtime docs or agents, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`,
-  `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for Grok). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
+  `.codex/`, and `plugins/gobbi/` for Codex; `.cursor/` for Cursor; `.grok/` for Grok). Load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for skill
   authoring; use direct repository and runtime evidence for role and package surfaces. Load other task skills
   only from the manager's exact paths or their applicable triggers.
 

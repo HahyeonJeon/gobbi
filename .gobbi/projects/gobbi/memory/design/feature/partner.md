@@ -2,11 +2,12 @@
 
 ## Intent
 
-Partner is Gobbi's Tool Manual for invoking one named runtime from `{claude-code, codex, grok}` through
+Partner is Gobbi's Tool Manual for invoking one named runtime from `{claude-code, codex, cursor, grok}` through
 [Delegation](../../../skills/delegation/SKILL.md). The recorded policy is `disabled` or one or two of those
-names. Launch set is the selected names minus the active runtime. An empty launch set after skip stays valid
-and is not rewritten to `disabled`. The caller retains participant selection, scope, synthesis, acceptance,
-and every next action.
+names in lexicographic order. Valid two-name values are `claude-code,codex`, `claude-code,cursor`,
+`claude-code,grok`, `codex,cursor`, `codex,grok`, and `cursor,grok`. Launch set is the selected names minus
+the active runtime. An empty launch set after skip stays valid and is not rewritten to `disabled`. The caller
+retains participant selection, scope, synthesis, acceptance, and every next action.
 
 ## Write contract
 
@@ -32,6 +33,12 @@ contracted writing path. `--always-approve` is not the restricting flag.
 The command table was verified against Codex CLI 0.147.0, Claude Code 2.1.226, and Grok 1.0.4.
 Installed `codex exec --help`, `claude --help`, and `grok --help` remain authoritative for later versions.
 
+Cursor is named. Command availability is Unavailable. The measured binary is `cursor-agent`
+`2026.08.11-e8db854`. Installed help starts with `Usage: agent [options] [command] [prompt...]` and names
+`--sandbox` (`enabled` or `disabled`) and `--workspace`. A write-test with `--sandbox enabled` failed to
+start (AppArmor); the target was not created. `--sandbox disabled` is not the bound. Never invoke bare
+`agent`. Do not pass `--resume`, `--continue`, `--session-id`, `--worktree`, or `--yolo`.
+
 ## Failure boundary
 
 A missing binary, timeout, process error, missing result, unexpected write, or Handoff mismatch ends the run.
@@ -51,3 +58,4 @@ starts fresh to preserve named-runtime independence.
 - [Agent Teams](../../../skills/gobbi/agent-teams/SKILL.md)
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
+- [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)

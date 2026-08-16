@@ -94,7 +94,7 @@ Load per target type:
   result uses its operation baseline together with the Documentation baseline; mixed targets use every
   applicable source.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code;
-  `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for Grok) plus the relevant domain
+  `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.cursor/` for Cursor; `.grok/` for Grok) plus the relevant domain
   area in the codebase.
 - Evaluating documentation → read the document's governing sources and any relevant subject skill.
 - `{gobbi-skills-root}/checklist/SKILL.md` is the standalone operation for authoring a reusable unchecked
