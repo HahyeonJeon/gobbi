@@ -8,7 +8,7 @@ user-invocable: false
 
 # Partner
 
-Partner is a Tool Manual for invoking one named runtime from `{claude-code, codex, grok}` through Delegation.
+Partner is a Tool Manual for invoking one named runtime from `{claude-code, codex, cursor, grok}` through Delegation.
 Use it when the recorded policy names that runtime and the launch set includes it.
 
 ## Principles
@@ -42,7 +42,9 @@ remaining runtimes may run in parallel.
 ## Rules
 
 - **MUST launch only a recorded named runtime that is not the active runtime.** Accept `claude-code`, `codex`,
-  and `grok`; `disabled` or an empty launch set after skip launches nothing and is not rewritten to `disabled`.
+  `cursor`, and `grok` as `disabled` or one or two names in lexicographic order (`claude-code,codex`,
+  `claude-code,cursor`, `claude-code,grok`, `codex,cursor`, `codex,grok`, `cursor,grok`); `disabled` or an
+  empty launch set after skip launches nothing and is not rewritten to `disabled`.
 - **MUST start each remaining-runtime launch through one local wrapper subagent.** Use the active runtime's
   ordinary execute-capable subagent spawn. Start one wrapper per remaining runtime. When two runtimes remain,
   start both wrappers in the same parallel panel.
@@ -51,9 +53,12 @@ remaining runtimes may run in parallel.
 - **MUST contain the writing path inside the session directory and grant no other session or project write.**
   The caller records the preimage and rejects any unexpected session or project file change.
 - **MUST use one fresh named-runtime process with restricted write-capable tools.** One invocation produces
-  one saved result and one compact final Handoff. Do not pass `--session-id`, `--resume`, or `--continue`.
+  one saved result and one compact final Handoff. Do not pass `--session-id`, `--resume`, `--continue`,
+  `--worktree`, or `--yolo`.
 - **MUST validate the process, write set, saved result, and Handoff before acceptance.** Runtime status or a
   plausible stdout summary is not completion evidence.
+- **NEVER invoke bare `agent`.** Cursor Partner is `cursor-agent` only; official help uses `agent`, but that
+  name is ambiguous and is never the Partner binary.
 - **NEVER treat the wrapper as Partner or as a teammate.** The wrapper only runs the named command, captures
   stdout and stderr, and returns the Handoff to the caller. It does not talk to other specialists or reuse a
   prior Partner process.
@@ -79,8 +84,8 @@ remaining runtimes may run in parallel.
 
   - agent: partner
   - assignment: <stable one-use assignment>
-  - active-runtime: <claude-code, codex, or grok>
-  - expected-partner: <claude-code, codex, or grok>
+  - active-runtime: <claude-code, codex, cursor, or grok>
+  - expected-partner: <claude-code, codex, cursor, or grok>
   - session-directory: <exact absolute session directory>
   - writing-path: <exact absolute result file inside session-directory>
 
@@ -159,6 +164,16 @@ remaining runtimes may run in parallel.
 
 - Re-run `codex exec --help`, `claude --help`, or `grok --help` before changing a flag or relying on another
   installed version. Installed help is the command authority.
+
+#### Cursor availability
+
+- Cursor is a named partner and Unavailable. The measured binary is `cursor-agent` `2026.08.11-e8db854`; do
+  not invent a command row.
+- Installed `cursor-agent --help` starts with `Usage: agent [options] [command] [prompt...]` and takes the
+  prompt as an argv argument. It names `-p`, `--force`, `--sandbox` (`enabled` or `disabled`), `--workspace`,
+  `--trust`, `--resume`, `--continue`, `--yolo`, and `--worktree`; `--session-id` is absent.
+- A write-test with `--sandbox enabled` failed to start (AppArmor) and did not create the target.
+  `--sandbox disabled` was not run and is not the bound; `--force` is not the bound.
 
 ### Launch
 
