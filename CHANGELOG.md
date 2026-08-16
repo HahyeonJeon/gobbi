@@ -7,8 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.2.0 - 2026-08-16
+
 ### Changed
 
+- Role contracts are now identity-and-load maps. Each of the 20 canonical files keeps frontmatter,
+  identity, characteristics, skills to load, out of scope, and status. Procedure lives in the owning
+  skills. Plugin agents remain the five Claude-fronted Markdown files for Claude Code and Grok.
+  Canonical folders are `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}`.
+- Delegation now owns the specialist root-pair protocol. A brief supplies both Gobbi roots as
+  absolute expanded paths or supplies neither. Specialists validate the three sentinels and stop on
+  `NO_GOBBI_ROOT` tokens. Gobbi 1.1 remains the manager entry owner.
+- Git now owns continuation write-safety. Specialists re-`cd` to the worktree, write with the
+  absolute worktree path, run `git -C <worktree-abs>`, re-anchor by naming the changed file,
+  re-state scope and status each continuation turn, and never push from a specialist continuation.
 - Gobbi now presents four runtimes: Claude Code, Codex, Cursor, and Grok. Cursor participants are
   checkout-local `.cursor/agents` and `.cursor/skills`. Start the parent as `grok-4.6[effort=xhigh]`.
   The binary is `cursor-agent`, never bare `agent`; official help uses `agent`. No Cursor
@@ -18,22 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as Gobbi Partner.
 - Plugin skill wording now names Cursor. Plugin agents remain Claude Code and Grok. Stop-hook headers
   name currently wired consumers and do not claim Cursor hook support.
-
-- The published plugin `agents/` directory is a flat Claude/Grok projection (`{role}.md` only). Canonical
-  runtime folders stay under `.gobbi/projects/gobbi/agents/{claude,grok,codex}/`. Codex custom agents remain
-  repository-local `.codex/agents/{role}.toml` and are not a plugin component. The Claude plugin description
-  names skills for all three runtimes and plugin agents only for Claude Code and Grok.
-
-- Gobbi now presents three runtimes: Claude Code, Codex, and Grok. Grok discovers skills from `.grok/skills`,
-  loads the checkout package through `.grok/plugins/gobbi` pointing at `../../plugins/gobbi`, and installs
-  from the official Marketplace tab or `[[marketplace.sources]]` in `~/.grok/config.toml`.
-- Partner policy is now `disabled` or one or two of `{claude-code,codex,grok}`. Launch set is the selected
-  names minus the active runtime. An empty launch set after skip stays valid. Grok 1.0.4 launches with
-  `--sandbox workspace`. Session and project writes stay limited to the contracted path.
-- Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and permission
-  settings; Codex agent, feature, skill, and instruction settings; Grok agent, skill, and `.agents/agents`
-  sibling settings; the project-keyed `.gobbi/` layout; effective `.gitignore` ownership; and installed
-  Claude Code, Codex, and Grok CLIs.
+- The plugin `agents/` directory is a flat Claude Code and Grok projection (`{role}.md` only).
+  Canonical runtime folders stay under `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
+  Codex custom agents remain repository-local `.codex/agents/{role}.toml` and are not a plugin
+  component. Plugin descriptions name skills for all four runtimes and plugin agents only for
+  Claude Code and Grok.
+- Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and
+  permission settings; Codex agent, feature, skill, and instruction settings; Grok agent, skill, and
+  `.agents/agents` sibling settings; Cursor agent, skill, and `.cursor` pair settings; the
+  project-keyed `.gobbi/` layout; effective `.gitignore` ownership; and installed `claude`, `codex`,
+  `cursor-agent`, and `grok` CLIs.
 - Gobbi, Partner, and Agent Teams now follow the compact Gobbi Skill structures. Gobbi retains only entry and
   routing, Partner is a write-capable Tool Manual that requires one exact session directory and writing path
   in every Delegation prompt, and Agent Teams prefers re-delegating coherent follow-up work to a context-ready
