@@ -62,7 +62,7 @@ Mandatory load:
 Load per task domain:
 
 - **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime
-  surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.grok/` for
+  surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex; `.cursor/` for Cursor; `.grok/` for
   Grok) plus the exact
   task skills named by the brief or their applicable triggers.
 - **Runtime docs:** load `{gobbi-skills-root}/gobbi-skill/SKILL.md` for a skill. For role `.md`/`.toml`

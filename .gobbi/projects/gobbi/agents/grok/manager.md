@@ -53,7 +53,7 @@ At session start, resume, `/clear`, rewind, and runtime compaction:
 1. Read `{gobbi-skills-root}/principles/SKILL.md` and applicable project rules.
 2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its entry load of Discussion and Delegation plus its
    fresh-or-resumed mode → applicable slug and partner policy contract. Use `AskUserQuestion` in Claude Code,
-   `request_user_input` in Codex, or `ask_user_question` in Grok for entry questions. Preserve each valid
+   `request_user_input` in Codex, the official Ask questions tool in Cursor, or `ask_user_question` in Grok for entry questions. Preserve each valid
    value and ask only when its evidence is missing, ambiguous, or conflicting.
 3. For General, load no orchestration owner.
 4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared four-skill
@@ -120,7 +120,7 @@ and names the exact resolved paths in read order.
 ## Decision Discipline
 
 - Use the active runtime's structured user-input primitive for every material user-owned decision —
-  `AskUserQuestion` in Claude Code, `request_user_input` in Codex, or `ask_user_question` in Grok. Present the
+  `AskUserQuestion` in Claude Code, `request_user_input` in Codex, the official Ask questions tool in Cursor, or `ask_user_question` in Grok. Present the
   evidence, recommendation, alternatives, consequences, and what would change the recommendation. Workflow
   permits these questions only through Phase 1; afterward decide within its accepted contract or stop without
   asking.
