@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-16 — Startup family redesign completed](2026-08-16-startup-family-redesign.md)
 - [2026-08-16 — Delegation, discussion, commit gate, and stop reminder completed](2026-08-16-skill-improve.md)
 - [2026-08-15 — Grok system integration completed](2026-08-15-grok-system-integration.md)
 - [2026-08-15 — Gobbi skill system redesign completed](2026-08-15-gobbi-skill-system-redesign.md)

@@ -21,3 +21,4 @@ Recursive navigation across design memory, grouped by category.
 - [Cowork implementation commits](process/cowork.md)
 - [Discussion question flow](process/discussion.md)
 - [React skill family](process/react-skill-family.md)
+- [Startup](process/startup.md)

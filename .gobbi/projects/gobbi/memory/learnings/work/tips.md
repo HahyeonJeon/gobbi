@@ -1,5 +1,17 @@
 # Work Tips
 
+## After Phase 2 Complete, add a new tasks and plan part
+
+**Context:** The user asks for more work after Workflow Phase 2 is already Complete.
+
+**Tip:** Record that work as a new `tasks-NN` and `plan-NN` with the next unused
+number. Do not rename earlier parts, and do not keep the extra work as a silent
+manager-only todo.
+
+**Application:** Append the new parts, update the Planning indexes, and reopen
+Execution at the first new task. Leave Wrap-up stopped until that extra work is
+accepted.
+
 ## Investigate a partner-round disagreement instead of picking a side
 
 **Context:** The two independent drafts of one partner round disagree on a factual or design question during
