@@ -1,0 +1,16 @@
+{
+  "description": "Gobbi Stop reminder.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/bash \"$(git rev-parse --show-toplevel)/.gobbi/projects/gobbi/hooks/stop-remind.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
