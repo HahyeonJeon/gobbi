@@ -1,19 +1,15 @@
 ---
 name: cli-platform
-description: "MUST load when looking up or diagnosing current command-line execution-platform facts about terminals, standard streams, process lifecycle, pipes, signals, shell entry, path resolution, encoding, locale, or operating-system differences for a line-oriented CLI."
+description: "CLI Platform is a tool Manual for dated, exact-tuple facts about line-oriented execution platforms. It returns Available, Unavailable, or Unknown with evidence and limits."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
 
 # CLI Platform
 
-CLI Platform is the lookup Manual for one current fact about the line-oriented command execution platform.
-It binds the question to an exact command, runtime, operating-system, entry, stream, terminal, process, and
-locale tuple, then returns `Available`, `Unavailable`, or `Unknown` with dated evidence and limits.
+CLI Platform looks up terminals, streams, processes, pipes, signals, shell entry, paths, encoding, locale, and operating-system differences for one exact command tuple.
 
-The Manual owns facts about terminals, standard streams, processes, pipes, signals, shell entry, path
-resolution, encoding, locale, and operating-system command differences. It chooses no product behavior,
-interface, security control, target policy, package mechanism, delivery method, or external action.
+Use it when a current platform fact or bounded diagnosis is needed; it does not make product, interface, security, implementation, evidence, delivery, or support decisions.
 
 ## Principles
 

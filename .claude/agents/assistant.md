@@ -1,1 +1,1 @@
-../../.gobbi/projects/gobbi/agents/assistant.md
+../../.gobbi/projects/gobbi/agents/claude/assistant.md

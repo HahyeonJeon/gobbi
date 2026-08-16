@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/grok/executor.md

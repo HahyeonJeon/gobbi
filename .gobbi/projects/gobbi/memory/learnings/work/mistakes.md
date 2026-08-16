@@ -85,3 +85,23 @@ silent overwrite.
 **Correction:** Once an instruction is delegated, the delegate owns that file until it reports or is
 explicitly released — including for the agent that did the delegating. If a coordinating agent needs to take a
 file back, it must say so to the delegate first, not just start editing.
+
+## Cutting CHANGELOG Unreleased without checking each carried bullet
+
+**Context:** Cutting Keep a Changelog Unreleased work into a dated version section.
+
+**Mistake:** Moving the Unreleased list as a block without re-reading each bullet against the shipped tree
+leaves superseded facts as current. A four-runtime tree kept three-runtime helper and question-tool sentences.
+
+**Correction:** Re-read each carried bullet against the shipped tree before accepting the version section.
+Drop or rewrite any sentence that is no longer true.
+
+## Running a Partner session write beside another session writer
+
+**Context:** Partner writes one authoritative result inside the Gobbi session directory.
+
+**Mistake:** Launching that write while another session writer is also changing the session directory makes
+the preimage check unusable and can collide with the contracted path.
+
+**Correction:** Launch Partner sequentially. Record the session preimage before the write. Accept only the
+contracted path change.

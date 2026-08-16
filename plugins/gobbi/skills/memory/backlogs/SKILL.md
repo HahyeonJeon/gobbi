@@ -1,6 +1,6 @@
 ---
 name: backlogs
-description: MUST load after the memory operation identifies content as backlog memory. Backlogs is a preference skill for grouping durable deferred outcomes by feature and preserving why they were backlogged.
+description: "Backlog Memory is a preference skill for grouping durable deferred outcomes by feature and preserving why each outcome was backlogged."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,13 +8,9 @@ user-invocable: false
 
 # Backlog Memory
 
-This internal category skill guides backlog-memory judgment after the parent memory operation identifies
-content as deferred work. It owns the content and structure of `memory/backlogs/`. The parent memory skill
-owns when and how backlog items are read, created, updated, moved, or deleted.
+Backlog Memory defines the content and structure of `memory/backlogs/` after the parent Memory operation classifies an outcome as deferred work. Use it to preserve each outcome, deferral reason, and useful context in one flat document per feature, with one project-wide home for cross-feature work.
 
-Backlog memory preserves lightweight evidence for work that remains deferred. It groups several items in one
-flat document for each feature. Planning, readiness, priority, ownership, approach, and acceptance are
-discussed with the user when an item is picked up.
+The parent Memory operation owns when and how backlog items are read, created, updated, moved, or deleted; planning, readiness, priority, ownership, approach, and acceptance stay with user discussion when an item is picked up.
 
 ## Principles
 

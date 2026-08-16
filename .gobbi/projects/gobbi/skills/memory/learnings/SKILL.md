@@ -1,6 +1,6 @@
 ---
 name: learnings
-description: MUST load after the memory operation identifies content as learning memory. Learnings is a preference skill for what learning memory contains and how it is structured.
+description: "Learning Memory is a preference skill for selecting and structuring reusable knowledge and repeatable failure patterns in durable memory."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,9 +8,9 @@ user-invocable: false
 
 # Learning Memory
 
-This internal category skill guides learning-memory judgment after the parent memory operation identifies
-content as learning memory. It owns the content and structure of `memory/learnings/`. The parent memory skill
-owns when and how records are read, created, updated, moved, or deleted.
+Learning Memory defines the content and structure of `memory/learnings/` after the parent Memory operation classifies content as learning memory. Use it for important reusable facts, techniques, constraints, and recurring failure patterns, organized by the most specific stable domain and then as tips or mistakes.
+
+The parent Memory operation owns when and how learning records are read, created, updated, moved, or deleted.
 
 ## Principles
 

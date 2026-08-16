@@ -1,19 +1,15 @@
 ---
 name: cli-development
-description: "MUST load when coordinating a scoped change to a line-oriented TypeScript CLI across accepted product contracts, security analysis, TypeScript implementation and testing, Bun and platform facts, package or direct delivery, release judgment, authorized external action, post-release observation, or maintenance."
+description: "CLI Development is an operation that coordinates multi-owner lifecycle changes to line-oriented TypeScript CLIs while preserving each specialist's evidence and authority boundary."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # CLI Development
 
-CLI Development coordinates one scoped, multi-owner change to a line-oriented TypeScript CLI. It joins
-current product, platform, security, TypeScript, consumer, and release results into an exact lifecycle state,
-then returns a complete result, recoverable blocker, or cold handoff.
+CLI Development reconciles product, platform, security, TypeScript, consumer, and release results for one scoped change.
 
-This operation activates for work spanning two or more owners or claiming a supported, delivered, released,
-maintained, deprecated, or retired CLI outcome. Bounded single-owner work routes directly to that owner.
-Coordination records specialist results; it never performs their work or inherits external-action authority.
+Use it when two or more owners must agree or the outcome claims support, delivery, release, maintenance, deprecation, or retirement; bounded single-owner work goes directly to that owner.
 
 ## Principles
 

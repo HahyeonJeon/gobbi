@@ -1,19 +1,15 @@
 ---
 name: python-performance
-description: "MUST load when a measured Python latency, throughput, CPU, allocation, memory, startup, or resource claim is investigated or changed."
+description: "Python Performance measures and explains latency, throughput, CPU, allocation, memory, startup, and other resource costs."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Python Performance
 
-Python Performance investigates or changes one measured Python latency, throughput, CPU, allocation, memory,
-startup, or resource claim. It returns a scoped measurement and causal conclusion, or an exact statement of the
-evidence that is still missing.
+Python Performance measures and explains one latency, throughput, CPU, allocation, memory, startup, or resource claim.
 
-This operation owns the performance question, representative workload, comparable baseline, measurement design,
-and interpretation. `python-toolchain` owns project command and tool facts, while `python-development` owns an
-implementation change and `python-testing` owns correctness evidence.
+Use it when a measured claim needs a representative workload, comparable baseline, and bounded conclusion. It owns measurement design and interpretation, not implementation or correctness proof.
 
 ## Principles
 

@@ -1,22 +1,15 @@
 ---
 name: electron-delivery
-description: "MUST load when coordinating one complete or multi-capability Electron application outcome across design, development, testing, diagnostics, packaging, installed verification, and release readiness."
+description: "Electron Delivery is an operation skill for coordinating a complete or multi-capability Electron application outcome across specialized owners and recording its exact accepted state."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Delivery
 
-Electron Delivery coordinates one complete application outcome across the Electron owners. It returns a
-complete coordinated delivery record at the exact last accepted state, ending in `maintained`, `reopened`,
-or an explicit recoverable stop.
+Electron Delivery coordinates one complete application outcome across contract, interface, design, development, testing, observability, packaging, and release owners.
 
-Delivery owns the complete outcome map, active-owner map, work order, state record, handoff tracking,
-cross-owner invalidation, failure containment, maintenance routing, and coordination result. Each lower owner
-keeps its policy and acceptance authority.
-
-A caller may request a narrower pre-release terminal. Delivery returns that state literally with its handoff
-and never describes it as full delivery.
+Use it when work needs accepted outputs from two or more owners or a coordinated path to a named terminal. It returns the exact accepted terminal, a reopened state, or a recoverable stop.
 
 ## Principles
 

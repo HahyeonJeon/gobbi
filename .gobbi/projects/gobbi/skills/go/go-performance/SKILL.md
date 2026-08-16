@@ -1,24 +1,15 @@
 ---
 name: go-performance
-description: "MUST load when diagnosing or changing Go latency, throughput, allocation, memory retention, garbage collection, CPU use, contention, binary size, startup time, or profile-guided optimization."
+description: "Go Performance is an operation for diagnosing, verifying, or coordinating changes to performance and resource use with representative evidence."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Performance
 
-Go Performance diagnoses, verifies, or coordinates changes to Go performance and resource use. It begins with
-one named question and representative workload, then selects only the named diagnostic evidence that can
-answer that question.
+Use Go Performance when latency, throughput, allocation, retained memory, garbage collection, CPU use, contention, binary size, startup time, or profile-guided optimization requires one named question and representative workload.
 
-The operation returns a representative-profile diagnosis, comparable verification, verified performance
-change with a regression guard, bounded investigation, or exact block. Every result states its workload,
-`GOOS/GOARCH` target, environment, comparison limits, and resource trade-offs.
-
-This operation owns performance questions, workload representativeness, evidence selection, bottleneck proof,
-comparison, performance trade-offs, and regression-guard requirements. General construction, evidence-source
-design, project-command mechanics, concurrent ownership, and unrelated failure diagnosis remain with their
-named sibling owners.
+It returns a proven performance diagnosis, comparable verification, a verified change with a regression guard, a bounded investigation, or an exact block while routing construction, evidence design, command mechanics, and concurrency judgment to their owners.
 
 ## Principles
 

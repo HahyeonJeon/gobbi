@@ -1,307 +1,199 @@
 ---
 name: gobbi
-description: "MUST load at session start and at every boundary that may discard session context. Loads Principles, Discussion, and Delegation, then obtains and routes the user's General, Cowork, or Workflow mode selection."
+description: "Gobbi is the read-only entry operation that establishes and routes General, Cowork, or Workflow session state."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
 
 # Gobbi
 
-Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, Discussion, and Delegation,
-reports any configuration the session is missing, obtains one session mode — General, Cowork, or Workflow — an
-applicable session slug, and one session-wide `partner: enabled|disabled` policy, then hands the complete entry
-state to that mode's owner.
-
-Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
-every mode inherits. General continues from the Principles foundation, Cowork uses
-[`cowork`](../cowork/SKILL.md), and Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all
-mode-specific creation, state, routing, execution, evaluation, and closure.
-
-The entry writes nothing: reading configuration and asking the user are both reads. It runs again at every
-boundary that may discard manager context and keeps an established mode whenever that mode's evidence still
-validates.
+Gobbi establishes the manager's durable entry state and routes it without mutation. Use it at session start
+and after any boundary that may discard manager context.
 
 ## Principles
 
-### Load the entry foundation from its durable source
+### Load the durable foundation
 
-A cold manager reads Principles, applicable project rules, and its role from the repository before acting.
-Runtime memory, a task view, or a stale entry document cannot replace those sources.
+Read the canonical principles, project rules, role, and entry owners before governed action. Runtime memory
+and a surviving task list do not replace these sources.
 
-### Let the user select the session mode
+### Let the user select the mode
 
-General, Cowork, and Workflow make materially different commitments. A fresh entry shows all three and lets
-the user select one.
+General, Cowork, and Workflow make different commitments. Present all three at fresh entry and let the user
+choose.
 
-### Preserve a proved mode across a context boundary
+### Preserve proved entry state
 
-A valid resume, `/clear`, rewind, or runtime compaction keeps its established mode and identity. Missing,
-ambiguous, or conflicting mode evidence returns to user selection instead of guessing.
+Keep a validated mode, slug, partner policy, and root pair across a context boundary. Ask again only when
+evidence is missing, ambiguous, or conflicting.
 
-### Keep the entry read-only and owners distinct
+### Leave work to its owner
 
-Gobbi writes no branch, worktree, session record, artifact, or implementation. It hands the selected mode to
-its owner without copying that owner's procedure or creating a second router.
+Gobbi owns entry and routing only. The selected mode owns session state, and task skills own their work.
 
 ## Rules
 
-- **NEVER mutate anything from the entry operation.** Create no branch, worktree, session record, artifact, or
-  implementation; every mutation belongs to the selected mode's owner.
-
-- **MUST obtain an explicit General, Cowork, or Workflow selection at every fresh entry.** Use the active
-  runtime's structured user-input control with no automatic resolution — `AskUserQuestion` in Claude Code and
-  `request_user_input` in Codex; wording may recommend a mode but never selects it.
-
-- **MUST load Principles before any governed action, then load Discussion and Delegation during entry.** Selected
-  mode owners and phases load their remaining shared and phase-specific skills.
-
-- **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
-  `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
-  `planning`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only `memory`,
-  and nothing in that isolated set may reference `wrap-up`.
-
-- **MUST hold the session to its selected mode's participant and finding commitments.** Automatically correct
-  a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside the locked contract;
-  and the correction is reversible, authority-neutral, non-destructive, and non-external. Send every other
-  finding to the user, require fresh evaluation after every correction, and continue automatically only from
-  PASS. A disabled partner policy invokes no external runtime.
-
-- **MUST keep the manager the session's only authority for assignment, scope, user decisions, acceptance, and
-  destructive or external action.** Build every specialist brief through
-  [`delegation`](../delegation/SKILL.md), keep all worktree writes in one ordered writer chain, and
-  parallelize only independent read-only analysis and fresh independent evaluation.
-
-Rule 4 names five linking skills, seven isolated skills, and `wrap-up`. Every skill it does not name is
-unclassified: the rule constrains it in no direction, and it may reference anything. The isolated seven are
-constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
-unclassified skill either. Runtime and project nouns — `Claude`, `Codex`, `Gobbi`, and `git` as a program —
-are not skill references.
+- **NEVER mutate from Gobbi entry.** Create no branch, worktree, session record, artifact, configuration, or
+  implementation.
+- **MUST obtain an explicit mode selection at every fresh entry.** Use `AskUserQuestion` in Claude Code,
+  `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending), or
+  `ask_user_question` in Grok; a recommendation cannot select the mode.
+- **MUST validate one Gobbi root pair and load the entry foundation before routing.** Hold the pair unchanged
+  for the session and carry it into every specialist brief.
+- **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
+  decide which task skill applies.
+- **MUST apply the session-wide finding gate.** Every correction receives fresh evaluation, and only a verified
+  PASS continues automatically.
+- **MUST keep the manager as the only authority for assignment, scope, user decisions, acceptance, and
+  external or destructive action.** Build specialist prompts through Delegation and keep writes in one ordered
+  chain.
 
 ## Procedure
 
-### Phase 1 — Load Principles and Route the Selected Mode
+### Phase 1 — Establish the Entry
 
-#### 1.1 Establish the entry context, runtime, and canonical layout
+#### 1.1 Resolve the Gobbi roots
 
-- Take the entry trigger — session start, resume, `/clear`, rewind, or runtime compaction — plus the governance
-  source, runtime, unchanged repository preimage, and loaded Gobbi skill path. The runtime-reported path is the
-  only root input; use no search, environment variable, or configuration fallback.
-- Treat the reported path and its parent as the two possible `{gobbi-skills-root}` values. For each candidate,
-  derive `{gobbi-agents-root}` as its sibling `agents/` directory. Expand both roots to absolute paths and let
-  the sentinels decide which candidate is valid; never decide from path spelling.
-- Validate the candidates against the sentinels `gobbi/SKILL.md`, `principles/SKILL.md`, and
-  `agents/manager.md`. Each sentinel must exist and be readable at the path its root produces. Exactly one
-  candidate satisfies both skills sentinels; that candidate is `{gobbi-skills-root}`, and its `agents/`
-  sibling must then satisfy the third:
+- Take the loaded Gobbi skill path reported by the runtime. Treat that path and its parent as the only two
+  candidate `{gobbi-skills-root}` values, and derive each candidate's sibling `agents/` directory.
+- Accept exactly one candidate pair that resolves all three readable sentinels:
 
-| Sentinel path | Root | Proves |
-|---|---|---|
-| `{gobbi-skills-root}/gobbi/SKILL.md` | `{gobbi-skills-root}` | The entry document itself resolves from the root |
-| `{gobbi-skills-root}/principles/SKILL.md` | `{gobbi-skills-root}` | A sibling skill resolves from that same root |
-| `{gobbi-agents-root}/manager.md` | `{gobbi-agents-root}` | Agent contracts resolve independently of skills |
+  | Sentinel | Proves |
+  |---|---|
+  | `{gobbi-skills-root}/gobbi/SKILL.md` | The entry skill resolves from the skills root. |
+  | `{gobbi-skills-root}/principles/SKILL.md` | A sibling skill resolves from the same root. |
+  | `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md` | Role contracts resolve from a runtime-flat or runtime-folder agents root. |
 
-- A canonical or generated view is valid when exactly one candidate satisfies all sentinels. Record that fixed
-  root pair with the source, runtime, trigger, and preimage. At every later entry, re-derive it and compare it
-  with the owner's recorded pair. Stop and report both pairs if they differ; Gobbi cannot rewrite existing
-  session facts or briefs.
-- Resolve the project key `<project>` with:
+- Expand and record the accepted pair with the runtime and entry trigger. Re-derive it after every context
+  boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed pair appears.
 
-```text
-basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
-```
+#### 1.2 Resolve the project layout
 
-- `--git-common-dir` resolves the shared repository even from a session worktree. Validate the key against
-  `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$` at up to 64 characters; ask before deriving paths when it fails.
-- Gobbi defines these paths:
+- Derive the project key with
+  `basename(dirname(git rev-parse --path-format=absolute --git-common-dir))`. Accept at most 64 lowercase
+  alphanumeric or hyphen characters matching `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`; ask before deriving paths
+  when it fails.
+- Use this layout:
 
-```text
-.gobbi/                          tracked
-├── .gitignore                   tracked
-└── projects/<project>/          tracked
-    ├── memory/                  tracked   the project memory root
-    ├── sessions/                ignored
-    └── worktrees/               ignored
-```
+  ```text
+  .gobbi/                          tracked
+  ├── .gitignore                   tracked
+  └── projects/<project>/          tracked
+      ├── memory/                  tracked
+      ├── sessions/                ignored
+      └── worktrees/               ignored
+  ```
 
-- `tracked` means not ignored; `ignored` covers the directory and every descendant. `.gobbi/.gitignore` is the
-  only owner of these exact bytes:
+  `.gobbi/.gitignore` owns these exact runtime-state entries:
 
-```text
-# Gobbi runtime state. Session evidence and linked worktrees are never tracked.
-projects/*/sessions/
-projects/*/worktrees/
-```
+  ```text
+  # Gobbi runtime state. Session evidence and linked worktrees are never tracked.
+  projects/*/sessions/
+  projects/*/worktrees/
+  ```
 
-  The middle slash prevents accidental matches inside durable memory. Never write the repository root
-  `.gitignore`.
-- Bootstrap only the namespace roots and ignore file. Create no category, session, marker, or `rules/` path.
-  Gobbi defines this layout but writes none of it; the selected owner creates a path when its first record
-  needs it.
-- Check the four configuration items below and report only the ones that are absent. A clean session should
-  read no report at all, so every line the user does see names a real missing prerequisite. Check all four
-  before reporting, so one report names every gap instead of exposing them one at a time.
+- Gobbi writes none of this layout. A selected owner may bootstrap only the namespace roots and ignore file
+  when authorized; it creates no category, session, marker, or `rules/` path until that path is needed.
 
-| Item | How to check it | What its absence costs |
-|---|---|---|
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` in the live session environment | No team is set up and no teammate is spawned |
-| An `Agent(...)` permission for each role the session may spawn — `manager`, `leader`, `executor`, `evaluator`, and `assistant` | Read `permissions.allow` in the settings sources that apply, local before project before user | A role without its permission cannot be spawned |
-| A `Skill(...)` permission for each Gobbi skill the session loads | The same `permissions.allow` sources | Skill use stays gated |
-| The `.gobbi/` layout above, in its required tracked-or-ignored state | `git check-ignore --no-index -v <path>` for each path | The project memory root and its ignore posture are missing |
+#### 1.3 Report missing prerequisites
 
-- Check the first three items only in Claude Code and the layout in both runtimes. For plugin consumers,
-  recommend namespaced permissions such as `Skill(gobbi:principles)` and `Agent(gobbi:leader)`; use bare names
-  only for repository-local `.claude/skills`. Report all missing items together without stopping. Do not write
-  configuration or probe the partner binary; [`partner`](partner/SKILL.md) Step 1.1 owns that probe.
-- Stop here when no candidate resolves a root, when both candidates satisfy the same sentinels, when a
-  sentinel is missing or unreadable, when a re-derived root differs from the pair this session already
-  recorded, or when the resolved view is otherwise partial or inconsistent. Name the exact broken element:
-  for a sentinel failure, the affected root, the exact sentinel path, and whether that path was absent or
-  unreadable; for an ambiguous or a diverged pair, both candidate roots. Repair a sentinel failure by
-  restoring the runtime's Gobbi package or entrypoint from its canonical source; an ambiguous or a diverged
-  pair needs the user's decision instead. The repository's governing instructions own any repository-local
-  repair command, and no step continues against a partial view.
-- This stop fires before Step 1.3. Never select a mode, load an owner, or build a brief without the validated
-  pair.
+- Run the read-only [prerequisite checker](scripts/check-prerequisites.sh) from the active repository or
+  worktree. It reports `PASS`, `WARN`, and `FAIL` for these project-local conditions:
 
-#### 1.2 Load the entry foundation
+  | Scope | Required observation |
+  |---|---|
+  | Claude Code | Team environment and display settings, role and skill discovery, and entry permissions. |
+  | Codex | Agent definitions, agent settings, skill discovery, and instruction entrypoints. |
+  | Grok | Agent definitions under `.grok/agents`, skill discovery, and the `.agents/agents` root-pair sibling. |
+  | Cursor | Agent definitions under `.cursor/agents`, skill discovery under `.cursor/skills`, and the `.cursor` pair. |
+  | Gobbi | The project namespace and tracked or ignored state, including effective `.gitignore` ownership. |
+  | All runtimes | Installed `claude`, `codex`, `cursor-agent`, and `grok` CLIs respond to a version probe. |
 
-- Read [`../principles/SKILL.md`](../principles/SKILL.md), then [`../discussion/SKILL.md`](../discussion/SKILL.md),
-  then [`../delegation/SKILL.md`](../delegation/SKILL.md).
-- Read applicable project rules, governing repository instructions, and the canonical
-  [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
-  project rules exist.
-- Confirm Principles, Discussion, and Delegation before governed action. Defer every other skill to the selected
-  owner or its task trigger.
+- For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:leader)` and
+  `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
+  the [Partner Manual](partner/SKILL.md#availability).
+- Continue after reporting ordinary missing configuration. Stop before routing when root resolution or layout
+  evidence is partial, contradictory, unreadable, or unsafe to repair without the user's decision.
 
-#### 1.3 Obtain or preserve mode, applicable slug, and partner policy
+#### 1.4 Load the entry foundation
 
-- Use the already loaded [Discussion](../discussion/SKILL.md) contract for every entry question. At every fresh
-  entry, use the active runtime's structured user-input control with no automatic resolution: call
-  `AskUserQuestion` in Claude Code or `request_user_input` in Codex. Do not replace these controls with a
-  plain-text question:
+- Read [Principles](../principles/SKILL.md), [Discussion](../discussion/SKILL.md), and
+  [Delegation](../delegation/SKILL.md), in that order.
+- Read applicable repository instructions, every applicable project rule, and the canonical
+  [manager role](../../agents/manager.md) for Claude and Grok. Codex custom agents are not a plugin component; load the project `.codex/agents/manager.toml` when that file exists. Cursor custom agents are not a plugin component; load the project `.cursor/agents/manager.md` when that file exists. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
+  directory is absent or empty.
+- Confirm the foundation and fixed root pair. Defer every other skill to the selected mode or its own trigger.
 
-| Mode | Select when | Participant and evaluation commitment |
-|---|---|---|
-| **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Local participants and evaluation come only from the task owner; the partner policy applies only when that owner requires an external run. |
-| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | Every selected stage self-reviews; explicit evaluation always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when partner is enabled. |
-| **Workflow** | The user wants the durable five-step recorded workflow. | Every WORK uses one assigned active-runtime draft with self-review and adds the applicable external draft or review only when partner is enabled; every EVALUATION always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when enabled. |
+### Phase 2 — Select and Route the Mode
 
-- Present the commitment column. A request may support a recommendation but never records a fresh selection.
-  On a boundary, preserve a validated selection and ask again only when its evidence is missing, ambiguous, or
-  conflicting. The selected owner, not Gobbi, supplies each commitment's mechanism.
-- Immediately after the user selects a mode, publish that mode's complete native TODO template before asking
-  for the applicable slug or partner policy. In Claude Code use the native task controls; in Codex use
-  `update_plan`. General publishes no Gobbi orchestration TODO. Cowork publishes its fixed `CW` template, and
-  Workflow publishes its fixed `P1`–`P3` template. Start only the first item and leave the remaining template
-  items pending. The template titles contain no topic, task, subject, stage, iteration, or closure-decision
-  placeholder; those values remain in evidence, assignments, and paths.
-- After the user selects Cowork or Workflow, warn that the session slug enters branch names and paths and must
-  not contain sensitive information. After publishing the mode TODO, ask the slug and session-wide partner
-  policy together in one structured request with two questions. The slug question uses the same
-  [Discussion](../discussion/SKILL.md) structure and control. Normalize it by taking each maximal ASCII
-  alphanumeric sequence as one word, lowercasing it, joining the words with one hyphen, and trimming separators.
-  Do not transliterate, truncate, or add a suffix. Accept only 1–20 characters matching
-  `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject `con`, `prn`, `aux`, `nul`, `com1` through `com9`, and `lpt1`
-  through `lpt9`, case-insensitively. Re-ask only the slug question with the failed condition when normalization
-  is empty, longer than 20 characters, or reserved; retain a valid partner answer. The second question asks
-  whether to use a partner, never which runtime; the active runtime fixes the direction. General skips this
-  question for the slug, records `slug: not-applicable`, creates no Gobbi identity, and asks only the partner
-  question. A recovered new session preserves its recorded normalized slug. A recovered legacy session
-  preserves `slug: not-applicable` and receives no slug question.
-- Record mode, applicable normalized slug, and partner policy together. Cowork and Workflow consume all three;
-  General consumes mode and policy without creating session state. Enabled authorizes the owner to call
-  [`partner`](partner/SKILL.md) whenever its mode requires; disabled authorizes none.
-- At a boundary, preserve every validated value and ask only for missing, ambiguous, or conflicting evidence,
-  in mode → applicable slug and partner pair order. Never rename a slug used by an existing session object.
+#### 2.1 Obtain or preserve the mode
 
-#### 1.4 Apply the session-wide finding gate
+- At fresh entry, use Discussion and the active structured input control to present all three choices:
 
-- Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it remains
-  inside the locked contract; and the correction is reversible, authority-neutral, non-destructive, and
-  non-external.
-- Send every other finding to the user for accept, reject, or defer disposition. Every correction requires
-  fresh evaluation, and only a verified PASS continues automatically.
+  | Mode | Use when | Commitment |
+  |---|---|---|
+  | **General** | Ordinary assistance needs no Gobbi lifecycle. | Task owners decide participants and evaluation. |
+  | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, evaluation calls, and closure. |
+  | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | Phase 1 closes user decisions; later phases continue or stop from accepted evidence. |
 
-#### 1.5 Load the selected owner and hand off without mutation
+- After selection, publish the selected owner's complete native TODO template before asking for a slug or
+  partner policy. General publishes no Gobbi TODO; Cowork and Workflow supply their own fixed templates.
+- Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,
+  or conflicting.
 
-- **General:** hand `mode: General`, `slug: not-applicable`, and the partner policy to the task owner. Continue
-  from Principles and load each task-specific skill when its trigger applies. Load neither orchestration owner
-  — `cowork` and `workflow` — and create no Gobbi identity or session state.
-- **Cowork:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
-  [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner generates or recovers its identity, creates or
-  recovers its isolated worktree before editing, and runs its user-topic loop.
-- **Workflow:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
-  [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
-  the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
-- Before a specialist brief, load [Delegation](../delegation/SKILL.md), add the selected mode's fields, and
-  resolve every required skill and role from the validated root pair. After the report, reread the result and
-  reproduce its verification before another assignment.
-- Use the [skill map](#references) to find a further task-specific skill, then load that skill from its own
-  trigger. The map indexes what exists for routing; it loads nothing itself and gives no skill a second entry
-  point.
-- On missing or invalid mode evidence, owner artifacts, identity, or authority, preserve state and report the
-  exact blocker. Never invent a fallback mode, cursor, worktree, or specialist route.
+#### 2.2 Resolve the slug and partner policy
+
+- For Cowork or Workflow, warn that the slug enters paths and branch names. Ask for the slug and session-wide
+  partner policy together through one structured request; General records `slug: not-applicable` and asks only
+  for the policy.
+- Normalize the slug by lowercasing each maximal ASCII alphanumeric sequence, joining sequences with one
+  hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
+  matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
+  through `com1`–`com9` and `lpt1`–`lpt9`.
+- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, cursor, grok}`
+  limited to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order
+  joined by one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `cursor`, `grok`,
+  `claude-code,codex`, `claude-code,cursor`, `claude-code,grok`, `codex,cursor`, `codex,grok`, and
+  `cursor,grok`.
+- Record mode, normalized slug when applicable, and that one Partner field together. A named set authorizes
+  launch of the selected names minus the active runtime; `disabled` authorizes no launch. A value outside the
+  grammar, including recovered `enabled`, is invalid and a stop; recovered `disabled` stays valid. Do not add
+  a second policy field or rewrite an empty launch set to `disabled`.
+
+#### 2.3 Apply the session-wide finding gate
+
+- Correct a finding automatically only when its severity is High, Medium, or Low; `blocking: no`; it stays
+  inside the locked contract; and it is reversible, authority-neutral, non-destructive, and non-external.
+- Send every other finding to the user in General, Cowork, and Workflow Phase 1. After a Complete Workflow
+  Phase 1 handoff, the manager decides from the accepted design, authority, available subagents or teammates,
+  and remaining Partner runtimes, or writes a stopped handoff without asking the user.
+- Run fresh evaluation after every correction. Continue automatically only from a verified PASS.
+
+#### 2.4 Hand off the selected route
+
+- Hand the complete entry state to one owner:
+
+  | Mode | Handoff |
+  |---|---|
+  | **General** | Mode, `slug: not-applicable`, and partner policy; no orchestration owner or session state. |
+  | **Cowork** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Cowork](../cowork/SKILL.md). |
+  | **Workflow** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Workflow](../workflow/SKILL.md). |
+
+- Before specialist work, load Delegation, add the selected owner's fields, and resolve every role and skill
+  from the validated root pair. Load further task skills only when their triggers apply.
+- Stop with the exact blocker when mode evidence, owner evidence, identity, path, or authority is invalid.
+  Never invent a fallback mode, cursor, worktree, session directory, or participant route.
 
 ## References
 
-This is the complete map of the canonical Gobbi skill roots, plus the two children `gobbi` owns. Step 1.2
-loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other
-skill. The map shows what exists rather than what is loaded. Every other root that has children routes to them
-from its own document.
-
-### Entry and shared operations
-
-| Skill | Owns |
+| Name | Description |
 |---|---|
-| [`principles`](../principles/SKILL.md) | The ten behavioral principles every agent applies. |
-| [`ideation`](../ideation/SKILL.md) | Exploring a problem with the user and locking what and why. |
-| [`planning`](../planning/SKILL.md) | Decomposing accepted work into an ordered executable plan. |
-| [`wrap-up`](../wrap-up/SKILL.md) | Closing accepted work with durable memory and an exact handoff. |
-| [`delegation`](../delegation/SKILL.md) | The brief shape every specialist assignment uses. |
-| [`discussion`](../discussion/SKILL.md) | The shape of a question put to the user. |
-| [`memory`](../memory/SKILL.md) | Temporary session records and durable project memory. |
-| [`git`](../git/SKILL.md) | Branch, worktree, commit, publication, merge, and recovery. |
-
-### Entry and mode owners
-
-| Skill | Owns |
-|---|---|
-| [`gobbi`](SKILL.md) | This entry: the system load, the mode selection, and the handoff. |
-| [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git contract, evaluation policy, and session locations. |
-| [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and evidence layout. |
-
-### Work operations
-
-| Skill | Owns |
-|---|---|
-| [`gobbi/partner`](partner/SKILL.md) | One external invocation: its preparation, launch, validation, and returned frozen content. |
-| [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
-| [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
-| [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces five accepted phase documents and one confirmed synthesis. |
-| [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
-| [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
-
-### Authoring the system
-
-| Skill | Owns |
-|---|---|
-| [`skill-writing`](../skill-writing/SKILL.md) | Authoring or substantively revising one project skill. |
-| [`agent-writing`](../agent-writing/SKILL.md) | Authoring a Gobbi agent's canonical Markdown and TOML pair. |
-| [`claude-plugin`](../claude-plugin/SKILL.md) | The shared Claude Code and Codex plugin package and its manifests. |
-| [`codex`](../codex/SKILL.md) | The Codex CLI and native Codex entry surfaces. |
-
-### Languages and platforms
-
-Each of these roots covers work in its language or platform and routes the task to its applicable children.
-
-| Skill | Covers |
-|---|---|
-| [`web`](../web/SKILL.md) | The web platform |
-| [`html-css`](../html-css/SKILL.md) | HTML markup and CSS presentation |
-| [`typescript`](../typescript/SKILL.md) | TypeScript |
-| [`react`](../react/SKILL.md) | React |
-| [`go`](../go/SKILL.md) | Go |
-| [`python`](../python/SKILL.md) | Python |
-| [`electron`](../electron/SKILL.md) | Electron |
-| [`desktop`](../desktop/SKILL.md) | Installable desktop applications |
-| [`cli`](../cli/SKILL.md) | Line-oriented TypeScript CLI products |
+| [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
+| [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
+| [Delegation](../delegation/SKILL.md) | Defines every specialist prompt and final Handoff. |
+| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance for Claude and Grok plugin consumers. Codex roles load from the project `.codex/agents/manager.toml`, not from this package. Cursor roles load from the project `.cursor/agents/manager.md`, not from this package. |
+| [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
+| [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
+| [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
+| [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
+| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Cursor, Grok, Git-ignore, and CLI prerequisites without mutation. |

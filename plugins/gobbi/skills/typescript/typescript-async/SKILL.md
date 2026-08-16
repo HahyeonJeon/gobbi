@@ -1,15 +1,15 @@
 ---
 name: typescript-async
-description: "MUST load when a TypeScript task involves promises, cancellation, concurrency, events, cleanup, or explicit resource management."
+description: "TypeScript Async is a preference skill for promise observation, cancellation, concurrency, events, cleanup, and explicit resource ownership."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # TypeScript Async
 
-TypeScript Async governs who observes asynchronous results and which code releases acquired resources. It applies to promises, cancellation, concurrent operations, event subscriptions, and values that require cleanup.
+TypeScript Async defines who observes asynchronous completion and failure and which code releases acquired resources. Use it when TypeScript work involves promises, cancellation, concurrent operations, event subscriptions, cleanup, or explicit resource management.
 
-These preferences sit above the runtime mechanism in use. They do not assume that every named runtime supports the same cancellation, event, or explicit-resource APIs.
+Its preferences remain runtime-neutral and do not assume identical capabilities across runtimes.
 
 ## Principles
 

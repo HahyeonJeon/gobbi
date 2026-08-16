@@ -1,25 +1,15 @@
 ---
 name: go-design
-description: "MUST load when designing or reviewing Go packages, public APIs or CLIs, functions, structs, methods, values and pointers, interfaces, errors, generics, mutable-data ownership, or ordinary resource lifetime."
+description: "Go Design provides preferences for package and API design, types, errors, ownership, copying, and ordinary resource lifetimes."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Go Design
 
-Go Design guides Go authors and reviewers choosing package identities, public APIs or CLIs, values, errors,
-ownership, and ordinary resource lifetime. It keeps those choices coherent from a package import path or CLI
-entry point through failure and cleanup.
+Use Go Design when choosing or reviewing package identities and boundaries, public APIs or CLIs, functions, structs, methods, values and pointers, interfaces, errors, generics, mutable-data ownership, or ordinary resource lifetimes.
 
-This skill owns package names, import paths, package directories or placement, package boundaries, public APIs
-or CLIs, types, errors, mutable-data ownership, copying, and ordinary resource-lifetime judgment.
-
-`go-architecture` owns confirmed project, package, module, or process design and the material-choice operation;
-`go-development` owns construction and review. `go-concurrency` owns concurrent lifetime and cancellation;
-`go-modules` owns module consumer compatibility. `go-conventions` owns naming and error text; `go-source` owns
-source organization, formatter layout, import form, and generated provenance; `go-documentation` owns public
-documentation and implementation comments. `go-toolchain` owns exact package pattern semantics, project
-command facts, and tool behavior.
+It owns those local design judgments while integrated architecture, construction, concurrent lifetime, module compatibility, written form, documentation, and command mechanics remain with their named owners.
 
 ## Principles
 

@@ -1,20 +1,15 @@
 ---
 name: cli-interface
-description: "MUST load when choosing or reviewing help and discovery content, terminal wording, human, plain, or structured rendering within accepted stream roles, diagnostics, prompts, progress, visualization, accessibility, localization, or adaptive presentation for a line-oriented CLI."
+description: "CLI Interface is a preference skill for expressing an accepted line-oriented command model across human, plain, JSON, and JSONL profiles."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # CLI Interface
 
-CLI Interface guides the product owner who chooses or reviews how an accepted line-oriented command model
-appears to people and automation. Its result is one expression contract for help, results, diagnostics,
-prompts, progress, and visualization across terminal, redirected, piped, CI, localized, and assistive use.
+CLI Interface defines help, result, diagnostic, prompt, progress, completion, and visualization expression across terminal, redirected, piped, CI, localized, and assistive contexts.
 
-[`cli-architecture`](../cli-architecture/SKILL.md) owns meaning, semantic fields, stream roles, modes, exits,
-and compatibility. This skill expresses those accepted decisions without choosing parser or renderer
-libraries, current platform facts, security policy, implementation, process tests, target support, automatic
-paging, or full-screen terminal behavior.
+Use it after command meaning and stream roles are accepted; it does not alter semantics or choose renderer, platform, security, implementation, evidence, support, paging, or full-screen behavior.
 
 ## Principles
 

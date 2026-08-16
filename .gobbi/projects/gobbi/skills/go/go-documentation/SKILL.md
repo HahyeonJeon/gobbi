@@ -1,22 +1,15 @@
 ---
 name: go-documentation
-description: "MUST load when writing or reviewing Go package comments, declaration comments, doc-comment links or headings, or implementation comments."
+description: "Go Documentation provides preferences for package comments, declaration comments, doc-comment structure, and implementation comments."
 allowed-tools: Read
 skill-type: preference
 ---
 
 # Go Documentation
 
-Go Documentation guides Go authors and reviewers when public documentation or implementation comments have
-more than one valid expression. It defines the documentation boundary, then recommends forms that serve
-callers and future maintainers.
+Use Go Documentation when writing or reviewing package comments, declaration comments, doc-comment links or headings, or implementation comments.
 
-This skill owns package comments, declaration comments, doc-comment links and headings, complete-sentence
-public documentation, and implementation-comment judgment.
-
-It describes accepted behavior without designing it. Public API, CLI, and error contracts remain with
-`go-design`; names and error text remain with `go-conventions`; source form and generated provenance remain
-with `go-source`; exact version, command, and tool behavior remain with `go-toolchain`.
+It describes accepted behavior for callers and maintainers without designing APIs, names, errors, source form, generated provenance, or tool behavior.
 
 ## Principles
 

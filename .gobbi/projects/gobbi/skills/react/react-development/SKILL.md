@@ -1,21 +1,15 @@
 ---
 name: react-development
-description: "MUST load when implementing one scoped React change for a browser application or Electron renderer."
+description: "React Development is an operation skill that implements one accepted design as a verified React-local source change."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # React Development
 
-React Development turns one accepted React design and bounded implementation task into a verified React-local
-source change. It follows Study → Design → Build → Verify → Handoff and ends with exact final-tree evidence.
+React Development turns one accepted design and bounded task into a verified React-local source change for a browser application or Electron renderer. Use it when implementing components, Hooks, state, Error Boundaries, approved host interfaces, and their React-local tests, types, callers, documents, or client-render profiling.
 
-This operation covers React components, Hooks, state behavior, Error Boundary behavior, approved host-interface
-use, related tests, types, callers, documents, and ordinary client-render profiling. It does not cover complete
-browser journeys, cross-layer integration, production delivery and emission, installed outcomes, Electron
-platform and runtime proof, release work, independent Evaluation, or publication.
-
-React Native is outside this operation and requires project-specific guidance.
+Complete application journeys, cross-layer integration, production delivery, Electron runtime proof, release, publication, independent evaluation, and React Native remain outside this operation.
 
 ## Principles
 

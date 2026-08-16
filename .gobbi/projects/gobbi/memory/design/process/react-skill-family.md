@@ -74,6 +74,5 @@ remains a point-in-time report.
 - React Testing records evidence by classification. Test defects record a test-local repair and reruns;
   product defects record product failure evidence and route to `react-development`; environment gaps,
   unsupported claims, and unresolved flakes record only their exact gap or stop and matching terminal status.
-- The cross-cutting [plugin package contract](../../../skills/claude-plugin/SKILL.md) governs generated
-  `plugins/gobbi/skills/` and `plugins/gobbi/agents/` projections. React work edits canonical sources first,
-  then regenerates and byte-checks the package.
+- `scripts/sync-plugin-package.sh` governs generated `plugins/gobbi/skills/` and `plugins/gobbi/agents/`
+  projections. React work edits canonical sources first, then regenerates and byte-checks the package.

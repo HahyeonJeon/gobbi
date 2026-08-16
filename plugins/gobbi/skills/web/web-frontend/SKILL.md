@@ -1,18 +1,15 @@
 ---
 name: web-frontend
-description: "MUST load when implementing or reviewing a web change's browser-facing interface, content, accessibility, responsive behavior, recovery, or user-visible integration."
+description: "Web Frontend is an operation skill for one browser-facing outcome across journey, content, interaction, visual hierarchy, responsiveness, accessibility, trust, recovery, and user-visible measurement."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Web Frontend
 
-Use this operation for the browser-facing outcome: journey, content, interaction, visual hierarchy, responsive
-behavior, accessibility, trust, recovery, and user-visible measurement.
+Web Frontend produces one browser-facing outcome across journey, content, interaction, visual hierarchy, responsiveness, accessibility, trust, recovery, and user-visible measurement. Use it when implementing or reviewing the interface and its real browser integration.
 
-It owns observable frontend behavior. `web-design` owns the identity, evidence, concept, and visual-design
-judgments it applies. The applicable `html-css` children plus language, framework, platform, backend, project
-structure, testing, and security owners load only when their triggers apply.
+Design judgments, HTML and CSS policy, platform facts, backend behavior, project placement, testing, and security remain with their triggered owners.
 
 ## Principles
 

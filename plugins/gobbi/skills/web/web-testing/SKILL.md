@@ -1,18 +1,15 @@
 ---
 name: web-testing
-description: "MUST load when designing, writing, running, diagnosing, or reviewing tests for a web application or change."
+description: "Web Testing is an operation skill for creating and maintaining a risk-based test system with deterministic suites, real-integration evidence, failure diagnosis, and accurate reporting."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Web Testing
 
-Use this operation to produce and maintain a risk-based web test system, from contract study through
-deterministic suites, real-integration-point evidence, failure diagnosis, and accurate reporting.
+Web Testing creates and maintains a risk-based test system from contract study through deterministic suites, real-integration evidence, failure diagnosis, and accurate reporting. Use it when designing, writing, running, diagnosing, or reviewing tests for a web application or change.
 
-It owns test design and mechanics, not runner-specific syntax or the behavior under test. Product,
-`web-app-lifecycle`, `web-operations`, platform, security, accessibility, performance, language, framework,
-and tool owners supply their claims and facts.
+It owns test design and mechanics, while product, platform, security, accessibility, performance, language, framework, and tool owners supply the claims and facts being tested.
 
 ## Principles
 

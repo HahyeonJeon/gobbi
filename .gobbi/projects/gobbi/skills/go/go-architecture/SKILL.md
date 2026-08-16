@@ -1,23 +1,15 @@
 ---
 name: go-architecture
-description: "MUST load when designing or reviewing the architecture of a Go application, service, command, library, or multi-package system, including package boundaries, dependency direction, process boundaries, configuration ownership, data flow, failure containment, or validation strategy."
+description: "Go Architecture is an operation for authoring or reviewing cross-package, module, and process architecture in Go software."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Architecture
 
-Go Architecture authors or reviews the cross-package, module, and process design of Go software. Author-design
-mode returns a user-confirmed design and future validation plan; review mode returns evidence-backed architecture
-findings. Either mode can instead return an exact decision block.
+Use Go Architecture when package boundaries, dependency direction, process roles, configuration ownership, data flow, failure containment, or validation strategy require an integrated design or review.
 
-This operation owns the ordered architecture process, the integrated architecture model, material-choice gate,
-confirmed design, and validation plan. It does not implement source, produce a code skeleton or implementation
-plan, execute project code or tools, populate Go caches, download inputs, publish, release, deploy, or mutate
-external state.
-
-Architecture integrates singular sibling judgments without taking them over. Project sources remain read-only;
-only separately caller-approved design artifacts and author-design scratch may be written.
+It returns a confirmed design and future validation plan, evidence-backed findings, or a decision block while keeping source implementation, code skeletons, implementation planning, project execution, and external effects outside its scope.
 
 ## Principles
 

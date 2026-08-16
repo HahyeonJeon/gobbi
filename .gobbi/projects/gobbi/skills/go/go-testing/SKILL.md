@@ -1,20 +1,15 @@
 ---
 name: go-testing
-description: "MUST load when designing, writing, reviewing, or executing Go tests, examples, fuzz targets, benchmarks, coverage checks, or race-detector evidence."
+description: "Go Testing is an operation for designing, authoring, reviewing, or executing focused evidence through tests, examples, fuzzing, benchmarks, coverage, race detection, and integration checks."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Testing
 
-Go Testing designs, authors, reviews, or executes focused evidence for a named Go behavior or risk. It returns
-the smallest repeatable result supported by tests, examples, fuzzing, benchmarks, coverage, race detection,
-and integration checks, with every evidence limit explicit.
+Use Go Testing when a named behavior or risk needs tests, examples, fuzz targets, benchmarks, coverage checks, race-detector evidence, or integration checks.
 
-This operation owns the evidence question, test kind, observable test boundary or controllable dependency,
-cases, execution choice, and interpretation. `go-design` owns production design, `go-development` owns
-production code changes, `go-concurrency` owns synchronization design, and `go-toolchain` owns project command
-syntax, exact package pattern semantics, environment facts, and project command effects.
+It owns the evidence question, test kind, observable boundary or controllable dependency, cases, execution choice, and interpretation while leaving production design, production changes, synchronization design, and command mechanics to their owners.
 
 ## Principles
 

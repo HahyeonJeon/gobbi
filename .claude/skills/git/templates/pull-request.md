@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/git/templates/pull-request.md

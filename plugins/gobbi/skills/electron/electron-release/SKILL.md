@@ -1,22 +1,15 @@
 ---
 name: electron-release
-description: "MUST load when preparing or executing an Electron release from verified packaged artifacts, including support policy, version transitions, update channels, release readiness, publication, rollout, withdrawal, or post-release recovery."
+description: "Electron Release is an operation skill for preparing, reviewing, or executing a target-specific release from accepted immutable Packaging candidates."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Release
 
-Electron Release takes one accepted immutable Packaging candidate for each target operating system and
-architecture. It prepares, reviews, or executes one release and returns an exact release record or an
-explicit stop.
+Electron Release defines support, version, update, channel, rollout, withdrawal, and recovery policy for accepted candidate bytes.
 
-This operation owns support policy, version transitions, update channels, release-readiness acceptance,
-external authority, publication, rollout, withdrawal, and post-release recovery. Packaging keeps ownership
-of candidate construction and final bytes, while Testing keeps ownership of test work and evidence.
-
-Release policy and metadata may change, but accepted candidate bytes remain unchanged throughout this
-operation. Every claim and external action stays specific to its candidate, target, channel, and destination.
+Use it when establishing release readiness or carrying out an explicitly authorized external action for a named target, channel, and destination. It returns an exact release record or stop.
 
 ## Principles
 

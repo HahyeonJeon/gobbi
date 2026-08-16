@@ -1,5 +1,17 @@
 # Work Tips
 
+## After Phase 2 Complete, add a new tasks and plan part
+
+**Context:** The user asks for more work after Workflow Phase 2 is already Complete.
+
+**Tip:** Record that work as a new `tasks-NN` and `plan-NN` with the next unused
+number. Do not rename earlier parts, and do not keep the extra work as a silent
+manager-only todo.
+
+**Application:** Append the new parts, update the Planning indexes, and reopen
+Execution at the first new task. Leave Wrap-up stopped until that extra work is
+accepted.
+
 ## Investigate a partner-round disagreement instead of picking a side
 
 **Context:** The two independent drafts of one partner round disagree on a factual or design question during
@@ -27,3 +39,16 @@ without re-deriving it.
 **Application:** When reviewing a delegate's report, weight a report that explicitly disclaims partial credit
 more highly than one that claims it all — and treat a report that claims everything as needing more
 independent verification, not less.
+
+## Grok Partner write-bound is a restricting flag plus a one-write postimage
+
+**Context:** Deciding whether Grok can be a Partner launch row, or launching Grok through a host wrapper.
+
+**Tip:** Treat write-bound as one AND rule: a help-backed sandbox or tool-restriction flag that is not
+`--always-approve`, plus a session or project postimage that changes only the contracted writing path.
+Measured Grok 1.0.4 uses `--sandbox workspace`. `--always-approve` is not that flag. `--sandbox workspace` is
+not a session-directory-only deny. A host `timeout` around the Grok CLI is a separate bound from Grok's own
+`[toolset.bash] timeout_secs` in user-level `~/.grok/config.toml`.
+
+**Application:** Do not add a Grok launch row from a clean in-session file check alone. Do not treat a
+wrapper-host bash timeout as Grok's tool timeout, or the reverse.

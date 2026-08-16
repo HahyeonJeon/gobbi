@@ -1,22 +1,15 @@
 ---
 name: typescript-development
-description: "MUST load when studying TypeScript implementation requirements, designing a typed API, or implementing, changing, or reviewing TypeScript implementation code."
+description: "TypeScript Development is an operation skill for studying requirements, designing typed APIs, implementing authorized changes, and reviewing implementation code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Development
 
-TypeScript Development coordinates authoring and review of TypeScript implementation code. Author mode takes an authorized change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. Review-only implementation mode keeps this child active, inspects the existing typed design and implementation, and composes with the general Evaluation operation for verdicts.
+TypeScript Development coordinates authoring and review of implementation code from supplied requirements through typed design, bottom-up construction, project-kind verification, and handoff. Use it when studying TypeScript requirements, designing an API, implementing or changing code, or performing review-only implementation inspection.
 
-This operation composes with `typescript-conventions` and `typescript-typing` whenever their triggers apply.
-Load each of `typescript-async`, `typescript-cli-delivery`, `typescript-toolchain`, `typescript-packaging`, and
-`typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every
-applicable project kind: web application, command-line application (CLI), library, SDK, and desktop
-application. If none fits, record a literal fallback such as `server process`, `build script`, or `test
-utility`.
-
-The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. Author mode implements those inputs through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results. Review-only implementation mode inspects how the existing code realizes those inputs.
+Product domains retain user experience, command semantics, service behavior, platform support, deployment, and release decisions.
 
 ## Principles
 

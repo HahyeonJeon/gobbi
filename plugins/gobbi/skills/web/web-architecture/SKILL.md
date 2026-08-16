@@ -1,18 +1,15 @@
 ---
 name: web-architecture
-description: "MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application."
+description: "Web Architecture is a preference skill for client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, and dependency strategy."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Web Architecture
 
-This preference skill guides structural web decisions: where authority and state live, how documents and code
-are delivered, how navigation survives transitions, and which caches, services, and dependencies are accepted.
+Web Architecture guides choices about authority, state, delivery, navigation, caching, progressive enhancement, and dependencies. Use it when choosing or reviewing structural boundaries for a web application.
 
-It recommends boundaries without redesigning a sound application. `web-app-lifecycle` owns user-visible browser
-and PWA states and transitions; development, project structure, frontend, backend, platform, security,
-testing, language, and framework owners keep their own policy and implementation.
+It recommends architecture without redesigning a sound application or taking ownership from lifecycle, implementation, platform, security, or testing specialists.
 
 ## Principles
 

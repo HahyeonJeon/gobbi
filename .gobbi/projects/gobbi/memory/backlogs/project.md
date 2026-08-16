@@ -1,28 +1,11 @@
 # Project Backlog
 
-## agent-writing template still hardcodes the agents path
+## Future Markdown link checking must inspect the plugin mirror
 
 **Backlogged at:** 2026-08-02T12:16:00Z
 
-**What:** Remove the remaining hardcoded `.gobbi/projects/gobbi/agents/{role}.md` path from
-`agent-writing/SKILL.md` (7 occurrences), replacing it with the `{gobbi-agents-root}` placeholder the five
-live role-contract wrappers now use.
-
-**Why backlogged:** The template and the five live `.toml` wrappers must change together, or the identity
-check that compares the template's string against each wrapper's string breaks. The 2026-08-02 locator session
-deliberately left this unfixed rather than half-fixing it — see
-[`learnings/dev/mistakes.md`](../learnings/dev/mistakes.md#fixing-one-copy-of-a-duplicated-invariant).
-
-**Context:** Raised during the same session that converted the five wrappers to reference the role contract's
-resolved roots instead of a hardcoded path.
-
-## check-markdown-links.sh never inspects the plugin mirror
-
-**Backlogged at:** 2026-08-02T12:16:00Z
-
-**What:** Change `scripts/check-markdown-links.sh`'s file discovery from `find -type f` to `find -xtype f` (or
-equivalent), so it inspects the 159 symlink `.md` leaves under `.claude/skills/` rather than skipping all of
-them.
+**What:** When Markdown link checking is reimplemented, use `find -xtype f` or an equivalent symlink-following
+strategy so it inspects Markdown leaves under `.claude/skills/` instead of skipping the plugin mirror.
 
 **Why backlogged:** Not currently unsafe — every mirror leaf points at a canonical file the checker already
 checks directly — but it is false assurance: a future task that points the checker at the mirror itself, or at
@@ -48,6 +31,21 @@ are also not applied. User decision: record it, decide separately.
 **Context:** Measured fact recorded in
 [`learnings/codex/tips.md`](../learnings/codex/tips.md#codexconfigtoml-at-a-repository-root-is-inert).
 
+## Project `.grok/config.toml`
+
+**Backlogged at:** 2026-08-15T14:49:00Z
+
+**What:** Decide whether Gobbi should add a repository `.grok/config.toml`.
+
+**Why backlogged:** The 2026-08-15 DISCUSSION lock deferred it. Official Grok config is user-level
+`~/.grok/config.toml`. Codex already showed that a repository config can be unused. Measure before adding a
+project file.
+
+**Context:** Official marketplace sources use `[[marketplace.sources]]` in `~/.grok/config.toml`. This
+checkout already has a project plugin pointer at `.grok/plugins/gobbi`. User-level
+`[toolset.bash] timeout_secs` is a Grok host setting, not a reason to add a project config. Revisit if
+measurement shows Grok reads a project config that Gobbi needs.
+
 ## Consumer-project README setup section
 
 **Backlogged at:** 2026-08-01T15:05:03Z
@@ -57,7 +55,8 @@ are also not applied. User decision: record it, decide separately.
 **Why backlogged:** Out of scope for the 2026-08-01 bootstrap fix, which focused on skill and ignore-rule
 behavior rather than user-facing documentation.
 
-**Context:** The bootstrap is defined in `gobbi/SKILL.md` Procedure Step 1.1 and recorded in
+**Context:** The layout is defined in `gobbi/SKILL.md` Procedure Step 1.1, while Cowork Configuration and
+Workflow's `Create the worktree and configuration` step own mode-specific bootstrap. The current design is recorded in
 [`design/architecture/consumer-project-bootstrap.md`](../design/architecture/consumer-project-bootstrap.md).
 
 ## Flat consumer-project layout
@@ -74,20 +73,6 @@ outcome.
 **Context:** The current nested layout and the rejection are recorded in
 [`design/architecture/consumer-project-bootstrap.md`](../design/architecture/consumer-project-bootstrap.md).
 
-## Git skill stop condition missing a detection command
-
-**Backlogged at:** 2026-08-01T15:05:03Z
-
-**What:** Add a named detection command to the `git/SKILL.md` Step 2.1 stop condition for "a required path
-component exists as a file or a symbolic link instead of a directory." The other stop conditions in that step
-each name a detection command; this one only says to name the path and what it is.
-
-**Why backlogged:** Trivially detectable by inspecting the path directly, so shipping the 2026-08-01 fix
-without spending another review cycle on it was preferred to leaving the whole fix unshipped.
-
-**Context:** The sibling stop conditions and this gap are described in
-[`design/architecture/consumer-project-bootstrap.md`](../design/architecture/consumer-project-bootstrap.md#stop-conditions).
-
 ## Guardrail gaps in two `.toml` role wrappers
 
 **Backlogged at:** 2026-08-02T12:16:00Z
@@ -95,11 +80,11 @@ without spending another review cycle on it was preferred to leaving the whole f
 **What:** Decide whether `assistant.toml` needs a git/scope guardrail clause and whether `manager.toml` needs
 the conflict-precedence clause the other four role wrappers carry.
 
-**Why backlogged:** `agent-writing/SKILL.md`'s P3 template requires a git/scope guardrail clause (c) for any
-role that writes to the worktree; `assistant.toml` has none, though the assistant role writes to the worktree
-during RECORD and Wrap-up WORK. `manager.toml` lacks the conflict-precedence clause the other four wrappers
-carry, which reads as a pre-existing asymmetry rather than a clear defect. Both need a user decision on
-whether the omission is intentional.
+**Why backlogged:** Direct comparison of the five live role contracts and wrappers shows that
+`assistant.toml` has no git/scope guardrail clause, though the assistant role writes to the worktree during
+RECORD and Wrap-up WORK. `manager.toml` lacks the conflict-precedence clause the other four wrappers carry,
+which reads as a pre-existing asymmetry rather than a clear defect. Both need a user decision on whether the
+omission is intentional.
 
 **Context:** Raised during the 2026-08-02 locator session while converting the five role-contract wrappers;
 pre-existing, not introduced by that conversion.
@@ -142,28 +127,8 @@ distribution rather than changing it.
 `packages/cli` binary v0.5.0 shipped before v1.0.0 moved to plugin-only distribution.
 
 **Why backlogged:** The 2026-08-01 fix solved the same gap by defining the layout inline in `gobbi/SKILL.md`
-and bootstrapping it through the `git` skill instead, without reviving a CLI.
+and assigning bootstrap to the selected Cowork or Workflow owner instead, without reviving a CLI.
 
 **Context:** `packages/cli` was deleted when Gobbi moved to plugin-only distribution for v1.0.0; that
 deletion is the root cause analyzed in
 [`reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md`](../reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md).
-
-## Role-contract references to nonexistent consumer-project surfaces
-
-**Backlogged at:** 2026-08-02T12:16:00Z
-
-**What:** Fix four remaining role-contract gaps, same defect class as the 2026-08-02 locator fix but outside
-that fix's scope: `plugins/gobbi/` is cited as a Codex runtime surface in `leader.md`, `executor.md`,
-`evaluator.md`, and `assistant.md`, though that directory does not exist in a consumer project;
-`executor.md` cites the user's own auto-memory file (`feedback_path_formatting`) as a memory rule, unreachable
-from any consumer project; `assistant.md` names a "Project skill" that does not exist anywhere in the tree;
-`assistant.md`'s frontmatter description still names `record/SKILL.md` and `wrap-up/SKILL.md Phase 2.1` by an
-older convention.
-
-**Why backlogged:** Each was raised during the 2026-08-02 locator session as a finding with no owning task and
-was still present in the tree at session end. The first is the strongest candidate, being the same defect
-class as the session's own reported cause; the "Project skill" gap would require inventing a destination
-rather than converting an existing reference, so it needs a design decision, not a mechanical fix.
-
-**Context:** Raised as findings F3, F4, F5, and F6 during the session that produced
-[`design/architecture/plugin-skill-locator.md`](../design/architecture/plugin-skill-locator.md).

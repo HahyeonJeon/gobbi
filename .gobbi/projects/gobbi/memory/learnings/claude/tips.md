@@ -47,6 +47,16 @@ a stable public mechanism — it could disappear without notice.
 
 **Application:** Use this only as a fallback signal, never as the primary acquisition step.
 
+## Claude Stop injects through additionalContext only
+
+**Context:** Writing a Claude Code Stop hook that should continue the model with extra text.
+
+**Tip:** Claude Code continues from `hookSpecificOutput.additionalContext` only. Codex
+`{decision: "block", reason}` is the wrong payload on Claude.
+
+**Application:** Share the additionalContext payload with Grok. Detect Claude when `GROK_HOOK_EVENT` is unset
+and `turn_id` is absent. See [stop reminder](../../design/feature/stop-reminder.md).
+
 ## `/plugin marketplace add` creates a full git clone
 
 **Context:** Understanding what a marketplace-installed plugin's files actually are on disk.

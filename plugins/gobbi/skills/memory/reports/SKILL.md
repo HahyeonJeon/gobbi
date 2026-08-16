@@ -1,6 +1,6 @@
 ---
 name: reports
-description: MUST load after the memory operation identifies content as report memory. Reports is a preference skill for what completed report memory contains and how it is structured.
+description: "Report Memory is a preference skill for preserving and structuring final, durable accounts of completed work."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,13 +8,9 @@ user-invocable: false
 
 # Report Memory
 
-This internal category skill guides report-memory judgment after the parent memory operation identifies
-content as report memory. It owns the content and structure of `memory/reports/`. The parent memory skill owns
-when and how reports are read, created, updated, moved, or deleted.
+Report Memory defines the content and structure of `memory/reports/` after the parent Memory operation classifies content as report memory. Use it for one final, point-in-time account of a completed work event, classified as a note, review, or analysis by the work that produced it.
 
-Report memory preserves one final, durable account of completed work. The work that produced the report
-chooses its category. The report remains a point-in-time evidence record while other memory categories own
-current intent, reusable knowledge, source materials, deferred actions, and compact session progression.
+The parent Memory operation owns when and how reports are read, created, updated, moved, or deleted; other memory categories own current intent, reusable knowledge, source materials, deferred outcomes, and session progression.
 
 ## Principles
 

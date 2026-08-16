@@ -1,28 +1,15 @@
 ---
 name: web-interaction
-description: "MUST load when choosing or reviewing browser interaction behavior, including event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, listener lifetime and rate limiting, or WAI-ARIA widget patterns."
+description: "Web Interaction is a preference skill for browser event, pointer, keyboard, focus, gesture, listener, rate-limiting, and widget behavior, including Electron renderers."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
 
 # Web Interaction
 
-Use this preference skill when a browser feature's interaction needs a judgment rather than a step: what an
-event contract must define, which states a control has, where focus goes and where it returns, how a pointer
-behavior is reached from a keyboard, and which published widget pattern applies. It owns the valid choice
-space that `web-frontend` applies, and it holds for any browser interface, including an Electron renderer.
+Web Interaction guides the valid behavior choices behind browser controls and scripted input. Use it when choosing or reviewing event contracts, pointer and keyboard equivalence, focus management, gesture alternatives, listener lifetime, rate limiting, or WAI-ARIA widget patterns.
 
-`web-frontend` owns the ordered browser operation and the obligation that every state, transition,
-interaction, and recovery path is specified and implemented; this skill owns the choices those obligations
-are satisfied from. [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owns which element, name, role,
-and state express the meaning; this skill owns the behavior a chosen role promises.
-[`html-css-motion`](../../html-css/html-css-motion/SKILL.md) owns declarative motion mechanics and the project motion scale;
-this skill owns motion a script drives from a live input and the listener contract behind it.
-
-`web-design` and `desktop-interface` decide whether an interaction or a transition is warranted at all,
-`web-platform` owns platform facts and evidence, `web-security` owns untrusted input and dangerous sinks, and
-`web-architecture` owns navigation and state ownership above the control. Rules define the boundary,
-Preferences select defaults inside it, and a Rule wins every conflict.
+Frontend owns the ordered implementation; semantics, motion mechanics, design need, platform facts, security, and architecture remain with their owners.
 
 ## Principles
 

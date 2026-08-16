@@ -1,5 +1,15 @@
 # Git Mistakes
 
+## Putting `--` before `-F` makes Git treat `-F` as a path
+
+**Context:** Creating a commit with a message from stdin and an explicit path list.
+
+**Mistake:** `git commit -- paths -F -` treats `-F` as a path, so the message
+file option is never applied.
+
+**Correction:** Put the message option before the path separator:
+`git commit -F - -- paths`.
+
 ## Reusing a squash-merged branch can reopen old history
 
 **Context:** Publishing a focused follow-up from a retained branch after that branch's earlier work was

@@ -1,33 +1,15 @@
 ---
 name: desktop-interface
-description: "MUST load when choosing or reviewing research evidence, interface requirements, product identity, interface concepts, prototypes, representative-user evidence, visual style, interaction or motion intent, accessibility, adaptation, success measures, or interface improvement decisions for an installable Electron desktop application written in TypeScript."
+description: "Desktop Interface is a preference skill for the complete design lifecycle of installable Electron desktop applications. It owns design judgments and interaction or motion intent, not mechanics."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Desktop Interface
 
-Use this preference skill to judge an installed desktop application's complete design lifecycle. It owns the
-current results for Discovery research, Problem framing and design requirements, Concept alternatives,
-Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement
-and improvement; [`desktop-development`](../desktop-development/SKILL.md) owns the order and coordination of
-that work.
+Desktop Interface judges seven design activities: discovery, problem framing, concepts, prototyping, representative-user testing, design–implementation collaboration, and post-release improvement.
 
-Every activity receives one bounded result, including when current evidence is reused or the activity is not
-applicable. These judgments preserve project identity, keep evidence able to change a choice, compare real
-alternatives, test representative use, settle expression only after the experience contract, and reopen a
-decision when post-release evidence challenges it.
-
-This skill decides whether an interaction or motion is warranted and what state, location, or causality it
-must communicate. It does not own mechanics: event, pointer, keyboard, focus, drag, gesture, widget-pattern,
-and script-driven interaction or motion mechanics route to
-[`web-interaction`](../../web/web-interaction/SKILL.md), while declarative motion mechanics route to
-[`html-css-motion`](../../html-css/html-css-motion/SKILL.md). Product structure and runtime outcomes remain with
-[`desktop-architecture`](../desktop-architecture/SKILL.md), release judgment with
-[`desktop-release`](../desktop-release/SKILL.md), Electron mechanisms with the
-[`electron`](../../electron/SKILL.md) family, current operating-system facts with the matching desktop OS
-owner, and other renderer policy with its web, HTML/CSS, React, or TypeScript owner. Rules define the valid
-choices below; Preferences recommend defaults inside that boundary, and Rules win every conflict.
+Use it when design evidence, identity, interaction and motion intent, accessibility, adaptation, expression, or success measures need judgment; development coordinates order, while architecture and implementation owners retain their boundaries.
 
 ## Principles
 

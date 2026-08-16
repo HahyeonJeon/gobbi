@@ -1,22 +1,15 @@
 ---
 name: go-concurrency
-description: "MUST load when working with goroutines, channels, context.Context, sync, atomics, timers, concurrent ownership, cancellation, shutdown, backpressure, or race safety."
+description: "Go Concurrency provides preferences for concurrent ownership, synchronization, cancellation, backpressure, shutdown, timers, and race safety."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Go Concurrency
 
-Use this preference skill when designing or reviewing goroutines, channels, contexts, synchronization,
-atomics, timers, concurrent queues, cancellation, or shutdown. It helps make ownership and completion visible
-at every concurrent boundary.
+Use Go Concurrency when goroutines, channels, contexts, synchronization, atomics, queues, timers, cancellation, backpressure, shutdown, or race safety are involved.
 
-This skill owns concurrent ownership, lifetime, synchronization, cancellation, bounds, backpressure,
-shutdown, timers, and race-safety judgment. `go-design` owns ordinary API and resource judgment.
-
-`go-architecture`, `go-development`, `go-debugging`, `go-observability`, and `go-performance` own their
-independent results and load this preference when concurrency enters them. `go-testing` owns evidence strategy
-and results; `go-toolchain` owns race-detector and project-command mechanics.
+It owns concurrent ownership and lifetime judgment; ordinary API and resource design, evidence strategy, command mechanics, and operation results remain with their named owners.
 
 ## Principles
 

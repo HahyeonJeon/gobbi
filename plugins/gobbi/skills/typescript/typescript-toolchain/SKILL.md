@@ -1,15 +1,15 @@
 ---
 name: typescript-toolchain
-description: "MUST load when a TypeScript task involves compiler configuration, module resolution, imports, emit, type stripping, linting, building, or differences among named runtimes."
+description: "TypeScript Toolchain is a tool skill for compiler configuration, module resolution, JavaScript and declaration output, type stripping, linting, building, source maps, and runtime execution."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # TypeScript Toolchain
 
-TypeScript Toolchain is the inspection and configuration tool for the language pipeline. It separates checking, JavaScript production, type stripping, module resolution, linting, building, and runtime loading so a result from one layer is never mistaken for another.
+TypeScript Toolchain explains and diagnoses the language pipeline from checking and module resolution through emit, stripping, linting, building, source maps, and runtime execution. Use it when TypeScript work involves compiler configuration, imports, output, build state, or differences among named runtimes.
 
-The correct settings depend on the generated output: an application, library, script, test, declaration-only package, browser bundle, server process, or desktop process may need a different `tsconfig.json`. Read the supplied requirements and named runtime behavior before selecting flags or import forms.
+Generated-output and consumer requirements determine the settings; downstream bundling, delivery, and release actions remain with their output owners.
 
 ## Principles
 

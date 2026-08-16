@@ -1,6 +1,6 @@
 ---
 name: history
-description: MUST load after the memory operation identifies content as completed session history. History is a preference skill for preserving short chronological records of durable project progression.
+description: "History Memory is a preference skill for preserving compact chronological records of durable project progression by completed session."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 user-invocable: false
@@ -8,12 +8,9 @@ user-invocable: false
 
 # History Memory
 
-This internal child skill applies after the parent memory operation identifies content as completed session
-history. It owns the content and structure of `memory/history/`; the parent skill owns when and how memory is
-read, created, updated, moved, or deleted.
+History Memory defines the content and structure of `memory/history/` after the parent Memory operation classifies content as completed session history. Use it for one short, immutable record of each completed session that produced a durable project change, not for transcripts, activity logs, or detailed reports.
 
-History preserves one short overall record for each completed session that produced a durable project
-change. It is not a session transcript, activity log, or detailed report.
+The parent Memory operation owns record actions, subject to this skill's point-in-time immutability rules.
 
 ## Principles
 

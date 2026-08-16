@@ -1,19 +1,15 @@
 ---
 name: desktop-windows
-description: "MUST load when looking up or diagnosing current Windows facts about compatibility, installation, runtime lifecycle, native integration, update, repair, uninstall, trust, or failure evidence for an installable Electron desktop application written in TypeScript."
+description: "Desktop Windows is a tool Manual for current Windows facts and failure diagnosis for one exact installable Electron application compatibility tuple. It returns Supported, Not supported, or Unknown."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
 
 # Desktop Windows
 
-Desktop Windows is the query-first Manual for current Windows facts about one installable Electron and
-TypeScript application. A **compatibility tuple** is the exact application, artifact, Windows, and environment
-record that bounds one lookup.
+Desktop Windows looks up compatibility, distribution and installation, lifecycle, native integration, application identity, install scope, update, repair, uninstall, trust, session, and failure facts for an exact Windows tuple.
 
-The Manual returns one bounded fact result and its diagnosis. It does not choose product behavior, declare
-product support policy, implement or test the application, use credentials, mutate a machine or external
-system, or run an end-to-end development or release procedure.
+Use it when a current Windows fact or diagnosis is needed; it does not choose product behavior or support, implement or test, use credentials, mutate systems, or coordinate a lifecycle.
 
 ## Principles
 

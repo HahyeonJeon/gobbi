@@ -1,23 +1,15 @@
 ---
 name: go-source
-description: "MUST load when choosing or reviewing Go source file organization, canonical formatting, import grouping, blank or dot imports, or generated source provenance."
+description: "Go Source provides preferences for source organization, canonical formatting, import form, and generated-source provenance."
 allowed-tools: Read
 skill-type: preference
 ---
 
 # Go Source
 
-Go Source guides Go authors and reviewers when source organization, formatting, import form, or generated
-source provenance has more than one plausible expression. It defines the valid source-form boundary, then
-recommends defaults within it.
+Use Go Source when source-file cohesion, canonical formatting, import grouping, blank or dot imports, or generated-source provenance has more than one plausible expression.
 
-Use this skill after the project has established its written conventions and tool policy. It owns source-file
-cohesion, canonical form, import grouping and form, and generated-source provenance.
-
-Source-file names, import aliases, other naming, and error text remain with
-[`go-conventions`](../go-conventions/SKILL.md). Public documentation and comments remain with
-`go-documentation`; exact formatter, import-tool, and generator commands remain with
-[`go-toolchain`](../go-toolchain/SKILL.md).
+It supplies defaults after project conventions and tool policy are established; filenames, import aliases, other names, comments, and exact formatter or generator commands remain with their named owners.
 
 ## Principles
 

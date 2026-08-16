@@ -1,23 +1,15 @@
 ---
 name: desktop-architecture
-description: "MUST load when choosing or reviewing view hierarchy, navigation, window model, activation request behavior, application-state ownership, or state restoration for an installable Electron desktop application written in TypeScript."
+description: "Desktop Architecture is a preference skill for view hierarchy, navigation, windows, activation outcomes, application-state ownership, and restoration in installable Electron desktop applications."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Desktop Architecture
 
-Use this preference skill to choose an installed application's view hierarchy, navigation, window model,
-application-state authority and lifetime, and restoration behavior. It owns product structure and runtime
-outcomes, not the operating-system or Electron mechanisms that realize them.
+Desktop Architecture defines product structure and runtime outcomes for views, windows, navigation, activation requests, authoritative state, and restoration.
 
-An Activation request is a product transition distinct from Launching. This skill chooses whether an
-applicable request creates, reveals, focuses, navigates, handles, does nothing, or is rejected, while one
-authoritative application instance and state owner protects the result.
-
-Adjacent owners supply current facts, implementation, evidence, intent, coordination, and release judgment.
-Rules define the valid choices below; Preferences recommend defaults inside that boundary, and Rules win
-every conflict.
+Use it when choosing these product outcomes; operating-system and Electron facts, mechanisms, implementation, evidence, interface intent, coordination, and release judgment remain with their owners.
 
 ## Principles
 

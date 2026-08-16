@@ -1,18 +1,15 @@
 ---
 name: web-backend
-description: "MUST load when designing, building, or reviewing a web change's server, API, domain rules, data lifecycle, provider integration, authorization, or server-side recovery."
+description: "Web Backend is an operation skill for one server-owned outcome across interfaces, domain policy, data and provider lifecycles, authorization, recovery, diagnostics, and operations."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Web Backend
 
-Use this operation for one complete server-owned backend outcome: interfaces, domain policy, data lifecycle,
-provider actions, failure recovery, migrations, diagnostics, and operations.
+Web Backend produces one complete server-owned outcome across interfaces, domain policy, data and provider lifecycles, authorization, recovery, diagnostics, and operations. Use it when designing, building, or reviewing server, API, domain, data, provider, authorization, or server-side recovery work.
 
-It owns backend design and implementation. Route repository placement to `web-project-structure`, test-system
-mechanics to `web-testing`, and security requirements and threat analysis to `web-security` when their
-triggers apply.
+Repository placement, test mechanics, and security requirements remain with their named owners.
 
 ## Principles
 

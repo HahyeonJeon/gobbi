@@ -4,10 +4,17 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Startup family redesign](note/2026-08-16-startup-family-redesign.md)
+- [Grok system integration](note/2026-08-15-grok-system-integration.md)
+- [Code-review skill handoff](note/2026-08-12-code-review-skill-handoff.md)
+- [Gobbi development lifecycle skill family handoff](note/2026-08-10-gobbi-dev-skill-family-handoff.md)
 - [CLI skill family handoff](note/2026-08-09-cli-skill-family-handoff.md)
 
 ## Review
 
+- [Documentation-review operation review](review/2026-08-12-docs-review-skill-review.md)
+- [Gobbi development lifecycle skill family review](review/2026-08-10-gobbi-dev-skill-family-review.md)
+- [Gobbi skill-documentation review](review/2026-08-10-gobbi-skill-documentation-review.md)
 - [CLI skill family review](review/2026-08-09-cli-skill-family-review.md)
 - [Python skill family lifecycle review](review/2026-08-09-python-skill-family-lifecycle-review.md)
 - [Gobbi v1.1.2 release evaluation](review/2026-08-08-gobbi-v1-1-2-release-evaluation.md)

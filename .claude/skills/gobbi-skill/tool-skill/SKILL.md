@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/gobbi-skill/tool-skill/SKILL.md

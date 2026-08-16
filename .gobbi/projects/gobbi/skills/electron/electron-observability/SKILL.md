@@ -1,23 +1,15 @@
 ---
 name: electron-observability
-description: "MUST load when designing, implementing, or reviewing Electron diagnostic emission, including structured logs, metrics, traces, crash and hang capture, correlation, redaction, delivery, and retention."
+description: "Electron Observability is an operation skill for producing and reviewing bounded diagnostic-emission outcomes across logs, metrics, traces, crash and hang capture, correlation, redaction, delivery, and retention."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Observability
 
-Use this operation to design, implement, or review one Electron diagnostic-emission outcome. Start with named
-diagnostic questions and consumers, accepted installed and technical decisions, current runtime facts, and
-the exact source, artifact, target operating system and architecture, and process record.
+Electron Observability designs, implements, or reviews one bounded diagnostic-emission outcome for named questions, consumers, identities, targets, and processes.
 
-Build the smallest signal set that answers those questions. Cover structured logs, metrics, traces,
-correlation, crash and hang capture, redaction, transport, stored arrival, access, retention, volume, and
-non-interference where each applies.
-
-The operation ends with one bounded diagnostic-emission record and a dynamic handoff of arrived records for
-runtime diagnosis. It does not decide the cause, establish live health, own tests, or advance package,
-release, delivery, publication, or rollout state.
+Use it when diagnostic signals need coordinated treatment from emission through stored arrival. It returns an emission record and diagnostic handoff without deciding root cause or live health.
 
 ## Principles
 

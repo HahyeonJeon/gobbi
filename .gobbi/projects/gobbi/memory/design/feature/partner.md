@@ -1,69 +1,61 @@
-# Partner — the Claude-and-Codex dual system
+# Partner
 
-## Problem
+## Intent
 
-Gobbi's Claude-and-Codex dual-system requirement did not work. Its policy was split between
-`codex/SKILL.md` and `codex/peer-adapters.md`, named around "peer" — a word that also means agent-to-agent
-collaboration inside Agent Teams, so a scripted rename risked corrupting the unrelated sense (see
-[`learnings/design/mistakes.md`](../../learnings/design/mistakes.md) for the guard that protected this).
-Fixed 2026-08-01/02 in the same session as [the locator](../architecture/plugin-skill-locator.md).
+Partner is Gobbi's Tool Manual for invoking one named runtime from `{claude-code, codex, cursor, grok}` through
+[Delegation](../../../skills/delegation/SKILL.md). The recorded policy is `disabled` or one or two of those
+names in lexicographic order. Valid two-name values are `claude-code,codex`, `claude-code,cursor`,
+`claude-code,grok`, `codex,cursor`, `codex,grok`, and `cursor,grok`. Launch set is the selected names minus
+the active runtime. An empty launch set after skip stays valid and is not rewritten to `disabled`. The caller
+retains participant selection, scope, synthesis, acceptance, and every next action.
 
-## Design
+## Write contract
 
-`gobbi/partner/SKILL.md` now owns the whole system, both launch directions (Claude launching Codex, Codex
-launching Claude), as one canonical child. `codex/peer-adapters.md` is deleted; `codex/SKILL.md` is reduced to
-CLI usage only, 183 → 205 lines, dominated by its Manual section (137/205 lines).
+Every Partner prompt names two required absolute paths:
 
-**Vocabulary fixed at first use**, closing the ambiguity that broke the naming migration:
+- the Gobbi session directory that contains the external run;
+- one writing path inside that session directory for the authoritative result.
 
-- **partner** — the system, and the opposite runtime's role in it
-- **partner run** — one bounded invocation
-- **partner round** — a composed set of partner runs
+The external process receives write permission only to produce that result. It returns a compact final Handoff
+on stdout that references the saved file instead of reproducing it. The caller records the preimage, verifies
+that no other session path changed, rereads the result, reproduces verification, and compares the Handoff with
+direct evidence.
 
-**Four carry-forward elements**, verified live in the child before the source was deleted:
+## Runtime boundary
 
-1. The version-verified surface table — Codex CLI `0.146.0`, Claude Code `2.1.220` — one row per launch
-   direction with its command form. Re-verified at authoring time against installed `--help` output; no drift
-   from the recorded values.
-2. The instruction that installed help wins over the recorded table — re-run `codex exec --help` and
-   `claude --help` before trusting a flag.
-3. Per-row mutation rules from the failure matrix, 7 rows plus header, each with an evidence-to-surface
-   mapping and a mutation rule.
-4. The six-step response-handling check order — "no later check compensates for a failed earlier one."
+Each run uses a fresh, non-persistent named-runtime process. Codex uses `codex exec` with the session
+directory as a `workspace-write` sandbox; Claude Code uses print mode with `acceptEdits`, no session
+persistence, safe mode, and only `Read`, `Grep`, `Glob`, `Write`, and `Edit`.
 
-**Deliberately not carried forward**, because both would have bound the child to a Workflow caller: the
-envelope's `step: ideation|planning|execution|wrap-up` enum, replaced with `stage: the caller's stage or topic
-label`; and "return to DISCUSSION" from the recovery list, replaced with the other four recovery options
-(retry, bounded input repair, user-approved one-system waiver, abort), which generalize across callers.
+Grok 1.0.4 launches with `--sandbox workspace`. The session and project postimage may change only the
+contracted writing path. `--always-approve` is not the restricting flag.
 
-**Rule 4's temp-capture boundary** states explicitly that the child writes `prompt_file`/`response_file`/
-`stderr_file` — a flat "writes no file" would have contradicted its own Procedure.
+The command table was verified against Codex CLI 0.147.0, Claude Code 2.1.226, and Grok 1.0.4.
+Installed `codex exec --help`, `claude --help`, and `grok --help` remain authoritative for later versions.
 
-## Wired into both modes
+Cursor is named. Command availability is Unavailable. The measured binary is `cursor-agent`
+`2026.08.11-e8db854`. Installed help starts with `Usage: agent [options] [command] [prompt...]` and names
+`--sandbox` (`enabled` or `disabled`) and `--workspace`. A write-test with `--sandbox enabled` failed to
+start (AppArmor); the target was not created. `--sandbox disabled` is not the bound. Never invoke bare
+`agent`. Do not pass `--resume`, `--continue`, `--session-id`, `--worktree`, or `--yolo`.
 
-- **Workflow.** All six partner-policy regions across `workflow` and its phase children now call the child
-  instead of restating policy; 14 duplicated regions retargeted. A five-row adapter table supplies Workflow's
-  caller-specific inputs, making good on the child's own claim that Workflow is one caller among several.
-- **Cowork.** Executable partner rounds; a user-called Structured-depth creation offer; commit-gated teammate
-  reuse, with a second form for read-only specialists; a recovery evidence set naming only Cowork constructs.
-  Problem 4 of the original report ("both should work in Cowork") is closed by this wiring.
+## Failure boundary
 
-## Codex CLI facts the partner design depends on
+A missing binary, timeout, process error, missing result, unexpected write, or Handoff mismatch ends the run.
+Partner never repairs, extracts, relabels, moves, or automatically retries the result. The caller decides
+whether to retry with a new assignment, repair bounded input, continue without Partner when authorized, or
+stop.
 
-Measured against installed Codex CLI `0.146.0`, not assumed from its documentation — see
-[`learnings/codex/tips.md`](../../learnings/codex/tips.md) for the full detail:
-
-- `.codex/config.toml` at a repository root is **inert**; Codex loads only `$CODEX_HOME/config.toml`. It
-  stayed invisible because both files happened to name the same model.
-- `codex exec` has no `-a`/`--ask-for-approval` flag and always runs with `approval: never` — **sandbox mode
-  is the entire permission boundary of a `codex exec` run**, directly relevant to launching a partner run
-  safely.
-- `codex exec` did not block outside a git repository in `0.146.0` despite `--skip-git-repo-check` existing as
-  a flag.
+The caller starts each launch through one local wrapper subagent using the active runtime's ordinary
+execute-capable spawn. Wrappers for different remaining runtimes may run in parallel. The wrapper only runs
+the Partner command and returns the Handoff. Partner is not a persistent teammate. Context-aware
+re-delegation belongs to Agent Teams and other active-runtime subagent controls; every Partner process
+starts fresh to preserve named-runtime independence.
 
 ## References
 
-- `gobbi/partner/SKILL.md` — the canonical owner
-- `codex/SKILL.md` — CLI usage only, no partner policy
-- [`design/architecture/plugin-skill-locator.md`](../architecture/plugin-skill-locator.md) — the root-resolution contract both launch directions depend on
-- [`learnings/codex/tips.md`](../../learnings/codex/tips.md) — measured Codex CLI behavior
+- [Canonical Partner skill](../../../skills/gobbi/partner/SKILL.md)
+- [Agent Teams](../../../skills/gobbi/agent-teams/SKILL.md)
+- [Plugin skill locator](../architecture/plugin-skill-locator.md)
+- [Measured Codex CLI behavior](../../learnings/codex/tips.md)
+- [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)

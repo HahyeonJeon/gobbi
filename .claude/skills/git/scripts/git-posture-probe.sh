@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/git/scripts/git-posture-probe.sh

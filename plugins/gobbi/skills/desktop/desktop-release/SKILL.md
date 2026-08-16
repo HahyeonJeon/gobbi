@@ -1,25 +1,15 @@
 ---
 name: desktop-release
-description: "MUST load when judging target support, artifact and installed evidence, update and data compatibility, recovery, release readiness, rollout controls, or rollback and forward-fix options for an installable Electron desktop application written in TypeScript."
+description: "Desktop Release is a preference skill for target-support and release-readiness judgments for exact installable Electron artifacts and target tuples. It owns compatibility, recovery, rollout, support, and authority boundaries."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # Desktop Release
 
-Use this skill to judge target support, artifact and installed evidence, compatibility, recovery, readiness,
-rollout controls, support, rollback, and publication authority. `Forward fix` means a later compatible release
-that corrects a faulty version already installed on user machines. It is separate from rollback, whose reach
-and compatibility must be proved.
+Desktop Release judges target support, exact-artifact and installed evidence, update and data compatibility, recovery, rollout controls, support, rollback, Forward fix, and release readiness.
 
-[`desktop-development`](../desktop-development/SKILL.md) coordinates ordered lifecycle work. The applicable
-[`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
-[`desktop-linux`](../desktop-linux/SKILL.md) child owns current target facts.
-
-[`electron-release`](../../electron/electron-release/SKILL.md) owns packaging, signing, notarization, update,
-and platform release mechanisms, and [`electron-testing`](../../electron/electron-testing/SKILL.md) owns
-packaged and installed evidence; this skill owns only release judgments, defaults, exceptions, and authority
-boundaries.
+Use it when deciding whether one exact desktop artifact and target are ready; Electron release mechanisms, packaged and installed evidence, credentials, publication, deployment, and other external actions remain elsewhere.
 
 ## Principles
 

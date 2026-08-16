@@ -2,6 +2,16 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-16 — Compact identity-and-load contracts and local Gobbi v1.2.0 completed](2026-08-16-gobbi-v1-2-0.md)
+- [2026-08-16 — Startup family redesign completed](2026-08-16-startup-family-redesign.md)
+- [2026-08-16 — Cursor fourth runtime completed](2026-08-16-cursor-fourth-runtime.md)
+- [2026-08-16 — Delegation, discussion, commit gate, and stop reminder completed](2026-08-16-skill-improve.md)
+- [2026-08-15 — Grok system integration completed](2026-08-15-grok-system-integration.md)
+- [2026-08-15 — Gobbi skill system redesign completed](2026-08-15-gobbi-skill-system-redesign.md)
+- [2026-08-12 — Code-review skill session completed](2026-08-12-code-review-skill.md)
+- [2026-08-12 — Documentation-review operation completed](2026-08-12-docs-review-skill.md)
+- [2026-08-10 — Gobbi development lifecycle skill family completed](2026-08-10-gobbi-dev-skill-family.md)
+- [2026-08-10 — Gobbi skill-documentation review completed](2026-08-10-gobbi-skill-documentation-review.md)
 - [2026-08-09 — CLI skill family completed](2026-08-09-cli-skill-family.md)
 - [2026-08-09 — Python skill family lifecycle completed](2026-08-09-python-skill-family-lifecycle.md)
 - [2026-08-08 — Gobbi v1.1.2 collaborative design release completed](2026-08-08-gobbi-v1-1-2-collaborative-design-release.md)

@@ -1,27 +1,15 @@
 ---
 name: web-deployment
-description: "MUST load when deploying an accepted web release to an authorized environment, verifying the production URL, advancing or stopping a rollout, or rolling back the environment."
+description: "Web Deployment is an operation skill for placing one accepted immutable release into one authorized environment and proving what the production URL serves."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebFetch
 skill-type: operation
 ---
 
 # Web Deployment
 
-Use this operation to place one accepted, immutable web release into one authorized environment and prove
-what the production URL serves. It owns the exact target and authority state, environment freeze and record,
-migration, asset-upload, and entry-document order, retained predecessor assets, staged rollout, live
-verification, immediate reversal, and authority-boundary stop.
+Web Deployment places one accepted immutable release into one authorized environment and proves what the production URL serves. Use it when deploying, staging a rollout, verifying the live target, stopping, or rolling back.
 
-[`web-release`](../web-release/SKILL.md) owns production inputs, build configuration, artifact bytes, names,
-cache policy, build identity, manifest, digests, and source-map disposition. This operation accepts that
-identified artifact and never rebuilds, renames, or modifies its bytes. `web-development` coordinates the
-handoff and keeps release status, deployment authority, deployment state, live verification, and observed
-health separate.
-
-`web-backend` owns what a migration means to data; `web-observability` owns rollout signals;
-`web-configuration` owns runtime values and secrets management; `web-security` owns protected-data exposure;
-`web-testing` owns suite evidence; and `web-platform` owns disputed browser facts. Deployment changes and
-verifies the environment, then ends; it does not claim indefinite support or ongoing service operation.
+It changes environment state without rebuilding release bytes, and it ends after deployment verification rather than owning ongoing service operation.
 
 ## Principles
 

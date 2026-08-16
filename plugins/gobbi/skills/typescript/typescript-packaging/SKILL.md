@@ -1,23 +1,15 @@
 ---
 name: typescript-packaging
-description: "MUST load when creating, changing, validating, or publishing a TypeScript package, its exports, declarations, package-backed command metadata, or supported consumer environments."
+description: "TypeScript Packaging is an operation skill for building, validating, and publishing installable libraries, SDKs, and command-line packages."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Packaging
 
-TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package. It
-covers export maps, generated JavaScript, public declarations, package-backed command metadata, supported
-consumers, package-archive validation, and publication readiness without prescribing one module format for
-every package. Package-backed command metadata means a command name or entry supplied by package metadata,
-including a `package.json` `bin` entry, a package script, or a workspace package link. This operation owns
-that metadata and its package behavior.
+TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package and validates the archive from consumer environments. Use it when creating, changing, validating, or publishing package exports, declarations, package-backed commands, archives, or compatibility claims.
 
-Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their
-triggers apply. Classify work as authorized author mode or review-only validation. Author mode may change
-approved package files and produce approved artifacts. Review-only validation follows the non-mutating
-inspection boundary in Phase 1.1, and publication remains separately authorized.
+Direct command delivery without a package archive remains with `typescript-cli-delivery`, and publication requires separate authority.
 
 ## Principles
 

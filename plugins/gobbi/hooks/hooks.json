@@ -1,0 +1,16 @@
+{
+  "description": "Gobbi Stop reminder for currently wired consumers.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-remind.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

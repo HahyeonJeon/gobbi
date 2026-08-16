@@ -1,19 +1,15 @@
 ---
 name: react-conventions
-description: "MUST load when naming, defining, exporting, moving, organizing, or reviewing React components, Hooks, or JSX files."
+description: "React Conventions is a preference skill for naming, defining, exporting, locating, and organizing components, Hooks, and JSX files."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # React Conventions
 
-Use this preference skill when a React change creates, names, exports, moves, or reorganizes components,
-Hooks, or JSX files in a browser application or Electron renderer.
+React Conventions defines React-specific naming and source-organization preferences for components, Hooks, and JSX in browser applications and Electron renderers. Use it when creating, exporting, moving, organizing, or reviewing those units.
 
-This child defines React-specific source conventions. The project and its language, formatter, linter,
-framework, and module rules decide generic layout and tooling conventions.
-
-React Native is outside this skill. Use the project's React Native convention instead.
+Project, language, formatter, linter, framework, and module rules control generic layout and tooling, and React Native remains outside this skill.
 
 ## Principles
 

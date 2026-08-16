@@ -1,28 +1,24 @@
 ---
 name: html-css
-description: "MUST load before working in HTML or CSS. HTML/CSS is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
+description: "HTML and CSS is a domain skill for markup and presentation work. It routes that work to operation, tool, and preference children."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # HTML and CSS
 
-Use this family for markup and presentation work across design, development, focused testing, platform facts,
-semantics, conventions, and declarative motion. Product direction, application behavior, security, deployment,
-and release remain with their established owners; [routing evidence](routing.md) names those boundaries and
-[family vocabulary](vocabulary.md) defines the five project-specific terms used in this family.
+HTML and CSS covers markup and presentation design, development, focused testing, platform facts, semantics, conventions, and declarative motion. Use this family when work changes, evaluates, or explains HTML, CSS, generated markup or styling, or direct browser rendering.
 
-This root owns navigation only. Load every child whose trigger matches the request; no child is a universal
-prerequisite, and one task may load several children when it contains several independently owned claims.
+This root only routes that work; product direction, application behavior, security, deployment, and release remain with established owners.
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`html-css-conventions`](html-css-conventions/SKILL.md) | preference | MUST load when choosing or reviewing binding presentation rules or overridable defaults for HTML/CSS source organization, cascade, selectors, public hooks, tokens, responsive adaptation, compatibility, or maintainability. |
-| [`html-css-design`](html-css-design/SKILL.md) | preference | MUST load when choosing or reviewing an HTML/CSS system's structural regions and relationships, layout architecture, responsive or adaptive strategy, state-to-presentation mapping, material variants, or public markup and styling interface shape. |
-| [`html-css-development`](html-css-development/SKILL.md) | operation | MUST load when creating, changing, repairing, maintaining, migrating, or performing a protected read-only review of HTML, CSS, generated markup or styling output, or their public interfaces and consumers. |
-| [`html-css-motion`](html-css-motion/SKILL.md) | preference | MUST load when choosing or reviewing declarative CSS motion mechanics or motion-system defaults for transitions, animations, timing, interruption, cancellation, reduced motion, or performance-sensitive motion choices. |
-| [`html-css-platform`](html-css-platform/SKILL.md) | tool | MUST load when interpreting or verifying HTML/CSS conformance, parsing, parser-produced DOM, native HTML behavior, CSSOM, matching, cascade, computed values, layout, overflow, paint, compositing, rendering, direct target support, or browser and Electron-renderer diagnosis. |
-| [`html-css-semantics`](html-css-semantics/SKILL.md) | preference | MUST load when choosing or reviewing HTML elements, relationships, names, roles, states, language, direction, or accessibility meaning. |
-| [`html-css-testing`](html-css-testing/SKILL.md) | operation | MUST load when designing, writing, running, diagnosing, or reviewing focused tests for an HTML/CSS contract, generated or conditional output, or direct browser or Electron-renderer behavior claimed by that contract. |
+| [`html-css-conventions`](html-css-conventions/SKILL.md) | preference | Use it when choosing or reviewing binding presentation rules or overridable defaults. |
+| [`html-css-design`](html-css-design/SKILL.md) | preference | Use it when choosing or reviewing those system-level relationships before implementation. |
+| [`html-css-development`](html-css-development/SKILL.md) | operation | Use it when creating, changing, repairing, maintaining, migrating, or reviewing HTML, CSS, generated output, or their public interfaces and consumers. |
+| [`html-css-motion`](html-css-motion/SKILL.md) | preference | Use it when choosing or reviewing timing, restart, interruption, cancellation, reduced-motion alternatives, or performance-sensitive CSS choices. |
+| [`html-css-platform`](html-css-platform/SKILL.md) | tool | Use it when interpreting or verifying conformance, parsing, parser-produced DOM, native behavior, CSSOM, matching, cascade, computed values, layout, overflow, paint, compositing, rendering, target support, or renderer failures. |
+| [`html-css-semantics`](html-css-semantics/SKILL.md) | preference | Use it when choosing or reviewing those semantics across static, generated, localized, conditional, or stateful markup. |
+| [`html-css-testing`](html-css-testing/SKILL.md) | operation | Use it when designing, writing, running, diagnosing, or reviewing tests for authored markup or styling, generated or conditional output, or direct browser or Electron-renderer behavior. |

@@ -4,8 +4,8 @@
 
 Gobbi treats every choice of structure, meaning, or contract as design work. This includes architecture,
 strategy, naming, vocabulary, functions, classes, interfaces, data shapes, and small local choices. Cowork
-may use Direct delivery only when its unresolved design-choice inventory is empty. Workflow applies the same
-definition to every design-bearing productive step.
+uses Fast only when no design or decomposition choice remains; Light applies Ideation and Planning to bounded
+remaining choices. Workflow applies the same definition to every design-bearing productive step.
 
 ## Design participation
 
@@ -15,20 +15,33 @@ definition to every design-bearing productive step.
 - Keep one local creator as the sole writer and synthesizer. That creator receives the selected inputs,
   produces and self-reviews the draft, and completes the synthesis.
 - When the session policy is enabled, obtain at least one independent Partner draft and one Partner
-  cross-review over frozen input before synthesis. When it is disabled, invoke no external runtime.
+  cross-review over frozen input before synthesis. Each Partner prompt names the exact session directory and
+  one exact writing path for its result; when the policy is disabled, invoke no external runtime.
 
 ## Delegated result contract
 
-Every specialist brief names exactly one result kind: `file`, `commit`, or `response-only`. The owning
-operation defines the locator and acceptance proof. Durable design and evaluation use an exact caller-named
-absolute file, with containment and rereading checks; a printed response cannot replace that file. Commit and
-response-only results remain valid only where their owning operation intentionally requires them.
+Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
+The owning operation defines whether the result is a durable file, commit, or response without a result-kind
+field. Durable design, evaluation, and Partner results use exact caller-named absolute paths with containment
+and rereading checks; a printed Handoff references but never replaces a durable result.
+
+## Delegation brief
+
+The base brief order is Metadata, Context, Task, Instructions, Materials, Return.
+
+- Context sits above Task. It holds working state and accepted decisions only.
+- Materials is required and replaces Resources. It lists required skills-to-load with exact paths and read
+  order, remaining sources, purpose, and conflict precedence.
+- The Partner prompt template uses the same section names.
+
+Do not rely on conversation history or inherited skill loads. The canonical
+[Delegation](../../../skills/delegation/SKILL.md) and
+[Partner](../../../skills/gobbi/partner/SKILL.md) skills own these section names.
 
 ## Ownership and protection
 
 The canonical [Cowork](../../../skills/cowork/SKILL.md),
-[Workflow](../../../skills/workflow/SKILL.md),
-[Workflow Phase 1](../../../skills/workflow/phase-1/SKILL.md), and
-[Delegation](../../../skills/delegation/SKILL.md) skills own these semantics. Generated plugin skills are
-projections of those canonical sources and must remain byte-equal. The package synchronization validator and
-its mutation tests protect both the semantic contract and canonical/generated ownership.
+[Workflow](../../../skills/workflow/SKILL.md), and
+[Delegation](../../../skills/delegation/SKILL.md) skills own these semantics. Workflow Phase 1 is now a section
+of the main Workflow skill. Generated plugin skills are projections of the canonical sources and must remain
+byte-equal.

@@ -1,19 +1,15 @@
 ---
 name: html-css-semantics
-description: "MUST load when choosing or reviewing HTML elements, relationships, names, roles, states, language, direction, or accessibility meaning."
+description: "HTML/CSS Semantics is a preference skill for authored HTML meaning. It covers elements, relationships, names, roles, states, language, direction, and accessibility meaning."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # HTML/CSS Semantics
 
-Use this preference to choose or review the authored meaning of HTML: elements, document and control
-relationships, accessible names, roles, states, language, and direction. Bind each decision to the approved
-content and interaction meaning, including material generated or conditional variants.
+HTML/CSS Semantics guides the authored meaning of elements, document and control relationships, names, roles, states, language, and direction. Use it when choosing or reviewing those semantics across static, generated, localized, conditional, or stateful markup.
 
-This skill owns authored meaning, not observed browser or accessibility output. Route target behavior and
-output evidence to `html-css-platform` or `html-css-testing`; route the keyboard and activation model promised
-by a custom role to `web-interaction`, and its implementation to `web-frontend`.
+It does not establish observed browser or accessibility output or custom-widget behavior.
 
 ## Principles
 

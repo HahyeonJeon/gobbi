@@ -1,19 +1,15 @@
 ---
 name: html-css-development
-description: "MUST load when creating, changing, repairing, maintaining, migrating, or performing a protected read-only review of HTML, CSS, generated markup or styling output, or their public interfaces and consumers."
+description: "HTML/CSS Development is an operation skill for bounded source changes, maintenance, migrations, and protected reviews. It covers canonical markup and styling sources, generated output, public interfaces, and consumers."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # HTML/CSS Development
 
-Use this operation to produce one bounded HTML/CSS change, maintenance result, migration, or protected review
-report. It binds the request to authorized canonical sources, transforms, material variants, public
-interfaces, consumers, targets, and applicable specialist decisions before work begins.
+HTML/CSS Development produces one bounded HTML/CSS change, maintenance result, public-interface migration, or protected review report. Use it when creating, changing, repairing, maintaining, migrating, or reviewing HTML, CSS, generated output, or their public interfaces and consumers.
 
-Choose exactly one mode after study: authorized change or maintenance, protected read-only review, or public-
-interface migration. The operation changes no product, security, deployment, publication, or release decision;
-it returns those claims to their owners and hands focused evidence to `html-css-testing`.
+It selects one mode and binds the work to authorized sources, transforms, variants, targets, consumers, and specialist decisions.
 
 ## Principles
 

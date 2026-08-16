@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/gobbi-skill/scripts/link-project-skills.sh

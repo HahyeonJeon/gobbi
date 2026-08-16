@@ -5,6 +5,139 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+## 1.2.0 - 2026-08-16
+
+### Changed
+
+- Role contracts are now identity-and-load maps. Each of the 20 canonical files keeps frontmatter,
+  identity, characteristics, skills to load, out of scope, and status. Procedure lives in the owning
+  skills. Plugin agents remain the five Claude-fronted Markdown files for Claude Code and Grok.
+  Canonical folders are `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}`.
+- Delegation now owns the specialist root-pair protocol. A brief supplies both Gobbi roots as
+  absolute expanded paths or supplies neither. Specialists validate the three sentinels and stop on
+  `NO_GOBBI_ROOT` tokens. Gobbi 1.1 remains the manager entry owner.
+- Git now owns continuation write-safety. Specialists re-`cd` to the worktree, write with the
+  absolute worktree path, run `git -C <worktree-abs>`, re-anchor by naming the changed file,
+  re-state scope and status each continuation turn, and never push from a specialist continuation.
+- Gobbi now presents four runtimes: Claude Code, Codex, Cursor, and Grok. Cursor participants are
+  checkout-local `.cursor/agents` and `.cursor/skills`. Start the parent as `grok-4.6[effort=xhigh]`.
+  The binary is `cursor-agent`, never bare `agent`; official help uses `agent`. No Cursor
+  marketplace plugin is added. Agent Teams stays Claude-only.
+- Partner policy now accepts `cursor` under the existing one-or-two cap: `disabled` or one or two of
+  `{claude-code,codex,cursor,grok}`. Cursor is a named partner and Unavailable. Do not invoke `agent`
+  as Gobbi Partner.
+- Plugin skill wording now names Cursor. Plugin agents remain Claude Code and Grok. Stop-hook headers
+  name currently wired consumers and do not claim Cursor hook support.
+- The plugin `agents/` directory is a flat Claude Code and Grok projection (`{role}.md` only).
+  Canonical runtime folders stay under `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
+  Codex custom agents remain repository-local `.codex/agents/{role}.toml` and are not a plugin
+  component. Plugin descriptions name skills for all four runtimes and plugin agents only for
+  Claude Code and Grok.
+- Gobbi now includes a read-only project prerequisite checker for Claude Code team, role, skill, and
+  permission settings; Codex agent, feature, skill, and instruction settings; Grok agent, skill, and
+  `.agents/agents` sibling settings; Cursor agent, skill, and `.cursor` pair settings; the
+  project-keyed `.gobbi/` layout; effective `.gitignore` ownership; and installed `claude`, `codex`,
+  `cursor-agent`, and `grok` CLIs.
+- Gobbi, Partner, and Agent Teams now follow the compact Gobbi Skill structures. Gobbi retains only entry and
+  routing, Partner is a write-capable Tool Manual that requires one exact session directory and writing path
+  in every Delegation prompt, and Agent Teams prefers re-delegating coherent follow-up work to a context-ready
+  teammate under a fresh complete brief.
+- Partner now saves one authoritative result inside the caller's session directory and returns a separate
+  compact final Handoff. The caller starts each launch through one local wrapper subagent so remaining
+  runtimes can run in parallel. Codex, Claude Code, and Grok launches use the measured write-capable
+  commands, and any unexpected session or project write, invalid result, or Handoff mismatch stops
+  acceptance.
+- Cowork now uses only Fast and Light delivery. Fast skips Ideation and Planning, while Light runs bounded
+  canonical Ideation and Planning before Execution. Cowork and Workflow now share session-root and
+  configuration vocabulary, use aligned owner-local configuration templates, and reference the skills that
+  own discussion, delegation, shaping, and runtime mechanics instead of repeating their procedures.
+- Cowork session records now use topic-owned `1-ideation/`, `2-planning/`, and `3-execution/` directories plus
+  a session `wrap-up/`; Workflow uses the same lifecycle directories without the topic wrapper. Both modes
+  write drafts and other unfinished inputs to caller-named paths below `tmp/`, then organize accepted results
+  and required evidence into the owning phase without a fixed temporary-package shape or filename.
+- Workflow now owns its three phase procedures in one skill instead of separate phase children. Each phase
+  applies `DISCUSSION → WORK → EVALUATION → RECORD` and writes a fixed `handoff.md` for completion or a safe
+  terminal stop. Phase 1 studies and designs with the user, available subagents or teammates, and the remaining
+  Partner launch set; after its Complete handoff, the manager proceeds autonomously from the accepted design
+  or stops without asking another Workflow question. Continuation and recovery stay in the worktree and
+  session directory recorded by Configuration and the latest handoff.
+- Renamed `skill-writing` to `gobbi-skill` with no compatibility alias. Its domain, operation, tool, and
+  preference type guides are now direct child skills with their own `SKILL.md` files.
+- Gobbi Skill and each direct type-writing child now own a reusable checklist. The parent covers shared skill
+  design, compactness, and source ownership with independently answerable signs; the child checklists cover
+  exact operation SOPs, preference consistency, tool manuals and collections, and domain-family routing. The
+  shared References contract now explicitly exempts navigation-only domain roots.
+- The canonical Gobbi Skill source now includes a project-local helper that links every top-level skill into
+  `.claude/skills/`, `.agents/skills/`, `.grok/skills/`, and `.cursor/skills/`. It accepts only one exact project-owned source
+  tree, creates missing relative directory links, and stops on conflicts without migrating existing
+  directories or writing to plugin or user-level locations.
+- Skill descriptions now identify what each skill is in one or two short sentences. Each Intro states what
+  the skill is and when to use it in one to three sentences across no more than two paragraphs.
+- Evaluation now uses four phases and a short report template: understand the target, prepare an
+  evidence-backed checklist, evaluate the target, and report the results. Checklist is now a standalone root
+  skill, and its old nested path has no compatibility alias. Reports state evidence and uncertainty without a
+  numeric certainty score. Its checklist template renders Project, Design and Development, and Product lifecycle
+  sections with categories, broad mistake-oriented scenarios, and unchecked problem signs. Checklist defines
+  the categories first, the scenarios second, and the observable problem signs third before assembling the source.
+  Each review step checks coverage; checklist items avoid unnecessary subject-specific detail and use heading
+  paths instead of IDs. Design and Development owns work-artifact creation, handoff, project use, maintenance,
+  and change; Product is reserved for operating apps, services, libraries, and comparable products. A bundled
+  evaluation checklist covers generated checklist documents.
+- Evaluation now consumes general code and documentation checklist sources owned by Execution and
+  operation-specific baselines owned by Ideation and Planning. Execution applies its matching checklist during
+  self-review; the separate Code Review and Documentation Review operations remain removed.
+- Execution keeps its evidence-led, bottom-up task procedure while strengthening YAGNI and incremental growth.
+  Executors study the project's vision, philosophy, design, architecture, and live evidence before choosing an
+  implementation, verify each smallest complete unit before expanding it, and add complexity only for a
+  current requirement or observed failure. Each task returns a compact response-only handoff for its result,
+  changes, verification, local delivery, concerns, and limits.
+- Ideation now records one indexed result with an `ideation-index.md` locator, coherent numbered design
+  parts, and optional nested requirements and topics snapshots. Workflow and Cowork freeze, evaluate, recover,
+  and hand off the complete listed result while retaining evidence-proved legacy single-file results without
+  migration.
+- Planning now records one indexed result with a `plan-index.md` locator, direct numbered plan parts, and a
+  numbered task hierarchy. Workflow and Cowork consume and freeze the complete listed result while retaining
+  an evidence-proved legacy `tasks.md` and `plan.md` pair without migration.
+- Wrap-up now uses a compact three-phase closure procedure that reconciles durable memory through
+  category-owned CRUD, commits closure changes, rejects base drift, proves the accepted and resulting base
+  trees agree, and returns one response-only development, research, or work Note for every terminal state from
+  `wrap-up/templates/note.md`. Its reusable checklist covers closure governance, Memory reconciliation,
+  exact-tree integration, recovery, and factual Note reporting.
+- Memory now permits durable updates only on an explicit user call or a caller skill's named Memory stage.
+  Mid-session discoveries use one ignored change-point record, while Memorize reconciles category-owned CRUD,
+  merges, reorganization, stale content, and duplicates before creating new memory. No-slug legacy session
+  identities and their recovery routes are removed from the active Gobbi, Cowork, Workflow, Agent Teams,
+  Memory, and Git contracts.
+- Discussion now understands the user's intent within the relevant project vision, roadmap, design,
+  architecture, and current state, using Who, What, When, Where, Why, and How to identify material gaps. It
+  studies evidence before proposing options and recommends the best-supported direction so the user can make a
+  concrete decision. Material design and decision advice actively uses available subagent, teammate, and enabled
+  Partner input through the active owner's participant contract, avoiding duplicate or out-of-policy runs.
+  Material decisions use one shared question template through `AskUserQuestion` in Claude Code,
+  `request_user_input` in Codex, the official Ask questions tool in Cursor, or
+  `ask_user_question` in Grok.
+- Delegation no longer classifies subagent results as `file`, `commit`, or `response-only`. Every brief now
+  names one authoritative result and its acceptance evidence directly. Its `Return` section requires the
+  subagent to write a final, verifiable Handoff for every terminal status and distinguishes durable locators from
+  response subjects without a result-kind field.
+- Study now frames reliable internal and external materials around the design, development approach, or
+  decision they must improve. It remains advisory, returns a defined concise response by default, or writes one
+  caller-authorized result from a compact template while keeping every studied material read-only.
+- Git is now a preference skill for common repository inspection, purpose-based branches, optional worktrees,
+  focused commits, explicit integration and publication, tags, recovery, and cleanup. Cowork and Workflow own
+  session Git actions, Execution owns task commits, Wrap-up owns closure integration, Go Release owns tag
+  specification and verification, and its named executor owns mutation. Compact issue and pull-request
+  templates provide repository-agnostic fallback bodies when a project supplies no applicable template.
+- New branches use `<type>/<slug>` or `<type>/<issue>-<slug>`; runtime-specific prefixes, date and session
+  identifiers, agent provenance trailers, their legacy recovery paths, the separate Git conventions document,
+  and the runtime posture probe are removed without migration.
+- Gobbi skill dependencies now preserve policy ownership instead of using a stale isolated-skill allowlist.
+  Internal References do not load their targets, and task triggers still control loading.
+- Removed the repository-level `scripts/` automation. Its hard-coded synchronization, smoke, link, and fixture
+  operations will be redesigned before they are reintroduced.
+
 ## 1.1.3 - 2026-08-09
 
 ### Added

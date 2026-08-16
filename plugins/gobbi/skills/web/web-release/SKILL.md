@@ -1,27 +1,15 @@
 ---
 name: web-release
-description: "MUST load when producing or reviewing a web production build or release artifact, including frozen inputs, bundler configuration, chunking, asset names and cache policy, build identity, production source maps, or the artifact handoff to deployment."
+description: "Web Release is an operation skill for turning evaluated inputs into one immutable, identified, verified production artifact and handing it to deployment."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebFetch
 skill-type: operation
 ---
 
 # Web Release
 
-Use this operation to turn one evaluated `web-development` handoff into one immutable, identified production
-artifact that deployment can consume unchanged. It owns frozen and recorded inputs, production build and
-bundler configuration, chunking, asset names and cache policy, build identity, manifest and digests,
-production source maps, artifact verification, failure return, and the release-to-deployment handoff.
+Web Release turns one evaluated handoff into an immutable, identified production artifact that deployment can consume unchanged. Use it when producing or reviewing production inputs, bundler output, chunking, asset names, cache policy, build identity, source maps, manifests, digests, or the deployment handoff.
 
-`web-development` coordinates the evaluated handoff into this operation. [`web-deployment`](../web-deployment/SKILL.md)
-accepts the resulting artifact and owns environment identity, target authority, publication, rollout, live
-verification, and rollback. Release may state the intended deployment handoff and source-map disposition, but
-it neither grants deployment authority nor changes an environment.
-
-`typescript-toolchain` owns compiling, emit, module resolution, and type stripping;
-`web-project-structure` owns build-output placement; `web-architecture` owns rendering and delivery strategy;
-`web-configuration` owns the values and secrets management inside frozen inputs; `web-security` owns every
-protected-data exposure question; and `web-observability` owns telemetry destinations. This operation owns
-the production artifact those decisions produce.
+It owns artifact production and verification, but grants no environment authority and performs no deployment action.
 
 ## Principles
 

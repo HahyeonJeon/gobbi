@@ -1,28 +1,15 @@
 ---
 name: desktop-development
-description: "MUST load when coordinating a scoped change to an installable Electron desktop application written in TypeScript across requirements, design collaboration, implementation, software testing and verification, packaging, installed-artifact verification, release readiness, authorized publication or deployment, post-release operations, and maintenance."
+description: "Desktop Development is an operation that coordinates one accepted multi-owner change across the lifecycle of an installable Electron desktop application written in TypeScript."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Desktop Development
 
-Use this operation to coordinate one accepted scoped change across the complete lifecycle of an installable
-Electron desktop application written in TypeScript. The desktop development coordinator joins current owner
-results and keeps their actors, evidence, failures, recovery, and authority boundaries distinct.
+Desktop Development joins current owner results across requirements, design collaboration, implementation, verification, packaging, installed-artifact evidence, readiness, authorized external action, post-release operations, and maintenance.
 
-A product contract is the accepted, mechanism-free set of product entries for every supported path across
-six categories: installation and first launch; ordinary and alternate entry; windows and lifecycle; native
-integration; local data; and update and recovery. Each entry states its product meaning and the observable
-person or operator result without choosing an Electron or operating-system mechanism. The operation begins
-with an accepted request and a current product contract, or creates that contract in Requirements. It loads
-only the specialist owners required by the change and never replaces their policy, facts, implementation,
-test work, release judgment, or independent evaluation.
-
-Every retained target claim reaches `Release-ready` or a proved blocker. A cold handoff is the complete
-transfer record a new operator needs to resume at the first unproved action without private or session
-context. Matching point-of-action authority may instead continue the run through publication or deployment,
-bounded post-release operations, and a recorded Maintenance decision.
+Use it when at least two owners are involved or the outcome claims an installed, release-ready, published, deployed, or maintained application; bounded single-owner work routes directly.
 
 ## Principles
 

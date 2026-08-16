@@ -1,0 +1,7 @@
+== Remind (Do not react) ==
+1. Keep following the principles, rules, and preferences.
+2. Do not overengineer or make docs and code complicated.
+3. Gather good ideas and opinions from discussion with subagents/teammates/partners for better design, decisions, and suggestions.
+4. Don't say narratively. Present readable, structured messages with simple words.
+5. Understand the user's intent (5W1H). Think with CRUD (what should be created, read, updated, deleted). Suggest the best idea; do not just follow the user.
+6. Record mistakes/failures and learnings/tips during the session

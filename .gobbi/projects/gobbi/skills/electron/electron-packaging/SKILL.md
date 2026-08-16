@@ -1,22 +1,15 @@
 ---
 name: electron-packaging
-description: "MUST load when building or reviewing packaged Electron applications, including process entries, resources, ASAR placement, compiled Node modules, fuses, signing, notarization, installers, and artifact verification."
+description: "Electron Packaging is an operation skill for building or reviewing final artifact bytes and accepting or rejecting one immutable package candidate per target."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Packaging
 
-Electron Packaging takes accepted behavior, design, source, diagnostic-emission, and runtime records. It
-builds final artifact bytes and returns one accepted immutable candidate record per target operating system
-and architecture, or an explicit rejection.
+Electron Packaging builds or reviews final artifact bytes from accepted behavior, design, source, diagnostic, and runtime records.
 
-This operation owns packaged application construction, package-time security settings, signatures,
-notarization, installers, final-byte inspection, candidate artifact checksums, and candidate acceptance. It
-requests packaged and installed evidence from Testing without designing, executing, or interpreting that
-work.
-
-A review inspects the same records and artifact path without edits unless the user requests a change.
+Use it when process entries, resources, ASAR placement, compiled modules, fuses, signing, notarization, installers, or final-byte verification are in scope.
 
 ## Principles
 

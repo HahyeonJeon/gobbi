@@ -1,20 +1,15 @@
 ---
 name: web-design
-description: "MUST load when choosing or reviewing a web product's design problem, project identity, user-evidence threshold, alternative concepts, accepted design, validation judgment, post-release learning, replacement, or retirement criteria."
+description: "Web Design is a preference skill for product design judgments from discovery through validation, live learning, replacement, and retirement."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Web Design
 
-Use this preference skill for judgments across a web product's design lifecycle: discovery, definition,
-alternatives, validation, delivery, live learning, iteration, replacement, and retirement. It owns the valid
-choice space and the evidence needed to accept, reopen, replace, or retire a design.
+Web Design guides evidence-backed design judgments from discovery and alternatives through validation, live learning, replacement, and retirement. Use it when choosing or reviewing the problem, identity source, evidence threshold, concepts, accepted design, reopen decision, or end-of-life criteria.
 
-This skill implements nothing and coordinates no delivery stage. [`web-frontend`](../web-frontend/SKILL.md)
-applies accepted browser-facing decisions, [`web-development`](../web-development/SKILL.md) coordinates the
-applicable development lifecycle, and each other specialist retains its own action, authority, and evidence.
-Rules define the boundary, Preferences select defaults inside it, and a Rule wins every conflict.
+It owns choices and evidence, not implementation, delivery coordination, deployment, operations, or retirement action.
 
 ## Principles
 

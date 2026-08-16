@@ -1,18 +1,15 @@
 ---
 name: python-conventions
-description: "MUST load when Python names, written forms, comments, documentation style, or formatting choices are made or reviewed."
+description: "Python Conventions provides overridable preferences for names, imports, source form, comments, docstrings, and formatting."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Python Conventions
 
-Python Conventions gives Python authors and reviewers overridable written-form guidance for names, imports,
-source-file form, comments, docstrings, and formatting. It makes a project easier to read without deciding an
-API's runtime behavior, a type model, a package's distribution semantics, or a project's tools.
+Python Conventions provides overridable written-form guidance for names, imports, source form, comments, docstrings, and formatting.
 
-An explicit project convention, configured formatter or linter, target-Python support policy, generated-source
-contract, or established public spelling wins. These defaults apply only where that evidence is silent.
+Use it when authors or reviewers make written-form choices after project rules, supported syntax, and public spellings are known. It does not decide runtime behavior, type semantics, package distribution, or tool selection.
 
 ## Principles
 

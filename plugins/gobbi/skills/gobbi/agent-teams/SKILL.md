@@ -1,164 +1,136 @@
 ---
 name: agent-teams
-description: "MUST load when setting up or using Agent Teams in Claude Code. Agent Teams is a tool skill for enabling, creating, coordinating, and cleaning up a team."
-allowed-tools: Read, Grep, Bash
+description: "Agent Teams is guidance for coordinating persistent Claude Code teammates through shared tasks and messages."
+allowed-tools: Read, Grep, Bash, WebFetch
 skill-type: tool
 user-invocable: false
 ---
 
 # Agent Teams
 
-Agent Teams is an experimental Claude Code feature. One lead coordinates independent Claude Code sessions
-through shared tasks and direct messages. Native Codex has no Agent Teams interface.
-
-This manual explains the tool. It also owns the shared Agent Teams continuity guidance used by Workflow.
-Cowork and Workflow still own assignments, authority, write boundaries, acceptance, and recovery evidence.
+Agent Teams is a Tool Manual for Claude Code's experimental multi-session team interface. Use it when
+independent specialists need shared tasks, direct messages, or coherent follow-up assignments.
 
 ## Principles
 
-### Use teams for useful parallelism
+### Use teams for useful collaboration
 
-Use a team when independent work benefits from shared tasks or teammate discussion; use one session for
-sequential or same-file work.
+Choose teammates when independent work benefits from direct communication or shared coordination. Use a
+single session or ordinary subagents when the result alone is enough.
 
-### Keep the lead in control
+### Reuse relevant context
 
-The session that creates the team remains its lead and owns coordination and cleanup.
+Prefer re-delegating coherent follow-up work to an available teammate who already understands the subject.
+Context saves study time but never replaces a fresh assignment contract.
 
-### Verify work outside team status
+### Keep the lead accountable
 
-Task and idle states help schedule work but do not prove that an artifact is correct.
+The main session owns participant selection, assignments, write boundaries, synthesis, and acceptance.
+Teammates own only their bounded work.
+
+### Verify work outside runtime state
+
+Task and idle states support scheduling. Direct result and verification evidence decide acceptance.
 
 ## Rules
 
-- **MUST enable Agent Teams before starting Claude Code.** A mid-session setting change does not enable it.
-- **MUST give parallel writers separate files or worktrees.** Agent Teams does not isolate edits.
-- **MUST let the lead create and clean up the team.** Teammates cannot create nested teams.
-- **MUST shut down active teammates before cleanup.** Cleanup fails while a teammate is running.
-- **NEVER edit Claude Code's generated team or task state.** Let Claude Code maintain it.
+- **MUST enable Agent Teams before starting Claude Code.** A mid-session setting change does not enable the
+  current session.
+- **MUST build every teammate assignment through Delegation.** Conversation history does not replace a complete
+  prompt with current scope, resources, authority, result, verification, and Handoff.
+- **MUST prefer a context-ready teammate for coherent follow-up work.** Revalidate the teammate's role,
+  addressability, current evidence, and write boundary before re-delegating.
+- **MUST separate parallel writers by exclusive files or worktrees.** Keep dependent writes in one ordered
+  chain because Agent Teams does not isolate edits.
+- **MUST reread the result and reproduce verification before acceptance or reuse.** A completed task or idle
+  teammate is not proof.
+- **NEVER edit Claude Code's generated team or task state or treat Partner as a persistent teammate.** Let the
+  runtime manage team state, and launch every Partner run fresh.
 
 ## Manual
 
-### Enable Agent Teams
+### Availability
 
-Agent Teams requires Claude Code 2.1.32 or later and is disabled by default:
+#### Enable and inspect
 
-```bash
-claude --version
-```
+- Agent Teams is experimental and disabled by default. Set
+  `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in the environment or a Claude settings file before starting the
+  session.
+- Check `claude --version` and the
+  [official Agent Teams documentation](https://code.claude.com/docs/en/agent-teams) before relying on current
+  mechanics. The official interface described as of Claude Code 2.1.178 creates team state when the first
+  teammate starts and cleans it automatically when the session exits.
+- Native Codex has no Claude Agent Teams interface. Use its available subagent controls under Delegation
+  instead.
+- Native Cursor has no Claude Agent Teams interface and uses ordinary subagents.
 
-Set the flag before starting Claude Code, in the environment or a Claude settings file:
+### Selection
 
-```json
-{
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-  "teammateMode": "in-process"
-}
-```
+#### Choose teammates or subagents
 
-`teammateMode` is optional. `in-process` works in any terminal; `tmux` requires tmux or iTerm2. Gobbi projects
-also allow each `Agent(<role>)` they use. Plugin roles are namespaced, such as `Agent(gobbi:leader)`; local
-roles use names such as `Agent(leader)`.
+- Use teammates for parallel research, competing hypotheses, cross-layer work, or other assignments that
+  benefit from direct specialist communication.
+- Use ordinary subagents for focused work that only needs a result returned to the caller. Use one session for
+  tightly sequential or same-file work.
+- Start with only the participants the work needs. Extra teammates add context, coordination, and token cost.
 
-Check the [official Agent Teams documentation](https://code.claude.com/docs/en/agent-teams) for current
-version and display support.
+### Coordination
 
-### Choose Agent Teams
+#### Spawn and assign teammates
 
-Use a team for parallel research, competing debugging hypotheses, independent reviews, or separate feature
-areas that must exchange findings. Teams use more tokens than one session, so start only needed teammates.
+- Ask the main Claude Code session to spawn named teammates in natural language. The main session becomes the
+  lead; do not use removed `TeamCreate` or `TeamDelete` mechanics.
+- Give each teammate a complete [Delegation](../../delegation/SKILL.md) prompt with its role, assignment,
+  resources, boundaries, result, verification, and final Handoff. A teammate does not inherit the lead's
+  conversation history.
+- Use the shared task list and direct messages for scheduling and coordination. The lead remains responsible
+  for dependencies, acceptance, and the next route.
 
-### Create a team
+#### Re-delegate a context-ready teammate
 
-Ask the main Claude Code session in natural language. Name the task, teammates, roles, and ownership:
+- Prefer an idle and addressable teammate when the next assignment is a coherent continuation of its role,
+  subject, and allowed write boundary. This preserves useful study and project context.
+- Send a new complete Delegation prompt. State what changed since the prior assignment, refresh exact
+  resources and evidence, and give the follow-up a new stable assignment identifier.
+- Spawn a fresh specialist when independence is required or the prior teammate's role, context, evidence,
+  addressability, or write boundary no longer fits. Never reuse convenience as authority.
 
-```text
-Create an agent team for this review. Name one teammate security and one performance.
-Give both read-only assignments and have the lead synthesize their evidence.
-```
+#### Protect concurrent work
 
-The main session becomes the lead. Claude Code creates the task list and runtime state. A custom subagent
-definition can supply a teammate's model and tools, but its `skills` and `mcpServers` fields do not apply;
-include required loads and task context in the assignment.
+- Give parallel writers non-overlapping files or separate worktrees. Do not rely on runtime task ownership to
+  prevent file conflicts.
+- Keep one write-capable assignment active across any shared file, branch, session record, TODO route, or
+  external system. Independent read-only work may run in parallel.
+- Route remaining-runtime work through [Partner](../partner/SKILL.md) when that runtime remains in the launch
+  set. Spawn one Partner wrapper subagent per remaining runtime. The Partner process is still a fresh CLI
+  with one exact session writing path, not a teammate to continue.
 
-### Coordinate work
+### Acceptance
 
-The lead assigns tasks, or teammates claim unassigned tasks after dependencies finish. Teammates message the
-lead and each other by name. Use Shift+Down to select in-process teammates and Ctrl+T to show tasks.
+#### Verify a teammate result
 
-Give each writer exclusive paths and keep dependent work ordered. Verify the artifact and its checks before
-acceptance because task status can lag.
+- Wait for the final Handoff, then reread every named file or commit and reproduce the stated checks. Compare
+  the result with the current assignment rather than the teammate's earlier context.
+- Treat task completion, idle state, and messages as scheduling evidence only. Reject missing, malformed,
+  stale, or out-of-bound results.
+- Keep independent evaluation outside the writer's acceptance. The active mode owns evaluator selection,
+  findings, and routing.
 
-### Shut down and recover
+#### Continue, recover, or replace
 
-Ask the lead to shut down every teammate, then clean up the team. One lead can manage one team at a time.
-
-`/resume` and `/rewind` do not restore in-process teammates. Spawn replacements from the active mode's
-verified recovery evidence. Replace a teammate that remains unreachable or repeatedly returns malformed work.
-
-### Workflow integration
-
-This section owns the Agent Teams guidance that Workflow uses for TODO assignment, evidence-based recovery,
-role reuse, and phase continuity. Workflow remains the authority for its state machine and acceptance rules.
-
-#### TODO-based assignment
-
-The manager creates, retitles, reorders, and completes TODO items. Specialists report progress but cannot
-self-assign, change progression, or accept their own work.
-
-One mutable item represents one productive-step iteration. The manager moves it through DISCUSSION, WORK,
-EVALUATION, and RECORD. A verified PASS completes the item; a revision creates a new iteration instead of
-rewriting the completed one.
-
-Task status is scheduling information. Workflow Step 1.3 alone validates a report and decides whether the TODO
-may advance.
-
-#### Context-boundary recovery
-
-After compact, clear, resume, rewind, lost TODO data, or another context boundary:
-
-1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
-2. Inspect the native TODO list when it survives.
-3. Verify the checkpoint against `configuration.md`, including mode, identity shape, original UTC date, slug
-   or `not-applicable`, full UUID, and partner policy. Parse branch, worktree leaf, and session leaf with the
-   separate new or permanent legacy validators, then verify RECORD receipts, `gate.md`, canonical outputs,
-   checks, commits, branch, and worktree. Never rename or migrate a live legacy or active object.
-4. Recreate only the proved item sequence and make the first unproved item the sole `in_progress` item.
-5. Leave later items `pending`, then resume routing from the native list.
-
-Use the accepted plan for Execution order. Stop at the earliest unsafe or contradictory evidence instead of
-guessing a later route.
-
-Claude Code does not restore in-process teammates after `/resume` or `/rewind`; spawn replacements. After
-compaction, continue a teammate only when its identity, assignment, addressability, idle state, and write
-boundary still match the reconstructed Workflow evidence.
-
-#### Reuse and write safety
-
-Reuse a teammate only inside the role boundary in Workflow Step 1.3. Every continued assignment receives a
-new identifier and a complete re-anchored brief.
-
-Permit one write-capable assignment at a time across the session worktree, evidence tree, Git branch, TODO
-route, and external systems. Parallel specialists must be independent and read-only.
-
-For WORK, assign one active-runtime writer to create and self-review the local draft. A disabled partner
-policy uses that local evidence only. Enabled calls Partner separately for each applicable external draft or
-cross-review; the external runtime is not a persistent teammate. The manager assembles and accepts the round.
-For EVALUATION, dispatch one fresh isolated active-runtime evaluator outside the persistent team and add one
-fresh external Partner evaluator only when enabled. Neither evaluator receives the other report.
-
-After each report, the manager rereads the promised artifact or commit, reproduces verification, and confirms
-the specialist is idle and addressable before reuse. A missing, malformed, rejected, or unreachable result
-gets a fresh replacement rather than inferred completion.
-
-#### Phase continuity
-
-During Phase 2 and Phase 3, activate the next dependency-ready stage immediately after verification. A Hand-off
-is a recovery checkpoint, not an idle wait. Stop only at Workflow's critical-blocker boundary.
+- Continue an existing teammate only while the runtime shows it addressable and its role, assignment history,
+  accepted evidence, and write boundary remain valid.
+- After a restart, resume, lost team process, or contradictory runtime state, rebuild the route from the active
+  mode's verified records and spawn a replacement with a complete brief. Never infer completion from surviving
+  task state.
+- Do not edit generated team or task files to repair state. Preserve the exact failure evidence and let Claude
+  Code manage runtime cleanup.
 
 ## References
 
-- [Workflow](../../workflow/SKILL.md)
-- [Delegation](../../delegation/SKILL.md)
+| Name | Description |
+|---|---|
+| [Delegation](../../delegation/SKILL.md) | Defines each teammate prompt and final Handoff. |
+| [Cowork](../../cowork/SKILL.md) | Owns Cowork participant, write, acceptance, and recovery policy. |
+| [Workflow](../../workflow/SKILL.md) | Owns Workflow phases, participant policy, handoffs, and recovery. |
+| [Partner](../partner/SKILL.md) | Defines fresh opposite-runtime invocations that cannot be continued as teammates. |

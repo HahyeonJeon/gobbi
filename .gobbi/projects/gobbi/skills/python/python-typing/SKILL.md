@@ -1,18 +1,15 @@
 ---
 name: python-typing
-description: "MUST load when Python annotations, type expressions, narrowing, generics, public type surfaces, or typing trade-offs are designed or reviewed."
+description: "Python Typing provides overridable preferences for truthful annotations, narrowing, generics, protocols, public type surfaces, and controlled imprecision."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
 # Python Typing
 
-Python Typing guides truthful static modeling of annotations, type expressions, narrowing, generics, protocols,
-public type surfaces, and the trade-offs around imprecision. It helps readers and static tools see the states and
-relationships the runtime/API design already supports.
+Python Typing guides truthful static models for annotations, narrowing, generics, protocols, public type surfaces, and controlled imprecision.
 
-The project selects its supported Python versions and type checker through `python-toolchain`. Annotations do not
-enforce runtime validation, and this skill does not choose names, runtime behavior, package layout, or tooling.
+Use it when authors or reviewers model states and relationships after runtime and API behavior are known. It does not provide runtime validation or choose names, runtime behavior, package layout, or tools.
 
 ## Principles
 

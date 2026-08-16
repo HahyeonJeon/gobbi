@@ -1,20 +1,15 @@
 ---
 name: cli-release
-description: "MUST load when choosing or reviewing supported runtime, target, or delivery policy, required consumer evidence, runtime, artifact, installation, or data compatibility, release readiness, rollout controls, recovery, rollback, forward-fix, support, deprecation, or retirement for a line-oriented TypeScript CLI."
+description: "CLI Release is a preference skill for early release policy and late readiness judgments for line-oriented TypeScript CLIs. It owns support, compatibility, recovery, rollout, deprecation, and retirement judgments."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # CLI Release
 
-CLI Release guides the product owner who sets release policy for a line-oriented TypeScript CLI and later
-judges whether one exact runtime, target, delivery identity, and consumer entry satisfy that policy. It
-produces two separate results: an early `Release policy accepted` record and a later
-`Release readiness judgment recorded` record.
+CLI Release records release policy first, then judges one exact runtime, target, delivery identity, and consumer entry as Supported, Unsupported, or blocked.
 
-This skill owns support, compatibility, recovery, rollout, deprecation, and retirement judgments. It does
-not build, test, package, sign, publish, install, roll out, roll back, forward-fix, use credentials, or perform
-another external action.
+Use it when support matrices, consumer evidence, compatibility, recovery, rollout, support, deprecation, or retirement need judgment; build, test, packaging, credential, publication, installation, and rollout actions remain elsewhere.
 
 ## Principles
 

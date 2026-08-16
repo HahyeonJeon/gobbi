@@ -1,18 +1,15 @@
 ---
 name: web-project-structure
-description: "MUST load when establishing or reviewing a web project's directory structure, workspace or application roots, source, runtime, test, configuration, asset, migration, shared, generated, build, or deployable-output placement, or a documented placement exception."
+description: "Web Project Structure is a preference skill for workspace, application, package, source, test, configuration, asset, migration, generated, build, and deployable-output placement."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---
 
 # Web Project Structure
 
-This preference skill guides web project structure: roots, applications, packages, source, routes, assets,
-tests, configuration, migrations, scripts, documentation, shared code, generated content, caches, builds, and
-deployable outputs.
+Web Project Structure guides where project roots, applications, packages, source, tests, configuration, assets, migrations, generated content, builds, and deployable outputs belong. Use it when establishing or reviewing those paths or a documented placement exception.
 
-It does not own UI or API conventions, naming, imports, formatting, or language and framework code style.
-Required framework and tool structure takes precedence over project preferences.
+Required framework and tool structure takes precedence, while naming, imports, formatting, and code style remain outside this skill.
 
 ## Principles
 

@@ -1,34 +1,15 @@
 ---
 name: typescript-testing
-description: "MUST load when creating or reviewing TypeScript runtime tests, type-level tests, negative tests, declaration checks, package checks, or documented examples."
+description: "TypeScript Testing is an operation skill for runtime, type-level, negative, declaration, installed-package, command-behavior, and documentation-example verification."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Testing
 
-TypeScript Testing verifies runtime behavior and compile-time requirements. It composes runtime tests, controllable dependencies, type-level assertions, expected failures, public declaration checks, installed-package checks, and checked documentation examples without treating any one layer as a substitute for the others.
+TypeScript Testing verifies runtime behavior and compile-time requirements without treating one evidence layer as a substitute for another. Use it when creating or reviewing runtime tests, type-level or negative tests, declaration and package checks, command behavior, or executable examples.
 
-This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs
-authorized commands without inheriting authority to change production or test files. Package-backed command
-metadata is a command name or entry supplied by package metadata, including a `package.json` `bin` entry,
-package script, or workspace package link; `typescript-packaging` owns that metadata and its package behavior.
-Direct non-archive delivery gives the consumer a command without a package-archive installation;
-`typescript-cli-delivery` owns a standalone executable or archive, a script copied or linked directly to an
-install target, a workspace or repository revision plus command, and another direct non-archive method whose
-unit, method, and consumer command are recorded by name. A package-backed workspace command delivered directly
-loads both owners for separate obligations. A genuine hybrid distributes the same command through a package
-archive and a direct non-archive method, loads both, and keeps separate artifact identities and consumer
-entries. This operation owns command behavior tests.
-
-`typescript-packaging` is the sole owner that builds, creates, recreates, and identifies a package archive.
-This operation receives that exact identified archive and an applicable isolated consumer setup, then owns
-behavior, type, and declaration assertions against it. When review-only package validation applies, it may
-inspect only existing generated output and a pre-existing archive supplied by `typescript-packaging`. With
-command authority, it may write only inside a named temporary directory or isolated disposable consumer
-outside reviewed files, remove those writes after review, and install only that pre-existing archive into the
-disposable consumer. It may not change the reviewed subject, install persistently, or publish; evidence that
-needs a new build or archive remains unavailable unless the task changes to author mode.
+`typescript-packaging` alone creates package archives; review-only mode keeps the subject unchanged.
 
 ## Principles
 

@@ -22,8 +22,8 @@ Four steps, run once at the Gobbi entry:
    variable, config file, or filesystem search is needed, and **none exists to supply one** — confirmed on
    both runtimes, see Measured facts below.
 2. **Derive two candidates, not one.** The reported path may name the skill's own directory (Claude Code) or
-   the skills root directly (Codex CLI) — the two runtimes disagree on shape. Build one candidate for each
-   shape and let the sentinels decide which is real: "never decide which from its spelling."
+   the skills root directly (Codex CLI and Grok) — the runtimes disagree on shape. Build one candidate for
+   each shape and let the sentinels decide which is real: "never decide which from its spelling."
 3. **Validate.** All three sentinels must exist and be readable, in order:
    `{gobbi-skills-root}/gobbi/SKILL.md`, `{gobbi-skills-root}/principles/SKILL.md`,
    `{gobbi-agents-root}/manager.md` — `{gobbi-agents-root}` is the `agents/` sibling of `{gobbi-skills-root}`.
@@ -37,11 +37,13 @@ Four steps, run once at the Gobbi entry:
 **Divergence rule.** The resolved pair is fixed for the whole session — "one session runs against exactly one
 pair" — re-derived at every entry and compared against the recorded pair.
 
-**Root-pair invariant** (in every role contract, not just the entry): the two roots are one pair, never one
-value. Either the brief supplies both or supplies neither, and a specialist derives both from its own
-contract's location only in the neither case. A supplied root is never trusted unvalidated. Four failure
-tokens discriminate the stop reason: `partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`,
-`location-underivable`.
+**Root-pair invariant:** the two roots are one pair, never one value. Gobbi 1.1 still owns manager entry
+resolution in this document. Delegation owns the specialist protocol, including the four failure tokens
+`partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`, and `location-underivable`. Role contracts are
+now [identity-and-load maps](../process/identity-and-load-role-contracts.md): specialists load Delegation and
+validate the supplied or derived pair; they do not restate the protocol. Either the brief supplies both roots
+or supplies neither. A specialist derives both from its own contract's location only in the neither case. A
+supplied root is never trusted unvalidated.
 
 ### Verified topology trace
 
@@ -50,6 +52,7 @@ tokens discriminate the stop reason: `partial-pair`, `not-an-absolute-path`, `ab
 | Claude Code, skill's own dir (`…/skills/principles`) | `…/skills/principles` | `…/skills` | readable |
 | Codex CLI, skills root (`…/skills`) | `…/1.0.1` | `…/skills` | readable |
 | This repository (`.claude/skills/gobbi`) | `.claude/skills/gobbi` | `.claude/skills` | readable |
+| Grok 1.0.4, skills root (`.agents/skills`) | `.agents/skills/gobbi` | `.agents/skills` | readable |
 
 ## Measured runtime facts backing the design
 
@@ -70,6 +73,10 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
 - **A spawned specialist (leader, executor, evaluator, assistant) has no `Skill` tool** unless its role's
   `tools:` frontmatter grants one, so it cannot itself read the "Base directory" report. It receives the
   resolved pair from its brief instead; the root-pair invariant above is what makes that safe.
+- **Grok entry uses the `.agents` pair, not `.grok/skills`.** This Workflow entered on Grok 1.0.4 with
+  `{gobbi-skills-root}` `.agents/skills` and `{gobbi-agents-root}` `.agents/agents`. The
+  `.agents/skills/gobbi` candidate failed all three sentinels. `.grok/skills` is a project discovery mirror
+  of 26 directory links, including `gobbi`, and is not the Gobbi skills root.
 - Claude Code appends `<plugin-root>/bin` onto `PATH` for a session with the plugin active — a real,
   undocumented side effect usable as a fallback signal, not the primary mechanism.
 - `~/.claude/plugins/marketplaces/<name>/` is a full git clone of the marketplace source repository, created
@@ -82,13 +89,10 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
   determine that location itself. The design holds today because the manager always carries both roots in
   every brief, so the fallback path is never exercised in practice. Recorded, not fixed; see
   [`backlogs/project.md`](../../backlogs/project.md).
-- Four role-contract surfaces still name paths or files that do not exist in a consumer project, outside the
-  locator conversion's own scope: `plugins/gobbi/` cited as a Codex runtime surface, a nonexistent "Project
-  skill", the user's own unreachable auto-memory file, and one cosmetic stale frontmatter line. See
-  [`backlogs/project.md`](../../backlogs/project.md).
 
 ## References
 
 - `gobbi/SKILL.md` Procedure Step 1.1 — the locator contract
-- Five role contracts (`.gobbi/projects/gobbi/agents/*.md`) — the root-pair invariant and failure tokens
+- [Delegation](../../../skills/delegation/SKILL.md) — specialist root-pair protocol and `NO_GOBBI_ROOT`
+- [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) — current role-file shape
 - [`reports/review/2026-08-02-locator-partner-agentteams-review.md`](../../reports/review/2026-08-02-locator-partner-agentteams-review.md) — evaluation and probe evidence

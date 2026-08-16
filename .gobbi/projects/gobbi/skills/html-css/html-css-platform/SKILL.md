@@ -1,19 +1,15 @@
 ---
 name: html-css-platform
-description: "MUST load when interpreting or verifying HTML/CSS conformance, parsing, parser-produced DOM, native HTML behavior, CSSOM, matching, cascade, computed values, layout, overflow, paint, compositing, rendering, direct target support, or browser and Electron-renderer diagnosis."
+description: "HTML/CSS Platform is a tool skill for standards interpretation and direct browser or Electron-renderer facts. It covers parsing, native behavior, CSSOM, cascade, layout, paint, compositing, rendering, support, and diagnosis."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # HTML/CSS Platform
 
-Use this manual to answer a bounded question about HTML/CSS standards or their direct realization in a browser
-or Electron renderer. State the specification meaning and maturity, declared target and mode, direct
-observation, uncertainty, and strongest supported conclusion separately.
+HTML/CSS Platform answers bounded questions about HTML/CSS standards and their direct realization in a browser or Electron renderer. Use it when interpreting or verifying conformance, parsing, parser-produced DOM, native behavior, CSSOM, matching, cascade, computed values, layout, overflow, paint, compositing, rendering, target support, or renderer failures.
 
-The manual does not own browser lifecycle, navigation, scheduling, network, cache, storage, origin, permission,
-security state, application architecture, or product acceptance. Route those claims to `web-platform` or the
-applicable product, security, testing, or release owner.
+It separates specification meaning, direct observation, uncertainty, and the strongest supported conclusion.
 
 ## Principles
 
