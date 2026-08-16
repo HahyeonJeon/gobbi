@@ -3,7 +3,7 @@
 set -euo pipefail
 export LC_ALL=C
 
-# Initialize missing Claude Code, Codex, and Grok skill links for canonical project skills.
+# Initialize missing Claude Code, Codex, Grok, and Cursor skill links for canonical project skills.
 # Existing discovery directories are not migrated or deleted.
 
 fail() {
@@ -68,10 +68,11 @@ check_skill_link() {
     return
   fi
 
+  if [[ -d "$link_path" ]]; then
+    return
+  fi
+
   if [[ -e "$link_path" ]]; then
-    if [[ -d "$link_path" ]]; then
-      fail "existing skill directory is not migrated: ${link_path#"$project_root"/}"
-    fi
     fail "skill discovery entry already exists and is not a symlink: ${link_path#"$project_root"/}"
   fi
 }
@@ -109,7 +110,8 @@ fi
 for discovery_root in \
   "$project_root/.claude/skills" \
   "$project_root/.agents/skills" \
-  "$project_root/.grok/skills"
+  "$project_root/.grok/skills" \
+  "$project_root/.cursor/skills"
 do
   check_discovery_root "${discovery_root%/skills}"
   check_discovery_root "$discovery_root"
@@ -121,12 +123,14 @@ for skill_path in "${skill_paths[@]}"; do
   check_skill_link "$project_root/.claude/skills/$skill_name" "$expected_target"
   check_skill_link "$project_root/.agents/skills/$skill_name" "$expected_target"
   check_skill_link "$project_root/.grok/skills/$skill_name" "$expected_target"
+  check_skill_link "$project_root/.cursor/skills/$skill_name" "$expected_target"
 done
 
 mkdir -p \
   "$project_root/.claude/skills" \
   "$project_root/.agents/skills" \
-  "$project_root/.grok/skills"
+  "$project_root/.grok/skills" \
+  "$project_root/.cursor/skills"
 
 created_count=0
 for skill_path in "${skill_paths[@]}"; do
@@ -136,10 +140,11 @@ for skill_path in "${skill_paths[@]}"; do
   for discovery_root in \
     "$project_root/.claude/skills" \
     "$project_root/.agents/skills" \
-    "$project_root/.grok/skills"
+    "$project_root/.grok/skills" \
+    "$project_root/.cursor/skills"
   do
     link_path="$discovery_root/$skill_name"
-    if [[ -L "$link_path" ]]; then
+    if [[ -L "$link_path" || -d "$link_path" ]]; then
       continue
     fi
     ln -s "$expected_target" "$link_path"
