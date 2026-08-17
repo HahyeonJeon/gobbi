@@ -1,11 +1,11 @@
 {
   "hooks": {
-    "UserPromptSubmit": [
+    "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/remind.sh\" claude",
+            "command": "bash \"${GROK_PLUGIN_ROOT}/hooks/remind.sh\" grok",
             "timeout": 10
           }
         ]
