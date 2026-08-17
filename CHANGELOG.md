@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Grok 1.0.4 does not run the plugin-bundled Stop hook in consumer projects. The Grok install section now
+  tells users to install with `--trust` and to copy `plugins/gobbi/hooks/user-hooks.json` plus the reminder
+  script into `~/.grok/hooks/`, which Grok always runs.
+
 ## 1.2.0 - 2026-08-16
 
 ### Changed

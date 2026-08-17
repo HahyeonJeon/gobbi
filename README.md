@@ -81,7 +81,26 @@ Installed Grok 1.0.4 also accepts the same source as GitHub shorthand:
 grok plugin marketplace add HahyeonJeon/gobbi
 ```
 
-Then install Gobbi from the Marketplace tab. Do not use Claude `/plugin` as the Grok install path.
+Then install Gobbi from the Marketplace tab with trust, or from the command line:
+
+```text
+grok plugin install gobbi --trust
+```
+
+Do not use Claude `/plugin` as the Grok install path. Grok 1.0.4 loads skills from the plugin but does not
+run the bundled Stop hook in other projects. Install the same hook as a user hook so every trusted project
+gets it:
+
+```bash
+mkdir -p ~/.grok/hooks
+cp plugins/gobbi/hooks/stop-remind.sh plugins/gobbi/hooks/remind.txt ~/.grok/hooks/
+cp plugins/gobbi/hooks/user-hooks.json ~/.grok/hooks/gobbi-stop-remind.json
+chmod +x ~/.grok/hooks/stop-remind.sh
+```
+
+From a marketplace install, copy those three files out of the loaded plugin directory shown by
+`grok inspect --json` instead of `plugins/gobbi/hooks/`. Prove the hook with `grok inspect --json`: a `Stop`
+command whose `source.path` is `~/.grok/hooks`. Start a new Grok session in the consumer project.
 
 A repository checkout already exposes the package through `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
