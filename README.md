@@ -87,19 +87,13 @@ Then install Gobbi from the Marketplace tab with trust, or from the command line
 grok plugin install gobbi --trust
 ```
 
-Do not use Claude `/plugin` as the Grok install path. Grok 1.0.4 loads skills from the plugin but does not
-run the bundled Stop hook in other projects. Copy the plugin hook files into `~/.grok/hooks/` so every
-trusted project gets them:
+Do not use Claude `/plugin` as the Grok install path. An enabled, trusted Grok install runs the reminder hook
+from the package itself: `.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json`, which registers a
+`Stop` handler running `hooks/remind.sh` with `grok` as its argument. No copy into `~/.grok/hooks/` is needed.
 
-```bash
-mkdir -p ~/.grok/hooks
-cp plugins/gobbi/hooks/hooks.json plugins/gobbi/hooks/stop-remind.sh plugins/gobbi/hooks/remind.txt ~/.grok/hooks/
-chmod +x ~/.grok/hooks/stop-remind.sh
-```
-
-From a marketplace install, copy those three files out of the loaded plugin directory shown by
-`grok inspect --json` instead of `plugins/gobbi/hooks/`. Prove the hook with `grok inspect --json`: a `Stop`
-command whose `source.path` is `~/.grok/hooks`. Start a new Grok session in the consumer project.
+Prove the hook with `grok inspect --json`: an entry whose `source.type` is `plugin`, whose `source.plugin_name`
+is `gobbi`, and whose `target` ends in `hooks/grok-hooks.json`. Grok reports that entry's `event` as
+`(plugin)` and does not resolve the inner `Stop` there. Start a new Grok session in the consumer project.
 
 A repository checkout already exposes the package through `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,

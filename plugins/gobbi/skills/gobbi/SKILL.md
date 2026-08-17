@@ -92,8 +92,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   projects/*/worktrees/
   ```
 
-- Gobbi writes none of this layout. A selected owner may bootstrap only the namespace roots and ignore file
-  when authorized; it creates no category, session, marker, or `rules/` path until that path is needed.
+- Gobbi writes none of this layout. [Setup](setup/SKILL.md) is its write owner and creates only the namespace
+  roots and ignore file when authorized; it creates no category, session, marker, or `rules/` path until that
+  path is needed.
 
 #### 1.3 Report missing prerequisites
 
@@ -196,4 +197,5 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
 | [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
+| [Setup](setup/SKILL.md) | Owns the separately invoked operation that writes a consumer project's missing layout, placeholders, settings, and Codex role contracts, and reports the rest. |
 | [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Cursor, Grok, Git-ignore, and CLI prerequisites without mutation. |
