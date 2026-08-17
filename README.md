@@ -88,13 +88,12 @@ grok plugin install gobbi --trust
 ```
 
 Do not use Claude `/plugin` as the Grok install path. Grok 1.0.4 loads skills from the plugin but does not
-run the bundled Stop hook in other projects. Install the same hook as a user hook so every trusted project
-gets it:
+run the bundled Stop hook in other projects. Copy the plugin hook files into `~/.grok/hooks/` so every
+trusted project gets them:
 
 ```bash
 mkdir -p ~/.grok/hooks
-cp plugins/gobbi/hooks/stop-remind.sh plugins/gobbi/hooks/remind.txt ~/.grok/hooks/
-cp plugins/gobbi/hooks/user-hooks.json ~/.grok/hooks/gobbi-stop-remind.json
+cp plugins/gobbi/hooks/hooks.json plugins/gobbi/hooks/stop-remind.sh plugins/gobbi/hooks/remind.txt ~/.grok/hooks/
 chmod +x ~/.grok/hooks/stop-remind.sh
 ```
 

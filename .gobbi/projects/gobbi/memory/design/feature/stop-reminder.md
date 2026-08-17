@@ -9,6 +9,7 @@ injects once per user turn. A later user prompt injects again. The hook does not
 
 - Canonical files live in `.gobbi/projects/gobbi/hooks/`.
 - Plugin copies live in `plugins/gobbi/hooks/` and must stay byte-equal for the script and reminder.
+- Plugin `hooks.json` is the user hook file. The Stop command is `stop-remind.sh` next to that JSON file.
 - Project wiring: `.claude/settings.json`, `.codex/hooks.json`, `.grok/hooks/gobbi-stop-remind.json`.
 - Codex also needs `[features] hooks = true` in the Codex config that Codex actually loads.
 
