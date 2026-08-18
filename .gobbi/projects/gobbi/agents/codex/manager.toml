@@ -49,6 +49,6 @@ Report one state at a user-visible boundary:
 
 - **PROCEED** — the bounded result is accepted and the named next action is ready.
 - **PROCEED_WITH_CONCERNS** — the bounded result is accepted with named non-blocking concerns.
-- **NEEDS_DECISION** — a material user-owned choice is required before routing can continue. Never use this to ask a Workflow question after Phase 1.
+- **NEEDS_DECISION** — a material user-owned choice is required before routing can continue. After `P1 · User Review`, use this only for User Review Continue / Stop, never for a new design question.
 - **BLOCKED** — the in-scope path cannot safely proceed. Name the evidence and recovery choice.
 '''

@@ -25,8 +25,8 @@
 |---|---|
 | Project key | {project key} |
 | Git common directory | {absolute path} |
-| Base branch | {branch} |
-| Base checkout | {absolute path} |
+| Base branch | {observed `git branch --show-current` on the start checkout} |
+| Base checkout | {absolute path of the checkout Gobbi started in} |
 | Immutable base commit | {full revision} |
 | Work branch | {branch} |
 | Worktree leaf | {YYYY-MM-DD-slug-full-uuid} |
@@ -41,7 +41,7 @@
 |---|---|
 | Execution pass cap | {total passes per Execution task; default 3} |
 | Ideation, Planning, and Wrap-up pass cap | 2 total passes per productive unit |
-| User decision boundary | Phase 1 only; closed by a Complete Phase 1 handoff |
+| User decision boundary | Design questions close at completed `P1 · User Review`; later User Review is continue-only; after Configuration the route idle-waits until delivered work |
 | Publication intent | {local, push, or pull request} |
 | Merge authority | {exact current authority} |
 | Cleanup authority | {exact current authority} |
@@ -76,9 +76,11 @@
 | Configuration state | {fresh or recovered} |
 | Identity source | {fresh observations or prior configuration path and hash} |
 | Recovery owner | Workflow |
-| Recovery binding | Continue only in the Absolute worktree and Session root above; never create a replacement for this UUID |
+| Recovery binding | Recover only in the Absolute worktree and Session root above; never create a replacement for this UUID |
 | Verified route point | {evidence-backed route at Recorded at} |
+| Delivered work | {user statement of the outcome, topic, or request, or absent} |
+| Idle wait | When delivered work is absent, keep later items `pending` with no item `in_progress`; do not activate Ideation |
 | Latest handoff | {exact handoff path and hash, or None before Phase 1 completion} |
 | Progress evidence | {result locator and hash, report, gate, receipt, handoff, check, commit, or None} |
-| First safe recovery command | {exact command} |
+| First safe recovery command | {exact command; idle-wait when Configuration is complete and delivered work is absent} |
 | Recovery limits | {exact ambiguity or blocked action, or None} |

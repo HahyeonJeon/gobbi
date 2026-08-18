@@ -16,7 +16,8 @@ closure action.
 ### Keep the user in control
 
 The user owns every material scope, design, risk, destructive-action, and external-service decision. The
-manager makes each topic concrete, returns accepted evidence, and waits at topic boundaries.
+manager idle-waits after Configuration until the user delivers the work, then makes each topic concrete,
+returns accepted evidence, and waits at later topic boundaries.
 
 ### Keep one inspectable local history
 
@@ -41,8 +42,11 @@ route.
   change nothing else in the main checkout.
 - **MUST continue and recover only in the registered Cowork worktree and session root.** Never create or select
   a replacement worktree or session directory for the same Cowork identity.
-- **MUST use the native TODO list to select Configuration, topic stages, Commit, Evaluation, and Wrap-up.**
-  Use only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
+- **MUST use the native TODO list to select Configuration, topic stages, Commit, Evaluation, and Wrap-up,
+  using only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`, and complete
+  Configuration as an idle wait that leaves later items `pending`.** Start a topic stage only after
+  delivered work exists: a user statement of the outcome, topic, or request, not mode, slug, partner
+  policy, "continue", "ok", "looks good", or repository state.
 - **MUST select and report Fast or Light delivery while the user owns every material decision.** Fast skips
   Ideation and Planning; Light runs bounded canonical Ideation and Planning before Execution.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
@@ -64,19 +68,25 @@ route.
   pair. Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
   [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order.
 - Publish the complete fixed Cowork TODO template through the native runtime control. Start only
-  `CW · Configuration`; recovery inspects the surviving route and direct evidence before changing a status.
+  `CW · Configuration`; recovery inspects the surviving route and direct evidence before changing a status,
+  reconstructs the idle wait when Configuration is complete and delivered work is absent, and may activate
+  the earliest unproved item only after delivered work exists.
 - For a fresh session, capture the original UTC session-start date and generate one full lowercase hyphenated
   UUID. For recovery, require one matching recorded identity, branch, registered worktree, and session root;
-  stop instead of creating or selecting a replacement.
+  stop instead of creating or selecting a replacement, and do not ask which branch is the base.
 
 #### 1.2 Create the worktree and configuration
 
-- Apply Git preferences to capture the immutable base commit and create or verify the purpose-based work
-  branch and isolated worktree. The sole main-checkout exception is an explicitly approved commit containing
-  only Gobbi's required layout and ignore file.
-- Name the worktree and session leaves `<YYYY-MM-DD>-<slug>-<full-uuid>` and require byte equality. Set the
-  session root to `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/` and place
-  `configuration.md` directly below it.
+- On the start checkout Gobbi started in, run `git branch --show-current` before creating the worktree, and
+  record that name as `Base branch` and that checkout as `Base checkout`. If the name is empty, or the
+  checkout is dirty or unusable, stop; do not ask which branch is the base, and never use the worktree
+  branch as the base.
+- Apply Git preferences to capture the immutable base commit from the recorded `Base branch` and create or
+  verify the purpose-based work branch and isolated worktree; the sole main-checkout exception is an
+  explicitly approved commit containing only Gobbi's required layout and ignore file. Name the worktree and
+  session leaves `<YYYY-MM-DD>-<slug>-<full-uuid>` and require byte equality, set the session root to
+  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` directly
+  below it.
 - Render the [configuration template](templates/configuration.md) as the Configuration phase's accepted record,
   apply Memory `Temporary Record`, and verify
   its identity, locations, settings, evidence, ignored state, native TODO route, and recovery point before
@@ -113,32 +123,38 @@ CW · Evaluation
 CW · Wrap-up
 ```
 
-- At every boundary, refresh `configuration.md` Progress evidence with exact accepted paths and hashes, then
-  reconcile the native TODO against the registered worktree, topic contracts, indexed results, commits,
-  checks, and evaluation coverage. Activate the earliest unproved item and stop on competing evidence.
+#### 1.4 Complete Configuration as an idle wait
+
+- Mark `CW · Configuration` completed after refreshing `configuration.md` Progress evidence and recording
+  the idle-wait recovery point when delivered work is absent. Leave every later item `pending` with no item
+  `in_progress`, and do not activate the earliest unproved item.
 
 ### Phase 2 — Deliver User Topics
 
 #### 2.1 Lock the topic and choose its depth
 
+- Enter only when Configuration is complete and delivered work exists; a concrete outcome statement already
+  in the session may be used after Configuration, not during it. If delivered work is absent, idle-wait with
+  no item `in_progress`; asking the user to state the work is allowed, and studying, ideating, planning, or
+  executing is not.
 - Apply [Discussion](../discussion/SKILL.md) to lock the topic outcome, purpose, scope, acceptance evidence,
   material decisions, first action, and exclusions. Assign the next stable `topic-NN-slug` and keep this
   contract authoritative for the topic.
-- Choose the smallest valid depth from this table:
+- Choose the smallest valid depth from this table. If the topic is too broad, risky, irreversible, or
+  uncertain for Light, use Discussion to ask the user to narrow or split it or start Workflow through
+  Gobbi; never create a hidden third depth or switch modes without the user's decision.
 
 | Depth | Selection evidence | Route |
 |---|---|---|
 | **Fast** | The outcome, acceptance evidence, material decisions, and one low-risk reversible task are complete; no design or decomposition choice remains. | Skip Ideation and Planning, then run Execution. |
 | **Light** | The topic is bounded, but a design or decomposition choice remains. | Run bounded Ideation, bounded Planning, then ordered Execution. |
 
-- If the topic is too broad, risky, irreversible, or uncertain for Light, use Discussion to ask the user to
-  narrow or split it or start Workflow through Gobbi. Never create a hidden third depth or switch modes
-  without the user's decision.
-
 #### 2.2 Route the selected stages
 
-- For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution. For
-  Light, activate Ideation, Planning, Execution, and PASS in order; neither shaping stage is optional.
+- For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution; for
+  Light, activate Ideation, Planning, Execution, and PASS in order, and neither shaping stage is optional.
+  After a topic is locked, later boundaries refresh `configuration.md` Progress evidence and activate the
+  next selected stage, and stop on competing evidence.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, and exact role and

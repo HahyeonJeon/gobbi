@@ -25,8 +25,8 @@
 |---|---|
 | Project key | {project key} |
 | Git common directory | {absolute path} |
-| Base branch | {branch} |
-| Base checkout | {absolute path} |
+| Base branch | {observed `git branch --show-current` on the start checkout} |
+| Base checkout | {absolute path of the checkout Gobbi started in} |
 | Immutable base commit | {full revision} |
 | Work branch | {branch} |
 | Worktree leaf | {YYYY-MM-DD-slug-full-uuid} |
@@ -68,6 +68,8 @@
 | Recovery owner | Cowork |
 | Recovery binding | Continue only in the Absolute worktree and Session root above; never create a replacement for this UUID |
 | Verified route point | {evidence-backed route at Recorded at} |
+| Delivered work | {user statement of the outcome, topic, or request, or absent} |
+| Idle wait | When delivered work is absent, keep later items `pending` with no item `in_progress`; do not activate Ideation |
 | Progress evidence | {accepted topics, result hashes, commits, coverage, or None} |
-| First safe recovery command | {exact command} |
+| First safe recovery command | {exact command; idle-wait when Configuration is complete and delivered work is absent} |
 | Recovery limits | {exact ambiguity or blocked action, or None} |
