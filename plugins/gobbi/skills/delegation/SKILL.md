@@ -1,26 +1,27 @@
 ---
 name: delegation
-description: "Delegation is guidance for writing concise subagent prompts that define context, authority, verification, and handoff expectations, and for validating a specialist Gobbi root pair."
+description: "Delegation is guidance for writing concise subagent prompts that define Role, Task, Materials, and handoff expectations, and for validating a specialist Gobbi root pair."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # Delegation
 
-Delegation standardizes the prompt a manager gives a subagent, the specialist Gobbi root-pair protocol, and the
-handoff the subagent returns. Use it when assigning bounded work across runtimes or roles so the subagent can
-act without private context and the manager can verify the result.
+Delegation standardizes the Role, Task, and Materials a manager writes into a subagent prompt, the specialist
+Gobbi root-pair protocol, and the handoff the subagent returns. Use it when assigning bounded work across
+runtimes or roles so the subagent can act without private context and the manager can verify the result.
 
 ## Principles
 
-### Give the subagent enough context
+### Grant a Role so the agent thinks how it will act
 
-State the purpose, current state, scope, decisions, and terms that change the work. Treat context absent from the
-prompt or its named materials as unknown to the subagent.
+Role names the persona and expertise for this assignment. The agent works from that craft's stance, not from a
+generic helper voice.
 
-### Command the task directly
+### Command the goal and the quality bar
 
-Use precise action verbs. State what to do, follow, read, produce, verify, and return.
+Task states the goal, a world-best quality bar with a concrete measure, and the minimum result. Method, extra
+limits, authority, stops, and prohibited work stay in Instructions.
 
 ### Keep the prompt concise
 
@@ -36,14 +37,16 @@ context.
 
 - **MUST follow the active contracts in their stated authority order.** Apply the caller-approved task and scope,
   then the owning mode or operation and the role-specific additions; use this base where those owners are silent.
-- **MUST give the subagent one bounded assignment with one authoritative result.** Name the outcome, purpose,
-  scope, authority, starting state, result, acceptance evidence, verification, stop conditions, and prohibited work.
-- **MUST name required skills-to-load in `## Materials` and keep `## Materials` required.** Put working state
-  and accepted decisions in `## Context`, and put exact skill paths with read order, remaining sources, purpose,
-  and conflict precedence in `## Materials`; do not rely on conversation history or inherited skill loads.
-- **MUST include a `## Return` section in every delegation prompt.** The delegating agent defines the return
-  contract there, and the subagent writes the final Handoff for every terminal status.
-- **MUST make the final handoff verifiable.** Require its status, summary, exact durable locator or response
+- **MUST give the subagent one bounded assignment with one authoritative result.** Put the goal, world-best
+  quality bar, and minimum result in `## Task`; put purpose, authority, constraints, method, verification, stops,
+  and prohibited work in `## Instructions`.
+- **MUST include `## Role` above `## Context` in every delegation prompt.** Role grants persona and expertise so
+  the agent thinks how it will act; Metadata `agent` stays the Gobbi role name and is not a substitute for Role.
+- **MUST name required skills-to-load in `## Materials` and keep `## Materials` required, not exclusive.** List
+  exact skill paths with read order, remaining sources, purpose, and conflict precedence, then require the agent
+  to load any other skill the work needs; do not rely on conversation history or inherited skill loads.
+- **MUST include a `## Return` section and make the final handoff verifiable.** The delegating agent defines the
+  return contract; the subagent writes the final Handoff with status, summary, exact durable locator or response
   subject, conclusion and consumer, changed paths or findings, verification, concerns, open work, and next action.
 - **NEVER accept a runtime task status or activity summary as the final handoff.** The manager rereads named
   results and reproduces required verification before acceptance.
@@ -54,7 +57,7 @@ context.
 
 #### Start from one base prompt
 
-- Start from this template and replace every placeholder with task facts and direct commands:
+- Start from this template and replace every placeholder with task facts:
 
   ```markdown
   ## Metadata
@@ -69,17 +72,27 @@ context.
   - stage: <work stage>
   - iteration: <current iteration>
 
+  ## Role
+  <Grant persona and expertise so the agent thinks how it will act.>
+
   ## Context
   <State working state and accepted decisions.>
 
   ## Task
-  <Command one outcome. State its purpose, scope, exclusions, required result, and completion evidence.>
+  Goal: <one user-visible or assignment-visible outcome>
+
+  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+
+  Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 
   ## Instructions
-  <State rules, authority, constraints, independence, method, verification, stops, and prohibited work.>
+  <State purpose, rules, authority, constraints, independence, method, verification, stops, and prohibited work.>
 
   ## Materials
-  <List required skills-to-load with exact paths and read order, remaining sources, purpose, and conflict precedence.>
+  Required skills, in this order:
+  1. <path>
+  Also load any other skill this work needs. The list above is required, not the full set.
+  <Add remaining sources, purpose, and conflict precedence.>
 
   ## Return
   <Require the subagent to write a final Handoff for every terminal status. Name the owning status format,
@@ -91,8 +104,65 @@ context.
 - Add `###` subsections only when one template section contains distinct task-specific subjects. Keep `agent`
   and `assignment`; omit an optional Metadata field unless the assignment uses it or an owning contract requires
   it.
-- Remove instructions already owned by an exact named material unless the subagent needs the brief to resolve
-  precedence, authority, or a task-specific exception.
+- Context still holds working state and accepted decisions only. Treat context absent from the prompt or its
+  named materials as unknown.
+
+#### Write Role as persona and expertise
+
+- Put `## Role` above `## Context`. Use the locked sentences, not a weaker substitute:
+
+  ```markdown
+  ## Role
+  You are a world-best UI/UX designer. Think and work the way a world-best UI/UX designer would: start from the user, the current surface, and proven patterns, then raise the result to that bar.
+  ```
+
+- For any other craft, keep that two-sentence frame and change only the persona and stance.
+
+#### Write Task as goal, world-best bar, and minimum result
+
+- Use the locked sentences, not a weaker substitute:
+
+  ```markdown
+  ## Task
+  Goal: Let a first-time user change notification preferences on the settings screen without help.
+
+  Quality: Meet a world-best UI/UX bar, not a generic application-UI pass. Cover the main path, empty state, error, and recovery.
+
+  Minimum result: One accepted settings-screen design that meets that bar. Do not add extra screens or features.
+  ```
+
+- The quality bar states how well the minimum result must be done and never authorizes extra result. Minimum
+  result is the acceptance floor and the scope ceiling; extra work is an Instructions exclusion or a Handoff
+  follow-up.
+- For executor, evaluator, and planner, keep Goal, Quality, and Minimum result. Do not move method into Task.
+
+#### Write Materials as required, not exclusive
+
+- Use the locked sentences as the Materials body:
+
+  ```markdown
+  ## Materials
+  Required skills, in this order:
+  1. <path>
+  Also load any other skill this work needs. The list above is required, not the full set.
+  ```
+
+- Add remaining sources, purpose, and conflict precedence in the same section after the locked body.
+- Load an unlisted skill only when that skill's trigger applies or the brief names the need.
+
+#### Craft substitution table
+
+- Use this table to write Role and Task for non-UI crafts. Do not paste the table into the brief as extra
+  sections.
+
+  | Craft | Role persona | Role stance | Quality contrast | Minimum result pattern |
+  |---|---|---|---|---|
+  | Executor | world-best implementer of `{subject}` | locked contract, current bytes, named callers | world-best implementation bar, not a generic code pass; cover the contracted path, failure, and verification | One accepted change that meets that bar. Do not add extra files or features. |
+  | Evaluator | world-best adversarial evaluator of `{subject}` | frozen subject, locked criteria, checklist | world-best evaluation bar, not a generic review pass; cover the main path, missing evidence, and recovery | One complete report with a criteria-derived verdict. Do not implement fixes. |
+  | Planner | world-best planner of `{subject}` | accepted design, current file set, smallest lawful change | world-best planning bar, not a generic task-list pass; cover ownership, order, verification, and stops | One accepted plan Execution can follow. Do not implement the work. |
+
+- Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
+- A leader Ideation brief uses the planner row unless the assignment is a different craft.
 
 ### Handoff Content
 

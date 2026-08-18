@@ -27,11 +27,14 @@ and rereading checks; a printed Handoff references but never replaces a durable 
 
 ## Delegation brief
 
-The base brief order is Metadata, Context, Task, Instructions, Materials, Return.
+The base brief order is Metadata, Role, Context, Task, Instructions, Materials, Return.
 
+- Role sits above Context. It grants persona and expertise so the agent thinks how it will act.
 - Context sits above Task. It holds working state and accepted decisions only.
+- Task states the goal, a world-best quality bar with a concrete measure, and the minimum result.
 - Materials is required and replaces Resources. It lists required skills-to-load with exact paths and read
-  order, remaining sources, purpose, and conflict precedence.
+  order, remaining sources, purpose, and conflict precedence. The listed skills are required, not exclusive.
+  Also load any other skill the work needs.
 - The Partner prompt template uses the same section names.
 
 Do not rely on conversation history or inherited skill loads. The canonical

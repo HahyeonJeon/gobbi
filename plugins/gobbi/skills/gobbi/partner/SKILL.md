@@ -85,18 +85,28 @@ invalid result remains a visible failure rather than transformed or relabeled co
   - stage: <caller stage>
   - iteration: <caller iteration>
 
+  ## Role
+  <Grant persona and expertise so the agent thinks how it will act.>
+
   ## Context
   <State working state and accepted decisions.>
 
   ## Task
-  <Command one result, its purpose, scope, exclusions, and acceptance evidence.>
+  Goal: <one user-visible or assignment-visible outcome>
+
+  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+
+  Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 
   ## Instructions
   <State write set writing-path-only or worktree. Missing write set means writing-path-only. Require named
   verification, independence, and a Handoff that lists every changed worktree path.>
 
   ## Materials
-  <List required skills-to-load with exact paths and read order, remaining sources, purpose, and conflict precedence.>
+  Required skills, in this order:
+  1. <path>
+  Also load any other skill this work needs. The list above is required, not the full set.
+  <Add remaining sources, purpose, and conflict precedence.>
 
   ## Return
   <Require one compact final Handoff on stdout for every status. It names writing-path, every changed
