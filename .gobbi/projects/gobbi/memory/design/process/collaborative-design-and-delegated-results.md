@@ -15,7 +15,7 @@ remaining choices. Workflow applies the same definition to every design-bearing 
 - Keep one local creator as the sole writer and synthesizer. That creator receives the selected inputs,
   produces and self-reviews the draft, and completes the synthesis.
 - When the session policy is enabled, obtain at least one independent Partner draft and one Partner
-  cross-review over frozen input before synthesis. Each Partner prompt names the exact session directory and
+  cross-review over frozen input before synthesis. Each Partner prompt names the required worktree, the exact session directory, and
   one exact writing path for its result; when the policy is disabled, invoke no external runtime.
 
 ## Delegated result contract

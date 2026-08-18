@@ -165,9 +165,9 @@ CW · Wrap-up
   launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
   not rewrite the recorded policy to `disabled`. For each remaining runtime, spawn one Partner wrapper
   subagent through the active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and
-  `expected-partner`. Wrappers for different remaining runtimes may run in parallel. Cowork validates each
-  sole write and Handoff after the wrapper returns, or records Unavailable evidence when the attempt cannot
-  launch. `disabled` invokes no external runtime.
+  `expected-partner`. Wrappers for different remaining runtimes may run in parallel. Cowork validates the
+  listed worktree write set, unchanged main checkout, and Handoff after the wrapper returns, or records
+  Unavailable evidence when the attempt cannot launch. `disabled` invokes no external runtime.
 
 #### 2.3 Accept the shaping results
 
@@ -266,4 +266,4 @@ CW · Wrap-up
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
 | [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete report. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, exact session write, and final Handoff. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

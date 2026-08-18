@@ -98,10 +98,10 @@ Drop or rewrite any sentence that is no longer true.
 
 ## Running a Partner session write beside another session writer
 
-**Context:** Partner writes one authoritative result inside the Gobbi session directory.
+**Context:** Partner writes the authorized write set under the worktree.
 
-**Mistake:** Launching that write while another session writer is also changing the session directory makes
-the preimage check unusable and can collide with the contracted path.
+**Mistake:** Launching a `worktree` write while another worktree writer is also changing the tree makes the
+preimage check unusable and can collide with authorized paths.
 
-**Correction:** Launch Partner sequentially. Record the session preimage before the write. Accept only the
-contracted path change.
+**Correction:** Launch Partner sequentially for `worktree` writes. Record the worktree preimage before the
+write. Accept the authorized write set.

@@ -71,7 +71,7 @@ recorded policy to `disabled`. Each remaining runtime receives one Partner wrapp
 active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and `expected-partner`.
 Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces an evaluator
 report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager validates
-each sole write and Handoff after the wrapper returns.
+the listed worktree write set, unchanged main checkout, and Handoff after the wrapper returns.
 
 The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
 criteria, reports, findings and dispositions, decision, and next action. PASS means the criteria are satisfied
@@ -299,4 +299,4 @@ Continue.
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, exact session write, and final Handoff. |
+| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

@@ -164,15 +164,16 @@ Partner is an optional session-wide policy selected after the mode and applicabl
 runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
 With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
-invocation per remaining runtime. A launchable runtime writes one result at the named path and returns a
-compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. Cursor is a named partner and Unavailable;
-do not invoke `agent` as Gobbi Partner. The session and project postimage may change only the contracted
-writing path. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner Handoff.
+invocation per remaining runtime. A launchable runtime writes the authorized worktree set and returns a
+compact Handoff. Grok 1.0.5 launches with `--sandbox workspace` and worktree cwd. Cursor is a named partner
+and Unavailable; do not invoke `agent` as Gobbi Partner. The worktree is the write root. A session result
+path may still exist. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner
+Handoff.
 
-Every prompt names the exact session directory and one writing path inside it. The caller starts each launch
-through one local wrapper subagent. Wrappers for different remaining runtimes may run in parallel. The
-active runtime verifies the write after the wrapper returns, assembles the round, decides what to accept,
-and remains the session authority.
+Every prompt names the exact worktree, the session directory inside it, and one writing path under the
+worktree. The caller starts each launch through one local wrapper subagent. Wrappers for different remaining
+runtimes may run in parallel. The active runtime verifies the write after the wrapper returns, assembles
+the round, decides what to accept, and remains the session authority.
 
 ## License
 
