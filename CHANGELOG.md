@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- The plugin's non-Claude role contracts move from `role-variants/{runtime}/` to `runtimes/{runtime}/`, and
+  `.cursor-plugin/plugin.json` and `.grok-plugin/plugin.json` declare the new paths. Canonical keeps all four
+  runtimes together under `.gobbi/projects/gobbi/agents/{claude,codex,cursor,grok}/`; only the published
+  package differs, because a plugin's `agents/` directory is scanned recursively and any subfolder there
+  becomes live agent surface.
+
+### Added
+
+- `scripts/sync-plugin-package.sh` derives `plugins/gobbi/{skills,agents,runtimes}/` from the canonical tree.
+  `--check` exits non-zero on any divergence and `--materialize` rebuilds it, so the package is generated
+  rather than hand-synced. `hooks/` and the four plugin manifests stay package-owned and untouched.
+
 ### Fixed
 
 - Each runtime now loads its own plugin hook file, and the Claude Code command resolves again through

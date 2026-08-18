@@ -78,8 +78,8 @@ what setup did. Everything outside the project root is the user's action, printe
 - Classify every entry as `write-if-missing`, `report-only`, `never`, or `stop`. A `never` path stays uncreated
   even when the checker fails on it.
 - Setup owns twelve rows in write order, and row 12 expands per role, so a full run creates up to seventeen
-  filesystem objects. Row 12 resolves `{gobbi-agents-root}/codex/` in a Gobbi checkout or
-  `<plugin>/role-variants/codex/` in a plugin install:
+  filesystem objects. Row 12 resolves `{gobbi-agents-root}/codex/` in a Gobbi checkout, where every runtime's
+  contracts sit under the agents root, or `<plugin>/runtimes/codex/` in a plugin install, where they cannot:
 
   | # | Path | Created as |
   |---|---|---|
@@ -160,7 +160,7 @@ what setup did. Everything outside the project root is the user's action, printe
   ```text
   path                                        action     evidence
   .gobbi/.gitignore                           created    3 canonical lines; cmp equal
-  .codex/agents/leader.toml                   created    byte copy of role-variants/codex/leader.toml; name="leader"
+  .codex/agents/leader.toml                   created    byte copy of runtimes/codex/leader.toml; name="leader"
   .claude/skills/                             not-mine   plugin owns skills; never created
   ```
 
@@ -203,9 +203,9 @@ what setup did. Everything outside the project root is the user's action, printe
   | Runtime | Hook file and event | Hook state | Role contracts |
   |---|---|---|---|
   | Claude Code | `hooks/hooks.json`, `UserPromptSubmit`, found by default discovery | `active` | plugin, flat `agents/` |
-  | Codex | `hooks/codex-hooks.json`, `UserPromptSubmit`, declared by `.codex-plugin` `hooks` | `needs-user-action`: review and trust the current definition in `/hooks`, and re-trust after any edit | **written by setup** from `role-variants/codex/` |
-  | Grok | `hooks/grok-hooks.json`, `Stop`, declared by `.grok-plugin` `hooks` | `deviation`: fires at turn end and costs one extra model round | plugin, declared `role-variants/grok` |
-  | Cursor | `hooks/cursor-hooks.json`, `sessionStart`, declared by `.cursor-plugin` `hooks` | `deviation`: once per conversation, not once per turn | plugin, declared `role-variants/cursor` |
+  | Codex | `hooks/codex-hooks.json`, `UserPromptSubmit`, declared by `.codex-plugin` `hooks` | `needs-user-action`: review and trust the current definition in `/hooks`, and re-trust after any edit | **written by setup** from `runtimes/codex/` |
+  | Grok | `hooks/grok-hooks.json`, `Stop`, declared by `.grok-plugin` `hooks` | `deviation`: fires at turn end and costs one extra model round | plugin, declared `runtimes/grok` |
+  | Cursor | `hooks/cursor-hooks.json`, `sessionStart`, declared by `.cursor-plugin` `hooks` | `deviation`: once per conversation, not once per turn | plugin, declared `runtimes/cursor` |
 
 - Enumerate the residual checker failures and mark them expected:
 

@@ -207,8 +207,9 @@ validate_root_pair() {
   fi
 }
 
-# Two topologies, one relative base. In a Gobbi checkout the base holds agents/codex/; in a plugin
-# install it holds role-variants/codex/ and a flat agents/ with no codex/ child.
+# Two topologies, and both probes stay inside a validated root. A Gobbi checkout keeps every runtime's
+# contracts under the agents root, so codex/ is its child. The published package cannot do the same: a plugin's
+# agents/ directory is scanned recursively, so the non-Claude copies ship in a runtimes/ sibling instead.
 resolve_codex_source() {
   local base="$1"
 
@@ -216,12 +217,8 @@ resolve_codex_source() {
     printf '%s' "$agents_root/codex"
     return 0
   fi
-  if [[ -n "$base" && -d "$base/agents/codex" ]]; then
-    printf '%s' "$base/agents/codex"
-    return 0
-  fi
-  if [[ -n "$base" && -d "$base/role-variants/codex" ]]; then
-    printf '%s' "$base/role-variants/codex"
+  if [[ -n "$base" && -d "$base/runtimes/codex" ]]; then
+    printf '%s' "$base/runtimes/codex"
     return 0
   fi
   return 1
