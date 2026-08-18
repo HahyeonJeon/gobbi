@@ -51,4 +51,6 @@ flag. `--sandbox workspace` is not a session-directory-only deny. A host `timeou
 separate bound from Grok's own `[toolset.bash] timeout_secs` in user-level `~/.grok/config.toml`.
 
 **Application:** Do not add a Grok launch row from a clean in-session file check alone. Do not treat a
-wrapper-host bash timeout as Grok's tool timeout, or the reverse.
+wrapper-host bash timeout as Grok's tool timeout, or the reverse. When Grok hosts a Partner
+wrapper, the ~300s host tool cap can kill the wrapper after the inner command finishes; see
+[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md).
