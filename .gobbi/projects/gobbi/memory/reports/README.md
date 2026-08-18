@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Setup skill and generated plugin package](note/2026-08-18-setup-skill-and-package-generation.md)
 - [Startup family redesign](note/2026-08-16-startup-family-redesign.md)
 - [Grok system integration](note/2026-08-15-grok-system-integration.md)
 - [Code-review skill handoff](note/2026-08-12-code-review-skill-handoff.md)

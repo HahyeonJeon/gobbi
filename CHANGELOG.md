@@ -7,11 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- The plugin's non-Claude role contracts move from `role-variants/{runtime}/` to `runtimes/{runtime}/`, and
+  `.cursor-plugin/plugin.json` and `.grok-plugin/plugin.json` declare the new paths. Canonical keeps all four
+  runtimes together under `.gobbi/projects/gobbi/agents/{claude,codex,cursor,grok}/`; only the published
+  package differs, because a plugin's `agents/` directory is scanned recursively and any subfolder there
+  becomes live agent surface.
+
+### Added
+
+- `scripts/sync-plugin-package.sh` derives `plugins/gobbi/{skills,agents,runtimes}/` from the canonical tree.
+  `--check` exits non-zero on any divergence and `--materialize` rebuilds it, so the package is generated
+  rather than hand-synced. `hooks/` and the four plugin manifests stay package-owned and untouched.
+
 ### Fixed
 
-- Grok 1.0.4 does not run the plugin-bundled Stop hook in consumer projects. Plugin `hooks.json` is now the
-  user hook file (`stop-remind.sh` next to the JSON). The Grok install section tells users to copy
-  `hooks.json`, the script, and the reminder into `~/.grok/hooks/`, which Grok always runs.
+- Each runtime now loads its own plugin hook file, and the Claude Code command resolves again through
+  `${CLAUDE_PLUGIN_ROOT}`. Claude Code keeps the default `hooks/hooks.json` on `UserPromptSubmit`, while
+  `.codex-plugin`, `.grok-plugin`, and `.cursor-plugin` point Codex, Grok, and Cursor at
+  `hooks/codex-hooks.json` (`UserPromptSubmit`), `hooks/grok-hooks.json` (`Stop`), and
+  `hooks/cursor-hooks.json` (`sessionStart`). The package's `stop-remind.sh` becomes `hooks/remind.sh`, taking
+  the runtime name as its first argument instead of probing for its host, and drops the per-turn lock. The
+  Grok install section no longer tells users to copy hook files into `~/.grok/hooks/`.
 
 ## 1.2.0 - 2026-08-16
 

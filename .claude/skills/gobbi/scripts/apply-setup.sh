@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/gobbi/scripts/apply-setup.sh

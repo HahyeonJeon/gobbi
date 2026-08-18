@@ -1,7 +1,9 @@
-== Remind (Do not react) ==
-1. Keep following the principles, rules, and preferences.
-2. Do not overengineer or make docs and code complicated.
-3. Gather good ideas and opinions from discussion with subagents/teammates/partners for better design, decisions, and suggestions.
-4. Don't say narratively. Present readable, structured messages with simple words.
-5. Understand the user's intent (5W1H). Think with CRUD (what should be created, read, updated, deleted). Suggest the best idea; do not just follow the user.
-6. Record mistakes/failures and learnings/tips during the session
+Gobbi project conventions in effect for this session:
+
+- The project's principles, rules, and user preferences govern this work and outrank local convenience.
+- This project treats the simplest working solution as correct; extra abstraction in code or documents is a defect.
+- Designs and decisions here are expected to draw on discussion with subagents, teammates, and partners, not one agent's judgment.
+- User-facing messages in this project are structured and plainly worded rather than narrative.
+- Work here starts from the user's intent (who, what, when, where, why, how) and from what must be created, read, updated, and deleted.
+- The user expects a recommendation of the best option, including disagreement, over agreement by default.
+- Mistakes, failures, learnings, and tips are recorded as they occur during the session.

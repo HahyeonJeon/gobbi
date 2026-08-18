@@ -1,0 +1,10 @@
+{
+  "name": "gobbi",
+  "version": "1.2.0",
+  "description": "Gobbi workflow skills, plugin agents, and per-turn reminder for Grok.",
+  "author": { "name": "HahyeonJeon", "email": "jeonhh0061@gmail.com" },
+  "license": "MIT",
+  "keywords": ["gobbi", "workflow", "grok"],
+  "agents": "./runtimes/grok",
+  "hooks": "./hooks/grok-hooks.json"
+}
