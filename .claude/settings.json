@@ -9,6 +9,8 @@
       "Skill(gobbi)",
       "Skill(gobbi:agent-teams)",
       "Skill(gobbi:partner)",
+      "Skill(gobbi:gobbi-setup)",
+      "Skill(gobbi-setup)",
       "Skill(cowork)",
       "Skill(workflow)",
       "Skill(git)",

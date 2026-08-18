@@ -13,7 +13,7 @@ keep who the role is, how it behaves, what it loads, what it never does, and whi
   package cannot nest them under `agents/`, because a plugin's `agents/` directory is scanned recursively and
   each subfolder becomes part of the agent's scoped identifier. Grok and Cursor declare their own paths in
   their manifests; Codex custom agents are still not a plugin component and are written into a consumer's
-  `.codex/agents/` by `gobbi/setup`.
+  `.codex/agents/` by `gobbi-setup`.
 - Follow surfaces: `.claude/agents`, `.grok/agents`, `.codex/agents`, `.cursor/agents`, and Grok-shaped
   `.agents/agents`.
 

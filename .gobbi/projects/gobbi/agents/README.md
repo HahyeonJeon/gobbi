@@ -52,7 +52,7 @@ This README is not mapped anywhere, so it never ships and cannot become live age
 
 The Grok and Cursor plugin manifests declare `"agents": "./runtimes/grok"` and `"./runtimes/cursor"`; a declared
 path replaces default discovery, measured on Grok in both directions. Codex custom agents are not a plugin
-component — `gobbi/setup` writes them into a consumer's `.codex/agents/{role}.toml`, reading
+component — `gobbi-setup` writes them into a consumer's `.codex/agents/{role}.toml`, reading
 `{gobbi-agents-root}/codex/` in a checkout or `<plugin>/runtimes/codex/` in an install.
 
 ## The one file whose content differs

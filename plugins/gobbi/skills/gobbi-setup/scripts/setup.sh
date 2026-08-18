@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# apply-setup.sh — the Gobbi setup writer.
+# setup.sh — the Gobbi setup writer.
 #
 # Creates a consumer project's missing Gobbi layout, instruction placeholders, Claude Code settings, and
 # Codex role contracts, then prints one ledger row per target. Every write is create-if-absent: nothing
@@ -8,7 +8,7 @@
 # written, and no Git command here changes repository state. Judgment, user questions, the prerequisite
 # checker runs, and the per-runtime report belong to the setup skill, not to this script.
 #
-# Usage: apply-setup.sh [--project-key <key>] [--skills-root <absolute> --agents-root <absolute>]
+# Usage: setup.sh [--project-key <key>] [--skills-root <absolute> --agents-root <absolute>]
 #
 # Exit status: 0 when no row stopped, 1 on a stop or a refusal, 2 on an argument error.
 
@@ -17,7 +17,7 @@ set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
 roles=(manager leader executor evaluator assistant)
-permission_skills=(gobbi principles discussion delegation agent-teams)
+permission_skills=(gobbi principles discussion delegation agent-teams gobbi-setup)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
 # slash, which anchors them to .gobbi/; a slashless sessions/ would also swallow memory/design/sessions/.
@@ -35,7 +35,7 @@ minimum_claude_settings='{
       "Agent(gobbi:manager)", "Agent(gobbi:leader)", "Agent(gobbi:executor)",
       "Agent(gobbi:evaluator)", "Agent(gobbi:assistant)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
-      "Skill(gobbi:delegation)", "Skill(gobbi:agent-teams)"
+      "Skill(gobbi:delegation)", "Skill(gobbi:agent-teams)", "Skill(gobbi:gobbi-setup)"
     ]
   }
 }
@@ -239,9 +239,10 @@ physical_ancestor() {
 }
 
 # Refusals 1, 2, and 5, applied to every computed target before the first write, so a refusal creates
-# nothing at all. The components checked are relative to the project root. A skills component is always a
-# refusal, including the one a repository directory named skills produces through the project key; that
-# case is a project condition with a recovery, while any other position is a defect in setup itself.
+# nothing at all. The components checked are relative to the project root. A skills component at index 2
+# under .gobbi/projects means the project key is skills and is refused with recovery. A skills component
+# at index 3 under .gobbi/projects/<key>/ is the project-namespace skills directory and is allowed.
+# Every other skills component is a defect in setup itself.
 guard_target() {
   local relative="$1"
   local absolute="$project_root/$1"
@@ -272,6 +273,9 @@ guard_target() {
           "the project key is \"skills\", so computed target $relative has a skills component; re-run with --project-key <other-key> to name this project's .gobbi/projects/ namespace something else" \
           'the resolved project key against the computed target list'
       fi
+      if ((index == 3)) && [[ "${components[0]}" == ".gobbi" && "${components[1]}" == "projects" && "${components[2]}" == "$project_key" ]]; then
+        continue
+      fi
       refuse "refusal-2 (S9)" \
         "computed target $relative has a skills component; this is a defect in setup itself, not a project error" \
         'component scan of the computed target list'
@@ -291,9 +295,10 @@ guard_target() {
 
 # Containment does not rest on the two functions below. It rests on guard_target plus one property of the
 # target list: the list is ancestor-closed. Every component of every target is itself a target — .gobbi,
-# .gobbi/projects, .gobbi/projects/<key>, .claude, .codex, .codex/agents — and guard_target runs over the
-# whole list before the first write. So every ancestor a write could traverse is separately resolved by
-# cd -P, and any component below a target's deepest existing ancestor cannot exist yet at guard time.
+# .gobbi/projects, .gobbi/projects/<key>, agents, skills, memory and each named child, .claude, .codex,
+# .codex/agents — and guard_target runs over the whole list before the first write. So every ancestor a
+# write could traverse is separately resolved by cd -P, and any component below a target's deepest existing
+# ancestor cannot exist yet at guard time.
 #
 # ADDING A TARGET WHOSE PARENT IS NOT ALSO A TARGET BREAKS CONTAINMENT SILENTLY. That parent would never be
 # resolved, and both mkdir and > follow a symlinked mid-path directory into wherever it leads. Only the final
@@ -477,9 +482,9 @@ report_settings_gaps() {
   done
 
   if ((${#missing[@]} == 0)); then
-    printf 'left untouched; all 11 expected entries present'
+    printf 'left untouched; all 12 expected entries present'
   else
-    printf 'left untouched; %d of 11 expected entries missing: %s' "${#missing[@]}" "${missing[*]}"
+    printf 'left untouched; %d of 12 expected entries missing: %s' "${#missing[@]}" "${missing[*]}"
   fi
 }
 
@@ -507,14 +512,14 @@ write_claude_settings() {
     return 1
   fi
   if jq -e 'type == "object"' "$absolute" >/dev/null 2>&1; then
-    record "$relative" created "minimum object; 5 Agent + 5 Skill entries"
+    record "$relative" created "minimum object; 5 Agent + 6 Skill entries"
     return 0
   fi
   record "$relative" stopped "the written file is not a JSON object"
   return 1
 }
 
-# Row 12. Bytes are copied from the named source; a role body is never generated or converted.
+# Rows 36 to 39. Bytes are copied from the named source; a role body is never generated or converted.
 write_codex_roles() {
   local role
   local source_file
@@ -660,7 +665,33 @@ targets=(
   ".gobbi/.gitignore"
   ".gobbi/projects"
   ".gobbi/projects/$project_key"
+  ".gobbi/projects/$project_key/agents"
+  ".gobbi/projects/$project_key/agents/README.md"
+  ".gobbi/projects/$project_key/skills"
+  ".gobbi/projects/$project_key/skills/README.md"
   ".gobbi/projects/$project_key/memory"
+  ".gobbi/projects/$project_key/memory/design"
+  ".gobbi/projects/$project_key/memory/design/README.md"
+  ".gobbi/projects/$project_key/memory/design/architecture"
+  ".gobbi/projects/$project_key/memory/design/feature"
+  ".gobbi/projects/$project_key/memory/design/process"
+  ".gobbi/projects/$project_key/memory/design/roadmap"
+  ".gobbi/projects/$project_key/memory/learnings"
+  ".gobbi/projects/$project_key/memory/reports"
+  ".gobbi/projects/$project_key/memory/reports/README.md"
+  ".gobbi/projects/$project_key/memory/reports/note"
+  ".gobbi/projects/$project_key/memory/reports/review"
+  ".gobbi/projects/$project_key/memory/reports/analysis"
+  ".gobbi/projects/$project_key/memory/history"
+  ".gobbi/projects/$project_key/memory/history/README.md"
+  ".gobbi/projects/$project_key/memory/materials"
+  ".gobbi/projects/$project_key/memory/materials/README.md"
+  ".gobbi/projects/$project_key/memory/materials/references"
+  ".gobbi/projects/$project_key/memory/materials/assets"
+  ".gobbi/projects/$project_key/memory/materials/docs"
+  ".gobbi/projects/$project_key/memory/materials/data"
+  ".gobbi/projects/$project_key/memory/backlogs"
+  ".gobbi/projects/$project_key/memory/backlogs/README.md"
   ".claude"
   ".claude/CLAUDE.md"
   ".claude/settings.json"
@@ -692,21 +723,51 @@ fi
 printf '\n'
 ledger_line path action evidence
 
-# Rows 1 to 5: the Gobbi namespace and its ignore file.
+# Rows 1 to 4: the Gobbi namespace and its ignore file.
 ensure_directory ".gobbi" "real directory"
 write_gobbi_ignore
 ensure_directory ".gobbi/projects" "real directory"
 ensure_directory ".gobbi/projects/$project_key" "real directory"
-ensure_directory ".gobbi/projects/$project_key/memory" "namespace root only; no category"
 
-# Rows 6 to 9: Claude Code and the root instruction placeholder. A child is absent whenever its parent
+# Rows 5 to 8: reserved project-namespace directories.
+ensure_directory ".gobbi/projects/$project_key/agents" "real directory"
+create_empty_file ".gobbi/projects/$project_key/agents/README.md"
+ensure_directory ".gobbi/projects/$project_key/skills" "real directory"
+create_empty_file ".gobbi/projects/$project_key/skills/README.md"
+
+# Rows 9 to 31: Memory categories, five category-root README stubs, and named subject directories.
+ensure_directory ".gobbi/projects/$project_key/memory" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/design" "real directory"
+create_empty_file ".gobbi/projects/$project_key/memory/design/README.md"
+ensure_directory ".gobbi/projects/$project_key/memory/design/architecture" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/design/feature" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/design/process" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/design/roadmap" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/learnings" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/reports" "real directory"
+create_empty_file ".gobbi/projects/$project_key/memory/reports/README.md"
+ensure_directory ".gobbi/projects/$project_key/memory/reports/note" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/reports/review" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/reports/analysis" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/history" "real directory"
+create_empty_file ".gobbi/projects/$project_key/memory/history/README.md"
+ensure_directory ".gobbi/projects/$project_key/memory/materials" "real directory"
+create_empty_file ".gobbi/projects/$project_key/memory/materials/README.md"
+ensure_directory ".gobbi/projects/$project_key/memory/materials/references" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/materials/assets" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/materials/docs" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/materials/data" "real directory"
+ensure_directory ".gobbi/projects/$project_key/memory/backlogs" "real directory"
+create_empty_file ".gobbi/projects/$project_key/memory/backlogs/README.md"
+
+# Rows 32 to 35: Claude Code and the root instruction placeholder. A child is absent whenever its parent
 # is, so the design's "only if a child will be created" condition holds whenever the directory is absent.
 ensure_directory ".claude" "real directory"
 create_empty_file ".claude/CLAUDE.md"
 write_claude_settings
 create_empty_file "AGENTS.md"
 
-# Rows 10 to 12: Codex.
+# Rows 36 to 39: Codex.
 ensure_directory ".codex" "real directory"
 create_empty_file ".codex/AGENTS.md"
 write_codex_roles
