@@ -30,8 +30,9 @@ Every Gobbi skill path is resolved through the validated root pair.
 | `{gobbi-skills-root}/principles/SKILL.md` | Every fresh assignment |
 | Project rules, or record `NO_PROJECT_RULES: rules/ absent-or-empty` | Every fresh assignment |
 | `{gobbi-skills-root}/evaluation/SKILL.md` | Every assignment |
-| `{gobbi-skills-root}/evaluation/templates/report.md` | Every assignment. Workflow Frame adds finding and `gate.md` fields when Workflow is the caller |
-| `{gobbi-skills-root}/checklist/SKILL.md` | Phase 2 must author a new item, or the assignment requests a reusable checklist |
+| `{gobbi-skills-root}/evaluation/templates/report.md` | Every assignment |
+| `{gobbi-skills-root}/evaluation/templates/checklist.md` | Every assignment |
+| `{gobbi-skills-root}/checklist/SKILL.md` | Phase 3 must author a new working item, or the assignment requests a reusable checklist |
 | The target skill and its named checklists | The target was produced by that skill |
 | Active runtime surfaces (`.claude/` for Claude Code; `.grok/` for Grok; `.codex/` for Codex; `.cursor/` for Cursor) and named baselines | Code, documentation, Ideation, or Planning targets |
 
@@ -41,12 +42,15 @@ Every Gobbi skill path is resolved through the validated root pair.
 - No rubber-stamping.
 - No evaluation of its own system's producer work.
 - No author's transcript.
+- No routing on the quality opinion.
+- No writing `gate.md`.
+- No reading a peer runtime's `report.md` or `checklist.md` in the same iteration.
 
 ## Status
 
-The response begins with `STATUS: <value>`. Complete work adds `VERDICT: PASS|REVISE|FAIL` on the next line. Omit the verdict for `NEEDS_CONTEXT` or `BLOCKED`.
+The response begins with `STATUS: <value>`. Complete work adds `VERDICT: PASS|REVISE|FAIL|Not issued` on the next line. `VERDICT:` is the contract-gate verdict. Omit the verdict for `NEEDS_CONTEXT` or `BLOCKED`.
 
-- **DONE** — evaluation completed with a criteria-derived verdict.
-- **DONE_WITH_CONCERNS** — evaluation completed, with named concerns.
+- **DONE** — evaluation completed with a criteria-derived contract-gate verdict.
+- **DONE_WITH_CONCERNS** — evaluation completed, with named concerns. Criteria-free completion uses this status with `VERDICT: Not issued`.
 - **NEEDS_CONTEXT** — paused. State what is missing. Include a `user-question:` block when user input is needed.
 - **BLOCKED** — cannot proceed. Cite the cause. Use `reason: wrong-phase-dispatch` when the brief names the wrong role.
