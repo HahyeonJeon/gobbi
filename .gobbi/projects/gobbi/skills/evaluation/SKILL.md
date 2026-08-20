@@ -1,23 +1,24 @@
 ---
 name: evaluation
-description: "Evaluation is an operation for preparing a checklist, assessing one defined target, and writing an evidence-based report."
+description: "Evaluation is an operation for independent critique of one frozen target and for writing an evidence-based report plus working checklist."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Evaluation
 
-Evaluation defines a four-phase procedure for understanding one target, preparing an evidence-backed
-checklist, assessing the target, and reporting the results. Use it after the target is ready for independent
-review and before an acceptance or workflow decision; it does not modify the target, source checklists, or
-decision state.
+Evaluation is the operation that binds and freezes one target, reviews it without a
+checklist, prepares and runs an evaluation-owned working checklist, reconciles, and
+writes `report.md` plus working `checklist.md`. Use it after the target is ready for
+independent review and before an acceptance or workflow decision. It does not modify
+the target, source checklists, or decision state.
 
 ## Principles
 
-### Understand the target before defining coverage
+### Criticize the frozen target before any checklist
 
-Inspect the actual target, intended results, context, and boundaries before preparing checklist items.
-This prevents assumptions, summaries, or existing checklists from defining the target incorrectly.
+Inspect and freeze the actual target, then criticize it, then prepare checklist coverage.
+A prepared item list must not define what the evaluator looks at first.
 
 ### Find useful improvements as well as problems
 
@@ -28,7 +29,8 @@ Problems and verdicts.
 ### Keep the evaluation independent and preserve its inputs
 
 The evaluator should have no producer role or interest in defending the target. Write only evaluation-owned
-checklists, notes, and reports while preserving the target, source checklists, criteria, and workflow state.
+`report.md` and working `checklist.md` while preserving the target, source checklists, criteria, and
+workflow state.
 
 ### Support each judgment with direct evidence
 
@@ -37,127 +39,197 @@ limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST bind the exact target, scope, intended results, supplied decision criteria, caller-authorized report
-  path, and any other evaluation output paths before preparing the checklist.** Stop when identity, access,
-  independence, or preservation of source-owned inputs cannot support a responsible evaluation.
-- **MUST prepare one evaluation-owned checklist from applicable existing checklists and necessary internal or
-  external study.** Load the standalone Checklist operation before authoring a new item; reusing existing items
-  alone does not load it.
-- **MUST evaluate the target through both its working checklist and a general review.** Evaluate every
-  applicable item, then inspect the whole target for material problems, improvements, strengths, and
-  evidence gaps the checklist did not anticipate.
-- **MUST derive a verdict only from sufficient evidence and caller-supplied decision criteria.** Do not let an
-  optional improvement or strength cancel an unmet criterion.
-- **NEVER change the target, source checklists, supplied criteria, acceptance state, or workflow state.** Write
-  only the evaluation-owned checklist, notes, and report.
+- **MUST bind the exact target, scope, intended results, supplied decision criteria, and both
+  evaluation output paths before the critical review.** Confirm neither output overlaps the
+  target or a source-owned input, and stop when identity, access, independence, or
+  preservation cannot support a responsible evaluation.
+- **MUST criticize the frozen target before preparing or loading any checklist.** Record the
+  results from the Evaluation-owned prompts and the current project design and vision
+  without traversing any checklist item source.
+- **MUST prepare one evaluation-owned working checklist from applicable existing sources and
+  necessary study, freeze it before any item is answered, then evaluate every applicable item
+  against the frozen target.** Load the standalone Checklist operation before authoring a new
+  item; reusing existing items alone does not load it.
+- **MUST label every Problem and Improvement `in-contract` or `out-of-contract`, and derive
+  the gate verdict only from in-contract Problems, sufficient evidence, and caller-supplied
+  criteria.** Record a quality opinion against current project design and vision that never
+  changes that verdict.
+- **NEVER change the target, source checklists, supplied criteria, acceptance state, or
+  workflow state.** Write only the evaluation-owned `report.md` and `checklist.md`.
 
 ## Procedure
 
-### Phase 1 — Understand the Evaluation Target
+### Phase 1 — Understand and bind the target
 
 #### 1.1 Bind the target and evaluation boundary
 
-- Confirm that the evaluator did not design, author, or implement the target. Disclose any relationship,
-  interest, access limit, or missing capability that could affect independent judgment.
-- Identify the exact artifact, state, version, or content hash under evaluation, plus its scope, intended
-  results, and caller-supplied decision criteria. Record affected people and systems, governing inputs, known
-  risks, prior failures, the caller-authorized report path, and any other evaluation-owned output paths;
-  confirm that no output overlaps the target or source-owned inputs.
-- Establish a safe inspection method that preserves the target and source-owned inputs, and record the
-  available evidence. Stop when the target is unstable or material identity, access, or authority is missing;
-  absent decision criteria allow a report but not a verdict.
+- Confirm that the evaluator did not design, author, or implement the target, and disclose any
+  relationship, interest, access limit, or missing capability that could affect independent
+  judgment. Do not read another evaluator's `report.md` or `checklist.md` from the same
+  iteration.
+- Bind the exact artifact, state, version, or content hash; scope; intended results;
+  caller-supplied decision criteria; and both evaluation-owned paths: `report.md` and working
+  `checklist.md`. Confirm that neither path overlaps the target or a source-owned input, and
+  that the evaluator does not write `gate.md`.
+- Stop when identity, access, independence, or preservation cannot support a responsible
+  evaluation. Absent decision criteria allow a report and forbid a contract-gate verdict.
 
-#### 1.2 Inspect and understand the actual target
+#### 1.2 Inspect the actual target
 
-- Inspect the artifacts and observable behavior before reading completion claims, reports, or prepared
-  checklists. Distinguish delivered results from claims, deferred work, missing results, and unavailable state.
-- Trace the target's relevant structure, dependencies, interfaces, states, transitions, failures, recovery,
-  and user or consumer paths. Follow only the contexts that can change an expected result or its evidence.
-- Record verified facts, open questions, assumptions, and material evidence gaps. Return to Step 1.1 when the
-  inspection changes the target identity, scope, intended result, or decision criteria.
+- Inspect the artifacts and observable behavior before reading completion claims, reports, or
+  prepared checklists. Distinguish delivered results from claims, deferred work, missing
+  results, and unavailable state.
+- Trace the target's relevant structure, dependencies, interfaces, states, transitions,
+  failures, recovery, and consumer paths. Follow only the contexts that can change an expected
+  result or its evidence.
+- Record verified facts, open questions, assumptions, and evidence gaps, and do not record
+  Problems yet. Return to Step 1.1 when inspection changes the target identity, scope,
+  intended result, or decision criteria.
 
-### Phase 2 — Prepare the Evaluation Checklist
+#### 1.3 Study the quality bar and freeze the target
 
-#### 2.1 Gather existing checklist coverage
+- Load, in this order, whichever exist: current design memory under the project's
+  `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
+  accepted session design. Use a startup draft only when it is the accepted current design.
+- Record missing bar sources as a Gap and never invent a vision. Never add these sources to
+  gate criteria unless the caller listed them.
+- Freeze the exact artifact, state, version, or content hash only when that state is stable;
+  stop instead of freezing an unstable target. After this freeze, Phase 2 may criticize and
+  Phase 3 may prepare a checklist, and neither may mutate the target.
 
-- Collect applicable project and caller-supplied checklists, requirements, rules, tests, and prior evaluation
-  items, including the [Code checklist](../execution/code/checklist.md) for code work, the
+### Phase 2 — Review the target critically
+
+#### 2.1 Criticize the frozen target without a checklist
+
+- Run these Evaluation-owned prompts. They are not checklist items and must not become report
+  taxonomy.
+
+  | Prompt | Ask about |
+  |---|---|
+  | **Project design and vision** | The frozen target contradicts or drifts from current design, vision, philosophy, architecture, or accepted session design. What those sources omit. |
+  | **Best version and gap** | The distance between this target and the best version a competent owner would produce for the same purpose and constraints. |
+  | **Failure, gaming, and cosmetic compliance** | The target fails, is exploited at a boundary, or satisfies the form of a requirement while missing the result. |
+  | **Absences across the target's life** | What is missing rather than wrong: an unowned consequence, an unhandled state, or a later stage no one covers. |
+
+- Challenge the frozen target with the scenario spectrum in [Checklist](../checklist/SKILL.md)
+  Step 2.3 by link, not as a working-checklist walk. Do this after prompts 3 and 4.
+- Do not load or traverse reusable checklist sources, caller-supplied checklists, prior
+  evaluation item lists, or the working checklist.
+
+#### 2.2 Record the critical-review results
+
+- Record labeled Problems, Improvements, Strengths, gaps, and coverage leads using the
+  [report template](templates/report.md) field meanings. Coverage leads are study candidates
+  for Phase 3, not working items.
+- Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
+  result, or `out-of-contract`, citing the governing source. A Problem that maps to a supplied
+  criterion must be `in-contract`; an out-of-contract result with no cited governing source is
+  not a Problem and must be demoted to an Improvement or dropped.
+- Return to Phase 1 if this review changes the bound target or evaluation boundary.
+
+### Phase 3 — Prepare, freeze, run, and reconcile
+
+#### 3.1 Gather sources
+
+- Collect applicable project and caller-supplied checklists, including the
+  [Code checklist](../execution/code/checklist.md) for code work, the
   [Documentation checklist](../execution/docs/checklist.md) for documentation work, the
   [Ideation checklist](../ideation/checklist.md) for a current indexed Ideation result, and the
-  [Planning checklist](../planning/checklist.md) for a current indexed Planning result. Apply every matching
-  baseline to mixed work, treating each source as baseline coverage rather than proof that the target is complete.
-- Preserve every source's wording, hierarchy, identifiers, and unchecked state. Copy or reference only
-  applicable items in the evaluation-owned checklist and retain their exact source identity.
-- Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its reason and
-  effect on coverage. Do not repair or rewrite the source during Evaluation.
+  [Planning checklist](../planning/checklist.md) for a current indexed Planning result. Apply
+  every matching baseline to mixed work.
+- Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
+  or rewrite a source during Evaluation.
+- Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its
+  reason and effect on coverage.
 
-#### 2.2 Study for missing checklist items
+#### 3.2 Re-challenge coverage and author study-backed items
 
-- Study relevant internal evidence, including governing documents, designs, source, tests, configuration,
-  user evidence, history, and prior failures. Look for expectations, boundaries, and risks not covered by the
-  existing checklist sources.
-- Study current primary external sources when the target depends on an external standard, platform, library,
-  security practice, or other mechanism that internal evidence does not settle. Record the source and why it
-  applies.
-- Load [Checklist](../checklist/SKILL.md) before authoring any new working item, then apply its item guidance
-  within the evaluation-owned checklist. Add only material expectations or risks supported by study
-  evidence, not coverage that fills a category, increases a count, or represents a speculative case.
+- Copy each source coverage account into the working checklist as a source claim. When a
+  reused source has no account, challenge the frozen target with the Checklist spectrum and
+  stage tables in [Checklist](../checklist/SKILL.md) Steps 2.1–2.3, record the missing account
+  as a Limit, and do not invent a source account.
+- Treat Phase 2 coverage leads as study candidates, and study internal evidence and current
+  primary external sources when they settle an uncovered expectation or risk. Load
+  [Checklist](../checklist/SKILL.md) only before authoring a new working item, and add a
+  working item only from that study evidence.
+- Do not add items to fill a category, count, or account row.
 
-#### 2.3 Finalize the evaluation-owned checklist
+#### 3.3 Freeze the working checklist
 
-- Organize the working items in an order that fits the target and remove only working-copy duplication. Keep
-  every reused item traceable to its unchanged source and every added item traceable to its
-  study evidence.
-- Check relevant success, boundary, transition, failure, recovery, deficient-quality, safety, misuse, and
-  change cases. Include only cases that the target or evidence makes applicable.
-- Confirm that the working checklist covers the material target boundary and that every reused or added item
-  remains traceable. Freeze the working checklist with the target before evaluation begins.
+- Confirm membership, wording, source identity, exclusions, copied accounts, and additions.
+  An item-free working checklist still has the required header, Sources, Coverage, Additions,
+  Limits, and an explicit no-applicable-items reason.
+- Confirm that no item has been answered and that items do not trace only to Phase 2 notes,
+  then freeze membership, wording, and source identity. A working copy that traces only to
+  Phase 2 notes has failed the checklist pass.
+- Begin the item pass only after this freeze. A later material coverage gap returns to
+  Step 3.2, adds only study-supported items, re-freezes, and reruns every applicable item.
 
-### Phase 3 — Evaluate the Target
+#### 3.4 Evaluate every applicable item
 
-#### 3.1 Complete the checklist-based evaluation
+- Evaluate every applicable frozen item against the frozen target with safe non-mutating
+  inspections, reproductions, tests, or measurements. Record the observations, exact evidence,
+  limitations, and uncertainty needed to support the material results.
+- Record one Result per item: `problem-present`, `no-problem-found`, `not-applicable` with a
+  subject reason, or `evidence-insufficient`. Checked means the problem is present; an empty
+  checkbox is not `no-problem-found`.
+- Record Problems, Improvements, and Strengths independently of Phase 2, including
+  contradictions, using the [report template](templates/report.md) field meanings. Unique
+  checklist-only Problems are not a pass condition for critique-first.
 
-- Evaluate every applicable item against the frozen target with safe non-mutating inspections,
-  reproductions, tests, or measurements. Record the observations, exact evidence, limitations, and uncertainty
-  needed to support the material results.
-- Record each Problem with its expectation, observation, impact, evidence, supported cause or hypothesis,
-  and uncertainty.
-- Record each Optional Improvement with its acceptable current condition, evidence, expected benefit,
-  and practical suggestion. Record each Strength with its verified benefit, evidence, and condition to
-  preserve.
+#### 3.5 Short reconcile
 
-#### 3.2 Review the target beyond the checklist
+- Keep unique Problems from Phase 2 and from Step 3.4. Do not drop either side.
+- If Phase 2 and the checklist pass contradict on the same expectation, re-inspect the frozen
+  target. If the contradiction survives, it is a Gap that blocks a verdict on the affected
+  criterion.
+- Do not treat this Step as a second whole-target critique.
 
-- Review the frozen target as a whole because a checklist cannot anticipate every material case or
-  interaction. Inspect relationships, inconsistencies, omissions, deficient quality, and improvement
-  opportunities that become visible only outside item-by-item traversal.
-- Record each additional Problem, Optional Improvement, Strength, or evidence gap with direct evidence and
-  the same result meanings as Step 3.1. Return to Phase 2 when a discovery exposes a material coverage gap, or
-  Phase 1 when it changes the target or evaluation boundary.
-- Reconcile the checklist-based results with the general review, then apply the caller-supplied criteria,
-  thresholds, and aggregation rule once to all contributing Problems. Issue no verdict when material evidence
-  or decision criteria are insufficient, and name what would resolve the gap.
+#### 3.6 Apply caller criteria and set opinions
+
+- Apply caller-supplied criteria, thresholds, and aggregation once to in-contract Problems
+  only. Optional Improvements, Strengths, out-of-contract Problems, and the quality opinion
+  do not change the contract-gate verdict.
+- Set the quality opinion to `meets-design`, `mixed`, `does-not-meet`, or `not-available`. If
+  the caller listed design or vision as criteria, those findings are `in-contract` and gate
+  normally, and the quality opinion still records the best-version gap without duplicating
+  the verdict.
+- Issue no contract-gate verdict when material evidence or decision criteria are insufficient,
+  including `evidence-insufficient` on an item material to a criterion. Name what would
+  resolve the gap.
 
 ### Phase 4 — Report the Evaluation
 
-#### 4.1 Write and summarize the evaluation report
+#### 4.1 Recheck identity and write the working checklist
 
-- Recheck the frozen target identity and evaluation-owned output paths before writing. Return to Phase 1 when
-  the target changed or an output path overlaps the target or a source-owned input.
-- Write the report from the [report template](templates/report.md), adding caller-required fields without
-  replacing its target identity, independence, scope, method, result, gap, or verdict meanings. Give each
-  material result exact evidence and enough reproduction detail, and give each Optional Improvement a concise
-  evidence-backed suggestion.
-- Cite internal paths and external sources beside the claims they support. Return a short summary with the
-  verdict or reason none was issued, Problems, Optional Improvements, Strengths, and unresolved evidence.
+- Recheck the frozen target identity and both evaluation-owned output paths. Return to Phase 1
+  when the target changed or a path overlaps the target or a source-owned input.
+- Write `checklist.md` from the [working-checklist template](templates/checklist.md) at the
+  bound path. Do not copy it into a skill.
+- Confirm the file is a regular non-empty file. An item-free file still carries the required
+  header, Sources, Coverage, Additions, Limits, and no-applicable-items reason.
+
+#### 4.2 Write the report and return
+
+- Write `report.md` from the [report template](templates/report.md) at the bound path, cite
+  the sibling `checklist.md`, and include Escalations, quality opinion, and finding fields.
+  Add caller-required fields without replacing its target identity, independence, scope,
+  method, result, gap, quality, or verdict meanings.
+- Give each material result exact evidence and enough reproduction detail, and give each
+  Optional Improvement a concise evidence-backed suggestion. Cite internal paths and external
+  sources beside the claims they support.
+- Return a short summary with the contract-gate verdict or reason none was issued, Problems,
+  Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence. Do
+  not read another evaluator's `report.md` or `checklist.md` from the same iteration.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Checklist](../checklist/SKILL.md) | Standalone operation for authoring a reusable, unchecked evaluation source. |
+| [Checklist](../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum Evaluation challenges by link. |
 | [Code checklist](../execution/code/checklist.md) | Execution-owned baseline source for evaluating general code-work quality. |
 | [Documentation checklist](../execution/docs/checklist.md) | Execution-owned baseline source for evaluating general documentation-work quality. |
 | [Ideation checklist](../ideation/checklist.md) | Ideation-owned baseline source for evaluating a complete current indexed Ideation result. |
 | [Planning checklist](../planning/checklist.md) | Planning-owned baseline source for evaluating a complete current indexed Planning result. |
-| [Report template](templates/report.md) | Default structure for a short, evidence-based Evaluation report. |
+| [Report template](templates/report.md) | Default structure for a short, evidence-based Evaluation report with dual-record fields. |
+| [Working-checklist template](templates/checklist.md) | Default structure for one Evaluation-owned working checklist on a frozen target. |
