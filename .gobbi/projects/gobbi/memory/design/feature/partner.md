@@ -17,8 +17,16 @@ Every Partner prompt names three required absolute paths:
 - the Gobbi session directory inside that worktree;
 - one writing path under that worktree for the named result.
 
-The assignment write set is `writing-path-only` or `worktree`. A missing write set means `writing-path-only`.
-`writing-path-only` may change only the named writing path. `worktree` may change listed worktree paths.
+The assignment write set is `writing-path-only`, `runtime-directory`, or `worktree`. A missing write
+set means `writing-path-only`. `writing-path-only` may change only the named writing path.
+`runtime-directory` may also write sibling `checklist.md` beside `writing-path` and may create the
+missing parent of `writing-path` when that parent resolves inside the caller-named directory from
+the brief and is not a symlink. Both files must be regular, non-symlink, and non-empty. Missing
+`checklist.md` is a missing result. Forbidden under this set: `gate.md`, other siblings, nested
+files, other runtimes' directories, target files, and reusable checklist sources. Remaining-runtime
+wrappers may run in parallel when every assignment is `writing-path-only` or `runtime-directory`
+and those writing-paths plus implied `checklist.md` siblings are disjoint. A `worktree` assignment
+stays serial. `worktree` may change listed worktree paths.
 Documented extras are incidental only: Grok `~/.grok/`, `/tmp`, `/var/tmp`, and official macOS temp dirs;
 incidental Codex `/tmp`; and the wrapper capture directory. They are not results.
 
@@ -68,3 +76,4 @@ starts fresh to preserve named-runtime independence.
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
 - [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)
+- [Evaluation](../process/evaluation.md)

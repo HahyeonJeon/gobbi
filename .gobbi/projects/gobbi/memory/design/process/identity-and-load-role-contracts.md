@@ -32,6 +32,13 @@ Gobbi 1.1 and does not run `NO_GOBBI_ROOT`.
 Status stays role-owned: manager `PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`; other
 roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. Evaluator adds `VERDICT` on complete work.
 
+Evaluator roles load Evaluation and both evaluation templates every assignment. They load Checklist
+only when authoring a new working item or when the assignment requests a reusable checklist. They
+write `report.md` and working `checklist.md` only, never `gate.md`, and they do not read a peer
+runtime's pair in the same iteration. `VERDICT` is the contract-gate verdict; criteria-free
+completion is `DONE_WITH_CONCERNS` with `VERDICT: Not issued`. The Cursor evaluator is not
+`readonly`; the Cursor leader stays `readonly`.
+
 ## Ownership
 
 | Subject | Owner |

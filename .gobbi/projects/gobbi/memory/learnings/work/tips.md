@@ -54,3 +54,17 @@ separate bound from Grok's own `[toolset.bash] timeout_secs` in user-level `~/.g
 wrapper-host bash timeout as Grok's tool timeout, or the reverse. When Grok hosts a Partner
 wrapper, the ~300s host tool cap can kill the wrapper after the inner command finishes; see
 [A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md).
+
+## A whole-branch Partner evaluation can exceed a 1200s wrapper timeout
+
+**Context:** Launching a remaining-runtime evaluator over a large frozen tree with a host
+`timeout 1200` around the Partner wrapper.
+
+**Tip:** A whole-branch evaluation can still be running at 1200s. `WRAPPER_EXIT 124` plus one of
+`report.md` or `checklist.md` is an incomplete pair. It is never PASS input, never a report to
+disposition, and never a file to extract, repair, or retry in place.
+
+**Application:** Require both regular non-empty files before using a runtime as gate input. A retry
+needs a new assignment identity or a new iteration directory. Raising the wrapper timeout is a
+caller authority choice, not an automatic Partner repair. This is not the Grok host-tool cap in
+[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md#a-grok-host-tool-timeout-can-kill-a-finished-partner-wrapper).
