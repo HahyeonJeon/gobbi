@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.0-blue" alt="Version 1.2.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.1-blue" alt="Version 1.2.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -110,6 +110,9 @@ the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/sk
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
 plus official Cursor subagents. Agent Teams is Claude-only.
 
+After install, the standalone `gobbi-setup` skill creates only missing Gobbi layout, instruction placeholders,
+Claude Code settings, and Codex role contracts. It reports the rest. Gobbi entry does not run setup.
+
 ## Start your first session
 
 Give Gobbi a concrete objective:
@@ -151,9 +154,10 @@ Every productive step uses:
 DISCUSSION → WORK → EVALUATION → RECORD
 ```
 
-Phase 1 studies the project and develops the design with the user, available subagents or teammates, and the
-remaining Partner launch set. Its handoff closes the user-decision window; later phases proceed autonomously
-within the accepted design or stop at a recoverable checkpoint instead of asking another Workflow question.
+After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
+develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
+After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
+Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
 Recorded evidence can rebuild the active route after a context boundary, and each gate must accept the frozen
 result before work advances. Workflow uses one isolated branch and linked worktree for the full session.
 
