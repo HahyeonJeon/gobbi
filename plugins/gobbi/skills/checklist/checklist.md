@@ -2,13 +2,48 @@
 
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Checklist documents created through the Checklist operation<br>
-> **Applicability:** A checklist source or generated checklist document; Evaluation binds the exact document under review<br>
+> **Applicability:** A checklist source or generated checklist document; Evaluation binds the exact document under review. Coverage-account items apply only to reusable sources the Checklist SOP now requires to carry an account; they do not apply to unrevisions this session leaves without an account.<br>
 > **Purpose:** Evaluate whether a checklist is clear, complete, reusable, and ready for Evaluation<br>
-> **Scope:** Framing, lifecycle coverage, categories, broad expected scenarios, checklist items, and evaluation use<br>
+> **Scope:** Framing, lifecycle coverage, coverage account, categories, broad expected scenarios, checklist items, and evaluation use<br>
 > **Exclusions:** The quality of the subject that the checklist will evaluate<br>
 > **Governing sources:** [Checklist](SKILL.md), [Checklist template](templates/checklist.md), the accepted request, and applicable subject sources<br>
 > **Context:** Apply the governing sources that were current when the checklist was created<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
+
+## Coverage Account
+
+> Metadata only. No row is a checklist item, and no row is ever checked.
+
+### Scenario spectrum
+
+| Prompt | Account | Where or reason |
+|---|---|---|
+| Positive / Good / normal | Covered | Subject and Authority > The checklist has an unclear or unsupported evaluation boundary; Document Structure > The document breaks the required category-to-scenario-to-item structure or retains template content; Evaluation Use > Checklist items cannot be used reliably during evaluation |
+| Alternative-valid | Covered | Subject and Authority > The checklist has an unclear or unsupported evaluation boundary; Reuse and Change > Reuse or revision loses stable meaning and source identity |
+| Negative / Bad / expected rejection | Covered | Subject and Authority > The checklist has an unclear or unsupported evaluation boundary; Evaluation Use > Checklist items cannot be used reliably during evaluation |
+| Boundary / edge / transition | Covered | Document Structure > The document breaks the required category-to-scenario-to-item structure or retains template content; Category and Scenario Design > Categories and expected scenarios are divided at the wrong level |
+| Failure / recovery | Covered | Maintenance and Change > The checklist remains stale after its subject or authority changes; Checklist Item Design > Checklist item integrity or coverage degrades |
+| Poor quality | Covered | Discovery and Applicability > A cold evaluator cannot identify, apply, or navigate the checklist; Checklist Item Design > Checklist items do not express distinct observable problem signs |
+| Rule violation | Covered | Document Structure > The document breaks the required category-to-scenario-to-item structure or retains template content; Checklist Item Design > Checklist item integrity or coverage degrades; Coverage Account > The coverage account is missing, blank, or unsupported |
+| Adversarial / abuse / gaming / cosmetic compliance | Covered | Category and Scenario Design > Expected-scenario coverage is incomplete or artificial; Coverage Account > The coverage account is missing, blank, or unsupported |
+| Change / regression / compatibility | Covered | Maintenance and Change > The checklist remains stale after its subject or authority changes; Reuse and Change > Reuse or revision loses stable meaning and source identity |
+| Counterfactual / assumption | Covered | Subject and Authority > The checklist has an unclear or unsupported evaluation boundary; Evaluation Use > Checklist items cannot be used reliably during evaluation |
+
+### Lifecycle stages
+
+| Lifecycle | Stages | Account | Where or reason |
+|---|---|---|---|
+| Project | initiation, planning, governance | Covered | Subject and Authority |
+| Project | coordination | Not applicable | A checklist document does not exhibit multi-party project coordination as a document-class concern. |
+| Project | change control | Not applicable | Change of a checklist document is a work-artifact concern absorbed by Design and Development Maintenance and Change and Reuse and Change, not a Project change-control process. |
+| Project | closure or archival | Not applicable | Supersession of a checklist source is a Design and Development Reuse and Change concern, not Project closure or archival. |
+| Design and Development | conceive, design, implement | Covered | Category and Scenario Design; Checklist Item Design; Document Structure |
+| Design and Development | verify | Covered | Coverage Account; Checklist Item Design |
+| Design and Development | handoff, use in the work, deliver | Covered | Evaluation Use; Discovery and Applicability; Reuse and Change |
+| Design and Development | maintain, change | Covered | Maintenance and Change; Reuse and Change |
+| Product | use, operate, configure, support, migrate, replace, retire | Not applicable | The subject is a checklist document, a work artifact, not an operating app, service, library, or comparable product. |
+
+Later-use, change, replacement, and retirement of a checklist document are absorbed by Design and Development Evaluation Use, Reuse and Change, and Maintenance and Change, not by Product.
 
 ## Project Lifecycle
 
@@ -61,6 +96,7 @@
 - [ ] A work artifact appears in Product Lifecycle only because it has readers, handoffs, or downstream users.
 - [ ] An operating app, service, library, or comparable product concern appears outside Product Lifecycle without a different viewpoint.
 - [ ] A category exists without support from the subject or governing evidence.
+- [ ] A supported category concern has no category.
 
 #### Expected-scenario coverage is incomplete or artificial
 
@@ -78,6 +114,23 @@
 - [ ] An expected scenario uses a spectrum prompt as its name.
 - [ ] An expected scenario exists only to satisfy a coverage quota.
 - [ ] A lifecycle without supported coverage invents content instead of naming the gap.
+
+### Coverage Account
+
+#### The coverage account is missing, blank, or unsupported
+
+- [ ] The coverage account is absent.
+- [ ] A required spectrum prompt or lifecycle-stage row is missing from the account.
+- [ ] An account row is blank.
+- [ ] A row marked Covered names no category or scenario.
+- [ ] A row marked Covered names coverage that does not detect that family or stage.
+- [ ] A row marked Not applicable gives no reason from inspected subject evidence, restates only a governing document, or is contradicted by inspected subject evidence.
+- [ ] A row marked Evidence gap names no missing evidence.
+
+#### The Product-skip absorption note is missing or false
+
+- [ ] Product Lifecycle is skipped without stating whether later-use, change, replacement, and retirement are not applicable or absorbed.
+- [ ] A named absorbing category does not cover the absorbed later-use, change, replacement, or retirement concern.
 
 ### Checklist Item Design
 

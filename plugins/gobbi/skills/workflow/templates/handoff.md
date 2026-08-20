@@ -26,7 +26,7 @@
 |---|---|
 | Completed work | {accepted result locators, ordered member hashes, commits, or exact partial state} |
 | Verification | {checks and material results} |
-| Evaluation | {report, gate, receipt, verdict, and iteration evidence} |
+| Evaluation | {report, working checklist, gate, receipt, verdict used by the gate, escalations, and iteration evidence} |
 | Decisions | {material decisions and authority, or None} |
 | Decision boundary | {Phase 1 user decisions; later frames have no design question; User Review is continue-only} |
 | Findings | {dispositions and fresh-evaluation evidence, or None} |
