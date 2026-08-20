@@ -164,8 +164,9 @@ CW · Wrap-up
   fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
   launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
   not rewrite the recorded policy to `disabled`. For each remaining runtime, spawn one Partner wrapper
-  subagent through the active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and
-  `expected-partner`. Wrappers for different remaining runtimes may run in parallel. Cowork validates the
+  subagent through the active runtime's subagent system, with its own wrapper-capture path outside the
+  session (not an evaluation tree), Delegation prompt, and `expected-partner`. Wrappers for different
+  remaining runtimes may run in parallel. Cowork validates the
   listed worktree write set, unchanged main checkout, and Handoff after the wrapper returns, or records
   Unavailable evidence when the attempt cannot launch. `disabled` invokes no external runtime.
 
@@ -211,19 +212,27 @@ CW · Wrap-up
   changes exist; an indexed result includes its index and every listed member. If uncommitted tracked
   implementation changes exist and the user did not name a subset, stop and ask for `commit` or a named
   subject.
-- Activate only `CW · Evaluation`, define the decision criteria and report aggregation rule, assign one unique
-  caller-named directory below `tmp/`, and apply Memory `Temporary Record` to each exact Evaluation output path.
-- Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator. For each remaining
-  runtime, spawn one Partner wrapper subagent over the same frozen subject, each with its own `tmp/` path,
-  Delegation prompt, and `expected-partner`. Wrappers may run in parallel. A launchable runtime produces an
-  evaluator report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager
-  validates and assembles reports only through the recorded criteria and aggregation rule.
+- Activate only `CW · Evaluation`, define the decision criteria and contract-gate aggregation rule, assign one
+  unique caller-named directory below `tmp/` as the aggregation parent with per-runtime children
+  `<runtime>/report.md` and `<runtime>/checklist.md`, and apply Memory `Temporary Record` to each exact file
+  path under that parent. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude`
+  or alias historical names such as `codex.md`.
+- Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator and one Partner wrapper
+  subagent per remaining runtime over the same frozen subject, with remaining-runtime briefs naming write set
+  `runtime-directory`, the caller-named aggregation parent, a Delegation prompt, and `expected-partner`;
+  a missing write set still means `writing-path-only` and cannot complete this assignment. Wrapper capture
+  stays private outside the session and is not the evaluation parent; a launchable runtime
+  produces both files, an Unavailable attempt produces Unavailable evidence, and the manager aggregates only
+  contract-gate verdicts from complete pairs.
 
 #### 4.2 Apply findings and coverage
 
 - Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction returns
   to its owning writer and waits for `commit` when it changes tracked files; it does not auto-commit, and it
   makes prior coverage stale.
+- Treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete evidence, never
+  a report to disposition, and never PASS input. Assemble and disposition only complete pairs, using
+  contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the aggregation result.
 - Complete Evaluation only when every finding has a disposition and no correction remains unevaluated. Another
   corrected subject requires another explicit `evaluate` call.
 
@@ -243,9 +252,10 @@ CW · Wrap-up
 
 #### 5.2 Check freshness and return the result
 
-- After the accepted Memory pass, compare evaluation coverage with the resulting head. When no verdict covers
-  the whole branch, use Discussion to ask whether to evaluate or close with self-verification only; an
-  evaluation choice runs Phase 4, then repeats this check without rerunning unchanged Memory work.
+- After the accepted Memory pass, compare evaluation coverage with the resulting head. When no contract-gate
+  verdict covers the whole branch, use Discussion to ask whether to evaluate or close with self-verification
+  only; quality `does-not-meet` with contract-gate PASS is not REVISE and is not missing coverage, and an
+  evaluation choice runs Phase 4 then repeats this check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence, a clean Cowork worktree, and an unchanged main checkout. Stop at
   the exact retained recovery state when any claim is unproved.
 - Return one compact conversation handoff with outcome, scope, topics, results, commits, Memory result, checks,
@@ -264,6 +274,6 @@ CW · Wrap-up
 | [Ideation](../ideation/SKILL.md) | Owns bounded Light design and its indexed result. |
 | [Planning](../planning/SKILL.md) | Owns bounded Light task decomposition and its indexed result. |
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
-| [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete report. |
+| [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete `report.md` plus working `checklist.md`. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

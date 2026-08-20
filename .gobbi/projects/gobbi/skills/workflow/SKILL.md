@@ -60,25 +60,38 @@ outside the frame.
 |---|---|
 | `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact report paths. |
-| `RECORD` | Reread the result and reports, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
+| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
+| `RECORD` | Reread the result, each `report.md`, and each `checklist.md`, copy the contract-gate verdict, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
-policy, iteration cap, report paths, `gate.md` path, receipt path, checks, authority, and recovery boundary.
-Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`. The Partner launch set
-is the recorded set minus the active runtime. If that set is empty, launch nothing and do not rewrite the
-recorded policy to `disabled`. Each remaining runtime receives one Partner wrapper subagent through the
-active runtime's subagent system, with its own `tmp/` path, Delegation prompt, and `expected-partner`.
-Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces an evaluator
-report; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff. The manager validates
-the listed worktree write set, unchanged main checkout, and Handoff after the wrapper returns.
+policy, iteration cap, per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, receipt path,
+checks, authority, and recovery boundary. Remaining-runtime evaluator briefs must name write set
+`runtime-directory` and the caller-named directory `<record-directory>/evaluation/iteration-N/` that may
+contain the writing-path parent; a missing write set still means `writing-path-only` and cannot complete an
+evaluation assignment. Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`.
+The Partner launch set is the recorded set minus the active runtime. If that set is empty, launch nothing and
+do not rewrite the recorded policy to `disabled`. Each remaining runtime receives one Partner wrapper subagent
+through the active runtime's subagent system, with its own wrapper-capture path, Delegation prompt, and
+`expected-partner`. Wrapper capture stays private, outside the session, and is not the evaluation tree.
+Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces that runtime's
+`report.md` and `checklist.md`; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+The manager validates the listed worktree write set, unchanged main checkout, and Handoff after the wrapper
+returns.
 
 The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
-criteria, reports, findings and dispositions, decision, and next action. PASS means the criteria are satisfied
-with no correction pending; REVISE means an authorized correction remains and the cap permits another
-iteration; FAIL means safe in-contract correction is unavailable or the cap is exhausted. One assistant then
-writes the RECORD receipt through Memory `Temporary Record` with the unit, stage, iteration, writer, result
-locator or commit, verification, reports, gate, decision, next action, and recovery state.
+criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate verdicts used, decision from those
+verdicts only, out-of-contract Problems and quality opinions as escalations with dispositions, and next
+action. PASS means the criteria are satisfied with no correction pending; REVISE means an authorized
+correction remains and the cap permits another iteration; FAIL means safe in-contract correction is
+unavailable or the cap is exhausted. One assistant then writes the RECORD receipt through Memory
+`Temporary Record` with the unit, stage, iteration, writer, result locator or commit, verification, reports
+and working checklists, gate, decision, next action, and recovery state.
+
+RECORD rereads the result, each `report.md`, and each `checklist.md`, copies the contract-gate verdict into
+`gate.md`, and stops on a criterion-mapped Problem labeled `out-of-contract` without silently relabeling. A
+runtime directory with only one of the two files is incomplete evidence and never PASS input. Escalations do
+not set the decision field; quality `does-not-meet` with contract-gate PASS is not REVISE; after completed
+`P1 · User Review`, out-of-contract opinions do not reopen design.
 
 ## Procedure
 
@@ -141,10 +154,18 @@ P3 · Note
 | Wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
-- For each productive unit, place caller-named reports and `gate.md` below
-  `<record-directory>/evaluation/iteration-N/`, and place its receipt at
-  `<record-directory>/record/iteration-N.md`. Accepted results remain at their owner-defined paths; create
-  later directories only when their first result needs them.
+```text
+<record-directory>/evaluation/iteration-N/
+  gate.md
+  <runtime>/
+    report.md
+    checklist.md
+```
+
+- For each productive unit, use that evaluation layout with runtime tokens `claude-code`, `codex`, `cursor`,
+  and `grok`, and place the receipt at `<record-directory>/record/iteration-N.md`. Do not use `claude` or
+  alias historical names such as `codex.md`; accepted results remain at their owner-defined paths, and later
+  directories are created only when their first result needs them.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
   `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`. Apply Memory `Temporary Record` to each
   exact ignored output path, and refresh `configuration.md` Progress evidence and Latest handoff only after
@@ -245,7 +266,8 @@ Continue.
   risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
   stops without a design question when authority, safety, or the locked contract cannot support one route.
 - Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
-  final paths, report paths, gate and receipt paths, cap, checks, merge authority, and protected state.
+  final paths, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths, cap,
+  checks, merge authority, and protected state.
 
 #### 3.2 Run closure WORK
 
@@ -261,10 +283,12 @@ Continue.
 
 - Freeze the actual closure tree and evaluate it with the Memory diff, accepted commits, checks, merge plan,
   authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and one Partner
-  wrapper subagent per remaining runtime over the same subject and criteria; a launchable runtime produces an
-  evaluator report, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+  wrapper subagent per remaining runtime over the same subject and criteria at
+  `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; a launchable runtime produces both
+  files, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
-  changed WORK; FAIL preserves the branch, worktree, session root, reports, and exact stopped state.
+  changed WORK; FAIL preserves the branch, worktree, session root, reports, working checklists, and exact
+  stopped state.
 - Any tracked correction makes prior coverage stale and repeats WORK and EVALUATION. Retry a bounded agent or
   Partner operation only when its prior effect is absent or safely reusable.
 
@@ -295,7 +319,7 @@ Continue.
 | [Ideation](../ideation/SKILL.md) | Owns design work and its indexed result. |
 | [Planning](../planning/SKILL.md) | Owns task hierarchy and its indexed result. |
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
-| [Evaluation](../evaluation/SKILL.md) | Owns independent assessment and each complete report. |
+| [Evaluation](../evaluation/SKILL.md) | Owns independent assessment and each complete `report.md` plus working `checklist.md`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
