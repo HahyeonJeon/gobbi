@@ -83,6 +83,8 @@ Stop when authority is missing or conflicting instead of choosing a convenient G
 - Create a topic branch from an inspected base with `git switch -c <branch> <base>`; use `git switch <branch>`
   for an existing branch. Stop for a user decision when the base is dirty, detached, stale, or ambiguous
   ([Git switch](https://git-scm.com/docs/git-switch)).
+- During Cowork or Workflow session-start capture, do not treat a stale or ambiguous base as a which-branch
+  ask; stop only when that start checkout is dirty, detached, or unusable.
 - Keep unrelated changes on separate branches. Reuse a branch only when the new work belongs to its same
   accepted scope and history.
 

@@ -15,23 +15,28 @@ remaining choices. Workflow applies the same definition to every design-bearing 
 - Keep one local creator as the sole writer and synthesizer. That creator receives the selected inputs,
   produces and self-reviews the draft, and completes the synthesis.
 - When the session policy is enabled, obtain at least one independent Partner draft and one Partner
-  cross-review over frozen input before synthesis. Each Partner prompt names the exact session directory and
+  cross-review over frozen input before synthesis. Each Partner prompt names the required worktree, the exact session directory, and
   one exact writing path for its result; when the policy is disabled, invoke no external runtime.
 
 ## Delegated result contract
 
 Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
 The owning operation defines whether the result is a durable file, commit, or response without a result-kind
-field. Durable design, evaluation, and Partner results use exact caller-named absolute paths with containment
-and rereading checks; a printed Handoff references but never replaces a durable result.
+field. Durable design and Partner results use exact caller-named absolute paths with containment and
+rereading checks. Evaluation results are the per-runtime pair `report.md` and working `checklist.md`
+under write set `runtime-directory`; see [Evaluation](evaluation.md). A printed Handoff references
+but never replaces a durable result.
 
 ## Delegation brief
 
-The base brief order is Metadata, Context, Task, Instructions, Materials, Return.
+The base brief order is Metadata, Role, Context, Task, Instructions, Materials, Return.
 
+- Role sits above Context. It grants persona and expertise so the agent thinks how it will act.
 - Context sits above Task. It holds working state and accepted decisions only.
+- Task states the goal, a world-best quality bar with a concrete measure, and the minimum result.
 - Materials is required and replaces Resources. It lists required skills-to-load with exact paths and read
-  order, remaining sources, purpose, and conflict precedence.
+  order, remaining sources, purpose, and conflict precedence. The listed skills are required, not exclusive.
+  Also load any other skill the work needs.
 - The Partner prompt template uses the same section names.
 
 Do not rely on conversation history or inherited skill loads. The canonical

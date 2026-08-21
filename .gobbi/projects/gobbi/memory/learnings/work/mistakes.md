@@ -98,10 +98,23 @@ Drop or rewrite any sentence that is no longer true.
 
 ## Running a Partner session write beside another session writer
 
-**Context:** Partner writes one authoritative result inside the Gobbi session directory.
+**Context:** Partner writes the authorized write set under the worktree.
 
-**Mistake:** Launching that write while another session writer is also changing the session directory makes
-the preimage check unusable and can collide with the contracted path.
+**Mistake:** Launching a `worktree` write while another worktree writer is also changing the tree makes the
+preimage check unusable and can collide with authorized paths.
 
-**Correction:** Launch Partner sequentially. Record the session preimage before the write. Accept only the
-contracted path change.
+**Correction:** Launch Partner sequentially for `worktree` writes. Record the worktree preimage before the
+write. Accept the authorized write set.
+
+## Treating User Review Continue as merge authority
+
+**Context:** Workflow `P2 · User Review` Continue activates Wrap-up. Configuration still records
+merge and cleanup authority separately.
+
+**Mistake:** Reading Continue as a rewrite of recorded `Merge authority` or `Cleanup authority`.
+Wrap-up then either mutates without a grant or, correctly, stops while the manager treats the stop
+as a surprise.
+
+**Correction:** Continue enters Wrap-up. It does not grant Git integration. Reread Configuration
+and the latest handoff for merge and cleanup authority. An explicit user grant is required before
+Memory mutation that is followed by merge or cleanup.

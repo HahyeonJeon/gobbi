@@ -103,7 +103,7 @@ Task and idle states support scheduling. Direct result and verification evidence
   external system. Independent read-only work may run in parallel.
 - Route remaining-runtime work through [Partner](../partner/SKILL.md) when that runtime remains in the launch
   set. Spawn one Partner wrapper subagent per remaining runtime. The Partner process is still a fresh CLI
-  with one exact session writing path, not a teammate to continue.
+  with a worktree write root and a named `writing-path`, not a teammate to continue.
 
 ### Acceptance
 

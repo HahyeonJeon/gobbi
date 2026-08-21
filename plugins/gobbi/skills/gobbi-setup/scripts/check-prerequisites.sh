@@ -319,7 +319,7 @@ if [[ "$claude_permissions_valid" == true ]]; then
     fi
   done
 
-  skills=(gobbi principles discussion delegation agent-teams)
+  skills=(gobbi principles discussion delegation agent-teams gobbi-setup)
   for skill in "${skills[@]}"; do
     if has_claude_permission "Skill($skill)" "Skill(gobbi:$skill)" "$claude_settings"; then
       pass "Claude Skill permission: $skill"
@@ -336,7 +336,38 @@ check_readable_file ".gobbi/.gitignore" "$project_root/.gobbi/.gitignore"
 if [[ "$project_key_valid" == true ]]; then
   gobbi_project="$project_root/.gobbi/projects/$project_key"
   check_real_directory ".gobbi/projects/$project_key directory" "$gobbi_project"
+  check_real_directory ".gobbi/projects/$project_key/agents directory" "$gobbi_project/agents"
+  check_real_directory ".gobbi/projects/$project_key/skills directory" "$gobbi_project/skills"
   check_real_directory ".gobbi/projects/$project_key/memory directory" "$gobbi_project/memory"
+
+  memory_categories=(design learnings reports history materials backlogs)
+  for category in "${memory_categories[@]}"; do
+    check_real_directory ".gobbi/projects/$project_key/memory/$category directory" \
+      "$gobbi_project/memory/$category"
+  done
+
+  memory_subjects=(
+    design/architecture design/feature design/process design/roadmap
+    reports/note reports/review reports/analysis
+    materials/references materials/assets materials/docs materials/data
+  )
+  for subject in "${memory_subjects[@]}"; do
+    check_real_directory ".gobbi/projects/$project_key/memory/$subject directory" \
+      "$gobbi_project/memory/$subject"
+  done
+
+  readme_stubs=(
+    agents/README.md
+    skills/README.md
+    memory/design/README.md
+    memory/reports/README.md
+    memory/history/README.md
+    memory/materials/README.md
+    memory/backlogs/README.md
+  )
+  for stub in "${readme_stubs[@]}"; do
+    check_readable_file ".gobbi/projects/$project_key/$stub" "$gobbi_project/$stub"
+  done
 
   gobbi_ignore="$project_root/.gobbi/.gitignore"
   if [[ -f "$gobbi_ignore" && -r "$gobbi_ignore" ]]; then
@@ -360,6 +391,19 @@ if [[ "$project_key_valid" == true ]]; then
   check_ignore_owner "Gobbi sessions state" ".gobbi/projects/$project_key/sessions/.gobbi-check"
   check_ignore_owner "Gobbi worktrees state" ".gobbi/projects/$project_key/worktrees/.gobbi-check"
   check_not_ignored "Gobbi memory state" ".gobbi/projects/$project_key/memory/.gobbi-check"
+  check_not_ignored "Gobbi agents state" ".gobbi/projects/$project_key/agents/.gobbi-check"
+  check_not_ignored "Gobbi skills state" ".gobbi/projects/$project_key/skills/.gobbi-check"
+  for category in "${memory_categories[@]}"; do
+    check_not_ignored "Gobbi memory/$category state" \
+      ".gobbi/projects/$project_key/memory/$category/.gobbi-check"
+  done
+  for subject in "${memory_subjects[@]}"; do
+    check_not_ignored "Gobbi memory/$subject state" \
+      ".gobbi/projects/$project_key/memory/$subject/.gobbi-check"
+  done
+  for stub in "${readme_stubs[@]}"; do
+    check_not_ignored "Gobbi $stub" ".gobbi/projects/$project_key/$stub"
+  done
 
   root_ignore="$project_root/.gitignore"
   duplicate_rules=()

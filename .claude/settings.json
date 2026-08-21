@@ -1,6 +1,7 @@
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
   },
   "teammateMode": "in-process",
   "permissions": {
@@ -8,6 +9,8 @@
       "Skill(gobbi)",
       "Skill(gobbi:agent-teams)",
       "Skill(gobbi:partner)",
+      "Skill(gobbi:gobbi-setup)",
+      "Skill(gobbi-setup)",
       "Skill(cowork)",
       "Skill(workflow)",
       "Skill(git)",

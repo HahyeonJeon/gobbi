@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.0-blue" alt="Version 1.2.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.1-blue" alt="Version 1.2.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -81,7 +81,19 @@ Installed Grok 1.0.4 also accepts the same source as GitHub shorthand:
 grok plugin marketplace add HahyeonJeon/gobbi
 ```
 
-Then install Gobbi from the Marketplace tab. Do not use Claude `/plugin` as the Grok install path.
+Then install Gobbi from the Marketplace tab with trust, or from the command line:
+
+```text
+grok plugin install gobbi --trust
+```
+
+Do not use Claude `/plugin` as the Grok install path. An enabled, trusted Grok install runs the reminder hook
+from the package itself: `.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json`, which registers a
+`Stop` handler running `hooks/remind.sh` with `grok` as its argument. No copy into `~/.grok/hooks/` is needed.
+
+Prove the hook with `grok inspect --json`: an entry whose `source.type` is `plugin`, whose `source.plugin_name`
+is `gobbi`, and whose `target` ends in `hooks/grok-hooks.json`. Grok reports that entry's `event` as
+`(plugin)` and does not resolve the inner `Stop` there. Start a new Grok session in the consumer project.
 
 A repository checkout already exposes the package through `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
@@ -97,6 +109,9 @@ the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/sk
 
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
 plus official Cursor subagents. Agent Teams is Claude-only.
+
+After install, the standalone `gobbi-setup` skill creates only missing Gobbi layout, instruction placeholders,
+Claude Code settings, and Codex role contracts. It reports the rest. Gobbi entry does not run setup.
 
 ## Start your first session
 
@@ -139,9 +154,10 @@ Every productive step uses:
 DISCUSSION → WORK → EVALUATION → RECORD
 ```
 
-Phase 1 studies the project and develops the design with the user, available subagents or teammates, and the
-remaining Partner launch set. Its handoff closes the user-decision window; later phases proceed autonomously
-within the accepted design or stop at a recoverable checkpoint instead of asking another Workflow question.
+After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
+develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
+After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
+Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
 Recorded evidence can rebuild the active route after a context boundary, and each gate must accept the frozen
 result before work advances. Workflow uses one isolated branch and linked worktree for the full session.
 
@@ -152,15 +168,16 @@ Partner is an optional session-wide policy selected after the mode and applicabl
 runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
 With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
-invocation per remaining runtime. A launchable runtime writes one result at the named path and returns a
-compact Handoff. Grok 1.0.4 launches with `--sandbox workspace`. Cursor is a named partner and Unavailable;
-do not invoke `agent` as Gobbi Partner. The session and project postimage may change only the contracted
-writing path. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner Handoff.
+invocation per remaining runtime. A launchable runtime writes the authorized worktree set and returns a
+compact Handoff. Grok 1.0.5 launches with `--sandbox workspace` and worktree cwd. Cursor is a named partner
+and Unavailable; do not invoke `agent` as Gobbi Partner. The worktree is the write root. A session result
+path may still exist. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner
+Handoff.
 
-Every prompt names the exact session directory and one writing path inside it. The caller starts each launch
-through one local wrapper subagent. Wrappers for different remaining runtimes may run in parallel. The
-active runtime verifies the write after the wrapper returns, assembles the round, decides what to accept,
-and remains the session authority.
+Every prompt names the exact worktree, the session directory inside it, and one writing path under the
+worktree. The caller starts each launch through one local wrapper subagent. Wrappers for different remaining
+runtimes may run in parallel. The active runtime verifies the write after the wrapper returns, assembles
+the round, decides what to accept, and remains the session authority.
 
 ## License
 

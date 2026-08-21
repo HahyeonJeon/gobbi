@@ -23,6 +23,17 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 - `wrap up` stops and requires `commit` first when those changes remain.
 - Evaluation corrections that change tracked files wait for `commit`. They do not auto-commit.
 
+## Evaluation layout
+
+Cowork evaluation uses one unique caller-named directory below `tmp/` as the aggregation parent.
+Per-runtime children are `<runtime>/report.md` and `<runtime>/checklist.md`. Runtime tokens are
+`claude-code`, `codex`, `cursor`, and `grok`. There is no `gate.md`. Remaining-runtime briefs name
+write set `runtime-directory`. A directory that holds only one of the two files is incomplete
+evidence and never PASS input. Wrapper capture stays outside the session.
+
+The Evaluation SOP, dual record, and Workflow layout live in [Evaluation](evaluation.md). This file
+keeps the Cowork commit gate and the Cowork-specific evaluation parent.
+
 ## Ownership
 
 The canonical [Cowork](../../../skills/cowork/SKILL.md) skill owns this contract. The generated plugin copy

@@ -40,15 +40,31 @@ without re-deriving it.
 more highly than one that claims it all — and treat a report that claims everything as needing more
 independent verification, not less.
 
-## Grok Partner write-bound is a restricting flag plus a one-write postimage
+## Grok Partner write-bound is a restricting flag plus an authorized write-set postimage
 
 **Context:** Deciding whether Grok can be a Partner launch row, or launching Grok through a host wrapper.
 
 **Tip:** Treat write-bound as one AND rule: a help-backed sandbox or tool-restriction flag that is not
-`--always-approve`, plus a session or project postimage that changes only the contracted writing path.
-Measured Grok 1.0.4 uses `--sandbox workspace`. `--always-approve` is not that flag. `--sandbox workspace` is
-not a session-directory-only deny. A host `timeout` around the Grok CLI is a separate bound from Grok's own
-`[toolset.bash] timeout_secs` in user-level `~/.grok/config.toml`.
+`--always-approve`, plus a postimage that accepts the authorized write set. Measured Grok 1.0.5 uses
+`--sandbox workspace`. `--always-approve` is not that flag. `--sandbox workspace` remains the restricting
+flag. `--sandbox workspace` is not a session-directory-only deny. A host `timeout` around the Grok CLI is a
+separate bound from Grok's own `[toolset.bash] timeout_secs` in user-level `~/.grok/config.toml`.
 
 **Application:** Do not add a Grok launch row from a clean in-session file check alone. Do not treat a
-wrapper-host bash timeout as Grok's tool timeout, or the reverse.
+wrapper-host bash timeout as Grok's tool timeout, or the reverse. When Grok hosts a Partner
+wrapper, the ~300s host tool cap can kill the wrapper after the inner command finishes; see
+[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md).
+
+## A whole-branch Partner evaluation can exceed a 1200s wrapper timeout
+
+**Context:** Launching a remaining-runtime evaluator over a large frozen tree with a host
+`timeout 1200` around the Partner wrapper.
+
+**Tip:** A whole-branch evaluation can still be running at 1200s. `WRAPPER_EXIT 124` plus one of
+`report.md` or `checklist.md` is an incomplete pair. It is never PASS input, never a report to
+disposition, and never a file to extract, repair, or retry in place.
+
+**Application:** Require both regular non-empty files before using a runtime as gate input. A retry
+needs a new assignment identity or a new iteration directory. Raising the wrapper timeout is a
+caller authority choice, not an automatic Partner repair. This is not the Grok host-tool cap in
+[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md#a-grok-host-tool-timeout-can-kill-a-finished-partner-wrapper).

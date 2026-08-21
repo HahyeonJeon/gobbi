@@ -26,9 +26,9 @@
 |---|---|
 | Completed work | {accepted result locators, ordered member hashes, commits, or exact partial state} |
 | Verification | {checks and material results} |
-| Evaluation | {report, gate, receipt, verdict, and iteration evidence} |
+| Evaluation | {report, working checklist, gate, receipt, verdict used by the gate, escalations, and iteration evidence} |
 | Decisions | {material decisions and authority, or None} |
-| Decision boundary | {Phase 1 user decisions or later autonomous manager decisions} |
+| Decision boundary | {Phase 1 user decisions; later frames have no design question; User Review is continue-only} |
 | Findings | {dispositions and fresh-evaluation evidence, or None} |
 | Preserved state | {unrelated work, retained objects, exclusions, and risks, or None} |
 
@@ -36,7 +36,7 @@
 
 | Item | Value |
 |---|---|
-| Next TODO | {exact next TODO, or None} |
+| Next TODO | {`P1 · User Review`, `P2 · User Review`, or `P3 · User Review` on Complete; None on Stopped} |
 | First unproved action | {exact action, or None} |
 | Recovery worktree | {same Absolute worktree recorded above} |
 | Recovery session root | {same Session root recorded above} |
@@ -44,5 +44,6 @@
 | Recovery limits | {exact blocker or ambiguity, or None} |
 
 Keep every section and fixed table row. Use `Complete` only when every phase claim is directly verified; use
-`Stopped` for an incomplete or failed phase. Never recover into a different worktree or session directory,
-and never treat this handoff as proof without rereading its named evidence.
+`Stopped` for an incomplete or failed phase. On Complete, `Next TODO` is the matching User Review title, not
+the next phase, and this file does not activate the next phase. Never recover into a different worktree or
+session directory, and never treat this handoff as proof without rereading its named evidence.

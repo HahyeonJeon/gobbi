@@ -11,26 +11,43 @@ retains participant selection, scope, synthesis, acceptance, and every next acti
 
 ## Write contract
 
-Every Partner prompt names two required absolute paths:
+Every Partner prompt names three required absolute paths:
 
-- the Gobbi session directory that contains the external run;
-- one writing path inside that session directory for the authoritative result.
+- the worktree write root;
+- the Gobbi session directory inside that worktree;
+- one writing path under that worktree for the named result.
 
-The external process receives write permission only to produce that result. It returns a compact final Handoff
-on stdout that references the saved file instead of reproducing it. The caller records the preimage, verifies
-that no other session path changed, rereads the result, reproduces verification, and compares the Handoff with
-direct evidence.
+The assignment write set is `writing-path-only`, `runtime-directory`, or `worktree`. A missing write
+set means `writing-path-only`. `writing-path-only` may change only the named writing path.
+`runtime-directory` may also write sibling `checklist.md` beside `writing-path` and may create the
+missing parent of `writing-path` when that parent resolves inside the caller-named directory from
+the brief and is not a symlink. Both files must be regular, non-symlink, and non-empty. Missing
+`checklist.md` is a missing result. Forbidden under this set: `gate.md`, other siblings, nested
+files, other runtimes' directories, target files, and reusable checklist sources. Remaining-runtime
+wrappers may run in parallel when every assignment is `writing-path-only` or `runtime-directory`
+and those writing-paths plus implied `checklist.md` siblings are disjoint. A `worktree` assignment
+stays serial. `worktree` may change listed worktree paths.
+Documented extras are incidental only: Grok `~/.grok/`, `/tmp`, `/var/tmp`, and official macOS temp dirs;
+incidental Codex `/tmp`; and the wrapper capture directory. They are not results.
+
+The process returns a compact final Handoff on stdout that names the writing path and every changed worktree
+path. The caller records the preimage, verifies the listed worktree write set, unchanged main checkout, and
+unchanged worktree git semantic state (`HEAD`, current branch, and `git worktree list` registration), rereads
+the result, reproduces verification, and compares the Handoff with direct evidence.
 
 ## Runtime boundary
 
-Each run uses a fresh, non-persistent named-runtime process. Codex uses `codex exec` with the session
-directory as a `workspace-write` sandbox; Claude Code uses print mode with `acceptEdits`, no session
-persistence, safe mode, and only `Read`, `Grep`, `Glob`, `Write`, and `Edit`.
+Each run uses a fresh, non-persistent named-runtime process with the worktree as cwd. The process may read
+outside the worktree and may use workspace-bounded Bash. Codex uses `codex exec` with a `workspace-write`
+sandbox and a disk-full-read-access grant, without `--add-dir`. Claude Code uses print mode with
+`acceptEdits`, no session persistence, safe mode, `--add-dir` of the main checkout, and `Read`, `Grep`,
+`Glob`, `Write`, `Edit`, and workspace-bounded `Bash`.
 
-Grok 1.0.4 launches with `--sandbox workspace`. The session and project postimage may change only the
-contracted writing path. `--always-approve` is not the restricting flag.
+Grok 1.0.5 launches with `--cwd` at the worktree and `--sandbox workspace`. The postimage allows the
+authorized write set. It fails a main-checkout identity change and a non-extra outside-worktree write.
+`--always-approve` is not the restricting flag.
 
-The command table was verified against Codex CLI 0.147.0, Claude Code 2.1.226, and Grok 1.0.4.
+The command table was verified against Codex CLI 0.147.0, Claude Code 2.1.234, and Grok 1.0.5.
 Installed `codex exec --help`, `claude --help`, and `grok --help` remain authoritative for later versions.
 
 Cursor is named. Command availability is Unavailable. The measured binary is `cursor-agent`
@@ -41,7 +58,7 @@ start (AppArmor); the target was not created. `--sandbox disabled` is not the bo
 
 ## Failure boundary
 
-A missing binary, timeout, process error, missing result, unexpected write, or Handoff mismatch ends the run.
+A missing binary, timeout, process error, missing result, unexpected write, tool denial, or Handoff mismatch ends the run.
 Partner never repairs, extracts, relabels, moves, or automatically retries the result. The caller decides
 whether to retry with a new assignment, repair bounded input, continue without Partner when authorized, or
 stop.
@@ -59,3 +76,4 @@ starts fresh to preserve named-runtime independence.
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
 - [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)
+- [Evaluation](../process/evaluation.md)

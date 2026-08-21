@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Gobbi workflow skills for Codex.",
   "author": {
     "name": "HahyeonJeon",
@@ -16,6 +16,7 @@
     "codex"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",

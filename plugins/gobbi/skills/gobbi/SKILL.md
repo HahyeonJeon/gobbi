@@ -79,9 +79,31 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   .gobbi/                          tracked
   ├── .gitignore                   tracked
   └── projects/<project>/          tracked
+      ├── agents/                  tracked, 0-byte README.md
+      ├── skills/                  tracked, 0-byte README.md
       ├── memory/                  tracked
-      ├── sessions/                ignored
-      └── worktrees/               ignored
+      │   ├── design/
+      │   │   ├── README.md         tracked, 0-byte
+      │   │   ├── architecture/
+      │   │   ├── feature/
+      │   │   ├── process/
+      │   │   └── roadmap/
+      │   ├── learnings/
+      │   ├── reports/
+      │   │   ├── README.md         tracked, 0-byte
+      │   │   ├── note/
+      │   │   ├── review/
+      │   │   └── analysis/
+      │   ├── history/README.md     tracked, 0-byte
+      │   ├── materials/
+      │   │   ├── README.md         tracked, 0-byte
+      │   │   ├── references/
+      │   │   ├── assets/
+      │   │   ├── docs/
+      │   │   └── data/
+      │   └── backlogs/README.md    tracked, 0-byte
+      ├── sessions/                ignored, not created by setup
+      └── worktrees/               ignored, not created by setup
   ```
 
   `.gobbi/.gitignore` owns these exact runtime-state entries:
@@ -92,35 +114,26 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   projects/*/worktrees/
   ```
 
-- Gobbi writes none of this layout. A selected owner may bootstrap only the namespace roots and ignore file
-  when authorized; it creates no category, session, marker, or `rules/` path until that path is needed.
+- Gobbi writes none of this layout. [Gobbi Setup](../gobbi-setup/SKILL.md) is its write owner and creates the
+  namespace, Memory tree, placeholders, settings, and Codex roles when the user invokes it; it creates no
+  `sessions/`, `worktrees/`, marker, or `rules/` path.
 
-#### 1.3 Report missing prerequisites
+#### 1.3 Stop on an unsafe layout
 
-- Run the read-only [prerequisite checker](scripts/check-prerequisites.sh) from the active repository or
-  worktree. It reports `PASS`, `WARN`, and `FAIL` for these project-local conditions:
-
-  | Scope | Required observation |
-  |---|---|
-  | Claude Code | Team environment and display settings, role and skill discovery, and entry permissions. |
-  | Codex | Agent definitions, agent settings, skill discovery, and instruction entrypoints. |
-  | Grok | Agent definitions under `.grok/agents`, skill discovery, and the `.agents/agents` root-pair sibling. |
-  | Cursor | Agent definitions under `.cursor/agents`, skill discovery under `.cursor/skills`, and the `.cursor` pair. |
-  | Gobbi | The project namespace and tracked or ignored state, including effective `.gitignore` ownership. |
-  | All runtimes | Installed `claude`, `codex`, `cursor-agent`, and `grok` CLIs respond to a version probe. |
-
+- Probe local layout paths and ignore ownership with `test` and `git check-ignore`. Do not invoke setup or
+  a prerequisite script.
+- Stop before routing when those probes show a partial, contradictory, unreadable, or unsafe layout, and
+  point the user at [Gobbi Setup](../gobbi-setup/SKILL.md).
 - For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:leader)` and
   `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
   the [Partner Manual](partner/SKILL.md#availability).
-- Continue after reporting ordinary missing configuration. Stop before routing when root resolution or layout
-  evidence is partial, contradictory, unreadable, or unsafe to repair without the user's decision.
 
 #### 1.4 Load the entry foundation
 
 - Read [Principles](../principles/SKILL.md), [Discussion](../discussion/SKILL.md), and
   [Delegation](../delegation/SKILL.md), in that order.
 - Read applicable repository instructions, every applicable project rule, and the canonical
-  [manager role](../../agents/manager.md) for Claude and Grok. Codex custom agents are not a plugin component; load the project `.codex/agents/manager.toml` when that file exists. Cursor custom agents are not a plugin component; load the project `.cursor/agents/manager.md` when that file exists. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
+  [manager role](../../agents/manager.md) for Claude, [grok/manager.md](../../runtimes/grok/manager.md) for Grok, [codex/manager.toml](../../runtimes/codex/manager.toml) for Codex, and [cursor/manager.md](../../runtimes/cursor/manager.md) for Cursor. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
   directory is absent or empty.
 - Confirm the foundation and fixed root pair. Defer every other skill to the selected mode or its own trigger.
 
@@ -134,7 +147,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   |---|---|---|
   | **General** | Ordinary assistance needs no Gobbi lifecycle. | Task owners decide participants and evaluation. |
   | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, evaluation calls, and closure. |
-  | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | Phase 1 closes user decisions; later phases continue or stop from accepted evidence. |
+  | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review TODO, then wait for explicit continue. |
 
 - After selection, publish the selected owner's complete native TODO template before asking for a slug or
   partner policy. General publishes no Gobbi TODO; Cowork and Workflow supply their own fixed templates.
@@ -164,9 +177,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 - Correct a finding automatically only when its severity is High, Medium, or Low; `blocking: no`; it stays
   inside the locked contract; and it is reversible, authority-neutral, non-destructive, and non-external.
-- Send every other finding to the user in General, Cowork, and Workflow Phase 1. After a Complete Workflow
-  Phase 1 handoff, the manager decides from the accepted design, authority, available subagents or teammates,
-  and remaining Partner runtimes, or writes a stopped handoff without asking the user.
+- Send every other finding to the user in General, Cowork, and Workflow Phase 1. After completed
+  `P1 · User Review`, the manager decides from the accepted design, authority, available subagents or
+  teammates, and remaining Partner runtimes, or writes a stopped `handoff.md` without asking the user.
 - Run fresh evaluation after every correction. Continue automatically only from a verified PASS.
 
 #### 2.4 Hand off the selected route
@@ -191,9 +204,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
 | [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
 | [Delegation](../delegation/SKILL.md) | Defines every specialist prompt and final Handoff. |
-| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance for Claude and Grok plugin consumers. Codex roles load from the project `.codex/agents/manager.toml`, not from this package. Cursor roles load from the project `.cursor/agents/manager.md`, not from this package. |
+| [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../runtimes/grok/manager.md), [Codex](../../runtimes/codex/manager.toml), [Cursor](../../runtimes/cursor/manager.md). |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
-| [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and autonomous continuation after Phase 1. |
+| [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
 | [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
-| [Prerequisite checker](scripts/check-prerequisites.sh) | Checks project-local Gobbi, Claude Code, Codex, Cursor, Grok, Git-ignore, and CLI prerequisites without mutation. |
+| [Gobbi Setup](../gobbi-setup/SKILL.md) | Owns the separately invoked operation that writes a consumer project's missing layout, placeholders, settings, and Codex role contracts, and reports the rest. |

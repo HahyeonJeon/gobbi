@@ -16,7 +16,8 @@ signs must be prepared; it stops before executing the items or judging the subje
 ### Let the subject determine coverage
 
 Inspect the subject, intended results, affected people and systems, boundaries, risks, and available evidence
-before choosing categories or scenarios. Include only coverage supported by that context.
+before choosing categories or scenarios. Include only coverage the bound subject can exhibit from that
+inspected context, not only families already named in a governing document.
 
 ### Assign each concern to its owning lifecycle
 
@@ -50,6 +51,9 @@ when omitting it would make the sign ambiguous or unanswerable.
   problem.** Phrase the item as an undesirable observable condition; a checked item means the problem is present.
 - **NEVER assign an ID to a lifecycle, category, scenario, or checklist item.** Use the
   lifecycle/category/scenario heading path when traceability is needed.
+- **MUST record a coverage account for the scenario spectrum and the lifecycle stages using only Covered, Not
+  applicable, or Evidence gap.** The account is metadata, never a checklist item, and never a reason to invent
+  a category, scenario, or sign.
 
 ## Procedure
 
@@ -68,26 +72,43 @@ when omitting it would make the sign ambiguous or unanswerable.
 
 #### 2.1 Categorize the lifecycle views
 
-- Use Project Lifecycle for the project as a unit of work from initiation through closure. Derive categories
-  from applicable concerns such as purpose, scope, ownership, planning, governance, coordination, project
-  structure, change control, documentation, and archival.
+- Use Project Lifecycle for the project as a unit of work from initiation through closure. Challenge the
+  Project stages and derive categories from the Project prompts in these tables:
+
+  | Lifecycle | Stages to challenge |
+  |---|---|
+  | Project | initiation, planning, governance, coordination, change control, closure or archival |
+  | Design and Development | conceive, design, implement, verify, handoff, use in the work, deliver, maintain, change |
+  | Product, only for an operating product | use, operate, configure, support, migrate, replace, retire |
+
+  | Lifecycle | Category concern prompts |
+  |---|---|
+  | Project | purpose, scope, ownership, planning, governance, coordination, project structure, change control, documentation, archival |
+  | Design and Development | conceive, design, implement, verify, handoff, use within the work, deliver, maintain, change |
+  | Product, operating products only | operation, user scenario, adoption, configuration, reliability, support, compatibility, migration, replacement, retirement, exit |
+
 - Use Design and Development Lifecycle for how a project or product result is conceived, designed,
-  implemented, verified, handed off, used within the work, delivered, maintained, and changed. Documents,
-  designs, plans, source files, and other work artifacts remain in this lifecycle when later project work uses
-  or revises them.
+  implemented, verified, handed off, used within the work, delivered, maintained, and changed. Keep
+  documents, designs, plans, source files, and other work artifacts in this lifecycle when later project
+  work uses or revises them, and challenge the Design and Development rows of those tables.
 - Use Product Lifecycle only for an operating app, service, library, or comparable product and its consumers.
-  Derive categories from applicable operation, user scenario, adoption, configuration, reliability, support,
-  compatibility, migration, replacement, retirement, and exit concerns.
+  Challenge the Product rows of those tables and derive Product categories only when that operating-product
+  condition holds.
 
 #### 2.2 Review lifecycle category coverage
 
-- Compare the categories with the subject, intended results, governing sources, affected people and systems,
-  interfaces, transitions, risks, and prior failures. Ensure every applicable material concern is covered.
+- Walk the applicable category-concern prompt table from Step 2.1 against the subject, intended results,
+  governing sources, affected people and systems, interfaces, transitions, risks, and prior failures. Record
+  each unsupported concern with a subject reason, and keep every applicable material concern covered.
 - Place each concern by its owning viewpoint, not by the mere presence of a reader, handoff, or downstream
   consumer. Keep work-artifact use and revision in Design and Development; use Product only when the concern
   belongs to the operation or life of an app, service, library, or comparable product.
-- Merge duplicate categories and remove unsupported categories, then recheck coverage. Return to Phase 1 when
-  a category exposes an unstable boundary or material evidence gap.
+- Fill every Step 2.1 stage into the lifecycle-stage account as Covered, Not applicable, or Evidence gap,
+  without requiring one category per stage, then merge duplicate categories and remove unsupported categories.
+  When Product has no supported coverage, write one Coverage Account line stating whether later-use, change,
+  replacement, and retirement are not applicable or are absorbed by named Design and Development or Project
+  categories; then recheck coverage and return to Phase 1 when a category exposes an unstable boundary or
+  material evidence gap.
 
 #### 2.3 Define the expected scenarios
 
@@ -111,15 +132,18 @@ when omitting it would make the sign ambiguous or unanswerable.
   | **Counterfactual / assumption** | A false load-bearing premise survives without the required disconfirmation or recovery. |
 
 - Keep every scenario directly below its category. Create another scenario only when the problem, context, or
-  evidence frame is materially different; retain only scenarios supported by the subject or governing evidence.
+  evidence frame is materially different; retain only scenarios the bound subject can exhibit from inspected
+  context.
 
 #### 2.4 Review expected-scenario coverage
 
 - Compare each category's scenarios with the subject, governing sources, prior failures, and scenario spectrum.
   Cover every supported material problem without treating the spectrum as a quota.
 - Merge narrow or overlapping scenarios when their signs share one problem, context, and evidence frame. Split
-  only a scenario that mixes materially different problem families.
-- Recheck coverage after reconciliation. Return to the applicable lifecycle step for a missing or incorrect
+  only a scenario that mixes materially different problem families; one scenario may cover several spectrum
+  prompts, as in execution/code/checklist.md Correctness → `Required behavior or failure handling is incomplete`.
+- Fill every spectrum-prompt row in the coverage account as Covered, Not applicable, or Evidence gap, then
+  recheck coverage after reconciliation. Return to the applicable lifecycle step for a missing or incorrect
   category, or Step 2.3 for missing, artificial, or misplaced scenarios.
 
 ### Phase 3 — Build the Checklist
@@ -136,9 +160,11 @@ when omitting it would make the sign ambiguous or unanswerable.
 
 #### 3.2 Assemble the checklist source
 
-- Start from the [Checklist template](templates/checklist.md) and complete its subject, scope, and context.
-- Keep `Project Lifecycle`, `Design and Development Lifecycle`, and `Product Lifecycle` as level-two sections
-  in that order. Render categories at level three and broad expected scenarios at level four, using short,
+- Start from the [Checklist template](templates/checklist.md) and complete its subject, scope, context, and
+  both Coverage Account blocks from Steps 2.2 and 2.4.
+- Keep `Coverage Account` as a level-two metadata section before the three lifecycle headings, then keep
+  `Project Lifecycle`, `Design and Development Lifecycle`, and `Product Lifecycle` as level-two sections in
+  that order. Render categories at level three and broad expected scenarios at level four, using short,
   stable names and no IDs.
 - Place each derived item unchecked below its scenario. State that checking an item means the problem is
   present.
@@ -147,11 +173,13 @@ when omitting it would make the sign ambiguous or unanswerable.
 
 #### 4.1 Review checklist coverage and quality
 
-- Trace the subject and governing sources through lifecycles, categories, scenarios, and items. Confirm every
-  material problem is covered and every scenario has all supported observable signs.
+- Trace the subject and governing sources through lifecycles, categories, scenarios, items, and both Coverage
+  Account blocks. Confirm every material problem is covered and every scenario has all supported observable
+  signs.
 - Remove IDs and duplicate, vague, compound, overly specific, unobservable, procedural, or result-bearing
-  items. Merge over-specific scenarios, recheck coverage after every change, and confirm each item is
-  independently answerable, reusable, and unchecked.
+  items, and confirm each item is independently answerable, reusable, and unchecked. Merge over-specific
+  scenarios, recheck coverage and both account blocks after every change, and correct the account rather than
+  the coverage when only the account is wrong.
 - Preserve the source unchanged for [Evaluation](../evaluation/SKILL.md). If the subject or a material premise
   changes, restart at the earliest affected phase before using the checklist again.
 
@@ -159,6 +187,6 @@ when omitting it would make the sign ambiguous or unanswerable.
 
 | Name | Description |
 |---|---|
-| [Checklist template](templates/checklist.md) | Flat lifecycle, category, broad expected-scenario, and unchecked-item structure for a reusable checklist. |
+| [Checklist template](templates/checklist.md) | Coverage-account, lifecycle, category, broad expected-scenario, and unchecked-item structure for a reusable checklist. |
 | [Checklist document evaluation checklist](checklist.md) | Reusable unchecked source for evaluating checklist documents created by this operation. |
-| [Evaluation](../evaluation/SKILL.md) | Operation that prepares a working checklist, evaluates one target, and writes its report. |
+| [Evaluation](../evaluation/SKILL.md) | Operation that prepares a working checklist, evaluates one target, and writes its report and working checklist. |
