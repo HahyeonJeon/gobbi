@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-20 — Local Gobbi v1.2.1 release prep completed](2026-08-20-gobbi-v1-2-1-release.md)
 - [2026-08-20 — Critique-first two-file Evaluation and Checklist coverage completed](2026-08-20-evaluation-and-checklist.md)
 - [2026-08-18 — Standalone gobbi-setup, mode wait, partner sandbox, and delegation briefs completed](2026-08-18-gobbi-setup-wait-partner-delegation.md)
 - [2026-08-18 — Setup skill, per-runtime hooks, and generated plugin package completed](2026-08-18-setup-skill-and-package-generation.md)
