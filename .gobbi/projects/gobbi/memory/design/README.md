@@ -17,6 +17,7 @@ Recursive navigation across design memory, grouped by category.
 
 ## Process
 
+- [Code Review](process/code-review.md)
 - [Collaborative design and delegated results](process/collaborative-design-and-delegated-results.md)
 - [Cowork implementation commits](process/cowork.md)
 - [Discussion question flow](process/discussion.md)

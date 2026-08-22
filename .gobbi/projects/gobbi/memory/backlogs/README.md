@@ -15,7 +15,6 @@ each group. Order implies no priority, readiness, or sequence.
 - `Cursor evaluator write and Partner command` → `evaluation.md#cursor-evaluator-write-and-partner-command`
 - `Domain checklist family migration` → `evaluation.md#domain-checklist-family-migration`
 - `Evaluation Rule 2 versus working-checklist template load` → `evaluation.md#evaluation-rule-2-versus-working-checklist-template-load`
-- `Execution Step 4.1 reading coverage accounts` → `evaluation.md#execution-step-41-reading-coverage-accounts`
 - `Wrap-up checklist as a named Evaluation baseline` → `evaluation.md#wrap-up-checklist-as-a-named-evaluation-baseline`
 
 ## Project

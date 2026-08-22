@@ -45,3 +45,23 @@ check compares it against and change them together, or leave all of them alone.
 
 **Correction:** Hash the pair with a separator that cannot appear in the values, such as
 `sha256(session + NUL + prompt)`.
+
+## Applying one capability rule to several sources
+
+**Context:** One consumer instruction names more than one checklist or source.
+
+**Mistake:** Applying the instruction to every named source without checking each source's precondition made
+an account requirement appear to cover a Documentation source that had no Coverage Account.
+
+**Correction:** Check every named source independently before editing. Apply the rule only where its
+precondition holds, and preserve the remaining source as an explicit backlog or limit.
+
+## Validating a template link only from the template directory
+
+**Context:** A template contains a relative link whose final location is chosen when a caller renders it.
+
+**Mistake:** Checking the literal link from the template's own directory proved only that the source template
+resolved. The rendered caller-bound artifact could still point to the wrong path.
+
+**Correction:** Parameterize location-dependent links and validate each rendered artifact from its actual
+location. A source-template link check is not enough.

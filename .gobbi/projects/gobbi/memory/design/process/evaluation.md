@@ -13,16 +13,21 @@ current intent for Memory readers. Do not copy the live Procedure here.
 
 Four phases with two freeze points: bind, critique, prepare-freeze-run-reconcile, then report.
 
-Named Evaluation baselines are the Code, Documentation, Ideation, and Planning checklists. Wrap-up
-is not a named Evaluation baseline. Evaluation reads coverage accounts. It does not own coverage and
-does not add items to fill an account row. A reused source with no account is a Limit; the working
-pass still runs.
+Named Evaluation baselines are the Code Review, Documentation, Ideation, and Planning checklists. The
+Code baseline is `skills/code-review/checklist.md`, [Code Review's checklist](../../../skills/code-review/checklist.md),
+owned by Code Review.
+Wrap-up is not a named Evaluation baseline. A Checklist consumer may use the Code baseline without invoking
+the Code Review operation. Evaluation reads coverage accounts. It does not own coverage and does not add
+items to fill an account row. A reused source with no account is a Limit; the working pass still runs.
 
 ## Dual record
 
 - One `VERDICT:` line from in-contract Problems, sufficient evidence, and caller-supplied criteria.
 - Quality opinion uses `meets-design`, `mixed`, `does-not-meet`, or `not-available` and never changes the gate.
 - Out-of-contract Problems escalate. After completed `P1 · User Review` they do not reopen design.
+- Evaluation records its own unaided same-subject critique before reading a same-subject Code Review report.
+  Prepared evidence is independently verified. It is not a checklist source and cannot substitute for
+  Evaluation's finding or verdict authority.
 - A runtime directory that holds only one of `report.md` and `checklist.md` is incomplete evidence and never PASS input.
 - Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`.
 
@@ -55,6 +60,7 @@ assignment. Wrapper capture stays outside the session and is not the evaluation 
 |---|---|
 | Critique, working copy, dual record | [Evaluation](../../../skills/evaluation/SKILL.md) |
 | Reusable sources and coverage accounts | [Checklist](../../../skills/checklist/SKILL.md) |
+| Code baseline and caller-bound Code Review report | [Code Review](../../../skills/code-review/SKILL.md) and [Code Review design](code-review.md) |
 | Write surface `runtime-directory` | [Partner](../../../skills/gobbi/partner/SKILL.md) and [Partner design](../feature/partner.md) |
 | Workflow path bind, RECORD, `gate.md` | [Workflow](../../../skills/workflow/SKILL.md) |
 | Cowork one-parent layout and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
@@ -66,5 +72,5 @@ denial is `BLOCKED` with the denial. The manager does not scribe evaluation file
 
 ## Current limits
 
-Coverage accounts exist on the Checklist operation source. Named baselines and domain-family
-checklists have no accounts yet. See [Evaluation backlog](../../backlogs/evaluation.md).
+Coverage Accounts exist on the Checklist operation source and the Code Review baseline. Documentation,
+Ideation, Planning, Wrap-up, and domain-family checklists have no accounts yet. See [Evaluation backlog](../../backlogs/evaluation.md).

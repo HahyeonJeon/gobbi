@@ -31,15 +31,15 @@ Checklist skill References still starts with prepare-then-evaluate.
 
 **Backlogged at:** 2026-08-20T08:37:00Z
 
-**What:** Add coverage accounts, without adding items, to `execution/code/checklist.md`,
-`execution/docs/checklist.md`, `ideation/checklist.md`, `planning/checklist.md`, and
-`wrap-up/checklist.md`.
+**What:** Add coverage accounts, without adding items, to `execution/docs/checklist.md`,
+`ideation/checklist.md`, `planning/checklist.md`, and `wrap-up/checklist.md`.
 
 **Why backlogged:** This session revised only Checklist-owned files that the SOP now requires to
 carry an account. L8 left unrevisions without accounts.
 
-**Context:** Evaluation Step 3.2 already records a missing account as a Limit and still runs the
-working pass. Coverage-account audit items do not apply to those unrevisions.
+**Context:** The Code Review baseline now has its own account. Evaluation Step 3.2 already records a
+missing account as a Limit and still runs the working pass. Coverage-account audit items do not apply to
+the remaining unrevisions.
 
 ## Wrap-up checklist as a named Evaluation baseline
 
@@ -52,18 +52,6 @@ own checklist.
 
 **Context:** Named baselines today are Code, Documentation, Ideation, and Planning. Adding Wrap-up
 would change Evaluation gather, not Wrap-up Git.
-
-## Execution Step 4.1 reading coverage accounts
-
-**Backlogged at:** 2026-08-20T08:37:00Z
-
-**What:** Teach Execution Step 4.1 to read coverage accounts once accounts exist on Execution
-baselines.
-
-**Why backlogged:** Out of this session's included file set. Accounts do not exist on those
-baselines yet.
-
-**Context:** Evaluation already reads accounts. Execution self-review does not.
 
 ## Domain checklist family migration
 
