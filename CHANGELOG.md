@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Independent `code-review` inspects the actual code, performs and locks an explicit checklist-free critical
+  review, then writes one caller-owned, non-gating report with applicability accounting, Problems,
+  Improvements, Strengths, and Gaps. This supersedes the 1.2.0 removal of the separate Code Review operation
+  without changing released history.
+
+### Changed
+
+- The reusable language-independent code checklist moves from
+  `.gobbi/projects/gobbi/skills/execution/code/checklist.md` to
+  `.gobbi/projects/gobbi/skills/code-review/checklist.md`. Its 26-category baseline now covers project, design
+  and development, and conditional product lifecycles; Execution and Evaluation consume the same source.
+
 ## 1.2.1 - 2026-08-21
 
 This patch includes new public operations as a project exception to Semantic Versioning 2.0.0
