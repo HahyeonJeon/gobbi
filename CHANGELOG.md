@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.2.2 - 2026-08-23
+
+This patch includes a new public operation and a moved public checklist as project exceptions to Semantic
+Versioning 2.0.0 rule 7, following the v1.2.1 precedent.
+
 ### Added
 
 - Independent `code-review` inspects the actual code, performs and locks an explicit checklist-free critical
