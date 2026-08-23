@@ -67,4 +67,15 @@ disposition, and never a file to extract, repair, or retry in place.
 **Application:** Require both regular non-empty files before using a runtime as gate input. A retry
 needs a new assignment identity or a new iteration directory. Raising the wrapper timeout is a
 caller authority choice, not an automatic Partner repair. This is not the Grok host-tool cap in
-[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md#a-grok-host-tool-timeout-can-kill-a-finished-partner-wrapper).
+[A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md#a-grok-host-tool-timeout-can-kill-a-finished-partner-wrapper). An attempt is counted by the actual external runtime or invocation. Wrapper silence and activity notifications do not count as an invocation or evidence of progress.
+
+## Freeze checklist-free critique before checklist coverage
+
+**Context:** A review uses a reusable checklist after an independent critical critique of one exact subject.
+
+**Tip:** Bind the exact subject and affected surfaces first. Lock actual-code observations and coverage leads
+before checklist exposure. Never backfill the locked record from checklist answers. If prepared material
+contaminates the critique or the subject rebinds, discard the affected record and restart from binding.
+
+**Application:** Keep the checklist as a coverage backstop and reconcile its findings with the locked critique;
+do not let prepared categories become the source of the first review.

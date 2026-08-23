@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Gobbi workflow skills for Claude Code, Codex, Cursor, and Grok, and plugin agents for Claude Code and Grok",
   "author": {
     "name": "HahyeonJeon"
