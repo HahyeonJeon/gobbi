@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.2.3 - 2026-08-28
+
+### Fixed
+
+- Ideation now follows the caller-supplied design and decision scope, compares supported participant suggestions
+  and critique before user decisions, and keeps detail-only out-of-scope findings from reopening accepted design.
+
 ## 1.2.2 - 2026-08-23
 
 This patch includes a new public operation and a moved public checklist as project exceptions to Semantic
