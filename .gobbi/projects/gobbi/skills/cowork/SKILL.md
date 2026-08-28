@@ -47,8 +47,11 @@ route.
   Configuration as an idle wait that leaves later items `pending`.** Start a topic stage only after
   delivered work exists: a user statement of the outcome, topic, or request, not mode, slug, partner
   policy, "continue", "ok", "looks good", or repository state.
-- **MUST select and report Fast or Light delivery while the user owns every material decision.** Fast skips
-  Ideation and Planning; Light runs bounded canonical Ideation and Planning before Execution.
+- **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending
+  a consequential topic/work option or asking for a required topic/work decision.** Cowork selects available
+  subagents or teammates and each launchable remaining Partner, routes any needed focused follow-up to an
+  addressable subagent or teammate, and owns user decisions and the reported route; Fast skips Ideation and
+  Planning, while Light runs bounded canonical Ideation and Planning before Execution.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
   results; executors own implementation writes and, only after `commit` authority, implementation commits;
   assistants own direct-Memory closure commits.
@@ -138,16 +141,20 @@ CW · Wrap-up
   no item `in_progress`; asking the user to state the work is allowed, and studying, ideating, planning, or
   executing is not.
 - Apply [Discussion](../discussion/SKILL.md) to lock the topic outcome, purpose, scope, acceptance evidence,
-  material decisions, first action, and exclusions. Assign the next stable `topic-NN-slug` and keep this
-  contract authoritative for the topic.
-- Choose the smallest valid depth from this table. If the topic is too broad, risky, irreversible, or
-  uncertain for Light, use Discussion to ask the user to narrow or split it or start Workflow through
-  Gobbi; never create a hidden third depth or switch modes without the user's decision.
+  first action, exclusions, and required user decisions; assign the next stable `topic-NN-slug` and keep this
+  contract authoritative. Define topic/work design and decisions as choices whose viable answers can change
+  the topic/work goal, requirements, scope or boundary, observable behavior, policy, strategy, algorithm,
+  pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility, or
+  acceptance.
+- Choose the smallest valid depth from this table. Document completeness and implementation detail enter the
+  topic/work design and decision scope only when they prove a missing or contradictory topic/work choice; if
+  the topic is too broad, risky, irreversible, or uncertain for Light, ask the user to narrow or split it or
+  start Workflow through Gobbi, and never create another depth or switch modes without the user's decision.
 
 | Depth | Selection evidence | Route |
 |---|---|---|
-| **Fast** | The outcome, acceptance evidence, material decisions, and one low-risk reversible task are complete; no design or decomposition choice remains. | Skip Ideation and Planning, then run Execution. |
-| **Light** | The topic is bounded, but a design or decomposition choice remains. | Run bounded Ideation, bounded Planning, then ordered Execution. |
+| **Fast** | The topic contract is complete, no in-scope design choice remains, and the work needs no decomposition. | Skip Ideation and Planning, then run Execution. |
+| **Light** | The topic is bounded, but an in-scope design choice or decomposition need remains; decomposition may select Light without becoming an Ideation decision. | Run bounded Ideation, bounded Planning, then ordered Execution. |
 
 #### 2.2 Route the selected stages
 
@@ -158,28 +165,30 @@ CW · Wrap-up
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, and exact role and
-  skill paths. Execution assignments set commit authority to none unless the assignment is the user-called
-  `commit`.
-- Prefer re-delegating coherent follow-up to an addressable teammate whose role, evidence, and boundary still
-  fit, and always issue a complete new Delegation brief. Compute the [Partner](../gobbi/partner/SKILL.md)
-  launch set as the recorded set minus the active runtime. If that set is empty, launch nothing and do
-  not rewrite the recorded policy to `disabled`. For each remaining runtime, spawn one Partner wrapper
-  subagent through the active runtime's subagent system, with its own wrapper-capture path outside the
-  session (not an evaluation tree), Delegation prompt, and `expected-partner`. Wrappers for different
-  remaining runtimes may run in parallel. Cowork validates the
-  listed worktree write set, unchanged main checkout, and Handoff after the wrapper returns, or records
-  Unavailable evidence when the attempt cannot launch. `disabled` invokes no external runtime.
+  skill paths. Set Execution commit authority to none unless the assignment is the user-called `commit`.
+- Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
+  still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
+  recorded launch set minus the active runtime; launch none when the set is empty or disabled without rewriting
+  the policy, otherwise spawn one parallel-capable wrapper per launchable runtime through the active runtime's
+  subagent system with its named outside-session capture, prompt, and `expected-partner`, then validate the
+  worktree write set, unchanged main checkout, and Handoff after return or record Unavailable when launch fails.
 
 #### 2.3 Accept the shaping results
 
 - Fast produces no Ideation or Planning result. Existing recovered sessions retain accepted selected or
   omitted stages and one exact evidence-proved legacy result shape without renaming or migration.
-- Light applies [Ideation](../ideation/SKILL.md) and then [Planning](../planning/SKILL.md). Name the complete
-  absolute locators `{session-root}/topic-NN-slug/1-ideation/ideation-index.md` and
-  `{session-root}/topic-NN-slug/2-planning/plan-index.md` in their assignments.
+- For Light, apply the collaboration Rule only when an in-scope topic/work design or decision exists, then apply
+  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract) through Delegation with its
+  complete caller contract plus the topic/work scope, applicable participant discussion records, and absolute
+  locators
+  `{session-root}/topic-NN-slug/1-ideation/ideation-index.md` and
+  `{session-root}/topic-NN-slug/2-planning/plan-index.md`, and recovery boundary. A decomposition-only Light route
+  creates no Ideation decision or participant discussion; route a returned decision package to Step 2.1, then
+  resume the leader only from the recorded answer.
 - Use caller-named `tmp/` paths for drafts and supporting inputs, then have the creator write the curated result
-  directly to its phase directory. Accept it only after rereading the index and members, recording paths and
-  hashes, and proving the tracked tree unchanged; any membership, order, path, or byte change makes it stale.
+  directly to its phase directory. Accept Ideation only when its caller completion test passes, the index and
+  members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any membership, order,
+  path, or byte change makes it stale, and accepted Ideation then continues to [Planning](../planning/SKILL.md).
 
 #### 2.4 Execute and accept the topic
 

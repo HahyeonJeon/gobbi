@@ -37,9 +37,10 @@ the worktree and session root recorded by Configuration and the latest handoff.
 
 - **MUST use the native TODO list to select the current phase and stage.** Use only `pending`, `in_progress`, and
   `completed`, with at most one item `in_progress`; keep task, iteration, cap, and decision data in session evidence.
-- **MUST complete every material user decision in Phase 1, using available subagents or teammates and remaining
-  Partner runtimes before recommending a design.** After completed `P1 · User Review`, never ask a design
-  question; at User Review TODOs ask only Continue or Stop.
+- **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
+  project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
+  or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
+  subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
 - **MUST run `DISCUSSION → WORK → EVALUATION → RECORD` in every phase.** Planning and each Execution task
   complete the frame before dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
@@ -173,26 +174,41 @@ P3 · Note
 - Complete `P1 · Configuration` as an idle wait after those location rules are recorded. Leave every later
   item `pending` with no item `in_progress`, and do not run 1.4 or activate `P1 · Ideation`.
 
-#### 1.4 Run the Ideation frame and lock direction
+#### 1.4 Discuss and lock project/work design
 
 - Enter only when Configuration is complete and delivered work exists: a user statement of the outcome, topic,
-  or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository state. If delivered
-  work is absent, idle-wait with no item `in_progress`; asking the user to state the work is allowed, studying
-  is not, and a concrete outcome statement already in the session may be used after Configuration.
-- **DISCUSSION:** Activate `P1 · Ideation`, then study the request, users, project vision, roadmap, design,
-  architecture, current behavior, prior decisions, evidence, constraints, and alternatives. Use available
-  subagents or teammates and remaining Partner runtimes for independent research and design suggestions, then
-  recommend the best-supported options and obtain every material user decision about What, Why, How, scope,
-  success, risk, authority, and deferrals.
-- **WORK → EVALUATION → RECORD:** Apply [Ideation](../ideation/SKILL.md) through Delegation with the absolute
-  output root `{session-root}/1-ideation/outputs/ideation/` and exact locator
-  `{session-root}/1-ideation/outputs/ideation/ideation-index.md`; one leader synthesizes and self-reviews the
-  indexed result, and every material unresolved question returns to this DISCUSSION before the phase closes.
-  Freeze the index and every listed member, apply the Workflow Frame with a maximum of two iterations, and
-  verify membership, order, paths, hashes, tracked-tree state, reports, gate, receipt, and finding
-  dispositions; REVISE returns to Phase 1 DISCUSSION, and FAIL records the exact stopped state.
+  or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository state. Use a concrete
+  outcome already in the session after Configuration; otherwise idle-wait with no item `in_progress` and allow
+  only a request for the user to state the work.
+- Activate `P1 · Ideation` and define project/work design and decisions as choices whose viable answers can
+  change the project/work goal, requirements, scope or boundary, observable behavior, policy, strategy,
+  algorithm, pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility,
+  or acceptance.
+- Apply [Discussion](../discussion/SKILL.md) under the Phase 1 collaboration Rule and recorded participant policy,
+  and record any unavailable required participant. Present its final synthesized project/work options and
+  recommendation, then record every required user decision.
 
-#### 1.5 Write the Phase 1 handoff and wait at User Review
+#### 1.5 Produce, evaluate, and record Ideation
+
+- **WORK:** Apply [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract) through Delegation
+  with its complete caller contract plus Workflow's project/work scope, recorded participant discussion records,
+  fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
+  `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
+  decision package to Step 1.4, then resume the leader only from the recorded answer.
+- **EVALUATION:** Freeze the index and every listed member, apply the Workflow Frame with at most two iterations,
+  and verify membership, order, paths, hashes, tracked-tree state, reports, and working checklists. Use the
+  frozen project/work design and discussion criteria for every evaluator.
+- **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
+  Step 1.4 only for missing or contradictory project/work design, required participant discussion, or a required
+  user decision; a checklist item, missing section, wording defect, or implementation detail cannot cause
+  REVISE without that trace, and FAIL records the exact stopped state. After evaluation,
+  apply one project/work-contract-neutral documentation correction only when it changes no accepted contract,
+  required study, discussion, user decision, or authority, is bounded, reversible, non-destructive,
+  non-external, and isolated, preserves indexed membership, order, and paths, passes full-result
+  self-verification, and records the finding, eligibility, changed bytes, checks, coverage limit, and
+  no-reevaluation disposition; otherwise use normal revision and fresh evaluation.
+
+#### 1.6 Write the Phase 1 handoff and wait at User Review
 
 - Render the [handoff template](templates/handoff.md) at `1-ideation/handoff.md` for Complete or Stopped. Record
   the exact identity, worktree, session root, branch, result and hashes, checks, decisions, authority, findings,

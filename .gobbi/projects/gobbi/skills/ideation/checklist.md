@@ -3,12 +3,25 @@
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Ideation work and complete indexed results produced through the Ideation operation<br>
 > **Applicability:** General Ideation evaluation with a current indexed result; Evaluation binds the exact work, locator, ordered membership, bytes, accepted contract, intended consumers, and frozen state<br>
-> **Purpose:** Provide baseline coverage for Ideation authority, design integrity, indexed closure, downstream use, and safe change before target-specific items are added<br>
-> **Scope:** Authority and scope, problem and outcomes, evidence and prior art, topics and decisions, integrated design, risks and uncertainty, indexed integrity, planning use, handoff, and revision<br>
+> **Purpose:** Provide baseline coverage for Ideation authority, design integrity, indexed closure, consumer use, and safe change before target-specific items are added<br>
+> **Scope:** Authority and scope, problem and outcomes, evidence, participant discussion and prior art, topics and decisions, integrated design, risks and uncertainty, indexed integrity, consumer use, handoff, and revision<br>
 > **Exclusions:** General documentation quality; retained legacy results; target-specific domain requirements and standards; Planning and implementation quality; operating product behavior; realized validation; Evaluation procedure, reports, and verdicts<br>
 > **Governing sources:** [Evaluation](../evaluation/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Ideation](SKILL.md), the accepted work contract, caller and user decisions, and applicable project sources and assessed prior art<br>
 > **Context:** Evaluate the operation evidence, root index, and every listed member as one subject. Authoritative parts supersede subordinate snapshots. Apply the [Documentation checklist](../execution/docs/checklist.md) in parallel and add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
+
+## Evaluation Guide
+
+1. Bind the caller-supplied project/work or topic/work design and decision scope, participant discussion contract,
+   required user decisions, intended consumer, and completion test before applying items.
+2. Verify separate supported participant suggestions and critique were compared, any disagreement or weak
+   assumption that could change the recommendation received one focused follow-up from an addressable participant,
+   each conflict was resolved or exposed, and the strongest supported options and recommendation were synthesized
+   before every user ask. Do not require consensus, repeated follow-up without new evidence, or participant
+   transcripts in the indexed result.
+3. Treat an item as an Ideation Problem only when it proves missing or contradictory in-scope project/work
+   design, required participant discussion, user decision, authority, or indexed-result
+   integrity. Document completeness and implementation detail alone are not Ideation Problems.
 
 ## Project Lifecycle
 
@@ -16,8 +29,8 @@
 
 #### The result conflicts with accepted authority, scope, or the design boundary
 
-- [ ] A material user- or caller-owned choice lacks a traceable supplied decision.
-- [ ] An unresolved material choice is presented as settled.
+- [ ] A required in-scope user- or caller-owned choice lacks a traceable supplied decision.
+- [ ] An unresolved required in-scope choice is presented as settled.
 - [ ] The result includes an outcome outside the accepted scope.
 - [ ] The result omits an accepted in-scope outcome.
 - [ ] The same material outcome has conflicting scope status.
@@ -59,15 +72,20 @@
 - [ ] A required outcome cannot be traced to the problem, evidence, or an accepted decision.
 - [ ] A requirement embeds a solution choice that its stated outcome does not require.
 
-### Study and Prior Art
+### Participant Discussion and Prior Art
 
-#### The selected direction rests on incomplete study or cosmetic comparison
+#### The selected direction rests on weak discussion, incomplete study, or cosmetic comparison
 
-- [ ] A material decision lacks traceable project evidence, prior art, or an accepted user decision.
+- [ ] Participant suggestions or critique were collected without comparing their reasoning.
+- [ ] A disagreement or weak assumption that could change the recommendation received no focused follow-up from an addressable participant.
+- [ ] A participant conflict is neither resolved nor exposed.
+- [ ] Participant reasoning that could change the recommendation is absent from the final synthesis.
+- [ ] The user was asked to decide before the final participant synthesis.
+- [ ] A required in-scope decision lacks traceable project evidence, prior art, or an accepted user decision.
 - [ ] Applicable evidence or prior art that could change the direction is omitted.
 - [ ] An adopted source lacks a supported assessment of its authority, relevance, currency, applicability, or reuse limits.
 - [ ] A material source conflict or evidence gap is hidden by a definitive conclusion.
-- [ ] The compared alternatives are not materially different directions.
+- [ ] The compared alternatives are not genuinely different directions.
 - [ ] The selected direction does not follow from the comparison and gives no supported reason for the difference.
 
 ### Topics and Decisions
@@ -75,11 +93,11 @@
 #### The decision hierarchy obscures boundaries, dependencies, or accepted choices
 
 - [ ] The hierarchy obscures the problem-rooted parent and child decision order.
-- [ ] One topic combines material decisions that can have different answers or evidence.
-- [ ] A material decision cannot be traced to its outcome, evidence, or authority.
+- [ ] One topic combines in-scope decisions that can have different answers or evidence.
+- [ ] An in-scope decision cannot be traced to its outcome, evidence, or authority.
 - [ ] Decisions in the same hierarchy conflict without reconciliation.
-- [ ] A material decision omits a consequence or trade-off that affects the design.
-- [ ] A material decision lacks an observable reopen condition.
+- [ ] An in-scope decision omits a consequence or trade-off that affects the design.
+- [ ] An in-scope decision lacks an observable reopen condition.
 
 ### Integrated Design
 
@@ -105,16 +123,16 @@
 - [ ] A failed validation signal has no link to the decision or design that must reopen.
 - [ ] A deferral leaves dependent design final without its consequences and resumption condition.
 
-### Planning Use
+### Consumer Use
 
-#### Downstream planning requires invention or loses material design context
+#### The intended consumer must invent design or cannot recover required context
 
-- [ ] A planner must invent a material actor, boundary, behavior, ownership rule, or constraint.
-- [ ] Multiple materially different designs satisfy the result because a load-bearing choice remains ambiguous.
-- [ ] A material path from required outcome through decision to design cannot be followed.
-- [ ] Behavior that must remain unchanged cannot be identified.
-- [ ] A remaining user-owned decision cannot be identified before planning begins.
-- [ ] A material risk, deferral, validation need, or reopen condition is invisible to planning.
+- [ ] The intended consumer must invent an in-scope actor, boundary, behavior, ownership rule, or constraint.
+- [ ] Multiple genuinely different designs satisfy the result because a required in-scope choice remains ambiguous.
+- [ ] The intended consumer cannot follow an in-scope path from required outcome through decision to design.
+- [ ] The intended consumer cannot identify behavior that must remain unchanged.
+- [ ] The intended consumer cannot identify a remaining required user decision before use.
+- [ ] A required risk, deferral, validation need, or reopen condition is invisible to the intended consumer.
 
 ### Handoff and Evolution
 
