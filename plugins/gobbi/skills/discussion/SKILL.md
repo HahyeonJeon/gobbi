@@ -25,11 +25,11 @@ Before suggesting options, study the request, current work, affected people, rel
 constraints, and proven approaches. Use [Study](../study/SKILL.md) when the recommendation depends on a bounded
 internal or external evidence question; otherwise develop and compare options from the available evidence.
 
-### Use subagents, teammates, and Partner through the active owner
+### Discuss consequential choices with participants
 
-Independent agents reveal evidence, alternatives, and weak assumptions that one agent can miss. Before
-recommending a consequential design or decision, actively use available subagent, teammate, and remaining
-Partner input through the active task or mode owner's participant contract.
+Independent participants reveal alternatives and weak assumptions that one agent can miss. Before recommending
+a consequential design or decision, seek separate supported suggestions and critique through the active owner's
+participant contract, compare their reasoning, resolve or expose conflicts, and synthesize before asking the user.
 
 ### Help the user make the best decision
 
@@ -42,10 +42,9 @@ best-supported option, explain why it fits, and state what evidence or changed c
   dependent work.**
   Understand Who, What, When, Where, Why, and How and the relevant project vision, roadmap, design, architecture,
   and current state only as far as the work needs; leave unresolved points explicit.
-- **MUST actively use available subagent, teammate, and remaining Partner input through the active owner's
-  participant contract before recommending a consequential design or decision.** A consequential choice can
-  change scope, architecture, interfaces, safety, cost, reversibility, acceptance, or a user-visible result; the
-  owner selects eligible participants and timing.
+- **MUST use the active owner's participant contract to discuss consequential designs and decisions before
+  presenting options or asking the user.** Seek separate supported suggestions and critique from available
+  participants; direct documentation work with no project/work design decision does not trigger this loop.
 - **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
   through the Decision Question template, then the active runtime's structured input tool.** Use `AskUserQuestion`
   in Claude Code, `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending),
@@ -81,17 +80,20 @@ best-supported option, explain why it fits, and state what evidence or changed c
 
 ### Decision Support
 
-#### Gather independent input
+#### Discuss participant reasoning
 
 - Treat a design or decision as consequential when a different choice could change scope, architecture, interfaces,
   safety, cost, reversibility, acceptance, or a user-visible result. Identify the evidence, alternatives, or
   assumptions where an independent perspective could improve it.
-- Ask the active owner to give available subagents or teammates separate bounded questions before exposing the
-  leading recommendation. Use Partner only for each remaining runtime in the launch set. A launchable runtime
-  produces an independent result; an Unavailable attempt produces Unavailable evidence, not a silent skip.
-- Compare the returned evidence and reasoning, resolve conflicts against the user's intent and project context,
-  and synthesize the best-supported options. When no eligible participant is available, state the evidence limit
-  instead of implying independent review.
+- Ask the active owner to give available subagents or teammates separate bounded prompts for supported design or
+  decision suggestions and critique. Each remaining launchable Partner may provide an initial suggestion or
+  critique; an Unavailable attempt is evidence, not a silent skip.
+- Compare participant reasoning before synthesis. When a disagreement or weak assumption could change the
+  recommendation, send one focused follow-up to an addressable participant; because Partner is one-shot, use an
+  addressable subagent or teammate when Partner provided the initial result.
+- Resolve conflicts or expose them, then synthesize the strongest supported options and recommendation
+  before asking the user. Do not force consensus or repeat a follow-up without new evidence; when no eligible
+  participant is available, state the evidence limit.
 
 #### Build meaningful options
 
