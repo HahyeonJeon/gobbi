@@ -1,13 +1,17 @@
 ---
 name: planning
-description: "Planning is the operation for turning defined work into a traceable task hierarchy and dependency-valid execution plan."
+description: "Planning is the operation for turning defined work into a traceable task hierarchy, a dependency-valid execution plan, and the assignment contract those require."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Planning
 
-Planning turns accepted work into a fine-grained task hierarchy and a flat, dependency-valid execution plan. Use it when scope and direction are defined but work still needs decomposition and grouping for accountable agents. It records both views as one indexed result while the caller retains orchestration and evaluation authority.
+Planning turns accepted work into a fine-grained task hierarchy, a flat, dependency-valid execution plan, and
+the assignment contract those require. Use it when scope and direction are defined but work still needs
+decomposition, grouping, order, and dispatch for accountable agents. It records both views as one indexed
+result and stops before implementation recipes, repository study dumps, file-level edit recipes, and
+verification methods.
 
 ## Principles
 
@@ -18,11 +22,13 @@ order explains how combined task groups build on one another through `Requires` 
 may run in parallel. Keeping these views separate prevents parent-child structure from being mistaken for
 dependency order and exposes safe parallel work.
 
-### Bound each task group for one accountable agent
+### Bound each task group by the assignment contract
 
-Planning is complete only when one accountable agent can understand and finish each combined task group from
-its recorded decomposed-task details and complete group context. If completion requires hidden coordination,
-the task group is too broad or its recorded details are incomplete.
+Each combined task group is complete when it records the assignment contract for one accountable agent:
+`task-NN-slug` IDs, `Requires`, role, writer frontier, leaf work, boundary, and output, handoffs, group
+outcome, why the leaves combine, the group's stop, constraints and authority, a pointer to accepted design,
+and compatible skills. If that contract is missing or completion needs hidden coordination, the group is too
+broad or the recorded contract is incomplete.
 
 ## Rules
 
@@ -30,17 +36,19 @@ the task group is too broad or its recorded details are incomplete.
   every leaf maps to exactly one task group, every task group combines at least one leaf, and a leaf that
   needs several task groups is split in the task hierarchy first.
 - **MUST combine only context-coherent decomposed tasks.** Combined tasks share one accountable agent role and
-  capabilities, skills and repository context, compatible inputs, one coherent outcome, writer/change
-  boundary, and dependency frontier; fixed-size batches and one-group-per-leaf defaults are invalid.
+  compatible skills, compatible inputs, one coherent outcome, one writer frontier, and one dependency
+  frontier; fixed-size batches and one-group-per-leaf defaults are invalid.
 - **NEVER combine incompatible work.** Keep separate any leaves divided by roles, unresolved material
-  decisions, destructive or external authority, conflicting dependencies, or incoherent verification or
+  decisions, destructive or external authority, conflicting dependencies, or incoherent writer frontiers or
   commit boundaries.
 - **MUST make execution order dependency-valid.** Stable IDs use `task-NN-slug`; explicit `Requires` edges
   are acyclic and authoritative, while shared order numbers only mark safe parallelism.
-- **MUST give each task group complete agent context.** Include its stable ID and title, exact combined paths,
-  every combined task's title, work, boundary, and output, why they are combined, relevant accepted context,
-  one agent role, skills, dependencies, group work, inputs, constraints, writer/change boundary,
-  handoffs, verification, and metadata.
+- **MUST record the assignment contract for each task group.** Include its `task-NN-slug` ID and title, exact
+  combined leaf paths, `Requires`, one accountable role, writer frontier, each combined leaf's work, boundary,
+  and output, handoffs, group outcome, why the leaves combine, the group's stop, constraints and authority, a
+  pointer to accepted design, and compatible skills; repository study dumps, implementation strategy,
+  file-level edit recipes presented as the work, and verification methods, commands, or test lists are out of
+  scope.
 - **MUST keep one closed indexed result and freeze it only after complete validation passes.** Use one
   caller-supplied absolute output root and its `plan-index.md` as the exact result locator; list the required
   task index and every plan part in the root index, and every task part in the task index.
@@ -66,7 +74,7 @@ the task group is too broad or its recorded details are incomplete.
 - Choose top-level groups by coherent decomposition boundaries, not one group per work item. Preserve each
   accepted work item's traceability to its hierarchy paths.
 - Recursively decompose every group until each leaf states one bounded outcome, boundary, and output. Split
-  distinct responsibilities, capabilities, change boundaries, dependencies, or outputs.
+  distinct responsibilities, capabilities, writer frontiers, dependencies, or outputs.
 - Keep the hierarchy independently readable. Do not assign agents or encode execution order in it.
 
 #### 2.2 Write the indexed task view
@@ -88,7 +96,7 @@ the task group is too broad or its recorded details are incomplete.
 
 - Read every task part in indexed order. Combine one or more compatible leaves into each task group, prefer the
   fewest safe coherent groups, and use neither fixed batch sizes nor an automatic one-group-per-leaf mapping.
-- Return to Step 2.1 when one leaf crosses several roles, outcomes, writer boundaries, or dependency frontiers.
+- Return to Step 2.1 when one leaf crosses several roles, outcomes, writer frontiers, or dependency frontiers.
   Split the leaf before combining it.
 - Give each task group its final `task-NN-slug`, title, exact combined leaf paths, one accountable agent role,
   `Requires` edges, and order number.
@@ -99,21 +107,22 @@ the task group is too broad or its recorded details are incomplete.
   [plan part template](templates/planning/plan-NN.md). Name parts `plan-01.md`,
   `plan-02.md`, and so on; assign the next unused number, never rename or reuse a part, and let the index define
   reading order.
-- Copy or restate every combined leaf's title, work, boundary, and output. For each group, record why the tasks
-  form one coherent outcome, accepted design and decisions, repository context, execution purpose, role,
-  skills, dependencies, work, inputs, constraints, writer boundary, handoffs, verification, and metadata.
-- Keep the plan flat and every group understandable without private discussion or reconstructing its context
-  from task paths. Record shared context once, and split parts only between complete task groups or table rows.
+- Copy or restate every combined leaf's title, work, boundary, and output into the group. Record the group's
+  assignment contract from the plan-part template; do not add repository study dumps, implementation
+  strategy, file-level edit recipes, or verification methods.
+- Keep the plan flat and every group understandable from its assignment contract without private discussion
+  or reconstructing it from task paths. Record shared assignment-local pointers once, and split parts only
+  between complete task groups or table rows.
 
 #### 3.3 Review and improve the result
 
 - Check six invariants: **coverage** traces every accepted work item through all applicable hierarchy paths and
   maps every leaf to exactly one task group; **acyclicity** validates `Requires` and order; **factual metadata**
   is supported or explicitly nonblocking; **separation** keeps hierarchy out of execution order and the plan
-  flat; **accountability** gives every group one role and complete context; and **independent consistency**
+  flat; **accountability** gives every group one role and the assignment contract; and **independent consistency**
   keeps both views aligned and independently readable.
-- Improve the section structure, reading order, sentences, vocabulary, part boundaries, links, and group
-  context directly. Remove repetition and complexity that do not improve execution, traceability, or safety.
+- Improve the section structure, reading order, sentences, vocabulary, part boundaries, links, and assignment
+  contract directly. Remove repetition and complexity that do not improve execution, traceability, or safety.
 - Return input, authority, decision, or direction failures to Phase 1; hierarchy failures to Phase 2; and
   combination, dependency, or order failures to Step 3.1. Return written context, metadata, structure, or link
   failures to Step 3.2; repair the owning step, then repeat this review.
@@ -136,4 +145,4 @@ the task group is too broad or its recorded details are incomplete.
 | [Task index](templates/planning/tasks/tasks-index.md) | Index template for the numbered task-hierarchy output. |
 | [Task part](templates/planning/tasks/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
 | [Plan index](templates/planning/plan-index.md) | Root template for result authority, task source, and plan-part order. |
-| [Plan part](templates/planning/plan-NN.md) | Repeatable template for complete ordered task groups. |
+| [Plan part](templates/planning/plan-NN.md) | Repeatable template for ordered task groups and their assignment contracts. |

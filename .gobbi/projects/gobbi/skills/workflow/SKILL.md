@@ -61,17 +61,18 @@ outside the frame.
 |---|---|
 | `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject and caller criteria to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
+| `EVALUATION` | Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`) to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
 | `RECORD` | Reread the result, each `report.md`, and each `checklist.md`, copy the contract-gate verdict, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
 Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
 policy, iteration cap, per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, receipt path,
-checks, authority, and recovery boundary. Remaining-runtime evaluator briefs must name write set
-`runtime-directory` and the caller-named directory `<record-directory>/evaluation/iteration-N/` that may
-contain the writing-path parent; a missing write set still means `writing-path-only` and cannot complete an
-evaluation assignment. Drafts and independent inputs start at caller-named paths below `{session-root}/tmp/`.
-The Partner launch set is the recorded set minus the active runtime. If that set is empty, launch nothing and
-do not rewrite the recorded policy to `disabled`. Each remaining runtime receives one Partner wrapper subagent
+checks, authority, recovery boundary, and one named `evaluation-depth` token. Remaining-runtime evaluator
+briefs must name write set `runtime-directory` and the caller-named directory
+`<record-directory>/evaluation/iteration-N/` that may contain the writing-path parent; a missing write set
+still means `writing-path-only` and cannot complete an evaluation assignment. Drafts and independent inputs
+start at caller-named paths below `{session-root}/tmp/`. The Partner launch set is the recorded set minus the
+active runtime. If that set is empty, launch nothing and do not rewrite the recorded policy to `disabled`.
+Each remaining runtime receives one Partner wrapper subagent
 through the active runtime's subagent system, with its own wrapper-capture path, Delegation prompt, and
 `expected-partner`. Wrapper capture stays private, outside the session, and is not the evaluation tree.
 Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces that runtime's
@@ -195,9 +196,11 @@ P3 · Note
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
   decision package to Step 1.4, then resume the leader only from the recorded answer.
-- **EVALUATION:** Freeze the index and every listed member, apply the Workflow Frame with at most two iterations,
-  and verify membership, order, paths, hashes, tracked-tree state, reports, and working checklists. Use the
-  frozen project/work design and discussion criteria for every evaluator.
+- **EVALUATION:** Freeze the index and every listed member, name `evaluation-depth` `ideation-design`, apply
+  the Workflow Frame with at most two iterations, and verify membership, order, paths, hashes, tracked-tree
+  state, reports, and working checklists. Use the frozen project/work design and discussion criteria so every
+  evaluator scores goal, decisions, boundaries, constraints, work strategy, indexed integrity, required
+  discussion, and user decisions, not implementation completeness or document polish.
 - **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
   Step 1.4 only for missing or contradictory project/work design, required participant discussion, or a required
   user decision; a checklist item, missing section, wording defect, or implementation detail cannot cause
@@ -229,7 +232,7 @@ runtimes make later in-frame decisions from the locked Phase 1 design, then wait
 Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its role, evidence,
 addressability, and write boundary and issuing a complete new Delegation brief.
 
-#### 2.1 Run the Planning frame
+#### 2.1 Run the Planning DISCUSSION and WORK
 
 - **DISCUSSION:** Enter only from completed `P1 · User Review`. The manager uses independent local and remaining
   Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted
@@ -238,22 +241,33 @@ addressability, and write boundary and issuing a complete new Delegation brief.
   `{session-root}/2-planning/outputs/planning/` and exact locator
   `{session-root}/2-planning/outputs/planning/plan-index.md`. One leader writes and self-reviews the indexed plan
   while preserving Ideation members and locked decisions.
-- **EVALUATION → RECORD:** Freeze the complete plan, run fresh evaluation, and record its gate and receipt with a
-  maximum of two iterations. Verify obligation coverage, stable task IDs, dependencies, contexts, writer
-  boundaries, indexed membership and hashes, and unchanged tracked state before activating Execution.
 
-#### 2.2 Run each Execution task frame
+#### 2.2 Evaluate and record Planning
+
+- **EVALUATION:** Freeze the complete plan, name `evaluation-depth` `planning-decomposition`, and apply the
+  Workflow Frame with at most two iterations. Use the accepted design and assignment-contract criteria so
+  every evaluator scores hierarchy coverage, grouping coherence, dependency-valid order, assignment contract,
+  and indexed integrity, not implementation recipes.
+- **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
+  Step 2.1 only for missing or contradictory decomposition, grouping, order, assignment-contract field,
+  authority, or indexed integrity; a checklist item, missing section, wording defect, or implementation
+  detail cannot cause REVISE without that trace, and FAIL records the exact stopped state. Verify obligation
+  coverage, stable task IDs, dependencies, contexts, writer boundaries, indexed membership and hashes, and
+  unchanged tracked state before activating Execution.
+
+#### 2.3 Run each Execution task frame
 
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
   gives one executor exact inputs, paths, authority, criteria, checks, and protected work.
 - **WORK:** Apply [Execution](../execution/SKILL.md) through Delegation with one active writer and read-only
   helpers. Require self-review, fresh verification, and one focused local commit for the accepted task.
-- **EVALUATION → RECORD:** Freeze the commit and result, run fresh evaluation, and record the gate and receipt
-  under the configured Execution cap. Reread the commit, diff, checks, reports, findings, and dispositions before
-  the next task; amend only pending plan work when an in-contract plan defect appears.
+- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`,
+  run fresh evaluation, and record the gate and receipt under the configured Execution cap. Reread the commit,
+  diff, checks, reports, findings, and dispositions before the next task; amend only pending plan work when an
+  in-contract plan defect appears.
 
-#### 2.3 Write the Phase 2 handoff and wait at User Review
+#### 2.4 Write the Phase 2 handoff and wait at User Review
 
 - After every planned task earns PASS, render the handoff template at `3-execution/handoff.md` with the plan,
   task commits, checks, evaluations, decisions, dispositions, exact worktree and session root, and
@@ -297,11 +311,11 @@ Continue.
 
 #### 3.3 Run closure EVALUATION
 
-- Freeze the actual closure tree and evaluate it with the Memory diff, accepted commits, checks, merge plan,
-  authority, exclusions, risks, and recovery paths. Use one fresh active-runtime evaluator and one Partner
-  wrapper subagent per remaining runtime over the same subject and criteria at
-  `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; a launchable runtime produces both
-  files, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+- Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
+  diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
+  active-runtime evaluator and one Partner wrapper subagent per remaining runtime over the same subject and
+  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; a launchable runtime
+  produces both files, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
   changed WORK; FAIL preserves the branch, worktree, session root, reports, working checklists, and exact
   stopped state.

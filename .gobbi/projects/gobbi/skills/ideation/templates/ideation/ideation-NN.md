@@ -114,25 +114,27 @@ child branch in another listed Ideation part and link it from the parent.}
 
 ## Design
 
+{Fill each Design heading only when that object is in the supplied design-and-decision scope. Keep the Design headings. An empty unscoped section is not an in-contract absence.}
+
 ### Actors
 
-{Define responsibilities and ownership.}
+{Define in-scope responsibilities and ownership.}
 
 ### Structure
 
-{Define boundaries, components, interfaces, dependencies, verification points, and trust boundaries.}
+{Define in-scope boundaries, components, interfaces, dependencies, verification points, and trust boundaries.}
 
 ### Data and State
 
-{Define inputs, outputs, states, invariants, retention, deletion, and boundary behavior.}
+{Define in-scope inputs, outputs, states, invariants, retention, deletion, and boundary behavior.}
 
 ### Behavior and Recovery
 
-{Define the main path, valid alternatives, invalid states, detection, containment, recovery, ownership, and diagnosis.}
+{Define the in-scope main path, valid alternatives, invalid states, detection, containment, recovery, ownership, and diagnosis.}
 
 ## Quality and Operations
 
-{Address applicable performance, resources, security, privacy, governance, accessibility, locale, compatibility, migration, rollback, observability, maintenance, and operational needs. Give evidence for material not-applicable decisions.}
+{Address in-scope performance, resources, security, privacy, governance, accessibility, locale, compatibility, migration, rollback, observability, maintenance, and operational needs. Keep the heading. An empty unscoped section is not an in-contract absence. Give evidence for an in-scope not-applicable decision.}
 
 ## Risks and Validation
 

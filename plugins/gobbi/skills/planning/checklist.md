@@ -3,12 +3,19 @@
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Planning work and complete indexed results produced through the Planning operation<br>
 > **Applicability:** General Planning evaluation with a current indexed result; Evaluation binds the exact work, locator, ordered membership, bytes, accepted work, intended consumers, and frozen state<br>
-> **Purpose:** Provide baseline coverage for Planning authority, decomposition, execution grouping, indexed integrity, downstream use, and safe change before target-specific items are added<br>
-> **Scope:** Work inputs and authority, hierarchy traceability and leaf boundaries, task-group composition and ownership, cross-view coverage, dependencies and parallelism, execution context and handoffs, indexed integrity, change, and recovery<br>
-> **Exclusions:** General documentation quality; retained legacy results; target-specific design, domain, implementation, security, accessibility, performance, and platform requirements; execution progress and operating product behavior; evaluation, acceptance, commit, and orchestration state<br>
+> **Purpose:** Provide baseline coverage for Planning authority, decomposition, grouping, order, assignment contract, indexed integrity, downstream use, and safe change before target-specific items are added<br>
+> **Scope:** Work inputs and authority, hierarchy traceability and leaf boundaries, task-group composition and ownership, cross-view coverage, dependencies and parallelism, assignment contract and handoffs, indexed integrity, change, and recovery<br>
+> **Exclusions:** General documentation quality; implementation recipes; Execution documentation completeness; retained legacy results; target-specific design, domain, implementation, security, accessibility, performance, and platform requirements; execution progress and operating product behavior; evaluation, acceptance, commit, and orchestration state<br>
 > **Governing sources:** [Evaluation](../evaluation/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Planning](SKILL.md), the accepted work contract, accepted design and decisions, and applicable project sources<br>
-> **Context:** Evaluate the operation evidence, plan index, task index, and every listed part as one subject. Apply the [Documentation checklist](../execution/docs/checklist.md) in parallel and add target-specific items after study.<br>
+> **Context:** Evaluate the operation evidence, plan index, task index, and every listed part as one subject. Add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
+
+## Evaluation Guide
+
+1. Bind the accepted work, accepted design, output root, and intended consumers before applying items.
+2. Treat an item as a Planning Problem only when it proves missing or contradictory decomposition, grouping,
+   order, assignment-contract field, authority, or indexed integrity. Implementation detail and document
+   completeness are not Planning Problems unless they prove one of those defects.
 
 ## Project Lifecycle
 
@@ -53,7 +60,7 @@
 - [ ] A hierarchy path traces to no accepted work item.
 - [ ] A hierarchy group's work, boundary, or output conflicts with its descendants.
 - [ ] A leaf contains outcomes that can complete independently.
-- [ ] A leaf requires materially different accountable roles or writer boundaries.
+- [ ] A leaf requires materially different accountable roles or writer frontiers.
 - [ ] A leaf combines work from different dependency frontiers.
 
 ### Task Group Composition
@@ -65,11 +72,11 @@
 - [ ] Combined leaves require incompatible capabilities or skills.
 - [ ] Combined leaves require incompatible context, inputs, or constraints.
 - [ ] Combined leaves begin from different dependency frontiers.
-- [ ] Combined leaves require conflicting writer or verification boundaries.
+- [ ] Combined leaves require conflicting writer frontiers.
 
 #### Compatible leaves are split into unnecessary task groups
 
-- [ ] Leaves with the same role, context, inputs, constraints, outcome, writer boundary, and dependency frontier remain separate without a supported reason.
+- [ ] Leaves with the same role, context, inputs, constraints, outcome, writer frontier, and dependency frontier remain separate without a supported reason.
 - [ ] A fixed batch size or automatic one-group-per-leaf pattern determines the task groups.
 
 ### Cross-View Coverage
@@ -96,20 +103,18 @@
 - [ ] A recorded dependency points to a missing or ineligible predecessor.
 - [ ] The dependency relationships contain a cycle.
 - [ ] Recorded order conflicts with a required predecessor relationship.
-- [ ] Groups presented as parallel have a dependency or conflicting writer boundary.
+- [ ] Groups presented as parallel have a dependency or conflicting writer frontier.
 - [ ] Independent groups are serialized without a supported dependency, authority, or resource constraint.
 
 ### Execution Use
 
-#### An accountable agent cannot execute a task group from the recorded result
+#### An accountable agent cannot identify the assignment contract from the recorded result
 
-- [ ] The agent cannot determine when the task group is ready to start.
-- [ ] The agent cannot determine the complete owned outcome and stopping boundary.
-- [ ] A required input, context source, or access condition cannot be located.
+- [ ] The agent cannot determine the owned outcome.
+- [ ] The agent cannot determine the stopping boundary.
 - [ ] A task group lacks one unique stable `task-NN-slug` identifier.
-- [ ] The required skills or capabilities cannot be identified from the task group.
-- [ ] The agent cannot distinguish permitted changes from prohibited changes.
-- [ ] The recorded verification cannot establish when the assignment is complete.
+- [ ] The agent cannot determine the accountable role.
+- [ ] The agent cannot distinguish permitted writer-frontier changes from prohibited changes.
 - [ ] Execution requires private planning context or a new decomposition decision.
 
 ### Handoff Failure

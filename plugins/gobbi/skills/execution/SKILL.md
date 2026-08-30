@@ -68,7 +68,9 @@ justifies it.
   implementation, callers, consumers, tests, documents, configuration, schemas, build paths, and relevant
   history.
 - Define the smallest complete result, explicit non-goals, open assumptions, and evidence that will prove the
-  task is done. Stop for the caller when a material outcome, boundary, or design choice is unresolved.
+  task is done. Stop for the caller when a material outcome, boundary, or design choice is unresolved;
+  missing implementation strategy, file-level edit set, or verification method is not an unresolved design
+  choice when the plan recorded outcome, boundary, and writer frontier.
 
 #### 1.2 Study before implementation
 
