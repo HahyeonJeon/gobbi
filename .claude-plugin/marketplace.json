@@ -9,7 +9,7 @@
     {
       "name": "gobbi",
       "description": "Structured orchestration, planning, execution, evaluation, temporary session evidence, durable memory, and terminal notes. Skills cover Claude Code, Codex, Cursor, and Grok; plugin agents remain Claude Code and Grok.",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "source": "./plugins/gobbi"
     }
   ]

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.2.4 - 2026-08-30
+
+### Fixed
+
+- Ideation and Planning evaluation no longer demand executor-owned implementation details. Managers deliver
+  `evaluation-depth` in evaluator briefs, and Evaluation honors a supplied token.
+
 ## 1.2.3 - 2026-08-28
 
 ### Fixed
