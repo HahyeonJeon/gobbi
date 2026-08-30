@@ -164,8 +164,9 @@ CW · Wrap-up
   next selected stage, and stop on competing evidence.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
-  exact temporary and final paths, authoritative result, verification, commit authority, and exact role and
-  skill paths. Set Execution commit authority to none unless the assignment is the user-called `commit`.
+  exact temporary and final paths, authoritative result, verification, commit authority, exact role and
+  skill paths, and, when the assignment is an evaluator, one named `evaluation-depth` token. Set Execution
+  commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
   recorded launch set minus the active runtime; launch none when the set is empty or disabled without rewriting
@@ -218,21 +219,27 @@ CW · Wrap-up
 
 - Enter only for an explicit `evaluate` and freeze the user-named subject, or the whole branch from the
   immutable base through the current head when no subset is named and no uncommitted tracked implementation
-  changes exist; an indexed result includes its index and every listed member. If uncommitted tracked
-  implementation changes exist and the user did not name a subset, stop and ask for `commit` or a named
-  subject.
-- Activate only `CW · Evaluation`, define the decision criteria and contract-gate aggregation rule, assign one
-  unique caller-named directory below `tmp/` as the aggregation parent with per-runtime children
-  `<runtime>/report.md` and `<runtime>/checklist.md`, and apply Memory `Temporary Record` to each exact file
-  path under that parent. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude`
-  or alias historical names such as `codex.md`.
+  changes exist; an indexed result includes its index and every listed member, and whole-branch evaluate uses
+  `evaluation-depth` `by-owning-stage`. If uncommitted tracked implementation changes exist and the user did
+  not name a subset, stop and ask for `commit` or a named subject.
+- Activate only `CW · Evaluation`, name one locked `evaluation-depth` token, define the decision criteria and
+  contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
+  parent with per-runtime children `<runtime>/report.md` and `<runtime>/checklist.md`, apply Memory
+  `Temporary Record` to each exact file path under that parent, and keep runtime tokens `claude-code`,
+  `codex`, `cursor`, and `grok`; do not use `claude` or alias historical names such as `codex.md`. Use
+  `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
+  integrity, required discussion, and user decisions, not implementation completeness or document polish),
+  `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
+  assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
+  implementation, and `by-owning-stage` for mixed subjects.
 - Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator and one Partner wrapper
-  subagent per remaining runtime over the same frozen subject, with remaining-runtime briefs naming write set
-  `runtime-directory`, the caller-named aggregation parent, a Delegation prompt, and `expected-partner`;
-  a missing write set still means `writing-path-only` and cannot complete this assignment. Wrapper capture
-  stays private outside the session and is not the evaluation parent; a launchable runtime
-  produces both files, an Unavailable attempt produces Unavailable evidence, and the manager aggregates only
-  contract-gate verdicts from complete pairs.
+  subagent per remaining runtime over the same frozen subject and named `evaluation-depth`, with
+  remaining-runtime briefs naming write set `runtime-directory`, the caller-named aggregation parent, a
+  Delegation prompt, `expected-partner`, and `evaluation-depth`; a missing write set still means
+  `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
+  session and is not the evaluation parent; a launchable runtime produces both files, an Unavailable
+  attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
+  complete pairs after Evaluation has applied the token rather than writing a RECORD.
 
 #### 4.2 Apply findings and coverage
 

@@ -39,10 +39,11 @@ limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST bind the exact target, scope, intended results, supplied decision criteria, and both
-  evaluation output paths before the critical review.** Confirm neither output overlaps the
-  target or a source-owned input, and stop when identity, access, independence, or
-  preservation cannot support a responsible evaluation.
+- **MUST bind the exact target, scope, intended results, supplied decision criteria, both
+  evaluation output paths, and any caller-supplied `evaluation-depth` before the critical
+  review.** Confirm neither output overlaps the target or a source-owned input, and stop
+  when identity, access, independence, or preservation cannot support a responsible
+  evaluation.
 - **MUST criticize the frozen target before preparing or loading any checklist.** Record the
   results from the Evaluation-owned prompts and the current project design and vision
   without traversing any checklist item source.
@@ -68,9 +69,10 @@ limit causes and verdicts to what the evidence supports.
   judgment. Do not read another evaluator's `report.md` or `checklist.md` from the same
   iteration.
 - Bind the exact artifact, state, version, or content hash; scope; intended results;
-  caller-supplied decision criteria; and both evaluation-owned paths: `report.md` and working
-  `checklist.md`. Confirm that neither path overlaps the target or a source-owned input, and
-  that the evaluator does not write `gate.md`.
+  caller-supplied decision criteria; both evaluation-owned paths: `report.md` and working
+  `checklist.md`; and any caller-supplied `evaluation-depth`. Confirm that neither path
+  overlaps the target or a source-owned input, and that the evaluator does not write
+  `gate.md`.
 - Stop when identity, access, independence, or preservation cannot support a responsible
   evaluation. Absent decision criteria allow a report and forbid a contract-gate verdict.
 
@@ -102,8 +104,8 @@ limit causes and verdicts to what the evidence supports.
 
 #### 2.1 Criticize the frozen target without a checklist
 
-- Run these Evaluation-owned prompts. They are not checklist items and must not become report
-  taxonomy.
+- Run these Evaluation-owned prompts; they are not checklist items and must not become report
+  taxonomy. When `evaluation-depth` is bound, apply them only inside that depth.
 
   | Prompt | Ask about |
   |---|---|
@@ -123,9 +125,13 @@ limit causes and verdicts to what the evidence supports.
   [report template](templates/report.md) field meanings. Coverage leads are study candidates
   for Phase 3, not working items.
 - Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
-  result, or `out-of-contract`, citing the governing source. A Problem that maps to a supplied
-  criterion must be `in-contract`; an out-of-contract result with no cited governing source is
-  not a Problem and must be demoted to an Improvement or dropped.
+  result, or `out-of-contract`, citing the governing source; when `evaluation-depth` is bound,
+  in-contract labeling follows the supplied token and the target skill's purpose and boundary.
+  Missing implementation detail at `ideation-design` or `planning-decomposition` is not an
+  in-contract Problem, and Phase 2 may still record out-of-contract Improvements for polish;
+  a Problem that maps to a supplied criterion must be `in-contract`, and an out-of-contract
+  result with no cited governing source is not a Problem and must be demoted to an Improvement
+  or dropped.
 - Return to Phase 1 if this review changes the bound target or evaluation boundary.
 
 ### Phase 3 — Prepare, freeze, run, and reconcile
@@ -134,10 +140,13 @@ limit causes and verdicts to what the evidence supports.
 
 - Collect applicable project and caller-supplied checklists, including the
   [Code Review checklist](../code-review/checklist.md) for code work, the
-  [Documentation checklist](../execution/docs/checklist.md) for documentation work, the
-  [Ideation checklist](../ideation/checklist.md) for a current indexed Ideation result, and the
-  [Planning checklist](../planning/checklist.md) for a current indexed Planning result. Apply
-  every matching baseline to mixed work.
+  [Documentation checklist](../execution/docs/checklist.md) for Execution documentation work,
+  the [Ideation checklist](../ideation/checklist.md) for a current indexed Ideation result, and
+  the [Planning checklist](../planning/checklist.md) for a current indexed Planning result.
+  When `evaluation-depth` is bound, gather baselines only at that depth: a current indexed
+  Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its own
+  checklist, not the Documentation checklist, and mixed work under `by-owning-stage` applies
+  each matching baseline to the artifact class it owns.
 - Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
   or rewrite a source during Evaluation.
 - Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its

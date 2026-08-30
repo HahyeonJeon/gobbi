@@ -7,13 +7,14 @@
 > **Scope:** Authority and scope, problem and outcomes, evidence, participant discussion and prior art, topics and decisions, integrated design, risks and uncertainty, indexed integrity, consumer use, handoff, and revision<br>
 > **Exclusions:** General documentation quality; retained legacy results; target-specific domain requirements and standards; Planning and implementation quality; operating product behavior; realized validation; Evaluation procedure, reports, and verdicts<br>
 > **Governing sources:** [Evaluation](../evaluation/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Ideation](SKILL.md), the accepted work contract, caller and user decisions, and applicable project sources and assessed prior art<br>
-> **Context:** Evaluate the operation evidence, root index, and every listed member as one subject. Authoritative parts supersede subordinate snapshots. Apply the [Documentation checklist](../execution/docs/checklist.md) in parallel and add target-specific items after study.<br>
+> **Context:** Evaluate the operation evidence, root index, and every listed member as one subject. Authoritative parts supersede subordinate snapshots. Add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Evaluation Guide
 
 1. Bind the caller-supplied project/work or topic/work design and decision scope, participant discussion contract,
-   required user decisions, intended consumer, and completion test before applying items.
+   required user decisions, intended consumer, and completion test before applying items. An Integrated Design
+   item fails only when that bound scope includes the named choice.
 2. Verify separate supported participant suggestions and critique were compared, any disagreement or weak
    assumption that could change the recommendation received one focused follow-up from an addressable participant,
    each conflict was resolved or exposed, and the strongest supported options and recommendation were synthesized
@@ -34,7 +35,7 @@
 - [ ] The result includes an outcome outside the accepted scope.
 - [ ] The result omits an accepted in-scope outcome.
 - [ ] The same material outcome has conflicting scope status.
-- [ ] Ordered implementation work or realized output appears inside the design result.
+- [ ] Ordered implementation work, recipes, file-level edits, algorithms as construction, verification methods, or realized output appear inside the design result.
 
 ### Change Coverage
 
@@ -101,16 +102,16 @@
 
 ### Integrated Design
 
-#### Requirements and decisions do not form one complete, coherent design
+#### Requirements and decisions do not form one coherent in-scope design
 
-- [ ] A requirement, decision, and design statement express conflicting versions of the same contract.
-- [ ] A material responsibility or ownership boundary remains unclear.
-- [ ] A material system relationship needed to realize the design remains undefined.
-- [ ] Required valid behavior cannot be derived from the design.
-- [ ] A material alternative-valid path cannot be derived from the design.
-- [ ] Expected handling of a material invalid input or state cannot be derived from the design.
-- [ ] A material failure or recovery path cannot be derived from the design.
-- [ ] An applicable quality or operating concern established by the evidence has no design treatment.
+- [ ] A requirement, decision, and design statement express conflicting versions of the same in-scope contract.
+- [ ] An in-scope responsibility or ownership boundary remains unclear.
+- [ ] An in-scope system relationship remains undefined.
+- [ ] In-scope valid behavior cannot be derived from the design.
+- [ ] An in-scope alternative-valid path cannot be derived from the design.
+- [ ] Expected handling of an in-scope invalid input or state cannot be derived from the design.
+- [ ] An in-scope failure or recovery path cannot be derived from the design.
+- [ ] An in-scope quality or operating concern has no design treatment.
 
 ### Risk and Uncertainty
 

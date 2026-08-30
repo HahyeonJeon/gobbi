@@ -24,15 +24,15 @@ parts.}
 
 | Context | Value | Applies to |
 |---|---|---|
-| {Truly shared repository, path, artifact, runtime, platform, access, environment, tool, or other metadata} | {Supported value} | {All task groups or named task-group IDs} |
+| {Truly shared assignment-local pointer, path, runtime, platform, access, environment, tool, or other metadata} | {Supported value} | {All task groups or named task-group IDs} |
 
-{Repeat rows only for truly shared context. Use `None` when no shared context is needed; never include secret
-values. Each task group still states the context needed to understand and execute its work.}
+{Repeat rows only for truly shared assignment-local pointers. Use `None` when no shared context is needed;
+never include secret values. Do not record a repository study dump here or in a task group.}
 
 ## Task Groups
 
 Lower order numbers execute first. Task groups with the same order may run in parallel only when their
-explicit `Requires` edges and writer boundaries permit it; `Requires` remains authoritative.
+explicit `Requires` edges and writer frontiers permit it; `Requires` remains authoritative.
 
 ### `task-NN-slug` — {Task group title}
 
@@ -41,7 +41,7 @@ explicit `Requires` edges and writer boundaries permit it; `Requires` remains au
 | Order | {Number} |
 | Combined task paths | {One or more exact leaf paths from the Task Hierarchy, such as 1.1, 1.2, and 2.1.1.} |
 | Accountable role | {Exactly one role assigned to this task group.} |
-| Required skills | {Exact skills and capabilities the assigned agent needs.} |
+| Compatible skills | {Exact skills the assigned role needs.} |
 | Requires | {Earlier task-group IDs or `None`.} |
 
 #### Decomposed Tasks
@@ -58,22 +58,18 @@ result inconsistent.}
 #### Group Details
 
 - **Why combined:** {Why these tasks belong in one agent assignment and form one coherent outcome.}
-- **Execution purpose:** {Why this grouped work is needed and what execution must achieve.}
-- **Accepted design:** {The relevant accepted design, decisions, and material assumptions.}
-- **Repository context:** {The relevant repository areas, current behavior, conventions, and artifacts.}
-- **Work:** {The complete group-level work across all combined tasks.}
-- **Boundary:** {What this task group covers and where its responsibility stops.}
-- **Output:** {The complete concrete output this task group must produce.}
-- **Inputs:** {All inputs the accountable agent needs.}
-- **Constraints:** {The accepted constraints and authority limits that govern this task group.}
-- **Writer boundary:** {The files, artifacts, state, or external surfaces this task group may change and its coherent commit boundary.}
+- **Group outcome:** {The owned observable outcome this task group must produce.}
+- **Stop:** {Where this task group's responsibility ends and what it must leave unspecified.}
+- **Constraints and authority:** {The accepted constraints and authority limits that govern this task group.}
+- **Accepted design:** {Pointer to the relevant accepted design and decisions.}
+- **Writer frontier:** {The files, artifacts, state, or external surfaces this task group may change.}
 - **Handoffs:** {Outputs received from prerequisite groups and outputs passed to dependent groups.}
-- **Verification:** {Fresh checks and direct evidence that prove the complete task-group outcome.}
+- **Verification:** {That the observable group outcome exists, not a test implementation, command list, or method.}
 - **Metadata:** {Task-group differences from Shared Context, or `None`.}
 
 {Repeat this task-group schema in flat plan order. Each group combines at least one leaf, each leaf appears in
-exactly one group, and no child agent tasks sit below a group. Do not make an agent infer group context solely
-from task paths, the Task Hierarchy, or private discussion.}
+exactly one group, and no child agent tasks sit below a group. Do not make an agent infer the assignment
+contract solely from task paths, the Task Hierarchy, or private discussion.}
 
 ## Unresolved Metadata
 

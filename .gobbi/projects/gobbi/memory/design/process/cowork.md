@@ -18,8 +18,11 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 
 ## Evaluate and wrap-up interaction
 
-- If uncommitted tracked implementation changes exist, default whole-branch `evaluate` stops and asks for
-  `commit` or a named subject.
+- Evaluator briefs name one `evaluation-depth` token. Tokens and in-contract bars live in
+  [Evaluation](evaluation.md#evaluation-depth).
+- Whole-branch `evaluate` uses `by-owning-stage`.
+- If uncommitted tracked implementation changes exist, default whole-branch `evaluate` still stops and
+  asks for `commit` or a named subject.
 - `wrap up` stops and requires `commit` first when those changes remain.
 - Evaluation corrections that change tracked files wait for `commit`. They do not auto-commit.
 
@@ -31,8 +34,9 @@ Per-runtime children are `<runtime>/report.md` and `<runtime>/checklist.md`. Run
 write set `runtime-directory`. A directory that holds only one of the two files is incomplete
 evidence and never PASS input. Wrapper capture stays outside the session.
 
-The Evaluation SOP, dual record, and Workflow layout live in [Evaluation](evaluation.md). This file
-keeps the Cowork commit gate and the Cowork-specific evaluation parent.
+The Evaluation SOP, dual record, depth tokens, and Workflow layout live in [Evaluation](evaluation.md).
+This file keeps the Cowork commit gate, `evaluation-depth` routing, and the Cowork-specific evaluation
+parent.
 
 ## Ownership
 

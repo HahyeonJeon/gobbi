@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Ideation and Planning evaluation depth](note/2026-08-30-evaluation-depth.md)
 - [Independent Code Review skill closure](note/2026-08-22-code-review-skill.md)
 - [Evaluation and Checklist improvement](note/2026-08-20-evaluation-and-checklist.md)
 - [Setup skill and generated plugin package](note/2026-08-18-setup-skill-and-package-generation.md)

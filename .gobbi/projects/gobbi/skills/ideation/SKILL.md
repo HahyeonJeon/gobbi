@@ -7,9 +7,10 @@ skill-type: operation
 
 # Ideation
 
-Ideation develops one evidence-backed design from a problem and its requirements. Use it when the problem,
-scope, or design choices need study and user discussion. It records the design as one indexed result and stops
-before realizing the design.
+Ideation develops one evidence-backed design from a problem and its requirements: the in-scope goal, design,
+decision, constraint, and strategy. Use it when the problem, scope, or those design choices need study and
+user discussion. It records the design as one indexed result and stops before implementation details, recipes,
+file-level edits, algorithms as construction, verification methods, or other realization.
 
 ## Principles
 
@@ -54,8 +55,10 @@ explain why the selected direction wins and what evidence would change it.
 - **MUST self-review and freeze the complete indexed result.** Read every listed file as one result and
   preserve its exact ordered membership and bytes; independent evaluation belongs to the caller and is never
   performed or claimed by Ideation.
-- **MUST stop at the design boundary.** Define the intended behavior and design without ordered implementation
-  tasks, implementation diffs, prototypes, code, experiments, benchmarks, or other realized output.
+- **MUST stop at the design boundary.** Define only the in-scope goal, design, decision, constraint, and
+  strategy; implementation details, recipes, file-level edits, algorithms as construction, verification
+  methods, ordered implementation tasks, implementation diffs, prototypes, code, experiments, benchmarks, and
+  other realized output are out of scope.
 - **NEVER change an accepted contract silently.** Reopen the earliest affected decision, obtain any required
   user choice through the caller, and propagate the consequence through every affected part.
 

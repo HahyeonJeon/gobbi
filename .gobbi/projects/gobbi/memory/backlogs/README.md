@@ -14,7 +14,10 @@ each group. Order implies no priority, readiness, or sequence.
 - `Coverage accounts on unrevisions` → `evaluation.md#coverage-accounts-on-unrevisions`
 - `Cursor evaluator write and Partner command` → `evaluation.md#cursor-evaluator-write-and-partner-command`
 - `Domain checklist family migration` → `evaluation.md#domain-checklist-family-migration`
+- `Evaluation 2.2 packed labeling substep` → `evaluation.md#evaluation-22-packed-labeling-substep`
+- `Evaluation 3.1 bound-gather omits execution-implementation` → `evaluation.md#evaluation-31-bound-gather-omits-execution-implementation`
 - `Evaluation Rule 2 versus working-checklist template load` → `evaluation.md#evaluation-rule-2-versus-working-checklist-template-load`
+- `Workflow Planning RECORD leftover writer-boundaries wording` → `evaluation.md#workflow-planning-record-leftover-writer-boundaries-wording`
 - `Wrap-up checklist as a named Evaluation baseline` → `evaluation.md#wrap-up-checklist-as-a-named-evaluation-baseline`
 
 ## Project
