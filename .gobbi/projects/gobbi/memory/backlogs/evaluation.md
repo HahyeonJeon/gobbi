@@ -41,6 +41,20 @@ carry an account. L8 left unrevisions without accounts.
 missing account as a Limit and still runs the working pass. Coverage-account audit items do not apply to
 the remaining unrevisions.
 
+## Workflow Planning RECORD leftover writer-boundaries wording
+
+**Backlogged at:** 2026-08-30T04:54:57Z
+
+**What:** Replace leftover Workflow Step 2.2 verify-list words `contexts, writer boundaries` with the
+Planning field `writer frontier`, and drop `contexts` if it is no longer an assignment-contract field.
+
+**Why backlogged:** Contract-gate PASS left this as a Low out-of-contract leftover. No correction this
+session.
+
+**Context:** Planning renamed the dispatch field to `writer frontier`. The Planning RECORD REVISE bar
+already uses the assignment contract. Leftover synonyms can still look like a recipe demand. Not
+blocking.
+
 ## Wrap-up checklist as a named Evaluation baseline
 
 **Backlogged at:** 2026-08-20T08:37:00Z
@@ -64,6 +78,34 @@ migrate other domain-family `checklists.md` files.
 
 **Context:** Domain files must not be failed for a missing account until they are given the SOP
 account. Product Lifecycle meaning stays unchanged.
+
+## Evaluation 2.2 packed labeling substep
+
+**Backlogged at:** 2026-08-30T04:54:57Z
+
+**What:** Split Evaluation Step 2.2 so polish-Improvement and criterion-mapping policy are not packed
+into the labeling bullet's second sentence.
+
+**Why backlogged:** Contract-gate PASS left this as a Low out-of-contract leftover. No correction this
+session.
+
+**Context:** The second sentence adds out-of-contract polish Improvements and restates
+criterion-mapping and demotion. Gobbi Skill caps still held. Prefer a Step split over packing. Not
+blocking.
+
+## Evaluation 3.1 bound-gather omits execution-implementation
+
+**Backlogged at:** 2026-08-30T04:54:57Z
+
+**What:** Name `execution-implementation` in Evaluation Step 3.1's bound-gather sentence so Code Review
+and Execution documentation baselines are explicit at that token.
+
+**Why backlogged:** Contract-gate PASS left this as a Low out-of-contract leftover. No correction this
+session.
+
+**Context:** Bound gather already names Ideation and Planning checklists at shaping tokens. Execution
+baselines remain in the unbound collect list. A cold evaluator at `execution-implementation` must infer
+them. Not blocking.
 
 ## Cursor evaluator write and Partner command
 

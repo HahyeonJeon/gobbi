@@ -79,3 +79,27 @@ contaminates the critique or the subject rebinds, discard the affected record an
 
 **Application:** Keep the checklist as a coverage backstop and reconcile its findings with the locked critique;
 do not let prepared categories become the source of the first review.
+
+## Thinning Ideation and Planning checklists does not stop completeness hunts
+
+**Context:** Changing Ideation or Planning so evaluation stops demanding executor-owned implementation
+details.
+
+**Tip:** Removing checklist items that demand recipes is not enough. Evaluation criticizes before any
+checklist. Phase 2 prompts and gather stay stage-blind unless Evaluation binds caller-supplied
+`evaluation-depth`. Cowork `evaluate` has no Workflow RECORD filter.
+
+**Application:** Bind `evaluation-depth` in Evaluation and name the token in Workflow and Cowork evaluator
+briefs. Keep Ideation and Planning checklists aligned with purpose and boundary, but do not treat
+checklist thinning as the depth bind.
+
+## Cowork whole-branch evaluate cannot freeze while tracked implementation is dirty
+
+**Context:** A Cowork `evaluate` call names no subset while accepted implementation is still uncommitted.
+
+**Tip:** Whole-branch evaluate freezes the branch from the immutable base through current head.
+Uncommitted tracked implementation is not in that freeze. The call stops and asks for `commit` or a
+named subject.
+
+**Application:** Commit accepted tracked implementation first, or name a subset. Do not treat Execution
+PASS as a freezeable whole-branch subject while those files remain dirty.

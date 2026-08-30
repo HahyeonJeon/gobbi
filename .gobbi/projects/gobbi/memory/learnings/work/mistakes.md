@@ -118,3 +118,25 @@ as a surprise.
 **Correction:** Continue enters Wrap-up. It does not grant Git integration. Reread Configuration
 and the latest handoff for merge and cleanup authority. An explicit user grant is required before
 Memory mutation that is followed by merge or cleanup.
+
+## Leaving leftover verify-list words after a Planning field rename
+
+**Context:** Planning renamed a dispatch field, and Workflow still lists older words in a RECORD verify
+list.
+
+**Mistake:** After Planning renamed `writer frontier`, Workflow Step 2.2 still said `contexts, writer
+boundaries`. Those leftover synonyms can look like a recipe demand even when the RECORD REVISE bar
+already uses the Planning assignment contract.
+
+**Correction:** When a Planning field is renamed, update every Workflow verify list in the same change.
+Do not treat leftover synonyms as in-contract REVISE when the RECORD bar is otherwise present.
+
+## Packing new policy into an Operation Skill second sentence instead of splitting a Step
+
+**Context:** Adding Evaluation-depth labeling policy without adding a seventh Rule or a new Phase.
+
+**Mistake:** Folding polish-Improvement and criterion-mapping policy into Evaluation Step 2.2's second
+sentence kept Gobbi Skill caps but packed extra policy into one substep.
+
+**Correction:** Prefer a Step split when new policy is more than a condition of the first sentence. A
+second sentence should only bound the first sentence, not introduce extra rules.

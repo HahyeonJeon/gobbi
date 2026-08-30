@@ -19,6 +19,7 @@ owned by Code Review.
 Wrap-up is not a named Evaluation baseline. A Checklist consumer may use the Code baseline without invoking
 the Code Review operation. Evaluation reads coverage accounts. It does not own coverage and does not add
 items to fill an account row. A reused source with no account is a Limit; the working pass still runs.
+When `evaluation-depth` is bound, Phase 2 prompts and Phase 3 gather stay inside that token.
 
 ## Dual record
 
@@ -30,6 +31,23 @@ items to fill an account row. A reused source with no account is a Limit; the wo
   Evaluation's finding or verdict authority.
 - A runtime directory that holds only one of `report.md` and `checklist.md` is incomplete evidence and never PASS input.
 - Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`.
+
+## Evaluation depth
+
+Bind any caller-supplied `evaluation-depth` in Phase 1. Phase 2 prompts and Phase 3 gather stay inside
+that token. Workflow and Cowork require the field in evaluator briefs. A missing-field stop-or-report
+protocol is not specified.
+
+| Token | In-contract bar |
+|---|---|
+| `ideation-design` | Goal, decisions, boundaries, constraints, work strategy, indexed integrity, required discussion and user decisions. Not implementation completeness or document polish. |
+| `planning-decomposition` | Hierarchy coverage, grouping coherence, dependency-valid order, assignment contract. Not implementation recipes. |
+| `execution-implementation` | Implementation, applicable Code Review and Execution documentation checklists, task verification. |
+| `by-owning-stage` | Mixed subject: each artifact uses its owning stage's token. Cowork whole-branch `evaluate` uses this. |
+
+A current indexed Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its
+own checklist, not the Execution documentation checklist. Mixed work under `by-owning-stage` applies each
+matching baseline to the artifact class it owns. Implementation recipes belong to Execution.
 
 ## Paths and writers
 
