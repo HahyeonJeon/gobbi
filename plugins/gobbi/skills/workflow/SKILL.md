@@ -191,8 +191,11 @@ P3 · Note
 
 #### 1.5 Produce, evaluate, and record Ideation
 
-- **WORK:** Apply [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract) through Delegation
-  with its complete caller contract plus Workflow's project/work scope, recorded participant discussion records,
+- **WORK:** Select [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive design subject has an
+  unresolved material code-design choice; otherwise select
+  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract). Apply the selected operation
+  through Delegation with Generic Ideation's complete caller contract plus Workflow's project/work scope,
+  recorded participant discussion records,
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
   decision package to Step 1.4, then resume the leader only from the recorded answer.
@@ -200,7 +203,8 @@ P3 · Note
   the Workflow Frame with at most two iterations, and verify membership, order, paths, hashes, tracked-tree
   state, reports, and working checklists. Use the frozen project/work design and discussion criteria so every
   evaluator scores goal, decisions, boundaries, constraints, work strategy, indexed integrity, required
-  discussion, and user decisions, not implementation completeness or document polish.
+  discussion, and user decisions, not implementation completeness or document polish; evaluate this design
+  through Generic Evaluation alone, using the Ideation baseline rather than the code baseline.
 - **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
   Step 1.4 only for missing or contradictory project/work design, required participant discussion, or a required
   user decision; a checklist item, missing section, wording defect, or implementation detail cannot cause
@@ -240,14 +244,14 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 - **WORK:** Apply [Planning](../planning/SKILL.md) through Delegation with absolute output root
   `{session-root}/2-planning/outputs/planning/` and exact locator
   `{session-root}/2-planning/outputs/planning/plan-index.md`. One leader writes and self-reviews the indexed plan
-  while preserving Ideation members and locked decisions.
+  while preserving Ideation members and locked decisions; Planning remains generic for code work.
 
 #### 2.2 Evaluate and record Planning
 
 - **EVALUATION:** Freeze the complete plan, name `evaluation-depth` `planning-decomposition`, and apply the
   Workflow Frame with at most two iterations. Use the accepted design and assignment-contract criteria so
   every evaluator scores hierarchy coverage, grouping coherence, dependency-valid order, assignment contract,
-  and indexed integrity, not implementation recipes.
+  and indexed integrity, not implementation recipes; use Generic Evaluation alone for the Planning result.
 - **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
   Step 2.1 only for missing or contradictory decomposition, grouping, order, assignment-contract field,
   authority, or indexed integrity; a checklist item, missing section, wording defect, or implementation
@@ -260,12 +264,18 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
   gives one executor exact inputs, paths, authority, criteria, checks, and protected work.
-- **WORK:** Apply [Execution](../execution/SKILL.md) through Delegation with one active writer and read-only
-  helpers. Require self-review, fresh verification, and one focused local commit for the accepted task.
-- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`,
-  run fresh evaluation, and record the gate and receipt under the configured Execution cap. Reread the commit,
-  diff, checks, reports, findings, and dispositions before the next task; amend only pending plan work when an
-  in-contract plan defect appears.
+- **WORK:** For a task whose settled writer frontier includes code, apply
+  [Coding Execution](../coding/coding-execution/SKILL.md) with [Execution](../execution/SKILL.md); otherwise use
+  Execution alone, always with one active writer, read-only helpers, self-review, fresh verification, and one
+  focused local commit. An explicitly planned [Coding Review](../coding/coding-review/SKILL.md) result remains
+  review-only inside this stage, creates no new stage or gate, and never replaces mandatory Evaluation.
+- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`, and
+  apply Generic [Evaluation](../evaluation/SKILL.md) only. For a frozen target or owned slice with an in-contract
+  code judgment, consume the [Coding Review checklist](../coding/coding-review/checklist.md) as Evaluation's code
+  baseline after its unaided critique; under `by-owning-stage`, apply that baseline only to matching implementation
+  slices, and never run Coding Review as Evaluation. Run fresh evaluation and record the gate and receipt under
+  the configured Execution cap, then reread the commit, diff, checks, reports, findings, and dispositions before
+  the next task; amend only pending plan work when an in-contract plan defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
@@ -314,8 +324,11 @@ Continue.
 - Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
   diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
   active-runtime evaluator and one Partner wrapper subagent per remaining runtime over the same subject and
-  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; a launchable runtime
-  produces both files, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each evaluator applies Generic
+  Evaluation only and, for a matching implementation slice, consumes the
+  [Coding Review checklist](../coding/coding-review/checklist.md) as its code baseline after unaided critique
+  without running Coding Review as Evaluation. A launchable runtime produces both files, and an Unavailable
+  attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
   changed WORK; FAIL preserves the branch, worktree, session root, reports, working checklists, and exact
   stopped state.
@@ -350,6 +363,9 @@ Continue.
 | [Planning](../planning/SKILL.md) | Owns task hierarchy and its indexed result. |
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
 | [Evaluation](../evaluation/SKILL.md) | Owns independent assessment and each complete `report.md` plus working `checklist.md`. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Adds code-design coverage inside a matching Phase 1 WORK stage. |
+| [Coding Execution](../coding/coding-execution/SKILL.md) | Adds code-specific implementation coverage inside a matching Execution WORK stage. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Produces an explicitly planned review-only result without creating a Workflow stage or gate. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |

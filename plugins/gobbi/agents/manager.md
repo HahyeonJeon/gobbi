@@ -30,6 +30,8 @@ Every Gobbi skill path is resolved through the validated root pair. Manager is n
 | Project rules, or record `NO_PROJECT_RULES: rules/ absent-or-empty` | Same entry load |
 | `{gobbi-skills-root}/cowork/SKILL.md` | Mode is Cowork |
 | `{gobbi-skills-root}/workflow/SKILL.md` | Mode is Workflow |
+| `{gobbi-skills-root}/coding/SKILL.md` | Any direct Coding child may apply to the current bounded unit; use the root only to discover every matching child |
+| Matching `coding-ideation`, `coding-execution`, or `coding-review` child in `{gobbi-skills-root}/coding/` | In General, sequence matching children as dependencies become current. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages without a Coding conductor |
 | `{gobbi-skills-root}/git/SKILL.md` and `{gobbi-skills-root}/memory/SKILL.md` | Cowork or Workflow owner entry |
 | `{gobbi-skills-root}/wrap-up/SKILL.md` | Workflow Phase 3 |
 | Other task, language, tool, or evaluation skills | Their trigger applies |

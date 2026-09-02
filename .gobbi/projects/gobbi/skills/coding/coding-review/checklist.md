@@ -1,12 +1,12 @@
-# Code Review Checklist
+# Coding Review Checklist
 
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Code artifacts and code changes<br>
-> **Applicability:** General Code Review, Execution self-review, and independent Evaluation; the applying operation binds the exact artifact, revision, behavior, and affected surfaces under review<br>
+> **Applicability:** General Coding Review, Execution self-review, and independent Evaluation; the applying operation binds the exact artifact, revision, behavior, and affected surfaces under review<br>
 > **Purpose:** Provide one language-independent baseline for category-by-category code review across the project, design and development, and conditional product lifecycles<br>
 > **Scope:** Project Fit, Affected Surfaces, Project Structure, Architecture, Design Pattern, Abstraction, Data Model, Public API, Parameters, Modularization, Reusability, Performance, Optimization, Unintended Overengineering, Code Complexity, Readability, Vocabulary, Naming Convention, Docstring, Correctness, Testing, Verification, Delivery, Usability, Operations, and Compatibility<br>
 > **Exclusions:** Language-, framework-, platform-, domain-, and specialist-specific expectations unless the applying operation activates their owning source; Security, Privacy, Concurrency, Accessibility, Localization, Dependencies, Build, Packaging, Release, Deployment, Configuration, Observability, Migration, Deprecation, and Retirement remain overlays<br>
-> **Governing sources:** [Code Review](SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Execution](../execution/SKILL.md), [Evaluation](../evaluation/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
+> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Execution](../../execution/SKILL.md), [Evaluation](../../evaluation/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
 > **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 

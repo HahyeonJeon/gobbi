@@ -8,8 +8,8 @@ skill-type: operation
 # Domain Skill
 
 Domain Skill defines how to author or substantively revise one navigation-only domain root and its direct
-operation, tool, and preference children. Use it after Gobbi Skill classifies the target as `domain` and one
-broad area needs a selective family of independently loadable skills.
+children. Use it after Gobbi Skill classifies the target as `domain` and one broad area needs a selective family
+of independently loadable skills.
 
 ## Principles
 
@@ -42,9 +42,9 @@ keep identities clear.
 - **MUST keep children direct and globally namespaced.** Use `{domain}/{domain}-{capability}/SKILL.md`, make
   each child `name` match its directory, and create no nested domain-routing child; a Tool Skill child may own
   direct Tool Skill children under the Tool Skill contract.
-- **MUST make every child an ordinary operation, tool, or preference skill.** Author each child through a fresh
-  Gobbi Skill pass and give it one matching type shape with locally owned supporting documents only when
-  needed.
+- **MUST give the family at least two independently loadable direct children, each an ordinary operation, tool,
+  or preference skill.** Author each child through a fresh Gobbi Skill pass and give it one matching type shape
+  with locally owned supporting documents only when needed.
 - **MUST keep root activation and child routing complete and bidirectional.** List each direct child once and
   require root predicate `R` to be true if and only if at least one direct-child predicate `Ci` is true.
 - **MUST keep applicability wording canonical.** Put identity only in each `description`, put one applicability
@@ -66,8 +66,8 @@ keep identities clear.
 #### 1.2 Assign child ownership
 
 - Partition the inventory by independently useful applicability, type, and policy owner.
-- Require at least one operation, one tool, and one preference child, and assign every material claim to one
-  child.
+- Require at least two independently loadable direct children, truthfully classify each one, and assign every
+  material claim to one child.
 - Split a child with mixed types or owners, and merge children that cannot state distinct boundaries without
   repeating the same contract.
 

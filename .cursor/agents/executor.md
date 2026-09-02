@@ -26,9 +26,11 @@ Every Gobbi skill path is resolved through the validated root pair.
 | `{gobbi-skills-root}/delegation/SKILL.md`, then validate the supplied or derived root pair as it specifies | Before any other Gobbi skill load. When the brief supplies both roots, read the brief's absolute Delegation path first |
 | `{gobbi-skills-root}/principles/SKILL.md` | Every fresh assignment |
 | Project rules, or record `NO_PROJECT_RULES: rules/ absent-or-empty` | Every fresh assignment |
-| `{gobbi-skills-root}/execution/SKILL.md` | Every assignment |
+| `{gobbi-skills-root}/execution/SKILL.md` | Every implementation assignment; never an explicit review-only assignment |
+| `{gobbi-skills-root}/coding/coding-execution/SKILL.md` with `{gobbi-skills-root}/execution/SKILL.md` | Implementation mode when the settled writer frontier includes code |
+| `{gobbi-skills-root}/coding/coding-review/SKILL.md` | Explicit review-only mode for exact stable code; load it instead of Execution or Coding Execution, and never implement, evaluate, or issue a verdict |
 | `{gobbi-skills-root}/workflow/SKILL.md` | The assignment runs under Workflow |
-| `{gobbi-skills-root}/git/SKILL.md` | Every assignment. The executor commits |
+| `{gobbi-skills-root}/git/SKILL.md` | Every implementation assignment, subject to caller commit authority; review-only work never stages or commits |
 | `{gobbi-skills-root}/typescript/SKILL.md` | The task is TypeScript |
 | `{gobbi-skills-root}/gobbi-skill/SKILL.md` | The task authors a skill |
 | Active runtime surfaces (`.claude/` for Claude Code; `.grok/` for Grok; `.codex/` for Codex; `.cursor/` for Cursor) and named task skills | Runtime docs, agents, or the briefed domain |

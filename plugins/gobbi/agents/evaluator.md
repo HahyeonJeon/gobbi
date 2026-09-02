@@ -32,6 +32,7 @@ Every Gobbi skill path is resolved through the validated root pair.
 | `{gobbi-skills-root}/evaluation/SKILL.md` | Every assignment |
 | `{gobbi-skills-root}/evaluation/templates/report.md` | Every assignment |
 | `{gobbi-skills-root}/evaluation/templates/checklist.md` | Every assignment |
+| `{gobbi-skills-root}/coding/coding-review/checklist.md` | The target or owned slice has an in-contract code judgment; use it as Evaluation's code baseline after unaided critique, under `by-owning-stage` apply it only to matching implementation slices, and never run Coding Review as Evaluation |
 | `{gobbi-skills-root}/checklist/SKILL.md` | Phase 3 must author a new working item, or the assignment requests a reusable checklist |
 | The target skill and its named checklists | The target was produced by that skill |
 | Active runtime surfaces (`.claude/` for Claude Code; `.grok/` for Grok; `.codex/` for Codex; `.cursor/` for Cursor) and named baselines | Code, documentation, Ideation, or Planning targets |

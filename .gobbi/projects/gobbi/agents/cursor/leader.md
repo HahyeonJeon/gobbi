@@ -29,6 +29,7 @@ Every Gobbi skill path is resolved through the validated root pair.
 | Project rules, or record `NO_PROJECT_RULES: rules/ absent-or-empty` | Every fresh assignment |
 | `{gobbi-skills-root}/git/SKILL.md` | The brief authorizes a worktree write. Response-form Study omits Git unless another assigned action writes |
 | `{gobbi-skills-root}/ideation/SKILL.md`, `{gobbi-skills-root}/study/SKILL.md`, or `{gobbi-skills-root}/planning/SKILL.md` | The named phase |
+| `{gobbi-skills-root}/coding/coding-ideation/SKILL.md` with `{gobbi-skills-root}/ideation/SKILL.md` | The named Ideation assignment has an unresolved material code-design choice; Planning remains generic |
 | `{gobbi-skills-root}/startup/SKILL.md` | Software-project design interview |
 | `{gobbi-skills-root}/gobbi-skill/SKILL.md` | Authoring a skill |
 | Active runtime surfaces (`.claude/` for Claude Code; `.grok/` for Grok; `.codex/` for Codex; `.cursor/` for Cursor) | Work touches runtime docs or agents |

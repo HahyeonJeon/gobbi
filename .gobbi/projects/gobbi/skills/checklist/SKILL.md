@@ -141,7 +141,8 @@ when omitting it would make the sign ambiguous or unanswerable.
   Cover every supported material problem without treating the spectrum as a quota.
 - Merge narrow or overlapping scenarios when their signs share one problem, context, and evidence frame. Split
   only a scenario that mixes materially different problem families; one scenario may cover several spectrum
-  prompts, as in code-review/checklist.md Correctness → `Required behavior or failure handling is incomplete`.
+  prompts, as in the [Coding Review checklist](../coding/coding-review/checklist.md), Correctness → `Required
+  behavior or failure handling is incomplete`.
 - Fill every spectrum-prompt row in the coverage account as Covered, Not applicable, or Evidence gap, then
   recheck coverage after reconciliation. Return to the applicable lifecycle step for a missing or incorrect
   category, or Step 2.3 for missing, artificial, or misplaced scenarios.

@@ -32,6 +32,23 @@ Gobbi 1.1 and does not run `NO_GOBBI_ROOT`.
 Status stays role-owned: manager `PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`; other
 roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. Evaluator adds `VERDICT` on complete work.
 
+## Conditional coding load map
+
+The Coding domain changes conditional loads, not the five-role set or role procedures. The same semantic map
+appears in all four canonical runtime variants.
+
+| Role | Conditional load | Boundary |
+|---|---|---|
+| Manager | Load [Coding](../../../skills/coding/SKILL.md) when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In General, sequence matching children as dependencies become current. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. General retains sequencing, re-entry, and acceptance; each mode retains its paths, gates, policies, and handoff. |
+| Leader | Load [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) with Generic Ideation for an unresolved material code-design choice. | Generic Planning remains the only decomposition operation. The leader does not implement or evaluate. |
+| Executor | In implementation mode, load [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) with Generic Execution when the settled writer frontier includes code. In explicit review-only mode, load [Coding Review](../../../skills/coding/coding-review/SKILL.md) instead. | Implementation and review-only modes are mutually exclusive. Review-only writes only the caller-bound report, changes no subject, never stages or commits, and issues no verdict. |
+| Evaluator | Load no Coding child. Always load Generic Evaluation and both templates. When the target or owned slice has an in-contract code judgment, load the [Coding Review checklist](../../../skills/coding/coding-review/checklist.md) as Evaluation's code baseline after unaided critique. | Generic Evaluation remains the only formal gate. Under `by-owning-stage`, apply the code baseline only to matching implementation slices. Never run Coding Review as Evaluation; read its report only as delayed prepared evidence. |
+| Assistant | No coding-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation, review, or evaluation. |
+
+An executor in review-only mode may provide independent review when not the author. An author may provide only
+caller-permitted disclosed self-review. The report remains non-gating in either case. See the
+[Coding skill family](../feature/coding-skill-family.md).
+
 Evaluator roles load Evaluation and both evaluation templates every assignment. They load Checklist
 only when authoring a new working item or when the assignment requests a reusable checklist. They
 write `report.md` and working `checklist.md` only, never `gate.md`, and they do not read a peer

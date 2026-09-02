@@ -1,12 +1,12 @@
-# {Subject} Code Review
+# {Subject} Coding Review
 
-> **Document role:** Current Code Review report<br>
+> **Document role:** Current Coding Review report<br>
 > **Record state:** `{current | partial | unable | historical}`<br>
 > **Subject:** {Exact paths, objects, and behavior boundary}<br>
 > **Reviewed revision:** {Exact commit, tree, range, hash, or observed content identity}<br>
 > **Reviewer:** {Identity and runtime}<br>
 > **Relationship:** `{author | not the author}`<br>
-> **Checklist:** [Canonical Code Review checklist]({absolute or relative path to the bound checklist source}) at {bound content identity}<br>
+> **Checklist:** [Canonical Coding Review checklist]({absolute or relative path to the bound checklist source}) at {bound content identity}<br>
 > **Reviewed at:** {Timestamp or bounded interval}<br>
 > **Evaluation timing:** This is prepared review material. An evaluator reviews the same subject unaided before reading it.<br>
 > **Authority:** Review only; no target change, approval, merge, publication, or release authority.

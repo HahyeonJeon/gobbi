@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added the navigation-only `coding` domain for discovering three direct operations: `coding-ideation`,
+  `coding-execution`, and `coding-review`.
+
+### Changed
+
+- Domain families now require at least two independently loadable direct children, each truthfully classified as
+  an operation, tool, or preference, instead of requiring one child of every type.
+- General discovers applicable operations through the `coding` domain and sequences matching children as their
+  dependencies become current. Cowork and Workflow keep their existing conduct and select matching children
+  directly inside current stages. Runtime specialist roles load those children directly.
+- The shared code-review checklist moves from
+  `.gobbi/projects/gobbi/skills/code-review/checklist.md` to
+  `.gobbi/projects/gobbi/skills/coding/coding-review/checklist.md`. Generic Execution and Evaluation consume the
+  moved baseline directly.
+
+### Removed
+
+- **Breaking:** Removed the top-level `code-review` skill and discovery name without an alias. Consumers must
+  replace direct `code-review` calls with the `coding-review` child under `coding` and replace
+  `skills/code-review/` paths with `skills/coding/coding-review/`; old calls and paths no longer resolve.
+- Removed the unreleased `coding-evaluation` child. Coding Review remains non-gating and owns the shared code
+  checklist; Generic Evaluation remains the independent gate and retains verdict authority.
+
 ## 1.2.4 - 2026-08-30
 
 ### Fixed

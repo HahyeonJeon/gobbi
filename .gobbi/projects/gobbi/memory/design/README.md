@@ -11,13 +11,13 @@ Recursive navigation across design memory, grouped by category.
 
 - [Agent Teams](feature/agent-teams.md)
 - [CLI skill family](feature/cli-skill-family.md)
+- [Coding skill family](feature/coding-skill-family.md)
 - [Partner](feature/partner.md)
 - [Python skill family](feature/python-skill-family.md)
 - [Stop reminder](feature/stop-reminder.md)
 
 ## Process
 
-- [Code Review](process/code-review.md)
 - [Collaborative design and delegated results](process/collaborative-design-and-delegated-results.md)
 - [Cowork implementation commits](process/cowork.md)
 - [Discussion question flow](process/discussion.md)

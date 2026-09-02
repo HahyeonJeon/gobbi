@@ -139,9 +139,9 @@ justifies it.
 - Run the task's required checks on the exact tree after the last edit and add targeted checks for risks found
   during study or implementation. Use only the tests, builds, type checks, validation, inspection, benchmarks,
   or security checks that apply.
-- Apply the [Code Review checklist](../code-review/checklist.md) to code work and the
-  [Documentation checklist](docs/checklist.md) to documentation work. Read and apply the Code Review checklist's
-  Coverage Account before reviewing its items, and consume the Code Review source directly without running the
+- Apply the [Coding Review checklist](../coding/coding-review/checklist.md) to code work and the
+  [Documentation checklist](docs/checklist.md) to documentation work. Read and apply the Coding Review checklist's
+  Coverage Account before reviewing its items, and consume the Coding Review source directly without running the
   full operation or writing its report; checklist use grants no report or formal decision authority.
 - Review the complete implementation and diff for task alignment, consistency, unsupported complexity, stale
   or unsafe content, unexpected churn, and undocumented compatibility changes, then inspect affected behavior
@@ -174,7 +174,7 @@ justifies it.
 
 | Name | Description |
 |---|---|
-| [Code Review checklist](../code-review/checklist.md) | Code Review-owned reusable unchecked source for self-reviewing and evaluating general code-work quality. |
+| [Coding Review checklist](../coding/coding-review/checklist.md) | Coding Review-owned reusable unchecked source for self-reviewing and evaluating general code-work quality. |
 | [Documentation checklist](docs/checklist.md) | Reusable unchecked source for self-reviewing and evaluating general documentation-work quality. |
 | [Execution handoff template](templates/handoff.md) | Response-only format for the task result, changes, verification, local delivery, concerns, and limits. |
 | [Git](../git/SKILL.md) | Preferences for staging, focused commits, verification, and retained local state. |

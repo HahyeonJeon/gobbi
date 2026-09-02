@@ -178,14 +178,16 @@ CW · Wrap-up
 
 - Fast produces no Ideation or Planning result. Existing recovered sessions retain accepted selected or
   omitted stages and one exact evidence-proved legacy result shape without renaming or migration.
-- For Light, apply the collaboration Rule only when an in-scope topic/work design or decision exists, then apply
-  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract) through Delegation with its
-  complete caller contract plus the topic/work scope, applicable participant discussion records, and absolute
-  locators
+- For Light with an in-scope topic/work design or decision, apply the collaboration Rule and select
+  [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive subject has an unresolved material
+  code-design choice; otherwise select
+  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract). Give the selected operation
+  Generic Ideation's complete caller contract plus the topic/work scope, applicable participant discussion
+  records, absolute locators
   `{session-root}/topic-NN-slug/1-ideation/ideation-index.md` and
-  `{session-root}/topic-NN-slug/2-planning/plan-index.md`, and recovery boundary. A decomposition-only Light route
-  creates no Ideation decision or participant discussion; route a returned decision package to Step 2.1, then
-  resume the leader only from the recorded answer.
+  `{session-root}/topic-NN-slug/2-planning/plan-index.md`, and recovery boundary, then route a returned decision
+  package to Step 2.1; a decomposition-only Light route selects neither Ideation operation, creates no Ideation
+  decision or participant discussion, and proceeds to Generic Planning.
 - Use caller-named `tmp/` paths for drafts and supporting inputs, then have the creator write the curated result
   directly to its phase directory. Accept Ideation only when its caller completion test passes, the index and
   members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any membership, order,
@@ -193,10 +195,14 @@ CW · Wrap-up
 
 #### 2.4 Execute and accept the topic
 
-- Assign each dependency-ready task through [Execution](../execution/SKILL.md). Fast receives one
-  manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted Planning result.
+- Assign each dependency-ready task through [Coding Execution](../coding/coding-execution/SKILL.md) with
+  [Execution](../execution/SKILL.md) when its settled writer frontier includes code; otherwise use Execution
+  alone. Fast receives one manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted
+  Planning result.
 - Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
-  work. Return failures, scope drift, or changed decisions to the earliest responsible stage.
+  work. An explicitly authorized [Coding Review](../coding/coding-review/SKILL.md) result stays review-only
+  inside the current stage, creates no TODO or gate, and cannot replace required implementation or Evaluation;
+  return failures, scope drift, or changed decisions to the earliest responsible stage.
 - Complete PASS only after every selected result is accepted and verified. Do not require a focused
   implementation commit or a clean tracked tree; report outcome, scope, results, commits, checks, exclusions,
   concerns, partner evidence, and evaluation coverage separately, then wait with no active item.
@@ -232,8 +238,12 @@ CW · Wrap-up
   `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
-- Apply [Evaluation](../evaluation/SKILL.md) through one fresh active-runtime evaluator and one Partner wrapper
-  subagent per remaining runtime over the same frozen subject and named `evaluation-depth`, with
+- Apply Generic [Evaluation](../evaluation/SKILL.md) only through one fresh active-runtime evaluator and one
+  Partner wrapper subagent per remaining runtime over the same frozen subject and named `evaluation-depth`. For a
+  frozen target or owned slice with an in-contract code judgment, each evaluator consumes the
+  [Coding Review checklist](../coding/coding-review/checklist.md) as Evaluation's code baseline after recording
+  its unaided critique; under `by-owning-stage`, apply that baseline only to matching implementation slices, and
+  never run Coding Review as Evaluation. Keep
   remaining-runtime briefs naming write set `runtime-directory`, the caller-named aggregation parent, a
   Delegation prompt, `expected-partner`, and `evaluation-depth`; a missing write set still means
   `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
@@ -291,5 +301,8 @@ CW · Wrap-up
 | [Planning](../planning/SKILL.md) | Owns bounded Light task decomposition and its indexed result. |
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
 | [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete `report.md` plus working `checklist.md`. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Adds code-design coverage to a matching Light Ideation stage. |
+| [Coding Execution](../coding/coding-execution/SKILL.md) | Adds code-specific implementation coverage to a matching Execution task. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Produces an explicitly authorized review-only result without creating a mode gate. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

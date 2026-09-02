@@ -1,15 +1,15 @@
 ---
-name: code-review
-description: "Code Review is an independent read-only operation for evidence-based code feedback."
+name: coding-review
+description: "Coding Review is an independent read-only operation for evidence-based code feedback."
 allowed-tools: Read, Grep, Glob, Bash, Write
 skill-type: operation
 ---
 
-# Code Review
+# Coding Review
 
-Code Review binds one exact code subject, inspects the actual code before prepared review material, applies
-the reusable checklist and activated specialist sources, and writes one caller-bound report. Use it for
-independent review or disclosed self-review; it does not change the subject or make a decision about it.
+Coding Review binds one exact code subject, inspects the actual code before prepared review material, applies
+the reusable checklist and activated specialist sources, and writes one caller-bound report.
+Use it when one exact stable code subject needs evidence-based feedback without target mutation or decision authority.
 
 ## Principles
 
@@ -39,7 +39,7 @@ all decision, correction, integration, publication, and release authority.
   invalidation condition, and caller-bound report path before inspection.** Stop as `unable` when identity,
   access, disclosure, a safe read-only method, or a non-overlapping report path cannot be established.
 - **MUST inspect the actual code and complete a checklist-free critical review before loading or traversing the
-  base checklist, a prepared item list, or a prior Code Review report for the same subject.** Lock the resulting
+  base checklist, a prepared item list, or a prior Coding Review report for the same subject.** Lock the resulting
   record before checklist exposure, do not backfill it from later material, and restart when prepared material
   contaminated either pass.
 - **MUST evaluate every applicable base item in source order and every activated overlay afterward.** Record
@@ -55,7 +55,7 @@ all decision, correction, integration, publication, and release authority.
 - **MUST keep the subject and governing state read-only and write or replace only the bound report.** Disclose
   `author` or `not the author`, and record the review as `current`, `partial`, `unable`, or `historical`.
 - **NEVER approve, accept, gate, correct, stage, commit, merge, publish, release, or change workflow or external
-  state through Code Review.** Do not score the subject or capture the report in durable Memory automatically.
+  state through Coding Review.** Do not score the subject or capture the report in durable Memory automatically.
 
 ## Procedure
 
@@ -69,7 +69,7 @@ all decision, correction, integration, publication, and release authority.
   source checklist. Record `unable` with the blocker, last valid evidence, needed input, and recovery owner when
   this proof fails.
 - Read the current requirements, accepted design, project rules, and ownership sources needed to interpret the
-  code. Do not load the Code Review checklist, a prepared item list, or a prior same-subject Code Review report.
+  code. Do not load the Coding Review checklist, a prepared item list, or a prior same-subject Coding Review report.
 
 ### Phase 2 — Inspect and Critique Without the Checklist
 
@@ -84,7 +84,7 @@ all decision, correction, integration, publication, and release authority.
 
 #### 2.2 Complete the checklist-free critical review
 
-- Critique the directly inspected subject through these five Code Review inquiry prompts. They are not checklist
+- Critique the directly inspected subject through these five Coding Review inquiry prompts. They are not checklist
   items or report taxonomy:
 
 | Prompt | Inquiry |
@@ -96,7 +96,7 @@ all decision, correction, integration, publication, and release authority.
 | Absences across the lifecycle | What necessary design, implementation, testing, verification, delivery, operation, transition, or closure work is absent? |
 
 - Challenge the critique against the concerns represented by the [Checklist scenario
-  spectrum](checklist.md#scenario-spectrum), but do not open, load, or traverse the Code Review checklist in this
+  spectrum](checklist.md#scenario-spectrum), but do not open, load, or traverse the Coding Review checklist in this
   phase. Record any new direct-evidence lead under the applicable inquiry prompt.
 - Before Phase 3, lock the exact subject identity, direct facts, Problems, Improvements, Strengths, Gaps, and
   coverage leads produced without checklist exposure. A bounded empty result names the inspected reach. Never
@@ -107,7 +107,7 @@ all decision, correction, integration, publication, and release authority.
 
 #### 3.1 Load, account for, and freeze applicable sources
 
-- Load [the Code Review checklist](checklist.md) only after the Phase 2 record is locked. Bind its exact content
+- Load [the Coding Review checklist](checklist.md) only after the Phase 2 record is locked. Bind its exact content
   identity and preserve its wording and hierarchy.
 - Record one applicability result for every core category before source freeze: `applicable`; `not applicable`
   with exact subject evidence; or `evidence missing` with a linked Gap. Do not infer applicability from the
@@ -197,8 +197,8 @@ all decision, correction, integration, publication, and release authority.
 
 | Name | Description |
 |---|---|
-| [Code Review checklist](checklist.md) | Supplies the reusable lifecycle, category, scenario, and negative-sign source loaded after actual-code inspection. |
-| [Code Review report template](templates/report.md) | Supplies the exact developer-facing report structure, item results, finding fields, zero states, and handoff boundary. |
-| [Checklist](../checklist/SKILL.md) | Owns creation and substantive revision of reusable checklist sources. |
-| [Evaluation](../evaluation/SKILL.md) | Owns independent critique, working checklists, and formal decisions; it completes its unaided same-subject critique before reading a Code Review report. |
-| [Execution](../execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |
+| [Coding Review checklist](checklist.md) | Supplies the reusable lifecycle, category, scenario, and negative-sign source loaded after actual-code inspection. |
+| [Coding Review report template](templates/report.md) | Supplies the exact developer-facing report structure, item results, finding fields, zero states, and handoff boundary. |
+| [Checklist](../../checklist/SKILL.md) | Owns creation and substantive revision of reusable checklist sources. |
+| [Evaluation](../../evaluation/SKILL.md) | Owns independent critique, working checklists, and formal decisions; it completes its unaided same-subject critique before reading a Coding Review report. |
+| [Execution](../../execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

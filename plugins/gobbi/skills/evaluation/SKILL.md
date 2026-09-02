@@ -79,7 +79,7 @@ limit causes and verdicts to what the evidence supports.
 #### 1.2 Inspect the actual target
 
 - Inspect the artifacts and observable behavior before reading completion claims, prepared reports—including
-  a same-subject Code Review report—or prepared checklists. Keep a same-subject Code Review report unread until
+  a same-subject Coding Review report—or prepared checklists. Keep a same-subject Coding Review report unread until
   the Phase 2 critical review is recorded, and distinguish delivered results from claims, deferred work,
   missing results, and unavailable state.
 - Trace the target's relevant structure, dependencies, interfaces, states, transitions,
@@ -117,7 +117,7 @@ limit causes and verdicts to what the evidence supports.
 - Challenge the frozen target with the scenario spectrum in [Checklist](../checklist/SKILL.md)
   Step 2.3 by link, not as a working-checklist walk. Do this after prompts 3 and 4.
 - Do not load or traverse reusable checklist sources, caller-supplied checklists, prior
-  evaluation item lists, the working checklist, or a same-subject Code Review report.
+  evaluation item lists, the working checklist, or a same-subject Coding Review report.
 
 #### 2.2 Record the critical-review results
 
@@ -139,7 +139,7 @@ limit causes and verdicts to what the evidence supports.
 #### 3.1 Gather sources
 
 - Collect applicable project and caller-supplied checklists, including the
-  [Code Review checklist](../code-review/checklist.md) for code work, the
+  [Coding Review checklist](../coding/coding-review/checklist.md) for code work, the
   [Documentation checklist](../execution/docs/checklist.md) for Execution documentation work,
   the [Ideation checklist](../ideation/checklist.md) for a current indexed Ideation result, and
   the [Planning checklist](../planning/checklist.md) for a current indexed Planning result.
@@ -150,7 +150,7 @@ limit causes and verdicts to what the evidence supports.
 - Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
   or rewrite a source during Evaluation.
 - Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its
-  reason and effect on coverage. After the Phase 2 critical review is recorded, treat any same-subject Code
+  reason and effect on coverage. After the Phase 2 critical review is recorded, treat any same-subject Coding
   Review report only as prepared evidence to verify independently, never as a source checklist or substitute
   finding.
 
@@ -239,7 +239,7 @@ limit causes and verdicts to what the evidence supports.
 | Name | Description |
 |---|---|
 | [Checklist](../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum Evaluation challenges by link. |
-| [Code Review checklist](../code-review/checklist.md) | Code Review-owned baseline source for evaluating general code-work quality. |
+| [Coding Review checklist](../coding/coding-review/checklist.md) | Coding Review-owned baseline source for evaluating general code-work quality. |
 | [Documentation checklist](../execution/docs/checklist.md) | Execution-owned baseline source for evaluating general documentation-work quality. |
 | [Ideation checklist](../ideation/checklist.md) | Ideation-owned baseline source for evaluating a complete current indexed Ideation result. |
 | [Planning checklist](../planning/checklist.md) | Planning-owned baseline source for evaluating a complete current indexed Planning result. |
