@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-09-02 — Coding skill family completed](2026-09-02-coding-skill-family.md)
 - [2026-08-30 — Ideation and Planning evaluation depth completed](2026-08-30-evaluation-depth.md)
 - [2026-08-22 — Independent Code Review skill completed](2026-08-22-code-review-skill.md)
 - [2026-08-20 — Local Gobbi v1.2.1 release prep completed](2026-08-20-gobbi-v1-2-1-release.md)
