@@ -52,11 +52,11 @@ route.
   subagents or teammates and each launchable remaining Partner, routes any needed focused follow-up to an
   addressable subagent or teammate, and owns user decisions and the reported route; Fast skips Ideation and
   Planning, while Light runs bounded canonical Ideation and Planning before Execution.
-- **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
-  results; executors own implementation writes and, only after `commit` authority, implementation commits;
+- **MUST keep one ordered writer chain with role-bound acceptance.** The matching craft owns ignored Ideation
+  and Planning results and implementation writes, and, only after `commit` authority, implementation commits;
   assistants own direct-Memory closure commits.
 - **MUST run evaluation, implementation commit, and Cowork closure only after the matching explicit user
-  `evaluate`, `commit`, or `wrap up` call.** One `evaluate` authorizes one fresh active-runtime evaluator and
+  `evaluate`, `commit`, or `wrap up` call.** One `evaluate` authorizes one fresh matching-craft agent and
   one Partner wrapper per remaining runtime; one `commit` authorizes focused implementation commits; one
   `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow TODOs, gates, RECORD receipts,
   or a Workflow Note.
@@ -165,7 +165,7 @@ CW · Wrap-up
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, a skills index of
-  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is an evaluator, one named `evaluation-depth` token. Set Execution
+  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is Evaluate, one named `evaluation-depth` token. Set Execution
   commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
@@ -213,7 +213,7 @@ CW · Wrap-up
 
 - Enter only for an explicit `commit` and activate only `CW · Commit`. Do not render the diff; the call is the
   confirmation.
-- Assign the owning executor through [Delegation](../delegation/SKILL.md) to create focused commit(s) of
+- Assign the matching craft through [Delegation](../delegation/SKILL.md) to create focused commit(s) of
   accepted uncommitted tracked implementation changes. Use one commit in the normal case, or one commit per
   accepted topic when the dirty set spans more than one topic.
 - Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
@@ -238,9 +238,9 @@ CW · Wrap-up
   `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
-- Apply Generic [Evaluation](../evaluation/SKILL.md) only through one fresh active-runtime evaluator and one
+- Apply Generic [Evaluation](../evaluation/SKILL.md) only through one fresh matching-craft agent and one
   Partner wrapper subagent per remaining runtime over the same frozen subject and named `evaluation-depth`. For a
-  frozen target or owned slice with an in-contract code judgment, each evaluator consumes the
+  frozen target or owned slice with an in-contract code judgment, each evaluating agent consumes the
   [Coding Review checklist](../coding/coding-review/checklist.md) as Evaluation's code baseline after recording
   its unaided critique; under `by-owning-stage`, apply that baseline only to matching implementation slices, and
   never run Coding Review as Evaluation. Keep

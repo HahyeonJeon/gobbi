@@ -9,11 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added programmer, designer, and author role contracts. They are subject crafts. Designer owns visual work
+  including UI, images, video, presentations, reports, and other visual artifacts. Pipeline work comes from
+  the Delegation prompt and loaded skills.
 - Added the navigation-only `coding` domain for discovering three direct operations: `coding-ideation`,
   `coding-execution`, and `coding-review`.
 
 ### Changed
 
+- Manager and assistant role contracts now match the thin craft shape: identity, Responsibility, In scope,
+  and Out of scope. Skills-to-load tables and status vocabularies live in the loaded mode and Delegation brief.
+- Every role intro names what that agent considers while working. Responsibility is the quality bar the role
+  owns. In scope is four CRUD operations, then named craft subjects. Out of scope bullets start with Never.
+  Designer subjects now include visual materials, design concept, and layout, kept separate from composition.
+- Delegation Role is a subject craft (programmer, designer, or author). Phase (ideate, plan, implement,
+  evaluate) lives in Task and the skills index, not in a pipeline role name.
 - Delegation no longer owns the Gobbi root-pair protocol. Specialists validate roots as Gobbi specifies.
   Every brief includes a skills index of skill, path, and description and a docs index of doc, path, and
   description; delegated agents load a listed skill or document only when the assignment cannot proceed
@@ -39,6 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** Removed the top-level `code-review` skill and discovery name without an alias. Consumers must
   replace direct `code-review` calls with the `coding-review` child under `coding` and replace
   `skills/code-review/` paths with `skills/coding/coding-review/`; old calls and paths no longer resolve.
+- **Breaking:** Removed the `executor`, `leader`, and `evaluator` agent roles without aliases. Dispatch uses
+  programmer, designer, or author plus a named phase. `Agent(gobbi:executor)`, `Agent(gobbi:leader)`, and
+  `Agent(gobbi:evaluator)` no longer resolve.
 - Removed the unreleased `coding-evaluation` child. Coding Review remains non-gating and owns the shared code
   checklist; Generic Evaluation remains the independent gate and retains verdict authority.
 

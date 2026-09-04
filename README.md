@@ -42,9 +42,9 @@ Enable Agent Teams and allow the five Gobbi roles in your project `.claude/setti
       "Skill(gobbi:gobbi)",
       "Skill(gobbi:principles)",
       "Agent(gobbi:manager)",
-      "Agent(gobbi:leader)",
-      "Agent(gobbi:executor)",
-      "Agent(gobbi:evaluator)",
+      "Agent(gobbi:programmer)",
+      "Agent(gobbi:designer)",
+      "Agent(gobbi:author)",
       "Agent(gobbi:assistant)"
     ]
   }

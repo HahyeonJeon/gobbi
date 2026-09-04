@@ -26,9 +26,9 @@
       "Skill(study)",
       "Skill(wrap-up)",
       "Agent(manager)",
-      "Agent(leader)",
-      "Agent(executor)",
-      "Agent(evaluator)",
+      "Agent(programmer)",
+      "Agent(designer)",
+      "Agent(author)",
       "Agent(assistant)",
       "WebSearch"
     ],

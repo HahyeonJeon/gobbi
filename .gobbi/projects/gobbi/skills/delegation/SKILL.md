@@ -70,6 +70,7 @@ context.
 
   - step: <owning operation step>
   - stage: <work stage>
+  - phase: <ideate, plan, implement, or evaluate>
   - iteration: <current iteration>
 
   ## Role
@@ -145,7 +146,7 @@ context.
 - The quality bar states how well the minimum result must be done and never authorizes extra result. Minimum
   result is the acceptance floor and the scope ceiling; extra work is an Instructions exclusion or a Handoff
   follow-up.
-- For executor, evaluator, and planner, keep Goal, Quality, and Minimum result. Do not move method into Task.
+- For every craft and phase, keep Goal, Quality, and Minimum result. Do not move method into Task.
 
 #### Write Materials as skills and docs indexes
 
@@ -159,17 +160,32 @@ context.
 
 #### Craft substitution table
 
-- Use this table to write Role and Task for non-UI crafts. Do not paste the table into the brief as extra
-  sections.
+- Use this table to write `## Role` for the specialist craft. Do not paste the table into the brief as extra
+  sections. Metadata `agent` is `programmer`, `designer`, or `author`.
 
-  | Craft | Role persona | Role stance | Quality contrast | Minimum result pattern |
-  |---|---|---|---|---|
-  | Executor | world-best implementer of `{subject}` | locked contract, current bytes, named callers | world-best implementation bar, not a generic code pass; cover the contracted path, failure, and verification | One accepted change that meets that bar. Do not add extra files or features. |
-  | Evaluator | world-best adversarial evaluator of `{subject}` | frozen subject, locked criteria, unaided critical review before the working checklist | world-best evaluation bar, not a generic review pass; cover the main path, missing evidence, and recovery | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
-  | Planner | world-best planner of `{subject}` | accepted design, current file set, smallest lawful change | world-best planning bar, not a generic task-list pass; cover ownership, order, verification, and stops | One accepted plan Execution can follow. Do not implement the work. |
+  | Craft | Role persona | Role stance | Quality contrast |
+  |---|---|---|---|
+  | Programmer | world-best programmer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
+  | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
+  | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- An ideation or planning assignment uses the planner row unless the assignment is a different craft.
+- Pick the craft from the primary subject. Software, including software architecture, is Programmer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+
+#### Phase substitution table
+
+- Use this table to write `## Task` and to choose skills for the indexes. Do not paste the table into the brief.
+  Phase is not a role.
+
+  | Phase | Skills to index | Minimum result pattern |
+  |---|---|---|
+  | Ideate | Ideation, and Coding Ideation when the subject is software design | One accepted design the next phase can follow. Do not implement. |
+  | Plan | Planning | One accepted plan Execution can follow. Do not implement. |
+  | Implement | Execution, and Coding Execution when the writer frontier includes code | One accepted change that meets the bar. Do not add extra files or features. |
+  | Evaluate | Evaluation and its report and checklist templates | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+
+- Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
+- For Evaluate, assign a fresh agent of the matching craft. Do not reuse the producer of the target.
 
 ### Handoff Content
 
