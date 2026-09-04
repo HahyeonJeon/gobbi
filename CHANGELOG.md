@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Principles dropped Why, Anti-pattern, and the Practice label while keeping every practice bullet. The
+  description and intro now require every agent to follow the principles. Principles 5 (scope contract)
+  and 6 (docs as memory) were removed; the remaining eight items are numbered 1–8.
 - Domain families now require at least two independently loadable direct children, each truthfully classified as
   an operation, tool, or preference, instead of requiring one child of every type.
 - General discovers applicable operations through the `coding` domain and sequences matching children as their
