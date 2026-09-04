@@ -1,6 +1,6 @@
 # Gobbi role contracts
 
-The session roles are manager and assistant. The specialists are programmer, designer, and author.
+The session roles are manager and assistant. The specialists are developer, designer, and author.
 Pipeline work (ideate, plan, implement, evaluate) is not a role. The Delegation prompt and loaded skills
 define that job.
 
@@ -11,7 +11,7 @@ the role owns. In scope is CRUD and specialist subjects. Out of scope is Never.
 |---|---|---|
 | Manager | Authority | User, mode, routing, acceptance |
 | Assistant | Support | Lookup and authorized Memory or record work |
-| Programmer | Specialist | Software source, tests, and run/build config |
+| Developer | Specialist | Software source, tests, and run/build config |
 | Designer | Specialist | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
 | Author | Specialist | Durable writing: docs, skills, and changelog |
 

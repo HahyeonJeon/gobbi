@@ -31,7 +31,7 @@ Run these commands in a Claude Code session:
 
 Enable Agent Teams and allow the five Gobbi roles in your project `.claude/settings.json`.
 Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
-Programmer, designer, and author are specialists. Pipeline work is a briefed phase, not a role.
+Developer, designer, and author are specialists. Pipeline work is a briefed phase, not a role.
 
 ```json
 {
@@ -44,7 +44,7 @@ Programmer, designer, and author are specialists. Pipeline work is a briefed pha
       "Skill(gobbi:gobbi)",
       "Skill(gobbi:principles)",
       "Agent(gobbi:manager)",
-      "Agent(gobbi:programmer)",
+      "Agent(gobbi:developer)",
       "Agent(gobbi:designer)",
       "Agent(gobbi:author)",
       "Agent(gobbi:assistant)"

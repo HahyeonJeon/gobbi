@@ -16,7 +16,7 @@ set -uo pipefail
 set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
-roles=(manager programmer designer author assistant)
+roles=(manager developer designer author assistant)
 permission_skills=(gobbi principles discussion delegation agent-teams gobbi-setup)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
@@ -32,7 +32,7 @@ minimum_claude_settings='{
   "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
   "permissions": {
     "allow": [
-      "Agent(gobbi:manager)", "Agent(gobbi:programmer)", "Agent(gobbi:designer)",
+      "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
       "Agent(gobbi:author)", "Agent(gobbi:assistant)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)", "Skill(gobbi:agent-teams)", "Skill(gobbi:gobbi-setup)"

@@ -63,7 +63,7 @@ context.
   ## Metadata
   **Required**
 
-  - agent: programmer|designer|author
+  - agent: developer|designer|author
   - assignment: <stable assignment identifier>
 
   **Optional**
@@ -161,16 +161,16 @@ context.
 #### Specialist substitution table
 
 - Use this table to write `## Role` for the specialist. Do not paste the table into the brief as extra
-  sections. Metadata `agent` is `programmer`, `designer`, or `author`.
+  sections. Metadata `agent` is `developer`, `designer`, or `author`.
 
   | Specialist | Role persona | Role stance | Quality contrast |
   |---|---|---|---|
-  | Programmer | world-best programmer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
+  | Developer | world-best developer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
   | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
   | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- Pick the specialist from the primary subject. Software, including software architecture, is Programmer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+- Pick the specialist from the primary subject. Software, including software architecture, is Developer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
 
 #### Phase substitution table
 

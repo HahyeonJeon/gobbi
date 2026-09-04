@@ -142,7 +142,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   a prerequisite script.
 - Stop before routing when those probes show a partial, contradictory, unreadable, or unsafe layout, and
   point the user at [Gobbi Setup](../gobbi-setup/SKILL.md).
-- For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:programmer)` and
+- For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:developer)` and
   `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
   the [Partner Manual](partner/SKILL.md#availability).
 
