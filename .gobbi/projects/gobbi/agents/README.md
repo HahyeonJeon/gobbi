@@ -1,19 +1,19 @@
 # Gobbi role contracts
 
-The session roles are manager and assistant. The specialist crafts are programmer, designer, and author.
+The session roles are manager and assistant. The specialists are programmer, designer, and author.
 Pipeline work (ideate, plan, implement, evaluate) is not a role. The Delegation prompt and loaded skills
 define that job.
 
 Each role file is intro, Responsibility, In scope, and Out of scope. Responsibility is the quality bar
-the role owns. In scope is CRUD and craft subjects. Out of scope is Never.
+the role owns. In scope is CRUD and specialist subjects. Out of scope is Never.
 
 | Role | Kind | Subject |
 |---|---|---|
 | Manager | Authority | User, mode, routing, acceptance |
 | Assistant | Support | Lookup and authorized Memory or record work |
-| Programmer | Craft | Software source, tests, and run/build config |
-| Designer | Craft | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
-| Author | Craft | Durable writing: docs, skills, and changelog |
+| Programmer | Specialist | Software source, tests, and run/build config |
+| Designer | Specialist | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
+| Author | Specialist | Durable writing: docs, skills, and changelog |
 
 Each role has one full copy per runtime, and all four runtimes live together in this directory.
 

@@ -10,7 +10,8 @@ skill-type: operation
 Evaluation is the operation that binds and freezes one target, reviews it without a
 checklist, prepares and runs an evaluation-owned working checklist, reconciles, and
 writes `report.md` plus working `checklist.md`. Use it after the target is ready for
-independent review and before an acceptance or workflow decision. It does not modify
+independent review and before an acceptance or workflow decision. The caller assigns a
+fresh matching-specialist agent and does not reuse the producer. It does not modify
 the target, source checklists, or decision state.
 
 ## Principles
@@ -18,7 +19,7 @@ the target, source checklists, or decision state.
 ### Criticize the frozen target before any checklist
 
 Inspect and freeze the actual target, then criticize it, then prepare checklist coverage.
-A prepared item list must not define what the evaluator looks at first.
+A prepared item list must not define what the evaluating agent looks at first.
 
 ### Find useful improvements as well as problems
 
@@ -28,7 +29,7 @@ Problems and verdicts.
 
 ### Keep the evaluation independent and preserve its inputs
 
-The evaluator should have no producer role or interest in defending the target. Write only evaluation-owned
+The evaluating agent should have no producer role or interest in defending the target. Write only evaluation-owned
 `report.md` and working `checklist.md` while preserving the target, source checklists, criteria, and
 workflow state.
 
@@ -64,14 +65,14 @@ limit causes and verdicts to what the evidence supports.
 
 #### 1.1 Bind the target and evaluation boundary
 
-- Confirm that the evaluator did not design, author, or implement the target, and disclose any
+- Confirm that the evaluating agent did not design, author, or implement the target, and disclose any
   relationship, interest, access limit, or missing capability that could affect independent
-  judgment. Do not read another evaluator's `report.md` or `checklist.md` from the same
+  judgment. Do not read another evaluating agent's `report.md` or `checklist.md` from the same
   iteration.
 - Bind the exact artifact, state, version, or content hash; scope; intended results;
   caller-supplied decision criteria; both evaluation-owned paths: `report.md` and working
   `checklist.md`; and any caller-supplied `evaluation-depth`. Confirm that neither path
-  overlaps the target or a source-owned input, and that the evaluator does not write
+  overlaps the target or a source-owned input, and that the evaluating agent does not write
   `gate.md`.
 - Stop when identity, access, independence, or preservation cannot support a responsible
   evaluation. Absent decision criteria allow a report and forbid a contract-gate verdict.
@@ -232,7 +233,7 @@ limit causes and verdicts to what the evidence supports.
   sources beside the claims they support.
 - Return a short summary with the contract-gate verdict or reason none was issued, Problems,
   Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence. Do
-  not read another evaluator's `report.md` or `checklist.md` from the same iteration.
+  not read another evaluating agent's `report.md` or `checklist.md` from the same iteration.
 
 ## References
 

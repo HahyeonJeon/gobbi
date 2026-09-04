@@ -23,7 +23,7 @@
 | Negative / Bad / expected rejection | Covered | Subject and Authority > The checklist has an unclear or unsupported evaluation boundary; Evaluation Use > Checklist items cannot be used reliably during evaluation |
 | Boundary / edge / transition | Covered | Document Structure > The document breaks the required category-to-scenario-to-item structure or retains template content; Category and Scenario Design > Categories and expected scenarios are divided at the wrong level |
 | Failure / recovery | Covered | Maintenance and Change > The checklist remains stale after its subject or authority changes; Checklist Item Design > Checklist item integrity or coverage degrades |
-| Poor quality | Covered | Discovery and Applicability > A cold evaluator cannot identify, apply, or navigate the checklist; Checklist Item Design > Checklist items do not express distinct observable problem signs |
+| Poor quality | Covered | Discovery and Applicability > A cold evaluating agent cannot identify, apply, or navigate the checklist; Checklist Item Design > Checklist items do not express distinct observable problem signs |
 | Rule violation | Covered | Document Structure > The document breaks the required category-to-scenario-to-item structure or retains template content; Checklist Item Design > Checklist item integrity or coverage degrades; Coverage Account > The coverage account is missing, blank, or unsupported |
 | Adversarial / abuse / gaming / cosmetic compliance | Covered | Category and Scenario Design > Expected-scenario coverage is incomplete or artificial; Coverage Account > The coverage account is missing, blank, or unsupported |
 | Change / regression / compatibility | Covered | Maintenance and Change > The checklist remains stale after its subject or authority changes; Reuse and Change > Reuse or revision loses stable meaning and source identity |
@@ -169,21 +169,21 @@ Later-use, change, replacement, and retirement of a checklist document are absor
 
 ### Discovery and Applicability
 
-#### A cold evaluator cannot identify, apply, or navigate the checklist
+#### A cold evaluating agent cannot identify, apply, or navigate the checklist
 
 - [ ] The document role is unclear.
 - [ ] The applicability boundary is insufficient to decide whether the checklist applies.
 - [ ] The meaning of a checked item is absent.
 - [ ] The stated meaning of a checked item is ambiguous.
-- [ ] Lifecycle headings do not lead a cold evaluator to the applicable viewpoint.
-- [ ] Category headings do not lead a cold evaluator to the applicable concern.
-- [ ] Expected-scenario headings do not lead a cold evaluator to the applicable problem family.
+- [ ] Lifecycle headings do not lead a cold evaluating agent to the applicable viewpoint.
+- [ ] Category headings do not lead a cold evaluating agent to the applicable concern.
+- [ ] Expected-scenario headings do not lead a cold evaluating agent to the applicable problem family.
 
 ### Evaluation Use
 
 #### Checklist items cannot be used reliably during evaluation
 
-- [ ] An item depends on context that is unavailable to the evaluator.
+- [ ] An item depends on context that is unavailable to the evaluating agent.
 - [ ] An item is too vague to identify relevant evidence without inventing an interpretation.
 - [ ] An exclusion is presented as an observed problem.
 - [ ] An evidence gap is presented as an observed problem.

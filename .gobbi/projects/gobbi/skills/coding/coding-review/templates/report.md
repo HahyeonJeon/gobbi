@@ -8,7 +8,7 @@
 > **Relationship:** `{author | not the author}`<br>
 > **Checklist:** [Canonical Coding Review checklist]({absolute or relative path to the bound checklist source}) at {bound content identity}<br>
 > **Reviewed at:** {Timestamp or bounded interval}<br>
-> **Evaluation timing:** This is prepared review material. An evaluator reviews the same subject unaided before reading it.<br>
+> **Evaluation timing:** This is prepared review material. An evaluating agent reviews the same subject unaided before reading it.<br>
 > **Authority:** Review only; no target change, approval, merge, publication, or release authority.
 
 ## Summary

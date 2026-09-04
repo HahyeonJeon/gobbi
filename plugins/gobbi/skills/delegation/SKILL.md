@@ -15,7 +15,7 @@ without private context and the manager can verify the result.
 
 ### Grant a Role so the agent thinks how it will act
 
-Role names the persona and expertise for this assignment. The agent works from that craft's stance, not from a
+Role names the persona and expertise for this assignment. The agent works from that specialist's stance, not from a
 generic helper voice.
 
 ### Command the goal and the quality bar
@@ -63,7 +63,7 @@ context.
   ## Metadata
   **Required**
 
-  - agent: <specialist role>
+  - agent: programmer|designer|author
   - assignment: <stable assignment identifier>
 
   **Optional**
@@ -82,7 +82,7 @@ context.
   ## Task
   Goal: <one user-visible or assignment-visible outcome>
 
-  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+  Quality: Meet a world-best <specialist> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or specialist-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
 
   Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 
@@ -128,7 +128,7 @@ context.
   You are a world-best UI/UX designer. Think and work the way a world-best UI/UX designer would: start from the user, the current surface, and proven patterns, then raise the result to that bar.
   ```
 
-- For any other craft, keep that two-sentence frame and change only the persona and stance.
+- For any other specialist, keep that two-sentence frame and change only the persona and stance.
 
 #### Write Task as goal, world-best bar, and minimum result
 
@@ -146,7 +146,7 @@ context.
 - The quality bar states how well the minimum result must be done and never authorizes extra result. Minimum
   result is the acceptance floor and the scope ceiling; extra work is an Instructions exclusion or a Handoff
   follow-up.
-- For every craft and phase, keep Goal, Quality, and Minimum result. Do not move method into Task.
+- For every specialist and phase, keep Goal, Quality, and Minimum result. Do not move method into Task.
 
 #### Write Materials as skills and docs indexes
 
@@ -158,19 +158,19 @@ context.
   cannot proceed without that item. Omit a Load-now list unless an item is already known to be absolutely
   necessary.
 
-#### Craft substitution table
+#### Specialist substitution table
 
-- Use this table to write `## Role` for the specialist craft. Do not paste the table into the brief as extra
+- Use this table to write `## Role` for the specialist. Do not paste the table into the brief as extra
   sections. Metadata `agent` is `programmer`, `designer`, or `author`.
 
-  | Craft | Role persona | Role stance | Quality contrast |
+  | Specialist | Role persona | Role stance | Quality contrast |
   |---|---|---|---|
   | Programmer | world-best programmer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
   | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
   | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- Pick the craft from the primary subject. Software, including software architecture, is Programmer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+- Pick the specialist from the primary subject. Software, including software architecture, is Programmer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
 
 #### Phase substitution table
 
@@ -185,7 +185,7 @@ context.
   | Evaluate | Evaluation and its report and checklist templates | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
 
 - Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
-- For Evaluate, assign a fresh agent of the matching craft. Do not reuse the producer of the target.
+- For Evaluate, assign a fresh agent of the matching specialist. Do not reuse the producer of the target.
 
 ### Handoff Content
 

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added programmer, designer, and author role contracts. They are subject crafts. Designer owns visual work
+- Added programmer, designer, and author role contracts. They are subject specialists. Designer owns visual work
   including UI, images, video, presentations, reports, and other visual artifacts. Pipeline work comes from
   the Delegation prompt and loaded skills.
 - Added the navigation-only `coding` domain for discovering three direct operations: `coding-ideation`,
@@ -17,12 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Manager and assistant role contracts now match the thin craft shape: identity, Responsibility, In scope,
+- Manager and assistant role contracts now match the thin specialist shape: identity, Responsibility, In scope,
   and Out of scope. Skills-to-load tables and status vocabularies live in the loaded mode and Delegation brief.
 - Every role intro names what that agent considers while working. Responsibility is the quality bar the role
-  owns. In scope is four CRUD operations, then named craft subjects. Out of scope bullets start with Never.
+  owns. In scope is four CRUD operations, then named specialist subjects. Out of scope bullets start with Never.
   Designer subjects now include visual materials, design concept, and layout, kept separate from composition.
-- Delegation Role is a subject craft (programmer, designer, or author). Phase (ideate, plan, implement,
+- Delegation Role is a subject specialist (programmer, designer, or author). Phase (ideate, plan, implement,
   evaluate) lives in Task and the skills index, not in a pipeline role name.
 - Delegation no longer owns the Gobbi root-pair protocol. Specialists validate roots as Gobbi specifies.
   Every brief includes a skills index of skill, path, and description and a docs index of doc, path, and

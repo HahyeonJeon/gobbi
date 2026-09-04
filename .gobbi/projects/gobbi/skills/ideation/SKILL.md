@@ -184,7 +184,7 @@ explain why the selected direction wins and what evidence would change it.
 
 - Freeze `ideation-index.md`, every authoritative part it lists, every snapshot index it lists, and every part
   those snapshot indexes list as one ordered subject. Do not follow evidence or citation links into the frozen
-  subject; any change to result membership, order, path, or bytes invalidates the freeze, and evaluator reports
+  subject; any change to result membership, order, path, or bytes invalidates the freeze, and evaluation reports
   remain outside the result.
 - Return the absolute `ideation-index.md` locator, ordered member paths, optional snapshots labeled subordinate,
   concise outcome and decision summary, explicit deferrals, out-of-scope handoffs, risks, checks, and the

@@ -94,7 +94,7 @@ invalid result remains a visible failure rather than transformed or relabeled co
   ## Task
   Goal: <one user-visible or assignment-visible outcome>
 
-  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+  Quality: Meet a world-best <specialist> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or specialist-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
 
   Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 

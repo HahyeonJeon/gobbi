@@ -45,7 +45,7 @@ the worktree and session root recorded by Configuration and the latest handoff.
   complete the frame before dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
   self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION uses
-  a fresh matching-craft agent and one attempted invocation per remaining runtime.
+  a fresh matching-specialist agent and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
@@ -61,7 +61,7 @@ outside the frame.
 |---|---|
 | `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`) to one fresh matching-craft agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
+| `EVALUATION` | Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`) to one fresh matching-specialist agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
 | `RECORD` | Reread the result, each `report.md`, and each `checklist.md`, copy the contract-gate verdict, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
 Every Delegation brief names the absolute temporary and final paths, a skills index of skill, path, and
@@ -199,7 +199,7 @@ P3 · Note
   recorded participant discussion records,
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
-  decision package to Step 1.4, then resume the matching craft only from the recorded answer.
+  decision package to Step 1.4, then resume the matching specialist only from the recorded answer.
 - **EVALUATION:** Freeze the index and every listed member, name `evaluation-depth` `ideation-design`, apply
   the Workflow Frame with at most two iterations, and verify membership, order, paths, hashes, tracked-tree
   state, reports, and working checklists. Use the frozen project/work design and discussion criteria so every
@@ -244,7 +244,7 @@ addressability, and write boundary and issuing a complete new Delegation brief.
   design; an unresolvable authority or contract conflict stops without a design question.
 - **WORK:** Apply [Planning](../planning/SKILL.md) through Delegation with absolute output root
   `{session-root}/2-planning/outputs/planning/` and exact locator
-  `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching-craft agent writes and self-reviews the indexed plan
+  `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching-specialist agent writes and self-reviews the indexed plan
   while preserving Ideation members and locked decisions; Planning remains generic for code work.
 
 #### 2.2 Evaluate and record Planning
@@ -264,7 +264,7 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
-  gives one matching-craft agent exact inputs, paths, authority, criteria, checks, and protected work.
+  gives one matching-specialist agent exact inputs, paths, authority, criteria, checks, and protected work.
 - **WORK:** For a task whose settled writer frontier includes code, apply
   [Coding Execution](../coding/coding-execution/SKILL.md) with [Execution](../execution/SKILL.md); otherwise use
   Execution alone, always with one active writer, read-only helpers, self-review, fresh verification, and one
@@ -324,7 +324,7 @@ Continue.
 
 - Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
   diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
-  matching-craft agent and one Partner wrapper subagent per remaining runtime over the same subject and
+  matching-specialist agent and one Partner wrapper subagent per remaining runtime over the same subject and
   criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each evaluating agent applies Generic
   Evaluation only and, for a matching implementation slice, consumes the
   [Coding Review checklist](../coding/coding-review/checklist.md) as its code baseline after unaided critique

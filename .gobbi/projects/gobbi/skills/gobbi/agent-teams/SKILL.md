@@ -113,7 +113,7 @@ Task and idle states support scheduling. Direct result and verification evidence
   the result with the current assignment rather than the teammate's earlier context.
 - Treat task completion, idle state, and messages as scheduling evidence only. Reject missing, malformed,
   stale, or out-of-bound results.
-- Keep independent evaluation outside the writer's acceptance. The active mode owns matching-craft Evaluate assignment selection,
+- Keep independent evaluation outside the writer's acceptance. The active mode owns matching-specialist Evaluate assignment selection,
   findings, and routing.
 
 #### Continue, recover, or replace
