@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** Removed the `cli`, `desktop`, `electron`, `go`, `html-css`, `python`, `react`, `typescript`, and
+  `web` skill families and discovery names without aliases. Direct calls and `skills/<family>/` paths for these
+  families no longer resolve.
 - **Breaking:** Removed the top-level `code-review` skill and discovery name without an alias. Consumers must
   replace direct `code-review` calls with the `coding-review` child under `coding` and replace
   `skills/code-review/` paths with `skills/coding/coding-review/`; old calls and paths no longer resolve.

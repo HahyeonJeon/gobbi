@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/web/web-app-lifecycle/SKILL.md

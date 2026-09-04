@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/web/web-app-lifecycle/checklists.md

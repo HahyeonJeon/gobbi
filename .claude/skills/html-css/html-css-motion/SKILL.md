@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/html-css/html-css-motion/SKILL.md

@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/typescript/typescript-development/verification-and-handoff-checklists.md

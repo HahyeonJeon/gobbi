@@ -33,7 +33,6 @@ Every Gobbi skill path is resolved through the validated root pair.
 | `{gobbi-skills-root}/coding/coding-review/SKILL.md` | Explicit review-only mode for exact stable code; load it instead of Execution or Coding Execution, and never implement, evaluate, or issue a verdict |
 | `{gobbi-skills-root}/workflow/SKILL.md` | The assignment runs under Workflow |
 | `{gobbi-skills-root}/git/SKILL.md` | Every implementation assignment, subject to caller commit authority; review-only work never stages or commits |
-| `{gobbi-skills-root}/typescript/SKILL.md` | The task is TypeScript |
 | `{gobbi-skills-root}/gobbi-skill/SKILL.md` | The task authors a skill |
 | Active runtime surfaces (`.claude/` for Claude Code; `.grok/` for Grok; `.codex/` for Codex; `.cursor/` for Cursor) and named task skills | Runtime docs, agents, or the briefed domain |
 

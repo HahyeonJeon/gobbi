@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/react/react-testing/lifecycle-checklists.md

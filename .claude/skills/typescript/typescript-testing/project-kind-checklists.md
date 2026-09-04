@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/typescript/typescript-testing/project-kind-checklists.md

@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/cli/cli-security/checklists.md

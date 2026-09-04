@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/go/go-development/checklists.md

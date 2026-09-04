@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/python/python-debugging/SKILL.md

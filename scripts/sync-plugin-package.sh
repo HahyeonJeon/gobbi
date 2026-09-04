@@ -52,12 +52,8 @@ GENERATED_SUBTREES=(skills agents runtimes)
 
 # Canonical paths inside a mapped prefix that must still not ship.
 #   skills/gobbi-skill/scripts/link-project-skills.sh — repository-local dev script.
-#   skills/html-css/migration.md — this project's own refactor traceability ledger. 771 lines
-#     naming .gobbi/ paths and package directories that exist in no consumer tree, and nothing
-#     links to it, so excluding it costs a consumer nothing.
 EXCLUDED_PATHS=(
   "skills/gobbi-skill/scripts/link-project-skills.sh"
-  "skills/html-css/migration.md"
 )
 
 # LINK REWRITES. A file listed here has its relative role-contract links rewritten from the
