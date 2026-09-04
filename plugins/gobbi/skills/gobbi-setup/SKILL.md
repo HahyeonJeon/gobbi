@@ -64,7 +64,7 @@ what setup did. Everything outside the project root is the user's action, printe
   unavailable or the current directory is not inside a Git worktree.
 - Derive the project key and accept at most 64 characters matching `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`. Ask
   the user for a key when the derived one fails, then pass it as `--project-key`.
-- Validate the Gobbi root pair against its three [Delegation](../delegation/SKILL.md) sentinels, then pass
+- Validate the Gobbi root pair against its three [Gobbi](../gobbi/SKILL.md) sentinels, then pass
   it as `--skills-root` and `--agents-root`. A partial, relative, unexpanded, or unreadable pair stops the run
   with the exact `NO_GOBBI_ROOT:` token.
 
@@ -232,5 +232,4 @@ what setup did. Everything outside the project root is the user's action, printe
 |---|---|
 | [`setup.sh`](scripts/setup.sh) | Performs every project write, applies the refusals, and prints one ledger row per target. |
 | [Prerequisite checker](scripts/check-prerequisites.sh) | Reports project-local `PASS`, `WARN`, and `FAIL` without mutation, as the baseline, the delta, and the report-only path. |
-| [Gobbi](../gobbi/SKILL.md) | Owns entry, the project layout this operation writes, and the namespaced permission forms. |
-| [Delegation](../delegation/SKILL.md) | Defines the root-pair protocol and the exact `NO_GOBBI_ROOT:` stop tokens. |
+| [Gobbi](../gobbi/SKILL.md) | Owns entry, the project layout this operation writes, the namespaced permission forms, and the exact `NO_GOBBI_ROOT:` stop tokens. |

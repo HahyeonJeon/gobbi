@@ -21,12 +21,11 @@ The YAML frontmatter is Grok agent metadata. In Codex, `.codex/agents/assistant.
 
 ## Skills to load
 
-Every Gobbi skill path is resolved through the validated root pair.
+The brief's skills index and docs index are the catalogs. Do not load a listed skill or document unless this assignment cannot proceed without it. If the brief supplies both Gobbi roots, validate them as Gobbi specifies before resolving any `{gobbi-skills-root}` path.
 
 | Load | When |
 |---|---|
-| `{gobbi-skills-root}/delegation/SKILL.md`, then validate the supplied or derived root pair as it specifies | Before any other Gobbi skill load. When the brief supplies both roots, read the brief's absolute Delegation path first |
-| `{gobbi-skills-root}/principles/SKILL.md` | Every fresh assignment |
+| The brief's skills index and docs index | Every assignment. Treat them as catalogs. Read a row's file only when that skill or document is absolutely necessary. |
 | Project rules, or record `NO_PROJECT_RULES: rules/ absent-or-empty` | Every fresh assignment |
 | `{gobbi-skills-root}/git/SKILL.md` | Workflow mode or Cowork Memory mode. Omit in read-only lookup |
 | `{gobbi-skills-root}/memory/SKILL.md` | Workflow RECORD, Wrap-up WORK, or Cowork Memory |

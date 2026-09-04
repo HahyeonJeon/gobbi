@@ -164,8 +164,8 @@ CW · Wrap-up
   next selected stage, and stop on competing evidence.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
-  exact temporary and final paths, authoritative result, verification, commit authority, exact role and
-  skill paths, and, when the assignment is an evaluator, one named `evaluation-depth` token. Set Execution
+  exact temporary and final paths, authoritative result, verification, commit authority, a skills index of
+  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is an evaluator, one named `evaluation-depth` token. Set Execution
   commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
@@ -296,7 +296,7 @@ CW · Wrap-up
 | [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, design options, recommendations, and user decisions. |
-| [Delegation](../delegation/SKILL.md) | Owns the base specialist prompt and final Handoff contract. |
+| [Delegation](../delegation/SKILL.md) | Owns the base specialist prompt, skills and docs indexes, and final Handoff contract. |
 | [Ideation](../ideation/SKILL.md) | Owns bounded Light design and its indexed result. |
 | [Planning](../planning/SKILL.md) | Owns bounded Light task decomposition and its indexed result. |
 | [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |

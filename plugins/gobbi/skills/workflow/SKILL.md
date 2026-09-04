@@ -64,7 +64,8 @@ outside the frame.
 | `EVALUATION` | Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`) to one fresh active-runtime evaluator and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
 | `RECORD` | Reread the result, each `report.md`, and each `checklist.md`, copy the contract-gate verdict, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
 
-Every Delegation brief names the absolute temporary and final paths, frozen subject, criteria, participant
+Every Delegation brief names the absolute temporary and final paths, a skills index of skill, path, and
+description, a docs index of doc, path, and description, frozen subject, criteria, participant
 policy, iteration cap, per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, receipt path,
 checks, authority, recovery boundary, and one named `evaluation-depth` token. Remaining-runtime evaluator
 briefs must name write set `runtime-directory` and the caller-named directory
@@ -357,7 +358,7 @@ Continue.
 | [Configuration template](templates/configuration.md) | Defines the ignored Workflow configuration and its fixed worktree and session identity. |
 | [Handoff template](templates/handoff.md) | Defines each ignored phase-completion and recovery checkpoint. |
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
-| [Delegation](../delegation/SKILL.md) | Owns the base specialist brief and final assignment handoff. |
+| [Delegation](../delegation/SKILL.md) | Owns the base specialist brief, skills and docs indexes, and final assignment handoff. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, evidence-backed options, recommendations, Phase 1 user decisions, and User Review Continue / Stop asks. |
 | [Ideation](../ideation/SKILL.md) | Owns design work and its indexed result. |
 | [Planning](../planning/SKILL.md) | Owns task hierarchy and its indexed result. |

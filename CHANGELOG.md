@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Delegation no longer owns the Gobbi root-pair protocol. Specialists validate roots as Gobbi specifies.
+  Every brief includes a skills index of skill, path, and description and a docs index of doc, path, and
+  description; delegated agents load a listed skill or document only when the assignment cannot proceed
+  without it.
 - Principles dropped Why, Anti-pattern, and the Practice label while keeping every practice bullet. The
   description and intro now require every agent to follow the principles. Principles 5 (scope contract)
   and 6 (docs as memory) were removed; the remaining eight items are numbered 1–8.

@@ -81,7 +81,7 @@ Task and idle states support scheduling. Direct result and verification evidence
 - Ask the main Claude Code session to spawn named teammates in natural language. The main session becomes the
   lead; do not use removed `TeamCreate` or `TeamDelete` mechanics.
 - Give each teammate a complete [Delegation](../../delegation/SKILL.md) prompt with its role, assignment,
-  resources, boundaries, result, verification, and final Handoff. A teammate does not inherit the lead's
+  skills index, docs index, resources, boundaries, result, verification, and final Handoff. A teammate does not inherit the lead's
   conversation history.
 - Use the shared task list and direct messages for scheduling and coordination. The lead remains responsible
   for dependencies, acceptance, and the next route.
@@ -130,7 +130,7 @@ Task and idle states support scheduling. Direct result and verification evidence
 
 | Name | Description |
 |---|---|
-| [Delegation](../../delegation/SKILL.md) | Defines each teammate prompt and final Handoff. |
+| [Delegation](../../delegation/SKILL.md) | Defines each teammate prompt, skills and docs indexes, and final Handoff. |
 | [Cowork](../../cowork/SKILL.md) | Owns Cowork participant, write, acceptance, and recovery policy. |
 | [Workflow](../../workflow/SKILL.md) | Owns Workflow phases, participant policy, handoffs, and recovery. |
 | [Partner](../partner/SKILL.md) | Defines fresh opposite-runtime invocations that cannot be continued as teammates. |

@@ -20,7 +20,7 @@ runtime settings; this Markdown body is still the canonical manager role contrac
 
 ## Skills to load
 
-Every Gobbi skill path is resolved through the validated root pair. Manager is never briefed and does not run the specialist `NO_GOBBI_ROOT` protocol. Roots come from Gobbi 1.1. Carry both absolute paths into every brief.
+Every Gobbi skill path is resolved through the validated root pair. Manager is never briefed and does not run the specialist `NO_GOBBI_ROOT` protocol. Roots come from Gobbi 1.1. Carry both absolute paths, a skills index, and a docs index into every brief.
 
 | Load | When |
 |---|---|

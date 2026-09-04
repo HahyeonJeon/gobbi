@@ -170,8 +170,8 @@ checksum() {
   fi
 }
 
-# Delegation's root-pair protocol. A supplied pair is validated; neither supplied means the Codex source
-# is derived from this script's own location, which Delegation allows.
+# Gobbi's root-pair protocol. A supplied pair is validated; neither supplied means the Codex source
+# is derived from this script's own location, which Gobbi allows.
 validate_root_pair() {
   local pair
   local name

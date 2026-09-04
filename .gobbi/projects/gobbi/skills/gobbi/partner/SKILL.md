@@ -105,10 +105,21 @@ invalid result remains a visible failure rather than transformed or relabeled co
   changed worktree path.>
 
   ## Materials
-  Required skills, in this order:
-  1. <path>
-  Also load any other skill this work needs. The list above is required, not the full set.
-  <Add remaining sources, purpose, and conflict precedence.>
+  Do not read other skills or documents unless that read is absolutely necessary for this assignment.
+
+  Skills index:
+
+  | Skill | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <frontmatter description> |
+
+  Docs index:
+
+  | Doc | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <one-line description> |
+
+  <Add remaining sources, purpose, and conflict precedence. Omit a Load-now list unless an item is already known to be absolutely necessary.>
 
   ## Return
   <Require one compact final Handoff on stdout for every status. It names writing-path, every changed
@@ -323,7 +334,7 @@ invalid result remains a visible failure rather than transformed or relabeled co
 
 | Name | Description |
 |---|---|
-| [Delegation](../../delegation/SKILL.md) | Defines the base prompt and final Handoff contract. |
+| [Delegation](../../delegation/SKILL.md) | Defines the base prompt, skills and docs indexes, and final Handoff contract. |
 | [Gobbi](../SKILL.md) | Owns the session-wide Partner policy and route. |
 | [Memory](../../memory/SKILL.md) | Owns validation and retention of ignored session results. |
 | [Agent Teams](../agent-teams/SKILL.md) | Distinguishes reusable Claude teammates from fresh Partner processes. |

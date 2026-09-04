@@ -39,7 +39,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending), or
   `ask_user_question` in Grok; a recommendation cannot select the mode.
 - **MUST validate one Gobbi root pair and load the entry foundation before routing.** Hold the pair unchanged
-  for the session and carry it into every specialist brief.
+  for the session, carry it into every specialist brief, and include a skills index and a docs index of name,
+  absolute path, and description.
 - **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
   decide which task skill applies.
 - **MUST apply the session-wide finding gate.** Every correction receives fresh evaluation, and only a verified
@@ -66,6 +67,23 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 - Expand and record the accepted pair with the runtime and entry trigger. Re-derive it after every context
   boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed pair appears.
+
+#### 1.1.1 Specialist root pair
+
+- The two roots are one pair. A brief supplies both as absolute expanded paths, or supplies neither.
+- A specialist that holds neither derives `{gobbi-agents-root}` from its own contract location and
+  `{gobbi-skills-root}` from the sibling `skills/` directory.
+- Never guess a root. Never substitute a hardcoded repository path.
+- Validate whichever pair the specialist holds before resolving any `{gobbi-skills-root}` path against the
+  three sentinels above.
+- Each held value must be an absolute expanded path. The three sentinels must exist and be readable.
+- Report the exact token and stop:
+  - exactly one root → `NO_GOBBI_ROOT: <missing-root> partial-pair`
+  - relative, unexpanded, or placeholder value → `NO_GOBBI_ROOT: <root> <value> not-an-absolute-path`
+  - missing or unreadable sentinel → `NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`
+  - neither root and location underivable → `NO_GOBBI_ROOT: both-roots location-underivable`
+- A brief that carries one root, a relative value, an unexpanded value, or a placeholder is a defect.
+  The manager repairs it before reassigning.
 
 #### 1.2 Resolve the project layout
 
@@ -192,8 +210,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | **Cowork** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Cowork](../cowork/SKILL.md). |
   | **Workflow** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Workflow](../workflow/SKILL.md). |
 
-- Before specialist work, load Delegation, add the selected owner's fields, and resolve every role and skill
-  from the validated root pair. Load further task skills only when their triggers apply.
+- Before specialist work, load Delegation, add the selected owner's fields, and put a skills index and a docs
+  index of name, absolute path, and description in the brief. Resolve those paths from the validated root pair.
+  The specialist loads an index row only when the assignment cannot proceed without it.
 - Stop with the exact blocker when mode evidence, owner evidence, identity, path, or authority is invalid.
   Never invent a fallback mode, cursor, worktree, session directory, or participant route.
 
@@ -203,7 +222,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 |---|---|
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
 | [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
-| [Delegation](../delegation/SKILL.md) | Defines every specialist prompt and final Handoff. |
+| [Delegation](../delegation/SKILL.md) | Defines every specialist prompt, skills and docs indexes, and final Handoff. |
 | [Manager role](../../agents/claude/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../agents/grok/manager.md), [Codex](../../agents/codex/manager.toml), [Cursor](../../agents/cursor/manager.md). |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
