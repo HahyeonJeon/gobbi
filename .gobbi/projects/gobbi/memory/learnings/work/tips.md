@@ -1,5 +1,17 @@
 # Work Tips
 
+## Coverage Account tables do not catch a bad idea
+
+**Context:** Authoring or revising a domain child-skill checklist, or deciding whether a missing
+Coverage Account is a defect.
+
+**Tip:** A Coverage Account table does not catch a bad idea. Child-skill checklists omit the
+account. The Checklist skill template still owns the account.
+
+**Application:** Do not add Coverage Account blocks to coding, authoring, or design child
+checklists. Do not fail those checklists for a missing account. Keep the account on the Checklist
+skill template when authoring a reusable Checklist-owned source.
+
 ## After Phase 2 Complete, add a new tasks and plan part
 
 **Context:** The user asks for more work after Workflow Phase 2 is already Complete.

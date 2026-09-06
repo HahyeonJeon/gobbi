@@ -2,42 +2,44 @@
 
 ## Intent
 
-Gobbi Evaluation is critique-first and two-file. A cold evaluator freezes one target, criticizes it
-without a checklist, then prepares and runs an evaluation-owned working checklist, reconciles, and
-writes `report.md` plus working `checklist.md`. It remains the independent gate for code and non-code
-targets. Callers consume only the contract-gate verdict.
+The Generic Evaluation skill and `skills/evaluation/` are removed without an alias. Cowork still has a
+user-called `evaluate` phase. This process design is stale until Evaluation is redesigned. Do not treat a
+domain Review skill as a replacement Evaluation skill.
 
-The canonical [Evaluation](../../../skills/evaluation/SKILL.md) skill owns the SOP. This file records
-current intent for Memory readers. Do not copy the live Procedure here.
+Coverage Accounts are not required on domain child checklists. The Checklist skill template still owns the
+account.
+
+This file records remaining Cowork `evaluate` facts and former Evaluation-skill limits for Memory readers.
+Do not copy a live SOP here.
 
 ## Procedure shape
 
-Four phases with two freeze points: bind, critique, prepare-freeze-run-reconcile, then report.
+The former Evaluation skill SOP is gone. Critique-first two-file procedure, named Evaluation baselines
+(Coding Review, Documentation, Ideation, and Planning checklists), and Coverage Account gather rules were
+owned by that skill. They are not current procedure.
 
-Named Evaluation baselines are the Coding Review, Documentation, Ideation, and Planning checklists. The
-Code baseline is `skills/coding/coding-review/checklist.md`, the
-[Coding Review checklist](../../../skills/coding/coding-review/checklist.md), owned by Coding Review.
-Wrap-up is not a named Evaluation baseline. A Checklist consumer may use the Code baseline without invoking
-the Coding Review operation. Evaluation reads coverage accounts. It does not own coverage and does not add
-items to fill an account row. A reused source with no account is a Limit; the working pass still runs.
-When `evaluation-depth` is bound, Phase 2 prompts and Phase 3 gather stay inside that token.
+A reused source with no Coverage Account is not a domain-child defect. Child-skill checklists omit the
+account by decision.
 
 ## Dual record
+
+These two-file and verdict facts still describe Cowork `evaluate` as of this session. They are not a
+redesigned Evaluation skill.
 
 - One `VERDICT:` line from in-contract Problems, sufficient evidence, and caller-supplied criteria.
 - Quality opinion uses `meets-design`, `mixed`, `does-not-meet`, or `not-available` and never changes the gate.
 - Out-of-contract Problems escalate. After completed `P1 · User Review` they do not reopen design.
-- Evaluation records its own unaided same-subject critique before reading a same-subject Coding Review report.
-  Prepared evidence is independently verified. It is not a checklist source and cannot substitute for
-  Evaluation's finding or verdict authority.
 - A runtime directory that holds only one of `report.md` and `checklist.md` is incomplete evidence and never PASS input.
 - Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`.
 
+Former Evaluation-skill rules about unaided critique before a same-subject Coding Review report, and about
+Evaluation owning finding and verdict authority, are stale until Evaluation is redesigned.
+
 ## Evaluation depth
 
-Bind any caller-supplied `evaluation-depth` in Phase 1. Phase 2 prompts and Phase 3 gather stay inside
-that token. Workflow and Cowork require the field in evaluator briefs. A missing-field stop-or-report
-protocol is not specified.
+These tokens still describe Cowork `evaluate`. Bind any caller-supplied `evaluation-depth` in the evaluate
+call. Workflow and Cowork require the field in evaluator briefs. A missing-field stop-or-report protocol is
+not specified.
 
 | Token | In-contract bar |
 |---|---|
@@ -50,19 +52,9 @@ A current indexed Ideation or Planning result at `ideation-design` or `planning-
 own checklist, not the Execution documentation checklist. Mixed work under `by-owning-stage` applies each
 matching baseline to the artifact class it owns. Implementation recipes belong to Execution.
 
-Code routing follows the frozen judgment, not the repository type:
-
-- Source behavior or structure, code APIs, tests as code, generated-code consistency, and code-caused runtime
-  claims use Generic Evaluation with the Coding Review checklist as the code baseline.
-- A code design or plan uses Generic Evaluation at `ideation-design` or `planning-decomposition`; missing
-  implementation is not an in-contract code finding.
-- Under `by-owning-stage`, the code baseline applies only to matching implementation slices. Other artifacts
-  retain their own baselines and specialist owners in the same Evaluation working checklist.
-- Documentation, configuration, package, release, Memory, or closure with no in-contract code judgment does not
-  load the Coding Review baseline.
-
-One coherent frozen decision subject still produces one `report.md` and working `checklist.md` pair. Code and
-supporting surfaces do not create separate verdicts or an unowned aggregator.
+Former Generic Evaluation code-routing rules are stale. There is no Generic Evaluation skill to load the
+Coding Review checklist as an Evaluation-owned working copy. Domain Review remains non-gating. Do not
+invent a replacement evaluation skill.
 
 ## Paths and writers
 
@@ -91,12 +83,13 @@ assignment. Wrapper capture stays outside the session and is not the evaluation 
 
 | Concern | Owner |
 |---|---|
-| Critique, working copy, dual record | [Evaluation](../../../skills/evaluation/SKILL.md) |
-| Reusable sources and coverage accounts | [Checklist](../../../skills/checklist/SKILL.md) |
+| Former Evaluation SOP | Removed. `skills/evaluation/` is gone. Stale until Evaluation is redesigned. |
+| Reusable sources and Coverage Account template | [Checklist](../../../skills/checklist/SKILL.md) |
+| Domain child checklists | Matching domain Review skill. No Coverage Account required. |
 | Code baseline and caller-bound Coding Review report | [Coding Review](../../../skills/coding/coding-review/SKILL.md) and [Coding skill family](../feature/coding-skill-family.md) |
 | Write surface `runtime-directory` | [Partner](../../../skills/gobbi/partner/SKILL.md) and [Partner design](../feature/partner.md) |
 | Workflow path bind, RECORD, `gate.md` | [Workflow](../../../skills/workflow/SKILL.md) |
-| Cowork one-parent layout and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
+| Cowork `evaluate` call, one-parent layout, and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
 | Evaluator craft row | [Delegation](../../../skills/delegation/SKILL.md) |
 | Role load maps | [Identity-and-load role contracts](identity-and-load-role-contracts.md) |
 
@@ -105,5 +98,8 @@ denial is `BLOCKED` with the denial. The manager does not scribe evaluation file
 
 ## Current limits
 
-Coverage Accounts exist on the Checklist operation source and the Coding Review baseline. Documentation,
-Ideation, Planning, Wrap-up, and domain-family checklists have no accounts yet. See [Evaluation backlog](../../backlogs/evaluation.md).
+Generic Evaluation and `skills/evaluation/` are removed. Coverage Accounts are not required on domain
+child checklists. The Checklist skill template still has a Coverage Account. The evaluator load map in
+[Identity-and-load role contracts](identity-and-load-role-contracts.md) is stale until Evaluation is
+redesigned. Callers that still load `skills/evaluation/` will fail. See remaining items in
+[Evaluation backlog](../../backlogs/evaluation.md).

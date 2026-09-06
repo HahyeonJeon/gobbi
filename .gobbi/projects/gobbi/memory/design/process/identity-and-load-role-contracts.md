@@ -32,29 +32,28 @@ Gobbi 1.1 and does not run `NO_GOBBI_ROOT`.
 Status stays role-owned: manager `PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`; other
 roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. Evaluator adds `VERDICT` on complete work.
 
-## Conditional coding load map
+## Conditional domain load map
 
-The Coding domain changes conditional loads, not the five-role set or role procedures. The same semantic map
+Domain families change conditional loads, not the five-role set or role procedures. Leader, Executor, and
+Evaluator below name the load map, not a requirement to restore those pipeline files. The same semantic map
 appears in all four canonical runtime variants.
 
 | Role | Conditional load | Boundary |
 |---|---|---|
-| Manager | Load [Coding](../../../skills/coding/SKILL.md) when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In General, sequence matching children as dependencies become current. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. General retains sequencing, re-entry, and acceptance; each mode retains its paths, gates, policies, and handoff. |
-| Leader | Load [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) with Generic Ideation for an unresolved material code-design choice. | Generic Planning remains the only decomposition operation. The leader does not implement or evaluate. |
-| Executor | In implementation mode, load [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) with Generic Execution when the settled writer frontier includes code. In explicit review-only mode, load [Coding Review](../../../skills/coding/coding-review/SKILL.md) instead. | Implementation and review-only modes are mutually exclusive. Review-only writes only the caller-bound report, changes no subject, never stages or commits, and issues no verdict. |
-| Evaluator | Load no Coding child. Always load Generic Evaluation and both templates. When the target or owned slice has an in-contract code judgment, load the [Coding Review checklist](../../../skills/coding/coding-review/checklist.md) as Evaluation's code baseline after unaided critique. | Generic Evaluation remains the only formal gate. Under `by-owning-stage`, apply the code baseline only to matching implementation slices. Never run Coding Review as Evaluation; read its report only as delayed prepared evidence. |
-| Assistant | No coding-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation, review, or evaluation. |
+| Manager | Load the matching domain root — [Coding](../../../skills/coding/SKILL.md), [Authoring](../../../skills/authoring/SKILL.md), or [Design](../../../skills/design/SKILL.md) — when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In General, sequence matching children as dependencies become current. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. General retains sequencing, re-entry, and acceptance; each mode retains its paths, gates, policies, and handoff. |
+| Leader | Load the matching domain ideation skill for an unresolved material design choice: [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md), [Authoring Ideation](../../../skills/authoring/authoring-ideation/SKILL.md), or [Design Ideation](../../../skills/design/design-ideation/SKILL.md). Load the matching domain planning skill when decomposition is needed: [Coding Planning](../../../skills/coding/coding-planning/SKILL.md), [Authoring Planning](../../../skills/authoring/authoring-planning/SKILL.md), or [Design Planning](../../../skills/design/design-planning/SKILL.md). | Generic Ideation and Generic Planning are gone. The leader does not implement or evaluate. |
+| Executor | Load the matching domain execution skill when the settled writer frontier matches that domain: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). In explicit review-only mode, load the matching domain review skill instead. | Generic Execution is gone. Implementation and review-only modes are mutually exclusive. Review-only writes only the caller-bound report, changes no subject, never stages or commits, and issues no verdict. |
+| Evaluator | Generic Evaluation is removed. Cowork still has a user-called `evaluate` phase. This evaluator load map is stale until Evaluation is redesigned. | Do not invent a replacement evaluation skill. Domain Review remains non-gating feedback, not a new Evaluation owner. |
+| Assistant | No domain-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation, review, or evaluation. |
 
 An executor in review-only mode may provide independent review when not the author. An author may provide only
 caller-permitted disclosed self-review. The report remains non-gating in either case. See the
-[Coding skill family](../feature/coding-skill-family.md).
+[Coding skill family](../feature/coding-skill-family.md), [Authoring skill family](../feature/authoring-skill-family.md),
+and [Design skill family](../feature/design-skill-family.md).
 
-Evaluator roles load Evaluation and both evaluation templates every assignment. They load Checklist
-only when authoring a new working item or when the assignment requests a reusable checklist. They
-write `report.md` and working `checklist.md` only, never `gate.md`, and they do not read a peer
-runtime's pair in the same iteration. `VERDICT` is the contract-gate verdict; criteria-free
-completion is `DONE_WITH_CONCERNS` with `VERDICT: Not issued`. The Cursor evaluator is not
-`readonly`; the Cursor leader stays `readonly`.
+Former evaluator loads of Generic Evaluation and both evaluation templates are stale. Cowork still
+names `evaluate`, `report.md`, working `checklist.md`, and `evaluation-depth`. Until Evaluation is
+redesigned, do not treat domain Review as that missing skill.
 
 ## Ownership
 
