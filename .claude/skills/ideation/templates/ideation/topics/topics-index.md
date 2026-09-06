@@ -1,1 +1,0 @@
-../../../../../../.gobbi/projects/gobbi/skills/ideation/templates/ideation/topics/topics-index.md

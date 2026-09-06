@@ -1,1 +1,0 @@
-../../../../../../.gobbi/projects/gobbi/skills/ideation/templates/ideation/requirements/requirements-NN.md

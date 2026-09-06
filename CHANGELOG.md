@@ -14,9 +14,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the Delegation prompt and loaded skills.
 - Added the navigation-only `coding` domain for discovering three direct operations: `coding-ideation`,
   `coding-execution`, and `coding-review`.
+- Added placeholder navigation-only `authoring` and `design` domains. Each discovers three direct operations:
+  `{domain}-ideation`, `{domain}-execution`, and `{domain}-review`. Child procedures are not written yet.
+- Added a placeholder `handoff.md` beside `coding-execution`, `authoring-execution`, and `design-execution`.
+- Added `report.md` beside each review skill, a placeholder `design-review` checklist, and Evaluation-based
+  draft `SKILL.md` files for `coding-review`, `authoring-review`, and `design-review`.
+- Added compacted `SKILL.md` files and domain-specific requirements, discussion, and ideation templates for
+  `coding-ideation`, `authoring-ideation`, and `design-ideation`. Each idea part's Design headings follow that
+  domain's design ladder. Phase 2 is Study and Discuss. Phase 3 is Design. Design Ideation decides from two
+  image passes — greybox structure, then styled direction — and lists illustration PNGs in the result.
+  Each ideation checklist is a tight problem-sign list with a three-line header.
+- Added Planning-based draft `SKILL.md` files and domain-specific plan and task templates for
+  `coding-planning`, `authoring-planning`, and `design-planning`.
+- Each domain ideation skill now absorbs Study as rough frame, inspect, and compare steps. The required
+  discussion view records topic groups keyed to the Design headings (topic, discussion, decision) and a
+  pointed Study ledger below. Authoritative ideation parts define the work and the idea for planning and
+  execution.
 
 ### Changed
 
+- Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
+  child checklist that still had one. The Checklist skill template and its own document checklist keep the
+  account.
 - Manager and assistant role contracts now match the thin specialist shape: identity, Responsibility, In scope,
   and Out of scope. Skills-to-load tables and status vocabularies live in the loaded mode and Delegation brief.
 - Every role intro names what that agent considers while working. Responsibility is the quality bar the role
@@ -38,8 +57,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   directly inside current stages. Runtime specialist roles load those children directly.
 - The shared code-review checklist moves from
   `.gobbi/projects/gobbi/skills/code-review/checklist.md` to
-  `.gobbi/projects/gobbi/skills/coding/coding-review/checklist.md`. Generic Execution and Evaluation consume the
+  `.gobbi/projects/gobbi/skills/coding/coding-review/checklist.md`. Coding Execution and Coding Review consume the
   moved baseline directly.
+- The documentation checklist moves from
+  `.gobbi/projects/gobbi/skills/execution/docs/checklist.md` to
+  `.gobbi/projects/gobbi/skills/authoring/authoring-review/checklist.md`. Authoring Review consumes
+  the moved baseline.
+- Cowork, Workflow, and Delegation route ideate work to `coding-ideation`, `authoring-ideation`, or
+  `design-ideation` by subject.
+- Cowork, Workflow, and Delegation route plan work to `coding-planning`, `authoring-planning`, or
+  `design-planning` by subject.
+- Discussion no longer loads a separate Study skill. Bounded design-evidence study belongs to the matching
+  domain ideation skill. Discussion consumes evidence and records the user's decision; it does not replace
+  that study or decide for the user.
 
 ### Removed
 
@@ -49,6 +79,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** Removed the top-level `code-review` skill and discovery name without an alias. Consumers must
   replace direct `code-review` calls with the `coding-review` child under `coding` and replace
   `skills/code-review/` paths with `skills/coding/coding-review/`; old calls and paths no longer resolve.
+- **Breaking:** Removed the top-level `execution` skill and discovery name without an alias. Dispatch uses
+  `coding-execution`, `authoring-execution`, or `design-execution` by writer frontier.
+  `Skill(execution)` and `skills/execution/` paths no longer resolve.
+- **Breaking:** Removed the top-level `evaluation` skill and discovery name without an alias. Independent
+  critique now uses `coding-review`, `authoring-review`, or `design-review` by subject.
+  `Skill(evaluation)` and `skills/evaluation/` paths no longer resolve.
+- **Breaking:** Removed the top-level `ideation` skill and discovery name without an alias. Design work
+  now uses `coding-ideation`, `authoring-ideation`, or `design-ideation` by subject.
+  `Skill(ideation)` and `skills/ideation/` paths no longer resolve.
+- **Breaking:** Removed the top-level `planning` skill and discovery name without an alias. Decomposition
+  now uses `coding-planning`, `authoring-planning`, or `design-planning` by subject.
+  `Skill(planning)` and `skills/planning/` paths no longer resolve.
+- **Breaking:** Removed the top-level `study` skill and discovery name without an alias. Design-evidence
+  study now lives in `coding-ideation`, `authoring-ideation`, or `design-ideation`.
+  `Skill(study)` and `skills/study/` paths no longer resolve.
 - **Breaking:** Removed the `executor`, `leader`, and `evaluator` agent roles without aliases. Dispatch uses
   developer, designer, or author plus a named phase. `Agent(gobbi:executor)`, `Agent(gobbi:leader)`, and
   `Agent(gobbi:evaluator)` no longer resolve.

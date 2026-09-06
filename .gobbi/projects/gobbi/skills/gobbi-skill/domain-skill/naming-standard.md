@@ -10,6 +10,7 @@ Use a reserved word only for its fixed meaning.
 | Word | Fixed meaning |
 |---|---|
 | `ideation` | Develops an evidence-backed design from a problem and requirements, preserves user decision authority, and stops before realization or task decomposition. |
+| `planning` | Turns defined work into a traceable task hierarchy, a dependency-valid execution plan, and the assignment contract those require, and stops before implementation recipes. |
 | `execution` | Implements and verifies one defined task under an accepted design and caller delivery policy; excludes multi-task Planning, protected Review, Evaluation, and acceptance. |
 | `evaluation` | Independently critiques one frozen target and returns an evidence-based report plus working checklist, with a criteria-derived verdict or `Not issued`; excludes target mutation and decision-state change. |
 | `development` | Implements an accepted domain change and coordinates implementation handoffs; excludes protected review, Evaluation, and acceptance. |

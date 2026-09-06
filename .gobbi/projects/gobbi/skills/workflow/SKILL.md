@@ -193,9 +193,10 @@ P3 · Note
 #### 1.5 Produce, evaluate, and record Ideation
 
 - **WORK:** Select [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive design subject has an
-  unresolved material code-design choice; otherwise select
-  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract). Apply the selected operation
-  through Delegation with Generic Ideation's complete caller contract plus Workflow's project/work scope,
+  unresolved material code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it
+  has an unresolved material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md)
+  when it has an unresolved material visual-design choice. Apply the selected operation
+  through Delegation with that skill's complete caller contract plus Workflow's project/work scope,
   recorded participant discussion records,
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
@@ -205,7 +206,8 @@ P3 · Note
   state, reports, and working checklists. Use the frozen project/work design and discussion criteria so every
   evaluating agent scores goal, decisions, boundaries, constraints, work strategy, indexed integrity, required
   discussion, and user decisions, not implementation completeness or document polish; evaluate this design
-  through Generic Evaluation alone, using the Ideation baseline rather than the code baseline.
+  through the matching domain review skill, using the matching ideation skill's baseline rather than an
+  implementation baseline.
 - **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
   Step 1.4 only for missing or contradictory project/work design, required participant discussion, or a required
   user decision; a checklist item, missing section, wording defect, or implementation detail cannot cause
@@ -242,17 +244,20 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 - **DISCUSSION:** Enter only from completed `P1 · User Review`. The manager uses independent local and remaining
   Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted
   design; an unresolvable authority or contract conflict stops without a design question.
-- **WORK:** Apply [Planning](../planning/SKILL.md) through Delegation with absolute output root
+- **WORK:** Select [Coding Planning](../coding/coding-planning/SKILL.md) when the productive work is code
+  work, [Authoring Planning](../authoring/authoring-planning/SKILL.md) when it is writing work, or
+  [Design Planning](../design/design-planning/SKILL.md) when it is visual work. Apply the selected
+  operation through Delegation with absolute output root
   `{session-root}/2-planning/outputs/planning/` and exact locator
   `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching-specialist agent writes and self-reviews the indexed plan
-  while preserving Ideation members and locked decisions; Planning remains generic for code work.
+  while preserving Ideation members and locked decisions.
 
 #### 2.2 Evaluate and record Planning
 
 - **EVALUATION:** Freeze the complete plan, name `evaluation-depth` `planning-decomposition`, and apply the
   Workflow Frame with at most two iterations. Use the accepted design and assignment-contract criteria so
   every evaluating agent scores hierarchy coverage, grouping coherence, dependency-valid order, assignment contract,
-  and indexed integrity, not implementation recipes; use Generic Evaluation alone for the Planning result.
+  and indexed integrity, not implementation recipes; use the matching domain review skill for the Planning result.
 - **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
   Step 2.1 only for missing or contradictory decomposition, grouping, order, assignment-contract field,
   authority, or indexed integrity; a checklist item, missing section, wording defect, or implementation
@@ -265,16 +270,19 @@ addressability, and write boundary and issuing a complete new Delegation brief.
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
   gives one matching-specialist agent exact inputs, paths, authority, criteria, checks, and protected work.
-- **WORK:** For a task whose settled writer frontier includes code, apply
-  [Coding Execution](../coding/coding-execution/SKILL.md) with [Execution](../execution/SKILL.md); otherwise use
-  Execution alone, always with one active writer, read-only helpers, self-review, fresh verification, and one
-  focused local commit. An explicitly planned [Coding Review](../coding/coding-review/SKILL.md) result remains
-  review-only inside this stage, creates no new stage or gate, and never replaces mandatory Evaluation.
+- **WORK:** Apply the matching domain execution skill:
+  [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
+  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
+  Keep one active writer, read-only helpers, self-review, fresh verification, and one
+  focused local commit. An in-stage review cannot replace mandatory user-called or stage review.
 - **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`, and
-  apply Generic [Evaluation](../evaluation/SKILL.md) only. For a frozen target or owned slice with an in-contract
-  code judgment, consume the [Coding Review checklist](../coding/coding-review/checklist.md) as Evaluation's code
-  baseline after its unaided critique; under `by-owning-stage`, apply that baseline only to matching implementation
-  slices, and never run Coding Review as Evaluation. Run fresh evaluation and record the gate and receipt under
+  apply the matching domain review skill:
+  [Coding Review](../coding/coding-review/SKILL.md) for code,
+  [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
+  [Design Review](../design/design-review/SKILL.md) for visual work.
+  Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns.
+  Run fresh review and record the gate and receipt under
   the configured Execution cap, then reread the commit, diff, checks, reports, findings, and dispositions before
   the next task; amend only pending plan work when an in-contract plan defect appears.
 
@@ -325,10 +333,8 @@ Continue.
 - Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
   diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
   matching-specialist agent and one Partner wrapper subagent per remaining runtime over the same subject and
-  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each evaluating agent applies Generic
-  Evaluation only and, for a matching implementation slice, consumes the
-  [Coding Review checklist](../coding/coding-review/checklist.md) as its code baseline after unaided critique
-  without running Coding Review as Evaluation. A launchable runtime produces both files, and an Unavailable
+  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each reviewing agent applies the
+  matching domain review skill. A launchable runtime produces both files, and an Unavailable
   attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
   changed WORK; FAIL preserves the branch, worktree, session root, reports, working checklists, and exact
@@ -360,13 +366,18 @@ Continue.
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist brief, skills and docs indexes, and final assignment handoff. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, evidence-backed options, recommendations, Phase 1 user decisions, and User Review Continue / Stop asks. |
-| [Ideation](../ideation/SKILL.md) | Owns design work and its indexed result. |
-| [Planning](../planning/SKILL.md) | Owns task hierarchy and its indexed result. |
-| [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
-| [Evaluation](../evaluation/SKILL.md) | Owns independent assessment and each complete `report.md` plus working `checklist.md`. |
-| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Adds code-design coverage inside a matching Phase 1 WORK stage. |
-| [Coding Execution](../coding/coding-execution/SKILL.md) | Adds code-specific implementation coverage inside a matching Execution WORK stage. |
-| [Coding Review](../coding/coding-review/SKILL.md) | Produces an explicitly planned review-only result without creating a Workflow stage or gate. |
+| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work decomposition and its indexed result. |
+| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work decomposition and its indexed result. |
+| [Design Planning](../design/design-planning/SKILL.md) | Owns Phase 2 visual-work decomposition and its indexed result. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Phase 1 code design and its indexed result. |
+| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Phase 1 writing design and its indexed result. |
+| [Design Ideation](../design/design-ideation/SKILL.md) | Owns Phase 1 visual design and its indexed result. |
+| [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
+| [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
+| [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
+| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |

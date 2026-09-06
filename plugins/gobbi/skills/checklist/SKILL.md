@@ -181,7 +181,7 @@ when omitting it would make the sign ambiguous or unanswerable.
   items, and confirm each item is independently answerable, reusable, and unchecked. Merge over-specific
   scenarios, recheck coverage and both account blocks after every change, and correct the account rather than
   the coverage when only the account is wrong.
-- Preserve the source unchanged for [Evaluation](../evaluation/SKILL.md). If the subject or a material premise
+- Preserve the source unchanged for the applying review skill. If the subject or a material premise
   changes, restart at the earliest affected phase before using the checklist again.
 
 ## References
@@ -190,4 +190,6 @@ when omitting it would make the sign ambiguous or unanswerable.
 |---|---|
 | [Checklist template](templates/checklist.md) | Coverage-account, lifecycle, category, broad expected-scenario, and unchecked-item structure for a reusable checklist. |
 | [Checklist document evaluation checklist](checklist.md) | Reusable unchecked source for evaluating checklist documents created by this operation. |
-| [Evaluation](../evaluation/SKILL.md) | Operation that prepares a working checklist, evaluates one target, and writes its report and working checklist. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Code review that prepares a working checklist, reviews one target, and writes its report and working checklist. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | Writing review that prepares a working checklist, reviews one target, and writes its report and working checklist. |
+| [Design Review](../design/design-review/SKILL.md) | Visual review that prepares a working checklist, reviews one target, and writes its report and working checklist. |

@@ -180,28 +180,33 @@ CW · Wrap-up
   omitted stages and one exact evidence-proved legacy result shape without renaming or migration.
 - For Light with an in-scope topic/work design or decision, apply the collaboration Rule and select
   [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive subject has an unresolved material
-  code-design choice; otherwise select
-  [Ideation Step 1.1](../ideation/SKILL.md#11-establish-the-operation-contract). Give the selected operation
-  Generic Ideation's complete caller contract plus the topic/work scope, applicable participant discussion
+  code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it has an unresolved
+  material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md) when it has an
+  unresolved material visual-design choice. Give the selected operation that skill's complete caller contract
+  plus the topic/work scope, applicable participant discussion
   records, absolute locators
   `{session-root}/topic-NN-slug/1-ideation/ideation-index.md` and
   `{session-root}/topic-NN-slug/2-planning/plan-index.md`, and recovery boundary, then route a returned decision
-  package to Step 2.1; a decomposition-only Light route selects neither Ideation operation, creates no Ideation
-  decision or participant discussion, and proceeds to Generic Planning.
+  package to Step 2.1; a decomposition-only Light route selects no ideation operation, creates no Ideation
+  decision or participant discussion, and proceeds to the matching domain planning skill.
 - Use caller-named `tmp/` paths for drafts and supporting inputs, then have the creator write the curated result
   directly to its phase directory. Accept Ideation only when its caller completion test passes, the index and
   members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any membership, order,
-  path, or byte change makes it stale, and accepted Ideation then continues to [Planning](../planning/SKILL.md).
+  path, or byte change makes it stale, and accepted Ideation then continues to the matching domain planning
+  skill: [Coding Planning](../coding/coding-planning/SKILL.md) for code work,
+  [Authoring Planning](../authoring/authoring-planning/SKILL.md) for writing work, or
+  [Design Planning](../design/design-planning/SKILL.md) for visual work.
 
 #### 2.4 Execute and accept the topic
 
-- Assign each dependency-ready task through [Coding Execution](../coding/coding-execution/SKILL.md) with
-  [Execution](../execution/SKILL.md) when its settled writer frontier includes code; otherwise use Execution
-  alone. Fast receives one manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted
+- Assign each dependency-ready task through the matching domain execution skill:
+  [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
+  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
+  Fast receives one manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted
   Planning result.
 - Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
-  work. An explicitly authorized [Coding Review](../coding/coding-review/SKILL.md) result stays review-only
-  inside the current stage, creates no TODO or gate, and cannot replace required implementation or Evaluation;
+  work. An in-stage review cannot replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
 - Complete PASS only after every selected result is accepted and verified. Do not require a focused
   implementation commit or a clean tracked tree; report outcome, scope, results, commits, checks, exclusions,
@@ -238,18 +243,18 @@ CW · Wrap-up
   `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
-- Apply Generic [Evaluation](../evaluation/SKILL.md) only through one fresh matching-specialist agent and one
-  Partner wrapper subagent per remaining runtime over the same frozen subject and named `evaluation-depth`. For a
-  frozen target or owned slice with an in-contract code judgment, each evaluating agent consumes the
-  [Coding Review checklist](../coding/coding-review/checklist.md) as Evaluation's code baseline after recording
-  its unaided critique; under `by-owning-stage`, apply that baseline only to matching implementation slices, and
-  never run Coding Review as Evaluation. Keep
+- Apply the matching domain review skill through one fresh matching-specialist agent and one
+  Partner wrapper subagent per remaining runtime over the same frozen subject and named `evaluation-depth`:
+  [Coding Review](../coding/coding-review/SKILL.md) for code,
+  [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
+  [Design Review](../design/design-review/SKILL.md) for visual work.
+  Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns. Keep
   remaining-runtime briefs naming write set `runtime-directory`, the caller-named aggregation parent, a
   Delegation prompt, `expected-partner`, and `evaluation-depth`; a missing write set still means
   `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
   session and is not the evaluation parent; a launchable runtime produces both files, an Unavailable
   attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
-  complete pairs after Evaluation has applied the token rather than writing a RECORD.
+  complete pairs after the assigned review skill has applied the token rather than writing a RECORD.
 
 #### 4.2 Apply findings and coverage
 
@@ -297,12 +302,17 @@ CW · Wrap-up
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, design options, recommendations, and user decisions. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist prompt, skills and docs indexes, and final Handoff contract. |
-| [Ideation](../ideation/SKILL.md) | Owns bounded Light design and its indexed result. |
-| [Planning](../planning/SKILL.md) | Owns bounded Light task decomposition and its indexed result. |
-| [Execution](../execution/SKILL.md) | Owns task implementation, verification, and focused commits. |
-| [Evaluation](../evaluation/SKILL.md) | Owns independent target assessment and each complete `report.md` plus working `checklist.md`. |
-| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Adds code-design coverage to a matching Light Ideation stage. |
-| [Coding Execution](../coding/coding-execution/SKILL.md) | Adds code-specific implementation coverage to a matching Execution task. |
-| [Coding Review](../coding/coding-review/SKILL.md) | Produces an explicitly authorized review-only result without creating a mode gate. |
+| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Light code-work decomposition and its indexed result. |
+| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Light writing-work decomposition and its indexed result. |
+| [Design Planning](../design/design-planning/SKILL.md) | Owns Light visual-work decomposition and its indexed result. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
+| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Light code design and its indexed result. |
+| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Light writing design and its indexed result. |
+| [Design Ideation](../design/design-ideation/SKILL.md) | Owns Light visual design and its indexed result. |
+| [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff. |
+| [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff. |
+| [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff. |
 | [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

@@ -22,8 +22,8 @@ design, architecture, and current state to expose gaps and boundaries that could
 ### Study the problem and possible options
 
 Before suggesting options, study the request, current work, affected people, relevant evidence, prior decisions,
-constraints, and proven approaches. Use [Study](../study/SKILL.md) when the recommendation depends on a bounded
-internal or external evidence question; otherwise develop and compare options from the available evidence.
+constraints, and proven approaches. When that study is part of an unresolved material design choice, the
+matching domain ideation skill owns it. Otherwise develop and compare options from the available evidence.
 
 ### Discuss consequential choices with participants
 
@@ -75,8 +75,8 @@ best-supported option, explain why it fits, and state what evidence or changed c
 - Turn accepted answers into a clear design or task with its intended result, scope, constraints, approach, and
   evidence of completion.
 - Keep accepted decisions, assumptions, and unresolved points distinct so later work does not treat one as
-  another. Discussion consumes evidence and records the user's decision; it does not replace Study or decide for
-  the user.
+  another. Discussion consumes evidence and records the user's decision; it does not replace the matching
+  domain ideation's design-evidence study or decide for the user.
 
 ### Decision Support
 
@@ -141,6 +141,8 @@ best-supported option, explain why it fits, and state what evidence or changed c
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../gobbi-skill/SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
-| [Study](../study/SKILL.md) | Source-grounded investigation for a bounded evidence question. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns bounded code-design study during ideation. |
+| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns bounded writing-design study during ideation. |
+| [Design Ideation](../design/design-ideation/SKILL.md) | Owns bounded visual-design study during ideation. |
 | [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent and teammate assignments. |
 | [Partner](../gobbi/partner/SKILL.md) | Write-bounded external-runtime invocation and final Handoff contract. |

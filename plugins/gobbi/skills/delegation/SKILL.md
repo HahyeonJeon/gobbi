@@ -179,10 +179,10 @@ context.
 
   | Phase | Skills to index | Minimum result pattern |
   |---|---|---|
-  | Ideate | Ideation, and Coding Ideation when the subject is software design | One accepted design the next phase can follow. Do not implement. |
-  | Plan | Planning | One accepted plan Execution can follow. Do not implement. |
-  | Implement | Execution, and Coding Execution when the writer frontier includes code | One accepted change that meets the bar. Do not add extra files or features. |
-  | Evaluate | Evaluation and its report and checklist templates | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+  | Ideate | Coding Ideation, Authoring Ideation, or Design Ideation by subject | One accepted design the next phase can follow. Do not implement. |
+  | Plan | Coding Planning, Authoring Planning, or Design Planning by subject | One accepted plan the matching execution skill can follow. Do not implement. |
+  | Implement | Coding Execution, Authoring Execution, or Design Execution by writer frontier | One accepted change that meets the bar. Do not add extra files or features. |
+  | Evaluate | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
 
 - Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
 - For Evaluate, assign a fresh agent of the matching specialist. Do not reuse the producer of the target.

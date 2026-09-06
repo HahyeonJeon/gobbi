@@ -6,59 +6,9 @@
 > **Purpose:** Provide one language-independent baseline for category-by-category code review across the project, design and development, and conditional product lifecycles<br>
 > **Scope:** Project Fit, Affected Surfaces, Project Structure, Architecture, Design Pattern, Abstraction, Data Model, Public API, Parameters, Modularization, Reusability, Performance, Optimization, Unintended Overengineering, Code Complexity, Readability, Vocabulary, Naming Convention, Docstring, Correctness, Testing, Verification, Delivery, Usability, Operations, and Compatibility<br>
 > **Exclusions:** Language-, framework-, platform-, domain-, and specialist-specific expectations unless the applying operation activates their owning source; Security, Privacy, Concurrency, Accessibility, Localization, Dependencies, Build, Packaging, Release, Deployment, Configuration, Observability, Migration, Deprecation, and Retirement remain overlays<br>
-> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Execution](../../execution/SKILL.md), [Evaluation](../../evaluation/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
+> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Coding Execution](../coding-execution/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
 > **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
-
-## Coverage Account
-
-> Metadata only. No row is a checklist item, and no row is ever checked.
-
-### Scenario spectrum
-
-| Prompt | Outcome | Named coverage |
-|---|---|---|
-| Positive / Good / normal | Covered | Correctness → `Required behavior or failure handling is incomplete` → `Ordinary valid use produces behavior that conflicts with the governing contract.` |
-| Alternative-valid | Covered | Correctness → `Required behavior or failure handling is incomplete` → `A materially different valid path is rejected or handled as invalid.` |
-| Negative / Bad / expected rejection | Covered | Correctness → `Required behavior or failure handling is incomplete` → `Invalid input or state is accepted without the required rejection or containment.` |
-| Boundary / edge / transition | Covered | Correctness → `Required behavior or failure handling is incomplete` → `A boundary or state transition violates a required invariant.` |
-| Failure / recovery | Covered | Correctness → `Required behavior or failure handling is incomplete` → `A failure leaves state inconsistent.` and `A resource is acquired, retained, released, or restored outside its required lifetime on a supported terminal path.` Operations → `Runtime behavior is difficult to observe, support, or recover` → `Operators cannot determine whether recovery restored the required service, state, or data condition.` |
-| Poor quality | Covered | Readability → `Local code expression obscures behavior` → `Dense or indirect expression makes local behavior difficult to follow.` Usability → `Consumers face avoidable learning or use burden` → `A common task requires avoidable interaction or implementation knowledge.` |
-| Rule violation | Covered | Project Fit → `The code work lacks accepted project direction or control` → `The code conflicts with an applicable project rule, decision, or governance constraint.` |
-| Adversarial / abuse / gaming / cosmetic compliance | Covered | Correctness → `Required behavior or failure handling is incomplete` → `A prohibited state or effect can be reached by bypassing the expected path.` Project Fit → `The code work lacks accepted project direction or control` → `The implemented behavior satisfies the form of an accepted decision while missing its intended result.` |
-| Change / regression / compatibility | Covered | Correctness → `A change fails to preserve required behavior` → `A refactoring or maintenance change alters required observable behavior.` Compatibility → `Change breaks a supported consumer or lifecycle transition` → `A supported runtime, operating system, architecture, environment, or consumer integration stops working after the change.` |
-| Counterfactual / assumption | Covered | Unintended Overengineering → `A mechanism has no support from current requirements or observed need` → `A mechanism remains after its load-bearing current-need premise is disproved.` Optimization → `An attempted optimization is not justified by its observed effect` → `The optimization uses a measurement frame that does not represent the current need.` |
-
-### Lifecycle stages
-
-| Lifecycle | Stage | Outcome | Named coverage |
-|---|---|---|---|
-| Project | initiation | Covered | Project Fit → `The code work lacks accepted project direction or control` → `The code work has no current purpose or intended result.` |
-| Project | planning | Covered | Project Fit → `The code work lacks accepted project direction or control` → `The accepted scope of the code work is unclear.` and `The code work has no observable completion condition.` |
-| Project | governance | Covered | Project Fit → `The code work lacks accepted project direction or control` → `The code conflicts with an applicable project rule, decision, or governance constraint.` |
-| Project | coordination | Covered | Affected Surfaces → `Affected work cannot be coordinated` → `Coordination ownership or handoff is unclear for a material affected surface.` |
-| Project | change control | Covered | Project Fit → `The code work lacks accepted project direction or control` → `An accepted project baseline changes without a traceable change-control decision.` |
-| Project | closure or archival | Covered | Project Fit → `The code work lacks accepted project direction or control` → `A project result remains presented as current after it becomes temporary, superseded, or archived.` |
-| Design and Development | conceive | Covered | Unintended Overengineering → `A mechanism has no support from current requirements or observed need` → `A mechanism remains after its load-bearing current-need premise is disproved.` |
-| Design and Development | design | Covered | Architecture → `Responsibilities, dependencies, or ownership sit in the wrong boundaries` → `One responsibility is divided across units without a clear owner.` Design Pattern and Abstraction cover the selected solution shape and concept boundary. Data Model → `The data model cannot preserve required domain meaning and invariants` → `The data model cannot represent a required domain state or relationship.` |
-| Design and Development | implement | Covered | Correctness → `Required behavior or failure handling is incomplete` → `Ordinary valid use produces behavior that conflicts with the governing contract.` Code Complexity and Readability cover implementation quality. |
-| Design and Development | verify | Covered | Testing → `Behavior and risk coverage is incomplete` → `A material observable behavior lacks a direct applicable test.` Testing → `Test code does not provide trustworthy, maintainable checks` → `A test fixture or test double does not represent the condition or real boundary contract named by the test.` Verification → `Verification evidence cannot support the claimed result` → `Verification ran against a different subject identity than the reviewed subject.` |
-| Design and Development | handoff | Covered | Delivery → `The handed-off result is not the reviewed and verified implementation` → `The handoff does not identify the exact delivered result.` |
-| Design and Development | use in the work | Covered | Public API → `The public entry surface makes correct use hard` → `A caller must inspect private implementation details to use the public surface correctly.` |
-| Design and Development | deliver | Covered | Delivery → `The handed-off result is not the reviewed and verified implementation` → `A delivered artifact changes the reviewed behavior.` Detailed versioned release identity, candidate composition, release records, channels, publication or promotion contracts, and release-to-deployment handoffs activate the Release overlay. |
-| Design and Development | maintain | Covered | Project Structure → `Project layout is incoherent or misleading` → `A coherent unit is fragmented across files without a project reason.` Modularization and Readability cover maintainable unit and expression boundaries. |
-| Design and Development | change | Covered | Affected Surfaces → `The change leaves affected work unknown or inconsistent` → `A material consistency-bound surface remains stale after the change.` |
-| Product | use | Covered | Conditional on operating-product applicability. Usability → `Consumers face avoidable learning or use burden` → `A consumer cannot complete an ordinary task from the public surface and its immediate guidance.` |
-| Product | operate | Covered | Conditional on operating-product applicability. Operations → `Runtime behavior is difficult to observe, support, or recover` → `A material failure cannot be distinguished from ordinary behavior with the available diagnostics.` |
-| Product | configure | Covered | Conditional on operating-product applicability. Operations → `Runtime behavior is difficult to observe, support, or recover` → `A supported operating configuration has an unclear runtime effect.` Detailed configuration mechanics activate the Configuration overlay. |
-| Product | support | Covered | Conditional on operating-product applicability. Operations → `Runtime behavior is difficult to observe, support, or recover` → `Diagnostic output omits context needed for support.` |
-| Product | migrate | Covered | Conditional on operating-product applicability. Compatibility → `Change breaks a supported consumer or lifecycle transition` → `A supported transition between versions breaks consumer behavior or prevents required stored or serialized data from remaining readable and valid.` Detailed migration mechanics activate the Migration overlay. |
-| Product | replace | Covered | Conditional on operating-product applicability. Compatibility → `Change breaks a supported consumer or lifecycle transition` → `A supported replacement leaves consumers without a working transition.` |
-| Product | retire | Covered | Conditional on operating-product applicability. Compatibility → `Change breaks a supported consumer or lifecycle transition` → `A supported exit leaves consumers without continuity or a defined state disposition.` Detailed retirement mechanics activate the Retirement overlay. |
-
-For a reviewed subject that is not an operating app, service, library, or comparable product, the applying
-operation may record one Product Lifecycle `not applicable` result with that exact subject reason. That report
-result does not change this reusable source account: the source covers the conditional subject class.
 
 ## Project Lifecycle
 

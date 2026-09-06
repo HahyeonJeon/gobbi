@@ -1,204 +1,240 @@
 ---
 name: coding-review
-description: "Coding Review is an independent read-only operation for evidence-based code feedback."
-allowed-tools: Read, Grep, Glob, Bash, Write
+description: "Coding Review is an operation for independent critique of one frozen code subject and for writing an evidence-based report plus working checklist."
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Coding Review
 
-Coding Review binds one exact code subject, inspects the actual code before prepared review material, applies
-the reusable checklist and activated specialist sources, and writes one caller-bound report.
-Use it when one exact stable code subject needs evidence-based feedback without target mutation or decision authority.
+Coding Review binds and freezes one code subject, reviews it without a checklist, prepares and runs a
+review-owned working checklist, reconciles, and writes `report.md` plus working `checklist.md`.
+Use it after one exact stable code subject is ready for independent review and before an acceptance or workflow decision.
+The caller assigns a fresh matching-specialist agent and does not reuse the producer. It does not modify
+the target, source checklists, or decision state.
+
+This skill is a draft adapted from Evaluation.
 
 ## Principles
 
-### Inspect the actual code first
+### Criticize the frozen target before any checklist
 
-Direct inspection reveals problems that prepared categories or earlier reports can hide. Record unaided
-observations before loading the checklist or another review of the same subject.
+Inspect and freeze the actual code subject, then criticize it, then prepare checklist coverage.
+A prepared item list must not define what the reviewing agent looks at first.
 
-### Close coverage category by category
+### Find useful improvements as well as problems
 
-The base checklist supplies one language-independent review path. Apply every item in source order, then
-apply only specialist coverage activated by the inspected subject.
+Review should show how an acceptable subject can become better, not stop after identifying failures.
+Record evidence-backed improvement points with practical suggestions, while keeping them separate from
+Problems and verdicts.
 
-### Record root conditions with evidence
+### Keep the review independent and preserve its inputs
 
-One supported root condition produces one Problem with one primary category. Link secondary effects to that
-Problem and use a Gap when evidence cannot distinguish the root.
+The reviewing agent should have no producer role or interest in defending the subject. Write only review-owned
+`report.md` and working `checklist.md` while preserving the target, source checklists, criteria, and
+workflow state.
 
-### Keep feedback separate from decisions
+### Support each judgment with direct evidence
 
-The report gives Problems, Improvements, Strengths, and Gaps to its caller. Evaluation and other owners retain
-all decision, correction, integration, publication, and release authority.
+Connect every result to the expected condition, observed state, impact, and evidence. State uncertainty and
+limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST bind one exact subject, scope, content identity, governing source set, reviewer relationship,
-  invalidation condition, and caller-bound report path before inspection.** Stop as `unable` when identity,
-  access, disclosure, a safe read-only method, or a non-overlapping report path cannot be established.
-- **MUST inspect the actual code and complete a checklist-free critical review before loading or traversing the
-  base checklist, a prepared item list, or a prior Coding Review report for the same subject.** Lock the resulting
-  record before checklist exposure, do not backfill it from later material, and restart when prepared material
-  contaminated either pass.
-- **MUST evaluate every applicable base item in source order and every activated overlay afterward.** Record
-  exactly `problem found`, `no problem found`, `not applicable`, or `evidence missing` with exact evidence or a
-  subject reason.
-- **MUST account for every core category and specialist overlay before freezing review sources.** Core results
-  are `applicable`, `not applicable`, or `evidence missing`; overlay results are `activated`, `not applicable`,
-  or `evidence missing`. Every exclusion needs exact subject evidence, and every missing-evidence result links a
-  Gap.
-- **MUST record one primary category for each root Problem and link every secondary category effect to it.**
-  Judge Unintended Overengineering from unsupported current requirements or observed need, never inferred
-  author motive.
-- **MUST keep the subject and governing state read-only and write or replace only the bound report.** Disclose
-  `author` or `not the author`, and record the review as `current`, `partial`, `unable`, or `historical`.
-- **NEVER approve, accept, gate, correct, stage, commit, merge, publish, release, or change workflow or external
-  state through Coding Review.** Do not score the subject or capture the report in durable Memory automatically.
+- **MUST bind the exact target, scope, intended results, supplied decision criteria, both
+  review output paths, and any caller-supplied `evaluation-depth` before the critical
+  review.** Confirm neither output overlaps the target or a source-owned input, and stop
+  when identity, access, independence, or preservation cannot support a responsible
+  review.
+- **MUST criticize the frozen target before preparing or loading any checklist.** Record the
+  results from the review-owned prompts and the current project design and vision
+  without traversing any checklist item source.
+- **MUST prepare one review-owned working checklist from applicable existing sources and
+  necessary study, freeze it before any item is answered, then evaluate every applicable item
+  against the frozen target.** Load the standalone Checklist operation before authoring a new
+  item; reusing existing items alone does not load it.
+- **MUST label every Problem and Improvement `in-contract` or `out-of-contract`, and derive
+  the gate verdict only from in-contract Problems, sufficient evidence, and caller-supplied
+  criteria.** Record a quality opinion against current project design and vision that never
+  changes that verdict.
+- **NEVER change the target, source checklists, supplied criteria, acceptance state, or
+  workflow state.** Write only the review-owned `report.md` and `checklist.md`.
 
 ## Procedure
 
-### Phase 1 — Bind the Subject and Boundary
+### Phase 1 — Understand and bind the target
 
-#### 1.1 Bind identity, scope, and authority
+#### 1.1 Bind the target and review boundary
 
-- Bind the repository, exact revision or content identity, included and excluded code, intended questions,
-  affected actors, governing sources, reviewer relationship, caller-bound report path, and invalidation condition.
-- Prove that every planned inspection is read-only and the report path overlaps neither the subject nor a
-  source checklist. Record `unable` with the blocker, last valid evidence, needed input, and recovery owner when
-  this proof fails.
-- Read the current requirements, accepted design, project rules, and ownership sources needed to interpret the
-  code. Do not load the Coding Review checklist, a prepared item list, or a prior same-subject Coding Review report.
+- Confirm that the reviewing agent did not design, author, or implement the target, and disclose any
+  relationship, interest, access limit, or missing capability that could affect independent
+  judgment. Do not read another reviewing agent's `report.md` or `checklist.md` from the same
+  iteration.
+- Bind the exact artifact, state, version, or content hash; scope; intended results;
+  caller-supplied decision criteria; both review-owned paths: `report.md` and working
+  `checklist.md`; and any caller-supplied `evaluation-depth`. Confirm that neither path
+  overlaps the target or a source-owned input, and that the reviewing agent does not write
+  `gate.md`.
+- Stop when identity, access, independence, or preservation cannot support a responsible
+  review. Absent decision criteria allow a report and forbid a contract-gate verdict.
 
-### Phase 2 — Inspect and Critique Without the Checklist
+#### 1.2 Inspect the actual target
 
-#### 2.1 Inspect the bound subject directly
+- Inspect the artifacts and observable behavior before reading completion claims, prepared reports, or
+  prepared checklists. Distinguish delivered results from claims, deferred work,
+  missing results, and unavailable state.
+- Trace the target's relevant structure, dependencies, interfaces, states, transitions,
+  failures, recovery, and consumer paths. Follow only the contexts that can change an expected
+  result or its evidence.
+- Record verified facts, open questions, assumptions, and evidence gaps, and do not record
+  Problems yet. Return to Step 1.1 when inspection changes the target identity, scope,
+  intended result, or decision criteria.
 
-- Inspect the directory and file structure, diff or code body, callers, dependencies, tests, configuration,
-  documents, generated views, product paths, state changes, failures, and recovery before prepared review material.
-- Record direct facts and affected-surface leads without forcing them into checklist categories. Trace only
-  surfaces that can change a result or its evidence.
-- Recheck the subject identity after inspection. Return to Phase 1 when it can be rebound safely, or record
-  `historical` and stop current claims when the reviewed state changed.
+#### 1.3 Study the quality bar and freeze the target
 
-#### 2.2 Complete the checklist-free critical review
+- Load, in this order, whichever exist: current design memory under the project's
+  `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
+  accepted session design. Use a startup draft only when it is the accepted current design.
+- Record missing bar sources as a Gap and never invent a vision. Never add these sources to
+  gate criteria unless the caller listed them.
+- Freeze the exact artifact, state, version, or content hash only when that state is stable;
+  stop instead of freezing an unstable target. After this freeze, Phase 2 may criticize and
+  Phase 3 may prepare a checklist, and neither may mutate the target.
 
-- Critique the directly inspected subject through these five Coding Review inquiry prompts. They are not checklist
-  items or report taxonomy:
+### Phase 2 — Review the target critically
 
-| Prompt | Inquiry |
-|---|---|
-| Design, intent, and best version | What design and behavior does the subject intend, and what would the best supported version do differently? |
-| Failure, misuse, and cosmetic compliance | How can the subject fail, be misused, or satisfy the form of a requirement while missing its purpose? |
-| State, data, effects, and resources | What states, data meanings, effects, ownership, lifetimes, and cleanup paths can become wrong or unclear? |
-| Change, integration, and compatibility | What callers, integrations, versions, environments, artifacts, and handoffs can this change break or leave inconsistent? |
-| Absences across the lifecycle | What necessary design, implementation, testing, verification, delivery, operation, transition, or closure work is absent? |
+#### 2.1 Criticize the frozen target without a checklist
 
-- Challenge the critique against the concerns represented by the [Checklist scenario
-  spectrum](checklist.md#scenario-spectrum), but do not open, load, or traverse the Coding Review checklist in this
-  phase. Record any new direct-evidence lead under the applicable inquiry prompt.
-- Before Phase 3, lock the exact subject identity, direct facts, Problems, Improvements, Strengths, Gaps, and
-  coverage leads produced without checklist exposure. A bounded empty result names the inspected reach. Never
-  add a checklist-derived observation to this locked record; restart from Phase 1 after prepared-material
-  contamination.
+- Run these review-owned prompts; they are not checklist items and must not become report
+  taxonomy. When `evaluation-depth` is bound, apply them only inside that depth.
 
-### Phase 3 — Freeze Review Coverage
+  | Prompt | Ask about |
+  |---|---|
+  | **Project design and vision** | The frozen target contradicts or drifts from current design, vision, philosophy, architecture, or accepted session design. What those sources omit. |
+  | **Best version and gap** | The distance between this target and the best version a competent owner would produce for the same purpose and constraints. |
+  | **Failure, gaming, and cosmetic compliance** | The target fails, is exploited at a boundary, or satisfies the form of a requirement while missing the result. |
+  | **Absences across the target's life** | What is missing rather than wrong: an unowned consequence, an unhandled state, or a later stage no one covers. |
 
-#### 3.1 Load, account for, and freeze applicable sources
+- Challenge the frozen target with the scenario spectrum in [Checklist](../../checklist/SKILL.md)
+  Step 2.3 by link, not as a working-checklist walk. Do this after prompts 3 and 4.
+- Do not load or traverse reusable checklist sources, caller-supplied checklists, prior
+  review item lists, or the working checklist.
 
-- Load [the Coding Review checklist](checklist.md) only after the Phase 2 record is locked. Bind its exact content
-  identity and preserve its wording and hierarchy.
-- Record one applicability result for every core category before source freeze: `applicable`; `not applicable`
-  with exact subject evidence; or `evidence missing` with a linked Gap. Do not infer applicability from the
-  presence or absence of a checklist-free finding.
-- Activate language, framework, platform, domain, and specialist sources only from bound governing evidence or
-  direct subject evidence. Record one result for every overlay: `activated`; `not applicable` with exact subject
-  evidence; or `evidence missing` with a linked Gap. Absence of a checklist-free finding is never evidence that
-  an overlay is not applicable.
-- Use these ordered overlay signals and boundaries:
+#### 2.2 Record the critical-review results
 
-| Overlay | Activation signals and boundary |
-|---|---|
-| Security | Trust boundaries, untrusted input, identity, authorization, secrets, cryptography, network exposure, or a security requirement. Security owns the specialist expectation. |
-| Privacy | Personal or sensitive data, consent, collection, retention, deletion, disclosure, or a privacy requirement. Privacy stays separate from Security and Operations. |
-| Concurrency | Threads, tasks, goroutines, shared mutable state, ordering, cancellation, synchronization, backpressure, or shutdown. Concurrency stays separate from Correctness and Performance. |
-| Accessibility | User-facing content, semantics, input, focus, assistive technology, motion, contrast, or an accessibility rule. Accessibility stays separate from Usability. |
-| Localization | Locale, translation, date, time, number, currency, collation, text direction, or internationalization. Localization stays separate from Usability and Compatibility. |
-| Dependencies | Added, removed, updated, resolved, vendored, or externally supplied components. Dependencies stays separate from Project Fit and Delivery. |
-| Build | A compiler, generator, build graph, build configuration, or produced artifact. Build stays separate from Verification and Delivery. |
-| Packaging | Package metadata, exports, declarations, installation, uninstallation, archives, or a consumer package. Packaging owns artifact structure. |
-| Release | Version or tag decisions, candidates, channels, release manifests, notes or changelogs, publication or promotion, signing, release automation, or release-state records. Release owns versioned release identity, candidate composition, the release record, channel or target, publication or promotion contract, and release-to-deployment handoff. |
-| Deployment | Environment promotion, rollout, rollback, deployment state, or release topology. Deployment owns environment rollout. |
-| Configuration | Configuration sources, schemas, validation, defaults, precedence, environments, secret supply, or feature flags. Configuration stays separate from Parameters and Operations. |
-| Observability | Logs, metrics, traces, health, diagnostics, correlation, or diagnostic redaction. Observability stays separate from general Operations. |
-| Migration | Data, schema, protocol, state, service, or consumer transition. Migration stays separate from Compatibility. |
-| Deprecation | Supported phase-out, warnings, alternatives, timing, or a removal contract. Deprecation stays separate from Compatibility. |
-| Retirement | Product or capability exit, disposal, retained state, consumer transition, or support end. Retirement stays separate from Compatibility and Delivery. |
+- Record labeled Problems, Improvements, Strengths, gaps, and coverage leads using the
+  [report template](report.md) field meanings. Coverage leads are study candidates
+  for Phase 3, not working items.
+- Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
+  result, or `out-of-contract`, citing the governing source; when `evaluation-depth` is bound,
+  in-contract labeling follows the supplied token and the target skill's purpose and boundary.
+  Missing implementation detail at `ideation-design` or `planning-decomposition` is not an
+  in-contract Problem, and Phase 2 may still record out-of-contract Improvements for polish;
+  a Problem that maps to a supplied criterion must be `in-contract`, and an out-of-contract
+  result with no cited governing source is not a Problem and must be demoted to an Improvement
+  or dropped.
+- Return to Phase 1 if this review changes the bound target or review boundary.
 
-- Delivery owns the reviewed handoff, Compatibility owns supported behavior, and any external mutation remains
-  with its operation or manager. Record each activated source, reviewer qualification, uninspected reach, and
-  missing capability.
-- Freeze the complete applicable source set before answering any item. Return here for a material coverage gap,
-  refresh the set, and rerun affected answers without inventing a review item.
+### Phase 3 — Prepare, freeze, run, and reconcile
 
-### Phase 4 — Run and Reconcile the Review
+#### 3.1 Gather sources
 
-#### 4.1 Run the item pass
+- Collect applicable project and caller-supplied checklists, including the
+  [Coding Review checklist](checklist.md) for code work.
+  When `evaluation-depth` is bound, gather baselines only at that depth: a current indexed
+  Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its own
+  checklist, not this domain checklist, and mixed work under `by-owning-stage` applies
+  each matching baseline to the artifact class it owns.
+- Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
+  or rewrite a source during review.
+- Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its
+  reason and effect on coverage.
 
-- Walk every base item category by category in source order and record one allowed result with exact evidence or
-  reason. Link `problem found` to one Problem and `evidence missing` to one Gap; give the other results no finding
-  link.
-- For a wholly non-product subject, record one Product Lifecycle `not applicable` reason instead of repeating
-  it for every Product sign. For a wholly inapplicable core category, record one category-level `not applicable`
-  result instead of repeating every sign.
-- For each applicable category, answer every applicable sign. For an applicable category with partial evidence,
-  or a category recorded as `evidence missing`, answer every supported sign and link every unsupported sign to a
-  Gap.
-- Apply each activated specialist source after the base pass. Record `evidence missing` and route the Gap to a
-  qualified specialist when the needed source, evidence, or reviewer capability is unavailable.
+#### 3.2 Re-challenge coverage and author study-backed items
 
-#### 4.2 Reconcile observations and item results
+- Copy each source coverage account into the working checklist as a source claim. When a
+  reused source has no account, challenge the frozen target with the Checklist spectrum and
+  stage tables in [Checklist](../../checklist/SKILL.md) Steps 2.1–2.3, record the missing account
+  as a Limit, and do not invent a source account.
+- Treat Phase 2 coverage leads as study candidates, and study internal evidence and current
+  primary external sources when they settle an uncovered expectation or risk. Load
+  [Checklist](../../checklist/SKILL.md) only before authoring a new working item, and add a
+  working item only from that study evidence.
+- Do not add items to fill a category, count, or account row.
 
-- Track each finding or lead as `critical review`, `base checklist`, `specialist overlay`, or `both`. Retain every
-  unique supported finding, and reinspect direct evidence when sources contradict.
-- Assign the earliest supported root condition to one primary core or overlay category. Link affected items and
-  secondary categories to that Problem. A supported Problem with no current owner may use `Primary category:
-  Unclassified — taxonomy Gap {link}`; this is not a permanent category or an excuse to skip category selection.
-- Data Model owns domain representation, identity, relationships, and representable states. Architecture owns
-  system data ownership; Parameters owns public-call input; Abstraction owns concept leakage; Correctness owns
-  runtime validation, mutation, transition, and corruption; Compatibility and Migration own version transitions;
-  Security and Privacy own classification; Vocabulary owns terms.
-- Keep a checklist-free Problem even when no source item names it. Record a short taxonomy-coverage Gap for
-  later Checklist work without changing the source or backfilling the locked pre-checklist record.
+#### 3.3 Freeze the working checklist
 
-### Phase 5 — Render and Hand Off
+- Confirm membership, wording, source identity, exclusions, copied accounts, and additions.
+  An item-free working checklist still has the required header, Sources, Coverage, Additions,
+  Limits, and an explicit no-applicable-items reason.
+- Confirm that no item has been answered and that items do not trace only to Phase 2 notes,
+  then freeze membership, wording, and source identity. A working copy that traces only to
+  Phase 2 notes has failed the checklist pass.
+- Begin the item pass only after this freeze. A later material coverage gap returns to
+  Step 3.2, adds only study-supported items, re-freezes, and reruns every applicable item.
 
-#### 5.1 Recheck identity and set the record state
+#### 3.4 Evaluate every applicable item
 
-- Use `current` only when the exact subject, source set, and cited evidence revalidate, every core category and
-  overlay has an applicability result, and every applicable item is answered. Use `partial` when missing
-  evidence, capability, or an interruption narrows supported claims.
-- Use `unable` when safe binding or responsible review cannot proceed, preserving the attempted subject, blocker,
-  last valid evidence, unreviewed reach, needed input, recovery owner, and first safe action.
-- Use `historical` when the subject or a governing source changed, naming the old and observed new identity and
-  stopping current claims. Start a fresh review instead of transplanting old item results.
+- Evaluate every applicable frozen item against the frozen target with safe non-mutating
+  inspections, reproductions, tests, or measurements. Record the observations, exact evidence,
+  limitations, and uncertainty needed to support the material results.
+- Record one Result per item: `problem-present`, `no-problem-found`, `not-applicable` with a
+  subject reason, or `evidence-insufficient`. Checked means the problem is present; an empty
+  checkbox is not `no-problem-found`.
+- Record Problems, Improvements, and Strengths independently of Phase 2, including
+  contradictions, using the [report template](report.md) field meanings. Unique
+  checklist-only Problems are not a pass condition for critique-first.
 
-#### 5.2 Render and hand off the report
+#### 3.5 Short reconcile
 
-- Render one report from [the report template](templates/report.md) with its nine sections, exact item evidence,
-  finding links, self-review disclosure, typed empty states, and record-state reason.
-- Name the next owner and first evidence-supported action, and state the authority the report does not grant.
-  Give the caller ownership of the completed caller-bound report after handoff.
-- Perform no automatic Memory capture. A separate authorized Memory action may copy a completed report to its
-  owned durable location.
+- Keep unique Problems from Phase 2 and from Step 3.4. Do not drop either side.
+- If Phase 2 and the checklist pass contradict on the same expectation, re-inspect the frozen
+  target. If the contradiction survives, it is a Gap that blocks a verdict on the affected
+  criterion.
+- Do not treat this Step as a second whole-target critique.
+
+#### 3.6 Apply caller criteria and set opinions
+
+- Apply caller-supplied criteria, thresholds, and aggregation once to in-contract Problems
+  only. Optional Improvements, Strengths, out-of-contract Problems, and the quality opinion
+  do not change the contract-gate verdict.
+- Set the quality opinion to `meets-design`, `mixed`, `does-not-meet`, or `not-available`. If
+  the caller listed design or vision as criteria, those findings are `in-contract` and gate
+  normally, and the quality opinion still records the best-version gap without duplicating
+  the verdict.
+- Issue no contract-gate verdict when material evidence or decision criteria are insufficient,
+  including `evidence-insufficient` on an item material to a criterion. Name what would
+  resolve the gap.
+
+### Phase 4 — Report the review
+
+#### 4.1 Recheck identity and write the working checklist
+
+- Recheck the frozen target identity and both review-owned output paths. Return to Phase 1
+  when the target changed or a path overlaps the target or a source-owned input.
+- Write `checklist.md` at the bound path with the required header, Sources, Coverage, Additions,
+  Limits, and item results. Do not copy it into a skill.
+- Confirm the file is a regular non-empty file. An item-free file still carries the required
+  header, Sources, Coverage, Additions, Limits, and no-applicable-items reason.
+
+#### 4.2 Write the report and return
+
+- Write `report.md` from the [report template](report.md) at the bound path, cite
+  the sibling working `checklist.md`, and include Escalations, quality opinion, and finding fields.
+  Add caller-required fields without replacing its target identity, independence, scope,
+  method, result, gap, quality, or verdict meanings.
+- Give each material result exact evidence and enough reproduction detail, and give each
+  Optional Improvement a concise evidence-backed suggestion. Cite internal paths and external
+  sources beside the claims they support.
+- Return a short summary with the contract-gate verdict or reason none was issued, Problems,
+  Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence. Do
+  not read another reviewing agent's `report.md` or `checklist.md` from the same iteration.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Coding Review checklist](checklist.md) | Supplies the reusable lifecycle, category, scenario, and negative-sign source loaded after actual-code inspection. |
-| [Coding Review report template](templates/report.md) | Supplies the exact developer-facing report structure, item results, finding fields, zero states, and handoff boundary. |
-| [Checklist](../../checklist/SKILL.md) | Owns creation and substantive revision of reusable checklist sources. |
-| [Evaluation](../../evaluation/SKILL.md) | Owns independent critique, working checklists, and formal decisions; it completes its unaided same-subject critique before reading a Coding Review report. |
-| [Execution](../../execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |
+| [Checklist](../../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum this review challenges by link. |
+| [Coding Review checklist](checklist.md) | Coding Review-owned baseline source for reviewing general code-work quality. |
+| [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
+| [Coding Execution](../coding-execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

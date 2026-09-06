@@ -6,8 +6,8 @@
 > **Purpose:** Provide baseline coverage for closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting before target-specific items are added<br>
 > **Scope:** Acceptance and authority, closure boundaries, Memory reconciliation, verification and tree identity, commit and merge evidence, retained recovery state, and the final Note<br>
 > **Exclusions:** Quality of the already accepted work except its preservation through closure; detailed Memory-category or Git behavior outside Wrap-up's use; Workflow orchestration outside closure; operating product behavior<br>
-> **Governing sources:** [Checklist](../checklist/SKILL.md), [Evaluation](../evaluation/SKILL.md), [Principles](../principles/SKILL.md), [Wrap-up](SKILL.md), [Note template](templates/note.md), [Memory](../memory/SKILL.md), [Git](../git/SKILL.md), and the accepted closure contract<br>
-> **Context:** Evaluate the closure evidence, durable Memory result, Git result, and Note as one subject. Apply the [Documentation checklist](../execution/docs/checklist.md) to the Note in parallel and add target-specific items after study.<br>
+> **Governing sources:** [Checklist](../checklist/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md), [Principles](../principles/SKILL.md), [Wrap-up](SKILL.md), [Note template](templates/note.md), [Memory](../memory/SKILL.md), [Git](../git/SKILL.md), and the accepted closure contract<br>
+> **Context:** Evaluate the closure evidence, durable Memory result, Git result, and Note as one subject. Apply the [Documentation checklist](../authoring/authoring-review/checklist.md) to the Note in parallel and add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
