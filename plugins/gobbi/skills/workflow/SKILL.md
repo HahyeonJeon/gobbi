@@ -37,7 +37,7 @@ the worktree and session root recorded by Configuration and the latest handoff.
 ## Rules
 
 - **MUST use the native TODO list to select the current phase and stage.** Use only `pending`, `in_progress`, and
-  `completed`, with at most one item `in_progress`; keep task, iteration, cap, and decision data in session evidence.
+  `completed`, with at most one item `in_progress`; keep task, iteration, and decision data in session evidence.
 - **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
   project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
   or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
@@ -62,14 +62,14 @@ frame.
 
 | Stage | Required action |
 |---|---|
-| `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
+| `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
 | `EVALUATION` | Execution tasks and Wrap-up only. Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`execution-implementation` or `by-owning-stage`) to one fresh matching-specialist agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
 | `RECORD` | Reread the WORK result and write the receipt. After EVALUATION, also reread each `report.md` and `checklist.md`, copy the contract-gate verdict into `gate.md`, and route PASS, REVISE, or FAIL. After Ideation or Planning, do not require reports, checklists, or `gate.md`. |
 
 Every Delegation brief names the absolute temporary and final paths, a skills index of skill, path, and
 description, a docs index of doc, path, and description, frozen subject, criteria, participant
-policy, iteration cap, receipt path, checks, authority, and recovery boundary. When the unit includes
+policy, receipt path, checks, authority, and recovery boundary. When the unit includes
 EVALUATION, also name per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, and one named
 `evaluation-depth` token. Remaining-runtime Evaluate
 briefs must name write set `runtime-directory` and the caller-named directory
@@ -86,11 +86,10 @@ The manager validates the listed worktree write set, unchanged main checkout, an
 returns.
 
 When the unit includes EVALUATION, the manager writes `gate.md` through Memory `Temporary Record` with the
-subject identity, iteration and cap, criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate
+subject identity, iteration, criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate
 verdicts used, decision from those verdicts only, out-of-contract Problems and quality opinions as escalations
 with dispositions, and next action. PASS means the criteria are satisfied with no correction pending; REVISE
-means an authorized correction remains and the cap permits another iteration; FAIL means safe in-contract
-correction is unavailable or the cap is exhausted. One assistant then writes the RECORD receipt through Memory
+means an authorized correction remains; FAIL means a safe in-contract correction is unavailable. One assistant then writes the RECORD receipt through Memory
 `Temporary Record` with the unit, stage, iteration, writer, result locator or commit, verification, next
 action, and recovery state; after EVALUATION the receipt also names reports, working checklists, gate, and
 decision.
@@ -144,12 +143,12 @@ P3 · Note
   record that name as `Base branch` and that checkout as `Base checkout`. If the name is empty, or the
   checkout is dirty or unusable, stop; do not ask which branch is the base, and never use the worktree
   branch as the base.
-- Resolve the Execution cap, participants, systems and waivers, immutable base, publication intent, merge and
-  cleanup authority, protected work, and exact current-project Memory root; the Execution cap defaults to three
-  total passes per task. For a fresh session, capture the original UTC start date, generate one lowercase
-  hyphenated UUID, apply Git preferences from the recorded `Base branch` without asking which branch is the
-  base, give the worktree and session leaves the byte-equal name `<YYYY-MM-DD>-<slug>-<full-uuid>`, set the
-  session root to `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and render the
+- Resolve the participants, systems and waivers, immutable base, publication intent, merge and cleanup
+  authority, protected work, and exact current-project Memory root. For a fresh session, capture the original
+  UTC start date, generate one lowercase hyphenated UUID, apply Git preferences from the recorded
+  `Base branch` without asking which branch is the base, give the worktree and session leaves the byte-equal
+  name `<YYYY-MM-DD>-<slug>-<full-uuid>`, set the session root to
+  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and render the
   [configuration template](templates/configuration.md) directly below it through Memory `Temporary Record`.
 - Verify identity, settings, roots, observed `Base branch`, registration, containment, ignored state, tracked
   tree, base checkout, and the rendered configuration. Do not activate `P1 · Ideation`.
@@ -273,9 +272,9 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
   [Design Review](../design/design-review/SKILL.md) for visual work.
   Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns.
-  Run fresh review and record the gate and receipt under
-  the configured Execution cap, then reread the commit, diff, checks, reports, findings, and dispositions before
-  the next task; amend only pending plan work when an in-contract plan defect appears.
+  Run fresh review and record the gate and receipt, then reread the commit, diff, checks, reports,
+  findings, and dispositions before the next task; amend only pending plan work when an in-contract plan
+  defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
@@ -306,7 +305,7 @@ Continue.
   risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
   stops without a design question when authority, safety, or the locked contract cannot support one route.
 - Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
-  final paths, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths, cap,
+  final paths, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths,
   checks, merge authority, and protected state.
 
 #### 3.2 Run closure WORK
@@ -327,9 +326,9 @@ Continue.
   criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each reviewing agent applies the
   matching domain review skill. A launchable runtime produces both files, and an Unavailable
   attempt produces Unavailable evidence, not a Partner Handoff.
-- Apply the Workflow gate with a maximum of two iterations. REVISE returns to Phase 3 DISCUSSION and repeats the
-  changed WORK; FAIL preserves the branch, worktree, session root, reports, working checklists, and exact
-  stopped state.
+- Apply the Workflow gate. REVISE returns to Phase 3 DISCUSSION and repeats the changed WORK; FAIL means a
+  safe correction is unavailable and preserves the branch, worktree, session root, reports, working
+  checklists, and exact stopped state.
 - Any tracked correction makes prior coverage stale and repeats WORK and EVALUATION. Retry a bounded agent or
   Partner operation only when its prior effect is absent or safely reusable.
 
