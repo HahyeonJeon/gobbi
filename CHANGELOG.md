@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Workflow Ideation and Planning skip independent `EVALUATION`. Those units use `DISCUSSION → WORK → RECORD`
+  and write a receipt from self-verified WORK. Execution tasks and Wrap-up still run `EVALUATION`.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.

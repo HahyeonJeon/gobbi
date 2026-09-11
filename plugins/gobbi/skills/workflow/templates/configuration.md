@@ -40,7 +40,7 @@
 | Field | Value |
 |---|---|
 | Execution pass cap | {total passes per Execution task; default 3} |
-| Ideation, Planning, and Wrap-up pass cap | 2 total passes per productive unit |
+| Wrap-up pass cap | 2 total passes per Wrap-up unit; Ideation and Planning have no evaluation pass cap |
 | User decision boundary | Design questions close at completed `P1 · User Review`; later User Review is continue-only; after Configuration the route idle-waits until delivered work |
 | Publication intent | {local, push, or pull request} |
 | Merge authority | {exact current authority} |

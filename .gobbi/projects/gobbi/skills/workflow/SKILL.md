@@ -25,8 +25,9 @@ User Review TODO, and stay autonomous inside later frames.
 
 ### Apply one frame in every phase
 
-Every phase uses `DISCUSSION → WORK → EVALUATION → RECORD`. The frame keeps decisions, authorship, independent
-judgment, acceptance, and recovery evidence separate, and User Review is outside the frame.
+Every productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up insert `EVALUATION`
+between WORK and RECORD so independent judgment stays separate; Ideation and Planning skip it, and User
+Review stays outside the frame.
 
 ### Make every phase handoff recoverable
 
@@ -41,11 +42,12 @@ the worktree and session root recorded by Configuration and the latest handoff.
   project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
   or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
   subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
-- **MUST run `DISCUSSION → WORK → EVALUATION → RECORD` in every phase.** Planning and each Execution task
-  complete the frame before dependent work starts.
+- **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `EVALUATION` between WORK and
+  RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete their frame before
+  dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
-  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION uses
-  a fresh matching-specialist agent and one attempted invocation per remaining runtime.
+  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION, when
+  the unit includes it, uses a fresh matching-specialist agent and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
@@ -53,21 +55,23 @@ the worktree and session root recorded by Configuration and the latest handoff.
 
 ## Workflow Frame
 
-Each phase applies the same four stages. A phase with more than one productive unit, such as Planning followed
-by Execution tasks, completes the frame for each unit before starting its dependent unit, and User Review is
-outside the frame.
+Each productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up also run `EVALUATION`
+between WORK and RECORD. A phase with more than one productive unit, such as Planning followed by Execution
+tasks, completes the frame for each unit before starting its dependent unit, and User Review is outside the
+frame.
 
 | Stage | Required action |
 |---|---|
 | `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, cap, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
 | `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`) to one fresh matching-specialist agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
-| `RECORD` | Reread the result, each `report.md`, and each `checklist.md`, copy the contract-gate verdict, disposition findings, write and verify the gate and receipt, update Configuration progress, and route PASS, REVISE, or FAIL. |
+| `EVALUATION` | Execution tasks and Wrap-up only. Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`execution-implementation` or `by-owning-stage`) to one fresh matching-specialist agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
+| `RECORD` | Reread the WORK result and write the receipt. After EVALUATION, also reread each `report.md` and `checklist.md`, copy the contract-gate verdict into `gate.md`, and route PASS, REVISE, or FAIL. After Ideation or Planning, do not require reports, checklists, or `gate.md`. |
 
 Every Delegation brief names the absolute temporary and final paths, a skills index of skill, path, and
 description, a docs index of doc, path, and description, frozen subject, criteria, participant
-policy, iteration cap, per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, receipt path,
-checks, authority, recovery boundary, and one named `evaluation-depth` token. Remaining-runtime Evaluate
+policy, iteration cap, receipt path, checks, authority, and recovery boundary. When the unit includes
+EVALUATION, also name per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, and one named
+`evaluation-depth` token. Remaining-runtime Evaluate
 briefs must name write set `runtime-directory` and the caller-named directory
 `<record-directory>/evaluation/iteration-N/` that may contain the writing-path parent; a missing write set
 still means `writing-path-only` and cannot complete an evaluation assignment. Drafts and independent inputs
@@ -81,28 +85,31 @@ Wrappers for different remaining runtimes may run in parallel. A launchable runt
 The manager validates the listed worktree write set, unchanged main checkout, and Handoff after the wrapper
 returns.
 
-The manager writes `gate.md` through Memory `Temporary Record` with the subject identity, iteration and cap,
-criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate verdicts used, decision from those
-verdicts only, out-of-contract Problems and quality opinions as escalations with dispositions, and next
-action. PASS means the criteria are satisfied with no correction pending; REVISE means an authorized
-correction remains and the cap permits another iteration; FAIL means safe in-contract correction is
-unavailable or the cap is exhausted. One assistant then writes the RECORD receipt through Memory
-`Temporary Record` with the unit, stage, iteration, writer, result locator or commit, verification, reports
-and working checklists, gate, decision, next action, and recovery state.
+When the unit includes EVALUATION, the manager writes `gate.md` through Memory `Temporary Record` with the
+subject identity, iteration and cap, criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate
+verdicts used, decision from those verdicts only, out-of-contract Problems and quality opinions as escalations
+with dispositions, and next action. PASS means the criteria are satisfied with no correction pending; REVISE
+means an authorized correction remains and the cap permits another iteration; FAIL means safe in-contract
+correction is unavailable or the cap is exhausted. One assistant then writes the RECORD receipt through Memory
+`Temporary Record` with the unit, stage, iteration, writer, result locator or commit, verification, next
+action, and recovery state; after EVALUATION the receipt also names reports, working checklists, gate, and
+decision.
 
-RECORD rereads the result, each `report.md`, and each `checklist.md`, copies the contract-gate verdict into
-`gate.md`, and stops on a criterion-mapped Problem labeled `out-of-contract` without silently relabeling. A
-runtime directory with only one of the two files is incomplete evidence and never PASS input. Escalations do
-not set the decision field; quality `does-not-meet` with contract-gate PASS is not REVISE; after completed
-`P1 · User Review`, out-of-contract opinions do not reopen design.
+After EVALUATION, RECORD rereads the result, each `report.md`, and each `checklist.md`, copies the
+contract-gate verdict into `gate.md`, and stops on a criterion-mapped Problem labeled `out-of-contract`
+without silently relabeling. A runtime directory with only one of the two files is incomplete evidence and
+never PASS input. Escalations do not set the decision field; quality `does-not-meet` with contract-gate PASS
+is not REVISE; after completed `P1 · User Review`, out-of-contract opinions do not reopen design. After
+Ideation or Planning, RECORD rereads the self-verified WORK result, writes the receipt, and does not require
+reports, checklists, or `gate.md`.
 
 ## Procedure
 
 ### Phase 1 — Configure and Ideate
 
-Phase 1 uses `DISCUSSION → WORK → EVALUATION → RECORD` to study the project with the user and participants,
-produce and assess Ideation, and lock the contract. It idle-waits after Configuration until delivered work
-exists, then waits at `P1 · User Review` after a Complete `handoff.md`.
+Phase 1 uses `DISCUSSION → WORK → RECORD` to study the project with the user and participants, produce
+Ideation, and lock the contract. It idle-waits after Configuration until delivered work exists, then waits at
+`P1 · User Review` after a Complete `handoff.md`.
 
 #### 1.1 Initialize or recover the route
 
@@ -165,10 +172,11 @@ P3 · Note
     checklist.md
 ```
 
-- For each productive unit, use that evaluation layout with runtime tokens `claude-code`, `codex`, `cursor`,
-  and `grok`, and place the receipt at `<record-directory>/record/iteration-N.md`. Do not use `claude` or
-  alias historical names such as `codex.md`; accepted results remain at their owner-defined paths, and later
-  directories are created only when their first result needs them.
+- Use that evaluation layout only for Execution tasks and Wrap-up, with runtime tokens `claude-code`,
+  `codex`, `cursor`, and `grok`, and place the receipt at `<record-directory>/record/iteration-N.md` for every
+  productive unit, including Ideation and Planning. Do not use `claude` or alias historical names such as
+  `codex.md`; accepted results remain at their owner-defined paths, and later directories are created only
+  when their first result needs them.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
   `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`. Apply Memory `Temporary Record` to each
   exact ignored output path, and refresh `configuration.md` Progress evidence and Latest handoff only after
@@ -190,7 +198,7 @@ P3 · Note
   and record any unavailable required participant. Present its final synthesized project/work options and
   recommendation, then record every required user decision.
 
-#### 1.5 Produce, evaluate, and record Ideation
+#### 1.5 Produce and record Ideation
 
 - **WORK:** Select [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive design subject has an
   unresolved material code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it
@@ -201,22 +209,10 @@ P3 · Note
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
   decision package to Step 1.4, then resume the matching specialist only from the recorded answer.
-- **EVALUATION:** Freeze the index and every listed member, name `evaluation-depth` `ideation-design`, apply
-  the Workflow Frame with at most two iterations, and verify membership, order, paths, hashes, tracked-tree
-  state, reports, and working checklists. Use the frozen project/work design and discussion criteria so every
-  evaluating agent scores goal, decisions, boundaries, constraints, work strategy, indexed integrity, required
-  discussion, and user decisions, not implementation completeness or document polish; evaluate this design
-  through the matching domain review skill, using the matching ideation skill's baseline rather than an
-  implementation baseline.
-- **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
-  Step 1.4 only for missing or contradictory project/work design, required participant discussion, or a required
-  user decision; a checklist item, missing section, wording defect, or implementation detail cannot cause
-  REVISE without that trace, and FAIL records the exact stopped state. After evaluation,
-  apply one project/work-contract-neutral documentation correction only when it changes no accepted contract,
-  required study, discussion, user decision, or authority, is bounded, reversible, non-destructive,
-  non-external, and isolated, preserves indexed membership, order, and paths, passes full-result
-  self-verification, and records the finding, eligibility, changed bytes, checks, coverage limit, and
-  no-reevaluation disposition; otherwise use normal revision and fresh evaluation.
+- **RECORD:** Reread the indexed result, reproduce membership, order, path, hash, and tracked-tree checks, and
+  write the receipt without reports, checklists, or `gate.md`. Return to Step 1.4 only for missing or
+  contradictory project/work design, required participant discussion, or a required user decision, and return
+  to WORK when the indexed result is incomplete.
 
 #### 1.6 Write the Phase 1 handoff and wait at User Review
 
@@ -233,11 +229,11 @@ P3 · Note
 
 ### Phase 2 — Plan and Execute
 
-Phase 2 applies `DISCUSSION → WORK → EVALUATION → RECORD` first to Planning and then to every Execution task.
-Enter only from completed `P1 · User Review`; the manager, subagents or teammates, and remaining Partner
-runtimes make later in-frame decisions from the locked Phase 1 design, then wait at `P2 · User Review`.
-Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its role, evidence,
-addressability, and write boundary and issuing a complete new Delegation brief.
+Phase 2 applies `DISCUSSION → WORK → RECORD` to Planning, then `DISCUSSION → WORK → EVALUATION → RECORD` to
+every Execution task. Enter only from completed `P1 · User Review`; the manager, subagents or teammates, and
+remaining Partner runtimes make later in-frame decisions from the locked Phase 1 design, then wait at
+`P2 · User Review`. Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its
+role, evidence, addressability, and write boundary and issuing a complete new Delegation brief.
 
 #### 2.1 Run the Planning DISCUSSION and WORK
 
@@ -252,18 +248,13 @@ addressability, and write boundary and issuing a complete new Delegation brief.
   `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching-specialist agent writes and self-reviews the indexed plan
   while preserving Ideation members and locked decisions.
 
-#### 2.2 Evaluate and record Planning
+#### 2.2 Record Planning
 
-- **EVALUATION:** Freeze the complete plan, name `evaluation-depth` `planning-decomposition`, and apply the
-  Workflow Frame with at most two iterations. Use the accepted design and assignment-contract criteria so
-  every evaluating agent scores hierarchy coverage, grouping coherence, dependency-valid order, assignment contract,
-  and indexed integrity, not implementation recipes; use the matching domain review skill for the Planning result.
-- **RECORD:** Reread the result and evaluation evidence, write and verify the gate and receipt, and return to
-  Step 2.1 only for missing or contradictory decomposition, grouping, order, assignment-contract field,
-  authority, or indexed integrity; a checklist item, missing section, wording defect, or implementation
-  detail cannot cause REVISE without that trace, and FAIL records the exact stopped state. Verify obligation
-  coverage, stable task IDs, dependencies, contexts, writer boundaries, indexed membership and hashes, and
-  unchanged tracked state before activating Execution.
+- **RECORD:** Reread the indexed plan, reproduce membership, order, path, hash, and tracked-tree checks, and
+  write the receipt without reports, checklists, or `gate.md`. Return to Step 2.1 only for missing or
+  contradictory decomposition, grouping, order, assignment-contract field, authority, or indexed integrity,
+  then verify obligation coverage, stable task IDs, dependencies, writer frontier, indexed membership and
+  hashes, and unchanged tracked state before activating Execution.
 
 #### 2.3 Run each Execution task frame
 

@@ -153,15 +153,18 @@ Configuration → Ideation → Planning → Execution → Wrap-up
 Every productive step uses:
 
 ```text
-DISCUSSION → WORK → EVALUATION → RECORD
+DISCUSSION → WORK → RECORD
 ```
+
+Execution tasks and Wrap-up also run `EVALUATION` between WORK and RECORD. Ideation and Planning skip it.
 
 After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
 develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
-Recorded evidence can rebuild the active route after a context boundary, and each gate must accept the frozen
-result before work advances. Workflow uses one isolated branch and linked worktree for the full session.
+Recorded evidence can rebuild the active route after a context boundary. Execution and Wrap-up gates must
+accept the frozen result before those units advance. Workflow uses one isolated branch and linked worktree
+for the full session.
 
 ## Partner
 

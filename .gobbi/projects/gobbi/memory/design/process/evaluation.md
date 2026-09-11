@@ -38,8 +38,8 @@ Evaluation owning finding and verdict authority, are stale until Evaluation is r
 ## Evaluation depth
 
 These tokens still describe Cowork `evaluate`. Bind any caller-supplied `evaluation-depth` in the evaluate
-call. Workflow and Cowork require the field in evaluator briefs. A missing-field stop-or-report protocol is
-not specified.
+call. Cowork `evaluate` and Workflow units that include EVALUATION require the field in evaluator briefs.
+Workflow Ideation and Planning skip EVALUATION. A missing-field stop-or-report protocol is not specified.
 
 | Token | In-contract bar |
 |---|---|
@@ -68,8 +68,9 @@ Workflow:
     checklist.md
 ```
 
-`<record-directory>` is `1-ideation/`, `2-planning/`, `3-execution/task-NN-slug/`, or `wrap-up/`.
-Receipt stays `<record-directory>/record/iteration-N.md`. The manager writes `gate.md`. The
+`<record-directory>` for this layout is `3-execution/task-NN-slug/` or `wrap-up/`. Ideation and
+Planning write a receipt only and do not create this evaluation tree. Receipt stays
+`<record-directory>/record/iteration-N.md`. The manager writes `gate.md` when EVALUATION ran. The
 evaluator does not.
 
 Cowork has no `gate.md` and no Workflow iteration tree. One unique caller-named directory below
