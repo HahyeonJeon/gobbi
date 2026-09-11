@@ -177,9 +177,9 @@ P3 · Note
   `codex.md`; accepted results remain at their owner-defined paths, and later directories are created only
   when their first result needs them.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
-  `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`. Apply Memory `Temporary Record` to each
-  exact ignored output path, and refresh `configuration.md` Progress evidence and Latest handoff only after
-  rereading the named result and reproducing its checks.
+  `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and apply Memory `Temporary Record` to each
+  exact ignored output path. Do not update `configuration.md` after the Configuration write except when
+  writing a phase `handoff.md`, and then set only `Latest handoff` to that path.
 - Complete `P1 · Configuration` as an idle wait after those location rules are recorded. Leave every later
   item `pending` with no item `in_progress`, and do not run 1.4 or activate `P1 · Ideation`.
 
@@ -218,8 +218,8 @@ P3 · Note
 - Render the [handoff template](templates/handoff.md) at `1-ideation/handoff.md` for Complete or Stopped. Record
   the exact identity, worktree, session root, branch, result and hashes, checks, decisions, authority, findings,
   first unproved action, and recovery command.
-- For Complete, record `Next TODO: P1 · User Review`, update Configuration's Latest handoff and Progress
-  evidence, activate `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
+- For Complete, record `Next TODO: P1 · User Review`, set `configuration.md` `Latest handoff` to
+  `1-ideation/handoff.md`, activate `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
   the runtime ask tool for Continue or Stop only, not a design-question card. For Stopped, keep the current
   first unproved productive TODO and do not activate User Review as a next-phase gate.
 - Do not activate Planning from the file, from silence, or from the absence of an interrupt. Continue
@@ -282,9 +282,10 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   task commits, checks, evaluations, decisions, dispositions, exact worktree and session root, and
   `Next TODO: P2 · User Review`.
 - On a safe terminal stop, render the same path with `Status: Stopped`, the current first unproved Planning or
-  Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, update
-  Configuration, verify the handoff against all named evidence, activate `P2 · User Review`, display the file,
-  and use Discussion with the runtime ask tool for Continue or Stop only, not a design-question card.
+  Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, set
+  `configuration.md` `Latest handoff` to `3-execution/handoff.md`, verify the handoff against all named evidence,
+  activate `P2 · User Review`, display the file, and use Discussion with the runtime ask tool for Continue or
+  Stop only, not a design-question card.
 - Do not activate Wrap-up from the file, from silence, or from the absence of an interrupt. Continue completes
   `P2 · User Review` and then activates `P3 · Wrap-up`; Stop leaves User Review `in_progress` or records a stop
   and does not activate Wrap-up; recovery returns to the first unproved action without replacing accepted
@@ -338,9 +339,10 @@ Continue.
   authority, and active Wrap-up TODO. Apply Wrap-up's Git procedure and [Git](../git/SKILL.md) preferences to
   commit remaining closure changes and merge the exact accepted work head into the configured base branch.
 - Prove the resulting base tree equals the evaluated tree. Render `wrap-up/handoff.md` for accepted integration
-  or any safe terminal stop, update Configuration, and record exact Git states, retained objects, first unproved
-  action, and recovery command; for Complete record `Next TODO: P3 · User Review`, and a Stopped handoff never
-  claims Phase 3 completion or opens User Review as a next-phase gate.
+  or any safe terminal stop, set `configuration.md` `Latest handoff` to that path, and record exact Git states,
+  retained objects, first unproved action, and recovery command in the handoff; for Complete record
+  `Next TODO: P3 · User Review`, and a Stopped handoff never claims Phase 3 completion or opens User Review as a
+  next-phase gate.
 - For Complete, activate `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
   Continue or Stop only, not a design-question card; do not start `P3 · Note` from the file or from the absence
   of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's

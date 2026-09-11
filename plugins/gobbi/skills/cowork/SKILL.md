@@ -91,10 +91,10 @@ route.
   `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` directly
   below it.
 - Render the [configuration template](templates/configuration.md) as the Configuration phase's accepted record,
-  apply Memory `Temporary Record`, and verify
-  its identity, locations, settings, evidence, ignored state, native TODO route, and recovery point before
-  completing Configuration. A recovered session without this file may create it only when one exact identity,
-  branch, registered worktree, session root, and accepted topic history agree.
+  apply Memory `Temporary Record`, and verify its identity, locations, settings, creation evidence, ignored
+  state, and the native TODO list before completing Configuration. A recovered session without this file may
+  create it only when one exact identity, branch, registered worktree, session root, and accepted topic history
+  agree; do not rewrite `configuration.md` again until a topic reaches PASS.
 
 #### 1.3 Establish topic and session locations
 
@@ -128,9 +128,8 @@ CW · Wrap-up
 
 #### 1.4 Complete Configuration as an idle wait
 
-- Mark `CW · Configuration` completed after refreshing `configuration.md` Progress evidence and recording
-  the idle-wait recovery point when delivered work is absent. Leave every later item `pending` with no item
-  `in_progress`, and do not activate the earliest unproved item.
+- Mark `CW · Configuration` completed without rewriting `configuration.md`. Leave every later item `pending`
+  with no item `in_progress`, and do not activate the earliest unproved item.
 
 ### Phase 2 — Deliver User Topics
 
@@ -160,8 +159,8 @@ CW · Wrap-up
 
 - For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution; for
   Light, activate Ideation, Planning, Execution, and PASS in order, and neither shaping stage is optional.
-  After a topic is locked, later boundaries refresh `configuration.md` Progress evidence and activate the
-  next selected stage, and stop on competing evidence.
+  After a topic is locked, activate the next selected stage and stop on competing evidence. Do not rewrite
+  `configuration.md` at lock, stage, commit, or evaluation boundaries.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, a skills index of
@@ -208,9 +207,11 @@ CW · Wrap-up
 - Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
   work. An in-stage review cannot replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
-- Complete PASS only after every selected result is accepted and verified. Do not require a focused
-  implementation commit or a clean tracked tree; report outcome, scope, results, commits, checks, exclusions,
-  concerns, partner evidence, and evaluation coverage separately, then wait with no active item.
+- Complete PASS only after every selected result is accepted and verified, then update `configuration.md`
+  `Accepted topics` with that topic ID and record path only and do not copy TODO statuses, hashes, or idle
+  state. Do not require a focused implementation commit or a clean tracked tree; report outcome, scope,
+  results, commits, checks, exclusions, concerns, partner evidence, and evaluation coverage separately, then
+  wait with no active item.
 
 ### Phase 3 — Commit on User Call
 
