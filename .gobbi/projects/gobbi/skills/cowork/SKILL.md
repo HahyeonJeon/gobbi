@@ -8,7 +8,7 @@ skill-type: operation
 # Cowork
 
 Cowork takes one user-supplied topic at a time through Fast or Light delivery in one isolated worktree. Use it
-after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit evaluation, or explicit
+after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit review, or explicit
 closure action.
 
 ## Principles
@@ -25,9 +25,9 @@ One linked worktree and one ordered writer chain keep tracked results attributab
 remain recoverable in the retained worktree; implementation commits happen only after an explicit user
 `commit`, and durable Memory commits still happen on `wrap up`.
 
-### Separate stage quality from evaluation
+### Separate stage quality from review
 
-Every selected stage self-reviews or self-verifies before acceptance. Independent evaluation is a separate
+Every selected stage self-reviews or self-verifies before acceptance. Independent review is a separate
 user-called judgment and never substitutes for stage quality.
 
 ### Route through one native TODO
@@ -42,7 +42,7 @@ route.
   change nothing else in the main checkout.
 - **MUST continue and recover only in the registered Cowork worktree and session root.** Never create or select
   a replacement worktree or session directory for the same Cowork identity.
-- **MUST use the native TODO list to select Configuration, topic stages, Commit, Evaluation, and Wrap-up,
+- **MUST use the native TODO list to select Configuration, topic stages, Commit, Review, and Wrap-up,
   using only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`, and complete
   Configuration as an idle wait that leaves later items `pending`.** Start a topic stage only after
   delivered work exists: a user statement of the outcome, topic, or request, not mode, slug, partner
@@ -55,8 +55,8 @@ route.
 - **MUST keep one ordered writer chain with role-bound acceptance.** The matching specialist owns ignored Ideation
   and Planning results and implementation writes, and, only after `commit` authority, implementation commits;
   assistants own direct-Memory closure commits.
-- **MUST run evaluation, implementation commit, and Cowork closure only after the matching explicit user
-  `evaluate`, `commit`, or `wrap up` call.** One `evaluate` authorizes one fresh matching-specialist agent and
+- **MUST run review, implementation commit, and Cowork closure only after the matching explicit user
+  `review`, `commit`, or `wrap up` call.** One `review` authorizes one fresh matching-specialist agent and
   one Partner wrapper per remaining runtime; one `commit` authorizes focused implementation commits; one
   `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow TODOs, gates, RECORD receipts,
   or a Workflow Note.
@@ -100,7 +100,7 @@ route.
 
 - Create each ignored directory only when its first result needs it, and name every temporary directory and
   file in its owning assignment. Drafts, subagent or teammate responses, Partner results, reviews, scratch
-  work, and user-called evaluation material start below `tmp/`; accepted session records go in their topic
+  work, and user-called review material start below `tmp/`; accepted session records go in their topic
   phase or session wrap-up directory, while tracked results stay at their owner-defined paths.
 
 | Content | Relative directory |
@@ -122,7 +122,7 @@ CW · Topic · PLANNING
 CW · Topic · EXECUTION
 CW · Topic · PASS
 CW · Commit
-CW · Evaluation
+CW · Review
 CW · Wrap-up
 ```
 
@@ -160,11 +160,11 @@ CW · Wrap-up
 - For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution; for
   Light, activate Ideation, Planning, Execution, and PASS in order, and neither shaping stage is optional.
   After a topic is locked, activate the next selected stage and stop on competing evidence. Do not rewrite
-  `configuration.md` at lock, stage, commit, or evaluation boundaries.
+  `configuration.md` at lock, stage, commit, or review boundaries.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
   exact temporary and final paths, authoritative result, verification, commit authority, a skills index of
-  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is Evaluate, one named `evaluation-depth` token. Set Execution
+  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is Review, one named `review-depth` token. Set Execution
   commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
@@ -210,7 +210,7 @@ CW · Wrap-up
 - Complete PASS only after every selected result is accepted and verified, then update `configuration.md`
   `Accepted topics` with that topic ID and record path only and do not copy TODO statuses, hashes, or idle
   state. Do not require a focused implementation commit or a clean tracked tree; report outcome, scope,
-  results, commits, checks, exclusions, concerns, partner evidence, and evaluation coverage separately, then
+  results, commits, checks, exclusions, concerns, partner evidence, and review coverage separately, then
   wait with no active item.
 
 ### Phase 3 — Commit on User Call
@@ -225,16 +225,16 @@ CW · Wrap-up
 - Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
   Complete `CW · Commit` and wait with no active item.
 
-### Phase 4 — Evaluate on User Call
+### Phase 4 — Review on User Call
 
-#### 4.1 Freeze and evaluate one subject
+#### 4.1 Freeze and review one subject
 
-- Enter only for an explicit `evaluate` and freeze the user-named subject, or the whole branch from the
+- Enter only for an explicit `review` and freeze the user-named subject, or the whole branch from the
   immutable base through the current head when no subset is named and no uncommitted tracked implementation
-  changes exist; an indexed result includes its index and every listed member, and whole-branch evaluate uses
-  `evaluation-depth` `by-owning-stage`. If uncommitted tracked implementation changes exist and the user did
+  changes exist; an indexed result includes its index and every listed member, and whole-branch review uses
+  `review-depth` `by-owning-stage`. If uncommitted tracked implementation changes exist and the user did
   not name a subset, stop and ask for `commit` or a named subject.
-- Activate only `CW · Evaluation`, name one locked `evaluation-depth` token, define the decision criteria and
+- Activate only `CW · Review`, name one locked `review-depth` token, define the decision criteria and
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
   parent with per-runtime children `<runtime>/report.md` and `<runtime>/checklist.md`, apply Memory
   `Temporary Record` to each exact file path under that parent, and keep runtime tokens `claude-code`,
@@ -245,15 +245,15 @@ CW · Wrap-up
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
 - Apply the matching domain review skill through one fresh matching-specialist agent and one
-  Partner wrapper subagent per remaining runtime over the same frozen subject and named `evaluation-depth`:
+  Partner wrapper subagent per remaining runtime over the same frozen subject and named `review-depth`:
   [Coding Review](../coding/coding-review/SKILL.md) for code,
   [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
   [Design Review](../design/design-review/SKILL.md) for visual work.
   Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns. Keep
   remaining-runtime briefs naming write set `runtime-directory`, the caller-named aggregation parent, a
-  Delegation prompt, `expected-partner`, and `evaluation-depth`; a missing write set still means
+  Delegation prompt, `expected-partner`, and `review-depth`; a missing write set still means
   `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
-  session and is not the evaluation parent; a launchable runtime produces both files, an Unavailable
+  session and is not the review parent; a launchable runtime produces both files, an Unavailable
   attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
   complete pairs after the assigned review skill has applied the token rather than writing a RECORD.
 
@@ -265,8 +265,8 @@ CW · Wrap-up
 - Treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete evidence, never
   a report to disposition, and never PASS input. Assemble and disposition only complete pairs, using
   contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the aggregation result.
-- Complete Evaluation only when every finding has a disposition and no correction remains unevaluated. Another
-  corrected subject requires another explicit `evaluate` call.
+- Complete Review only when every finding has a disposition and no correction remains unreviewed. Another
+  corrected subject requires another explicit `review` call.
 
 ### Phase 5 — Close on User Call
 
@@ -284,10 +284,10 @@ CW · Wrap-up
 
 #### 5.2 Check freshness and return the result
 
-- After the accepted Memory pass, compare evaluation coverage with the resulting head. When no contract-gate
-  verdict covers the whole branch, use Discussion to ask whether to evaluate or close with self-verification
-  only; quality `does-not-meet` with contract-gate PASS is not REVISE and is not missing coverage, and an
-  evaluation choice runs Phase 4 then repeats this check without rerunning unchanged Memory work.
+- After the accepted Memory pass, compare review coverage with the resulting head. When no contract-gate
+  verdict covers the whole branch, use Discussion to ask whether to review or close with self-verification
+  only; quality `does-not-meet` with contract-gate PASS is not REVISE and is not missing coverage, and a
+  review choice runs Phase 4 then repeats this check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence, a clean Cowork worktree, and an unchanged main checkout. Stop at
   the exact retained recovery state when any claim is unproved.
 - Return one compact conversation handoff with outcome, scope, topics, results, commits, Memory result, checks,
@@ -298,7 +298,7 @@ CW · Wrap-up
 
 | Name | Description |
 |---|---|
-| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry, the finding predicate, user boundary, and fresh-evaluation rule. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry, the finding predicate, user boundary, and fresh-review rule. |
 | [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
 | [Discussion](../discussion/SKILL.md) | Owns context understanding, design options, recommendations, and user decisions. |

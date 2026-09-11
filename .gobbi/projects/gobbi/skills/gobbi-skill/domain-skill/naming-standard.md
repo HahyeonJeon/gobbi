@@ -11,11 +11,10 @@ Use a reserved word only for its fixed meaning.
 |---|---|
 | `ideation` | Develops an evidence-backed design from a problem and requirements, preserves user decision authority, and stops before realization or task decomposition. |
 | `planning` | Turns defined work into a traceable task hierarchy, a dependency-valid execution plan, and the assignment contract those require, and stops before implementation recipes. |
-| `execution` | Implements and verifies one defined task under an accepted design and caller delivery policy; excludes multi-task Planning, protected Review, Evaluation, and acceptance. |
-| `evaluation` | Independently critiques one frozen target and returns an evidence-based report plus working checklist, with a criteria-derived verdict or `Not issued`; excludes target mutation and decision-state change. |
-| `development` | Implements an accepted domain change and coordinates implementation handoffs; excludes protected review, Evaluation, and acceptance. |
-| `review` | Performs protected read-only examination and returns scoped evidence without an Evaluation verdict or acceptance. |
-| `testing` | Exercises a domain subject to produce test evidence; excludes independent review, Evaluation, and acceptance. |
+| `execution` | Implements and verifies one defined task under an accepted design and caller delivery policy; excludes multi-task Planning, independent review, and acceptance. |
+| `development` | Implements an accepted domain change and coordinates implementation handoffs; excludes independent review and acceptance. |
+| `review` | Independently critiques one frozen target and returns an evidence-based report plus working checklist, with a criteria-derived verdict or `Not issued`; excludes target mutation and decision-state change. |
+| `testing` | Exercises a domain subject to produce test evidence; excludes independent review and acceptance. |
 | `conventions` | Defines project-overridable names, written forms, topology, role and branch vocabulary, handoffs, evidence forms, and departure boundaries. |
 | `source` | Defines source-file organization, formatter layout, import form, and generated provenance. |
 | `documentation` | Defines public documentation and implementation-comment preferences. |

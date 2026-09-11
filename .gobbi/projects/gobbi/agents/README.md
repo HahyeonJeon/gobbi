@@ -1,7 +1,7 @@
 # Gobbi role contracts
 
 The session roles are manager and assistant. The specialists are developer, designer, and author.
-Pipeline work (ideate, plan, implement, evaluate) is not a role. The Delegation prompt and loaded skills
+Pipeline work (ideate, plan, implement, review) is not a role. The Delegation prompt and loaded skills
 define that job.
 
 Each role file is intro, Responsibility, In scope, and Out of scope. Responsibility is the quality bar

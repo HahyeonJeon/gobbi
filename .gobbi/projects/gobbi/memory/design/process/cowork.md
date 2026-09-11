@@ -7,7 +7,7 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 
 ## Commit gate
 
-- `commit` is a user-called action, parallel to `evaluate` and `wrap up`.
+- `commit` is a user-called action, parallel to `review` and `wrap up`.
 - The fixed TODO title is `CW · Commit`, after `CW · Topic · PASS`.
 - Execution assignments have commit authority none until that call.
 - PASS accepts verified implementation without a clean tracked tree or an implementation commit.
@@ -16,26 +16,26 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 - Executors own those implementation commits once authority is granted.
 - Wrap-up Memory commits stay on `wrap up`.
 
-## Evaluate and wrap-up interaction
+## Review and wrap-up interaction
 
-- Evaluator briefs name one `evaluation-depth` token. Tokens and in-contract bars live in
-  [Evaluation](evaluation.md#evaluation-depth).
-- Whole-branch `evaluate` uses `by-owning-stage`.
-- If uncommitted tracked implementation changes exist, default whole-branch `evaluate` still stops and
+- Reviewer briefs name one `review-depth` token. Tokens and in-contract bars live in
+  [Evaluation](evaluation.md#review-depth).
+- Whole-branch `review` uses `by-owning-stage`.
+- If uncommitted tracked implementation changes exist, default whole-branch `review` still stops and
   asks for `commit` or a named subject.
 - `wrap up` stops and requires `commit` first when those changes remain.
-- Evaluation corrections that change tracked files wait for `commit`. They do not auto-commit.
+- Review corrections that change tracked files wait for `commit`. They do not auto-commit.
 
-## Evaluation layout
+## Review layout
 
-Cowork evaluation uses one unique caller-named directory below `tmp/` as the aggregation parent.
+Cowork review uses one unique caller-named directory below `tmp/` as the aggregation parent.
 Per-runtime children are `<runtime>/report.md` and `<runtime>/checklist.md`. Runtime tokens are
 `claude-code`, `codex`, `cursor`, and `grok`. There is no `gate.md`. Remaining-runtime briefs name
 write set `runtime-directory`. A directory that holds only one of the two files is incomplete
 evidence and never PASS input. Wrapper capture stays outside the session.
 
-The Evaluation SOP, dual record, depth tokens, and Workflow layout live in [Evaluation](evaluation.md).
-This file keeps the Cowork commit gate, `evaluation-depth` routing, and the Cowork-specific evaluation
+The review SOP, dual record, depth tokens, and Workflow layout live in [Evaluation](evaluation.md).
+This file keeps the Cowork commit gate, `review-depth` routing, and the Cowork-specific review
 parent.
 
 ## Ownership

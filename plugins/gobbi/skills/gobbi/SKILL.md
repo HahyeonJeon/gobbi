@@ -43,7 +43,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   absolute path, and description.
 - **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
   decide which task skill applies.
-- **MUST apply the session-wide finding gate.** Every correction receives fresh evaluation, and only a verified
+- **MUST apply the session-wide finding gate.** Every correction receives fresh review, and only a verified
   PASS continues automatically.
 - **MUST keep the manager as the only authority for assignment, scope, user decisions, acceptance, and
   external or destructive action.** Build specialist prompts through Delegation and keep writes in one ordered
@@ -163,8 +163,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
   | Mode | Use when | Commitment |
   |---|---|---|
-  | **General** | Ordinary assistance needs no Gobbi lifecycle. | Task owners decide participants and evaluation. |
-  | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, evaluation calls, and closure. |
+  | **General** | Ordinary assistance needs no Gobbi lifecycle. | Task owners decide participants and review. |
+  | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, review calls, and closure. |
   | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review TODO, then wait for explicit continue. |
 
 - After selection, publish the selected owner's complete native TODO template before asking for a slug or
@@ -198,7 +198,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - Send every other finding to the user in General, Cowork, and Workflow Phase 1. After completed
   `P1 · User Review`, the manager decides from the accepted design, authority, available subagents or
   teammates, and remaining Partner runtimes, or writes a stopped `handoff.md` without asking the user.
-- Run fresh evaluation after every correction. Continue automatically only from a verified PASS.
+- Run fresh review after every correction. Continue automatically only from a verified PASS.
 
 #### 2.4 Hand off the selected route
 
@@ -224,7 +224,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
 | [Delegation](../delegation/SKILL.md) | Defines every specialist prompt, skills and docs indexes, and final Handoff. |
 | [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../runtimes/grok/manager.md), [Codex](../../runtimes/codex/manager.toml), [Cursor](../../runtimes/cursor/manager.md). |
-| [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit evaluation, and explicit closure. |
+| [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
 | [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |

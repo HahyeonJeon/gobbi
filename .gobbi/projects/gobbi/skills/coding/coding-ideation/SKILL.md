@@ -120,7 +120,7 @@ level as `inherited/current`, `not applicable`, or `material change`.
 #### 3.3 Review and freeze
 
 - Read the result once in index order and fix in-scope defects at the earliest step.
-- Freeze the listed membership and bytes. Independent evaluation belongs to the caller.
+- Freeze the listed membership and bytes. Independent review belongs to the caller.
 - Return the `ideation-index.md` locator and a short outcome summary through the caller's handoff.
 
 ## References

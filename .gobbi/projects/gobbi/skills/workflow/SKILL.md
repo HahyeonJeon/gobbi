@@ -25,7 +25,7 @@ User Review TODO, and stay autonomous inside later frames.
 
 ### Apply one frame in every phase
 
-Every productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up insert `EVALUATION`
+Every productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up insert `REVIEW`
 between WORK and RECORD so independent judgment stays separate; Ideation and Planning skip it, and User
 Review stays outside the frame.
 
@@ -42,11 +42,11 @@ the worktree and session root recorded by Configuration and the latest handoff.
   project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
   or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
   subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
-- **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `EVALUATION` between WORK and
+- **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `REVIEW` between WORK and
   RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete that unit before
   dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
-  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION, when
+  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; REVIEW, when
   the unit includes it, uses a fresh matching-specialist agent and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
@@ -115,14 +115,14 @@ P3 · Note
 | Temporary work | `tmp/` |
 
 ```text
-<record-directory>/evaluation/iteration-N/
+<record-directory>/review/iteration-N/
   gate.md
   <runtime>/
     report.md
     checklist.md
 ```
 
-- Use that evaluation layout only for Execution tasks and Wrap-up, with runtime tokens `claude-code`,
+- Use that review layout only for Execution tasks and Wrap-up, with runtime tokens `claude-code`,
   `codex`, `cursor`, and `grok`, and place the receipt at `<record-directory>/record/iteration-N.md` for every
   productive unit, including Ideation and Planning. Do not use `claude` or alias historical names such as
   `codex.md`; accepted results remain at their owner-defined paths, and later directories are created only
@@ -179,7 +179,7 @@ P3 · Note
 
 ### Phase 2 — Plan and Execute
 
-Phase 2 applies `DISCUSSION → WORK → RECORD` to Planning, then `DISCUSSION → WORK → EVALUATION → RECORD` to
+Phase 2 applies `DISCUSSION → WORK → RECORD` to Planning, then `DISCUSSION → WORK → REVIEW → RECORD` to
 every Execution task. Enter only from completed `P1 · User Review`; the manager, subagents or teammates, and
 remaining Partner runtimes make later in-frame decisions from the locked Phase 1 design, then wait at
 `P2 · User Review`. Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its
@@ -217,10 +217,10 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
   focused local commit. An in-stage review cannot replace mandatory user-called or stage review.
-- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`,
+- **REVIEW → RECORD:** Freeze the commit and result, name `review-depth` `execution-implementation`,
   apply the matching domain review skill, and launch remaining runtimes from the recorded set minus the active
   runtime with write set `runtime-directory`; if that set is empty, launch nothing, and a missing write set is
-  `writing-path-only` and cannot complete EVALUATION. Write `gate.md` from contract-gate verdicts only (PASS:
+  `writing-path-only` and cannot complete REVIEW. Write `gate.md` from contract-gate verdicts only (PASS:
   criteria met with no correction pending; REVISE: authorized correction remains; FAIL: safe correction
   unavailable), treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete
   and never PASS input, then reread the commit, diff, checks, reports, findings, and dispositions before the
@@ -229,7 +229,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
 - After every planned task earns PASS, render the handoff template at `3-execution/handoff.md` with the plan,
-  task commits, checks, evaluations, decisions, dispositions, exact worktree and session root, and
+  task commits, checks, reviews, decisions, dispositions, exact worktree and session root, and
   `Next TODO: P2 · User Review`.
 - On a safe terminal stop, render the same path with `Status: Stopped`, the current first unproved Planning or
   Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, set
@@ -243,8 +243,8 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 
 ### Phase 3 — Wrap Up and Report
 
-Phase 3 applies `DISCUSSION → WORK → EVALUATION → RECORD` to the actual closure. It then integrates only the
-evaluated tree, writes the terminal `handoff.md`, waits at `P3 · User Review`, and returns the Note after
+Phase 3 applies `DISCUSSION → WORK → REVIEW → RECORD` to the actual closure. It then integrates only the
+reviewed tree, writes the terminal `handoff.md`, waits at `P3 · User Review`, and returns the Note after
 Continue.
 
 #### 3.1 Run closure DISCUSSION
@@ -265,32 +265,32 @@ Continue.
   and protected paths, and checks through Delegation. Apply Wrap-up and [Memory](../memory/SKILL.md), then
   self-review the Memory CRUD, retained paths, indexes, links, and complete worktree diff.
 - Verify the actual pre-Git tree, task commits, checks, heads, merge plan, authority, risks, and recovery state.
-  Keep the response-only Note outside the evaluation subject.
+  Keep the response-only Note outside the review subject.
 - Stop at the exact recoverable state when any promised closure result, containment check, authority, or
   verification is missing; do not ask a design question or invent a replacement route.
 
-#### 3.3 Run closure EVALUATION
+#### 3.3 Run closure REVIEW
 
-- Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
+- Freeze the actual closure tree, name `review-depth` `by-owning-stage`, and review it with the Memory
   diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
   matching-specialist agent and one Partner wrapper per remaining runtime at
-  `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}` with write set `runtime-directory`; if
-  that set is empty, launch nothing, a missing write set is `writing-path-only` and cannot complete EVALUATION,
+  `wrap-up/review/iteration-N/<runtime>/{report.md,checklist.md}` with write set `runtime-directory`; if
+  that set is empty, launch nothing, a missing write set is `writing-path-only` and cannot complete REVIEW,
   and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only: PASS when criteria are met with no correction
   pending, REVISE when an authorized correction remains and then return to Phase 3 DISCUSSION and repeat the
   changed WORK, and FAIL when a safe correction is unavailable. A runtime directory that holds only one of
   `report.md` and `checklist.md` is incomplete and never PASS input; quality `does-not-meet` with contract-gate
   PASS is not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design.
-- Any tracked correction makes prior coverage stale and repeats WORK and EVALUATION. Retry a bounded agent or
+- Any tracked correction makes prior coverage stale and repeats WORK and REVIEW. Retry a bounded agent or
   Partner operation only when its prior effect is absent or safely reusable.
 
 #### 3.4 Run closure RECORD and return the Note
 
-- For PASS, write and verify the closure gate and receipt, then reread the evaluated tree, branches, checks,
+- For PASS, write and verify the closure gate and receipt, then reread the reviewed tree, branches, checks,
   authority, and active Wrap-up TODO. Apply Wrap-up's Git procedure and [Git](../git/SKILL.md) preferences to
   commit remaining closure changes and merge the exact accepted work head into the configured base branch.
-- Prove the resulting base tree equals the evaluated tree. Render `wrap-up/handoff.md` for accepted integration
+- Prove the resulting base tree equals the reviewed tree. Render `wrap-up/handoff.md` for accepted integration
   or any safe terminal stop, set `configuration.md` `Latest handoff` to that path, and record exact Git states,
   retained objects, first unproved action, and recovery command in the handoff; for Complete record
   `Next TODO: P3 · User Review`, and a Stopped handoff never claims Phase 3 completion or opens User Review as a

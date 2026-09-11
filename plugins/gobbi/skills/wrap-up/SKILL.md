@@ -61,8 +61,8 @@ altered completion claim.
 #### 1.1 Accept the completed work
 
 - Enter only when the calling manager identifies accepted work as ready for terminal closure. The caller owns
-  acceptance, required evaluation, and the evidence gate.
-- Read the accepted scope, results, artifacts, commits, verification, evaluation coverage, user decisions,
+  acceptance, required review, and the evidence gate.
+- Read the accepted scope, results, artifacts, commits, verification, review coverage, user decisions,
   exclusions, risks, and unresolved items.
 - When a completion claim lacks evidence or a material decision remains unresolved, stop mutation and
   continue to Step 3.4 with the exact unattempted state.

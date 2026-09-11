@@ -10,7 +10,7 @@ Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
-Gobbi is an orchestration system that brings structured planning, implementation, evaluation, and durable
+Gobbi is an orchestration system that brings structured planning, implementation, review, and durable
 handoffs to the AI coding tools you already use. You choose the operating depth for each session, from
 ordinary assistance to fast topic-by-topic work or a fully recorded lifecycle. Gobbi never preselects the
 mode for you.
@@ -139,7 +139,7 @@ privacy-safe session slug. It then asks for the session-wide Partner policy: `di
 Cowork is the fast path for implementation work that you direct one topic at a time. Fast delivery skips
 Ideation and Planning; Light delivery runs a bounded version of both before verified Execution.
 
-Independent evaluation and closure run only when you explicitly request them. One isolated branch and linked
+Independent review and closure run only when you explicitly request them. One isolated branch and linked
 worktree hold the session, keeping your main checkout separate from the ordered local commits.
 
 ## Workflow
@@ -156,7 +156,7 @@ Every productive step uses:
 DISCUSSION → WORK → RECORD
 ```
 
-Execution tasks and Wrap-up also run `EVALUATION` between WORK and RECORD. Ideation and Planning skip it.
+Execution tasks and Wrap-up also run `REVIEW` between WORK and RECORD. Ideation and Planning skip it.
 
 After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
 develops the design with the user, available subagents or teammates, and the remaining Partner launch set.

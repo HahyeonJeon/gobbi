@@ -42,7 +42,7 @@ limit causes and verdicts to what the evidence supports.
 ## Rules
 
 - **MUST bind the exact target, scope, intended results, supplied decision criteria, both
-  review output paths, and any caller-supplied `evaluation-depth` before the critical
+  review output paths, and any caller-supplied `review-depth` before the critical
   review.** Confirm neither output overlaps the target or a source-owned input, and stop
   when identity, access, independence, or preservation cannot support a responsible
   review.
@@ -72,7 +72,7 @@ limit causes and verdicts to what the evidence supports.
   iteration.
 - Bind the exact artifact, state, version, or content hash; scope; intended results;
   caller-supplied decision criteria; both review-owned paths: `report.md` and working
-  `checklist.md`; and any caller-supplied `evaluation-depth`. Confirm that neither path
+  `checklist.md`; and any caller-supplied `review-depth`. Confirm that neither path
   overlaps the target or a source-owned input, and that the reviewing agent does not write
   `gate.md`.
 - Stop when identity, access, independence, or preservation cannot support a responsible
@@ -106,7 +106,7 @@ limit causes and verdicts to what the evidence supports.
 #### 2.1 Criticize the frozen target without a checklist
 
 - Run these review-owned prompts; they are not checklist items and must not become report
-  taxonomy. When `evaluation-depth` is bound, apply them only inside that depth.
+  taxonomy. When `review-depth` is bound, apply them only inside that depth.
 
   | Prompt | Ask about |
   |---|---|
@@ -126,7 +126,7 @@ limit causes and verdicts to what the evidence supports.
   [report template](report.md) field meanings. Coverage leads are study candidates
   for Phase 3, not working items.
 - Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
-  result, or `out-of-contract`, citing the governing source; when `evaluation-depth` is bound,
+  result, or `out-of-contract`, citing the governing source; when `review-depth` is bound,
   in-contract labeling follows the supplied token and the target skill's purpose and boundary.
   Missing implementation detail at `ideation-design` or `planning-decomposition` is not an
   in-contract Problem, and Phase 2 may still record out-of-contract Improvements for polish;
@@ -141,7 +141,7 @@ limit causes and verdicts to what the evidence supports.
 
 - Collect applicable project and caller-supplied checklists, including the
   [Authoring Review checklist](checklist.md) for writing work.
-  When `evaluation-depth` is bound, gather baselines only at that depth: a current indexed
+  When `review-depth` is bound, gather baselines only at that depth: a current indexed
   Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its own
   checklist, not this domain checklist, and mixed work under `by-owning-stage` applies
   each matching baseline to the artifact class it owns.

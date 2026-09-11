@@ -3,13 +3,13 @@
 ## Intent
 
 The Generic Evaluation skill and `skills/evaluation/` are removed without an alias. Cowork still has a
-user-called `evaluate` phase. This process design is stale until Evaluation is redesigned. Do not treat a
+user-called `review` phase. This process design is stale until Review is redesigned. Do not treat a
 domain Review skill as a replacement Evaluation skill.
 
 Coverage Accounts are not required on domain child checklists. The Checklist skill template still owns the
 account.
 
-This file records remaining Cowork `evaluate` facts and former Evaluation-skill limits for Memory readers.
+This file records remaining Cowork `review` facts and former Evaluation-skill limits for Memory readers.
 Do not copy a live SOP here.
 
 ## Procedure shape
@@ -23,7 +23,7 @@ account by decision.
 
 ## Dual record
 
-These two-file and verdict facts still describe Cowork `evaluate` as of this session. They are not a
+These two-file and verdict facts still describe Cowork `review` as of this session. They are not a
 redesigned Evaluation skill.
 
 - One `VERDICT:` line from in-contract Problems, sufficient evidence, and caller-supplied criteria.
@@ -33,20 +33,20 @@ redesigned Evaluation skill.
 - Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and `grok`.
 
 Former Evaluation-skill rules about unaided critique before a same-subject Coding Review report, and about
-Evaluation owning finding and verdict authority, are stale until Evaluation is redesigned.
+Evaluation owning finding and verdict authority, are stale until Review is redesigned.
 
-## Evaluation depth
+## Review depth
 
-These tokens still describe Cowork `evaluate`. Bind any caller-supplied `evaluation-depth` in the evaluate
-call. Cowork `evaluate` and Workflow units that include EVALUATION require the field in evaluator briefs.
-Workflow Ideation and Planning skip EVALUATION. A missing-field stop-or-report protocol is not specified.
+These tokens still describe Cowork `review`. Bind any caller-supplied `review-depth` in the review
+call. Cowork `review` and Workflow units that include REVIEW require the field in reviewer briefs.
+Workflow Ideation and Planning skip REVIEW. A missing-field stop-or-report protocol is not specified.
 
 | Token | In-contract bar |
 |---|---|
 | `ideation-design` | Goal, decisions, boundaries, constraints, work strategy, indexed integrity, required discussion and user decisions. Not implementation completeness or document polish. |
 | `planning-decomposition` | Hierarchy coverage, grouping coherence, dependency-valid order, assignment contract. Not implementation recipes. |
 | `execution-implementation` | Implementation, applicable Coding Review baseline and Execution documentation checklist, task verification. |
-| `by-owning-stage` | Mixed subject: each artifact uses its owning stage's token. Cowork whole-branch `evaluate` uses this. |
+| `by-owning-stage` | Mixed subject: each artifact uses its owning stage's token. Cowork whole-branch `review` uses this. |
 
 A current indexed Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its
 own checklist, not the Execution documentation checklist. Mixed work under `by-owning-stage` applies each
@@ -61,7 +61,7 @@ invent a replacement evaluation skill.
 Workflow:
 
 ```text
-<record-directory>/evaluation/iteration-N/
+<record-directory>/review/iteration-N/
   gate.md
   <runtime>/
     report.md
@@ -69,8 +69,8 @@ Workflow:
 ```
 
 `<record-directory>` for this layout is `3-execution/task-NN-slug/` or `wrap-up/`. Ideation and
-Planning write a receipt only and do not create this evaluation tree. Receipt stays
-`<record-directory>/record/iteration-N.md`. The manager writes `gate.md` when EVALUATION ran. The
+Planning write a receipt only and do not create this review tree. Receipt stays
+`<record-directory>/record/iteration-N.md`. The manager writes `gate.md` when REVIEW ran. The
 evaluator does not.
 
 Cowork has no `gate.md` and no Workflow iteration tree. One unique caller-named directory below
@@ -78,29 +78,29 @@ Cowork has no `gate.md` and no Workflow iteration tree. One unique caller-named 
 
 Remaining-runtime evaluator briefs name write set `runtime-directory` and `writing-path` as the
 absolute `report.md`. Missing write set still means `writing-path-only` and cannot complete the
-assignment. Wrapper capture stays outside the session and is not the evaluation tree.
+assignment. Wrapper capture stays outside the session and is not the review tree.
 
 ## Ownership
 
 | Concern | Owner |
 |---|---|
-| Former Evaluation SOP | Removed. `skills/evaluation/` is gone. Stale until Evaluation is redesigned. |
+| Former Evaluation SOP | Removed. `skills/evaluation/` is gone. Stale until Review is redesigned. |
 | Reusable sources and Coverage Account template | [Checklist](../../../skills/checklist/SKILL.md) |
 | Domain child checklists | Matching domain Review skill. No Coverage Account required. |
 | Code baseline and caller-bound Coding Review report | [Coding Review](../../../skills/coding/coding-review/SKILL.md) and [Coding skill family](../feature/coding-skill-family.md) |
 | Write surface `runtime-directory` | [Partner](../../../skills/gobbi/partner/SKILL.md) and [Partner design](../feature/partner.md) |
 | Workflow path bind, RECORD, `gate.md` | [Workflow](../../../skills/workflow/SKILL.md) |
-| Cowork `evaluate` call, one-parent layout, and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
+| Cowork `review` call, one-parent layout, and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
 | Evaluator craft row | [Delegation](../../../skills/delegation/SKILL.md) |
 | Role load maps | [Identity-and-load role contracts](identity-and-load-role-contracts.md) |
 
 Cursor as active runtime writes both files. Cursor as Partner stays Unavailable. A Write or Edit
-denial is `BLOCKED` with the denial. The manager does not scribe evaluation files.
+denial is `BLOCKED` with the denial. The manager does not scribe review files.
 
 ## Current limits
 
 Generic Evaluation and `skills/evaluation/` are removed. Coverage Accounts are not required on domain
 child checklists. The Checklist skill template still has a Coverage Account. The evaluator load map in
-[Identity-and-load role contracts](identity-and-load-role-contracts.md) is stale until Evaluation is
+[Identity-and-load role contracts](identity-and-load-role-contracts.md) is stale until Review is
 redesigned. Callers that still load `skills/evaluation/` will fail. See remaining items in
 [Evaluation backlog](../../backlogs/evaluation.md).

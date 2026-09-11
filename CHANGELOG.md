@@ -33,13 +33,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Workflow Ideation and Planning skip independent `EVALUATION`. Those units use `DISCUSSION → WORK → RECORD`
-  and write a receipt from self-verified WORK. Execution tasks and Wrap-up still run `EVALUATION`.
+- Workflow Ideation and Planning skip independent `REVIEW`. Those units use `DISCUSSION → WORK → RECORD`
+  and write a receipt from self-verified WORK. Execution tasks and Wrap-up still run `REVIEW`.
 - Workflow has no numeric pass cap. REVISE continues while an authorized in-contract correction remains.
   FAIL means a safe correction is unavailable. `iteration-N` remains an evidence counter.
 - `configuration.md` no longer stores live TODO, progress, or idle state. Workflow updates it only when a
   phase `handoff.md` is written. Cowork updates it only at topic PASS. Those updates are pointers only.
-- Workflow SKILL.md has no Workflow Frame section. Unique EVALUATION and RECORD rules live in Procedure.
+- Workflow SKILL.md has no Workflow Frame section. Unique REVIEW and RECORD rules live in Procedure.
+- Independent agent review replaces the evaluation name: Workflow stage `REVIEW`, Cowork call `review` and
+  TODO `CW · Review`, token `review-depth`, and paths `review/`. User Review and self-review are unchanged.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
@@ -49,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   owns. In scope is four CRUD operations, then named specialist subjects. Out of scope bullets start with Never.
   Designer subjects now include visual materials, design concept, and layout, kept separate from composition.
 - Delegation Role is a subject specialist (developer, designer, or author). Phase (ideate, plan, implement,
-  evaluate) lives in Task and the skills index, not in a pipeline role name.
+  review) lives in Task and the skills index, not in a pipeline role name.
 - Delegation no longer owns the Gobbi root-pair protocol. Specialists validate roots as Gobbi specifies.
   Every brief includes a skills index of skill, path, and description and a docs index of doc, path, and
   description; delegated agents load a listed skill or document only when the assignment cannot proceed

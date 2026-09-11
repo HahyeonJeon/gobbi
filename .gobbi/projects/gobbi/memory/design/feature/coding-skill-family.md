@@ -19,7 +19,7 @@ procedures.
 | [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts General, Cowork, or Workflow work. |
 | [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) | Operation | Owns study, discussion, the code-design ladder, and one indexed ideation result for an unresolved material code-design choice. | Stops before Planning or realization. |
 | [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Owns decomposition, grouping, order, and dispatch for defined code work. | Stops before implementation recipes. Coding Execution may order work only inside one accepted task. |
-| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, the applicable checklist pass, and handoff for one settled code task, with code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review, Evaluation, or acceptance authority. |
+| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, the applicable checklist pass, and handoff for one settled code task, with code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
 | [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Operation | Reviews one exact stable code subject and returns one caller-bound feedback report. | Non-gating. No target-mutation right, verdict, gate, correction, or acceptance authority. |
 
 Language, framework, platform, tool, and product-domain skills retain their specialist judgments
@@ -46,13 +46,13 @@ becomes a prerequisite for direct child use.
 - General may enter any child directly from a complete current contract. Code design, Planning, and Execution
   form a dependency path when needed, not a mandatory pipeline. Coding Review is an independent non-gating
   branch.
-- Cowork and Workflow keep their existing stages, paths, participant policy, commit policy, evaluate call,
+- Cowork and Workflow keep their existing stages, paths, participant policy, commit policy, `review` call,
   gates, acceptance, and handoffs. They select matching children directly inside those stages.
 - Route by the productive subject and owned outcome, not by whether the repository contains code. Keep
   consistency-bound tests, configuration, schemas, generated views, documents, behavior, failures, recovery,
   and consumers in one code-primary unit. Split independently assignable outcomes through Coding Planning.
-- There is no Generic Evaluation skill. Cowork still has a user-called `evaluate` phase. That load map is
-  stale until Evaluation is redesigned; see [Evaluation](../process/evaluation.md). Do not invent a
+- There is no Generic Evaluation skill. Cowork still has a user-called `review` phase. That load map is
+  stale until Review is redesigned; see [Evaluation](../process/evaluation.md). Do not invent a
   replacement evaluation skill.
 - Re-entry starts at the earliest owner whose accepted input changed. The manager or mode tracks result identity
   and freshness; the Coding root does not.
@@ -94,6 +94,6 @@ released changelog entries retain their point-in-time names and facts.
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
   use the same four-child navigation-only shape.
 - [Evaluation](../process/evaluation.md) records that Generic Evaluation is removed and that Cowork
-  `evaluate` remains.
+  `review` remains.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
   discovery and matching-child loads.
