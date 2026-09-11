@@ -43,7 +43,7 @@ the worktree and session root recorded by Configuration and the latest handoff.
   or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
   subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
 - **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `EVALUATION` between WORK and
-  RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete their frame before
+  RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete that unit before
   dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
   self-reviews; independent local and remaining Partner inputs stay separate until synthesis; EVALUATION, when
@@ -52,55 +52,6 @@ the worktree and session root recorded by Configuration and the latest handoff.
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
   by itself.** Reread the promised result or commit and reproduce its verification.
-
-## Workflow Frame
-
-Each productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up also run `EVALUATION`
-between WORK and RECORD. A phase with more than one productive unit, such as Planning followed by Execution
-tasks, completes the frame for each unit before starting its dependent unit, and User Review is outside the
-frame.
-
-| Stage | Required action |
-|---|---|
-| `DISCUSSION` | Freeze the subject, accepted decisions, criteria, authority, participants, absolute paths, and next action. Phase 1 includes the user; later frames use the manager, subagents or teammates, and remaining Partner runtimes with no design question, and User Review is outside the frame. |
-| `WORK` | Gather bounded independent input, then have one assigned writer create and self-review the authoritative result at its caller-supplied path. |
-| `EVALUATION` | Execution tasks and Wrap-up only. Freeze the actual result and send the same subject, caller criteria, and one named `evaluation-depth` token (`execution-implementation` or `by-owning-stage`) to one fresh matching-specialist agent and one Partner wrapper subagent per remaining runtime at exact per-runtime `report.md` and `checklist.md` paths. |
-| `RECORD` | Reread the WORK result and write the receipt. After EVALUATION, also reread each `report.md` and `checklist.md`, copy the contract-gate verdict into `gate.md`, and route PASS, REVISE, or FAIL. After Ideation or Planning, do not require reports, checklists, or `gate.md`. |
-
-Every Delegation brief names the absolute temporary and final paths, a skills index of skill, path, and
-description, a docs index of doc, path, and description, frozen subject, criteria, participant
-policy, receipt path, checks, authority, and recovery boundary. When the unit includes
-EVALUATION, also name per-runtime `report.md` and working `checklist.md` paths, `gate.md` path, and one named
-`evaluation-depth` token. Remaining-runtime Evaluate
-briefs must name write set `runtime-directory` and the caller-named directory
-`<record-directory>/evaluation/iteration-N/` that may contain the writing-path parent; a missing write set
-still means `writing-path-only` and cannot complete an evaluation assignment. Drafts and independent inputs
-start at caller-named paths below `{session-root}/tmp/`. The Partner launch set is the recorded set minus the
-active runtime. If that set is empty, launch nothing and do not rewrite the recorded policy to `disabled`.
-Each remaining runtime receives one Partner wrapper subagent
-through the active runtime's subagent system, with its own wrapper-capture path, Delegation prompt, and
-`expected-partner`. Wrapper capture stays private, outside the session, and is not the evaluation tree.
-Wrappers for different remaining runtimes may run in parallel. A launchable runtime produces that runtime's
-`report.md` and `checklist.md`; an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
-The manager validates the listed worktree write set, unchanged main checkout, and Handoff after the wrapper
-returns.
-
-When the unit includes EVALUATION, the manager writes `gate.md` through Memory `Temporary Record` with the
-subject identity, iteration, criteria, per-runtime `report.md` and `checklist.md` paths, contract-gate
-verdicts used, decision from those verdicts only, out-of-contract Problems and quality opinions as escalations
-with dispositions, and next action. PASS means the criteria are satisfied with no correction pending; REVISE
-means an authorized correction remains; FAIL means a safe in-contract correction is unavailable. One assistant then writes the RECORD receipt through Memory
-`Temporary Record` with the unit, stage, iteration, writer, result locator or commit, verification, next
-action, and recovery state; after EVALUATION the receipt also names reports, working checklists, gate, and
-decision.
-
-After EVALUATION, RECORD rereads the result, each `report.md`, and each `checklist.md`, copies the
-contract-gate verdict into `gate.md`, and stops on a criterion-mapped Problem labeled `out-of-contract`
-without silently relabeling. A runtime directory with only one of the two files is incomplete evidence and
-never PASS input. Escalations do not set the decision field; quality `does-not-meet` with contract-gate PASS
-is not REVISE; after completed `P1 · User Review`, out-of-contract opinions do not reopen design. After
-Ideation or Planning, RECORD rereads the self-verified WORK result, writes the receipt, and does not require
-reports, checklists, or `gate.md`.
 
 ## Procedure
 
@@ -255,7 +206,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   then verify obligation coverage, stable task IDs, dependencies, writer frontier, indexed membership and
   hashes, and unchanged tracked state before activating Execution.
 
-#### 2.3 Run each Execution task frame
+#### 2.3 Run each Execution task
 
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
@@ -266,15 +217,14 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
   focused local commit. An in-stage review cannot replace mandatory user-called or stage review.
-- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`, and
-  apply the matching domain review skill:
-  [Coding Review](../coding/coding-review/SKILL.md) for code,
-  [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
-  [Design Review](../design/design-review/SKILL.md) for visual work.
-  Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns.
-  Run fresh review and record the gate and receipt, then reread the commit, diff, checks, reports,
-  findings, and dispositions before the next task; amend only pending plan work when an in-contract plan
-  defect appears.
+- **EVALUATION → RECORD:** Freeze the commit and result, name `evaluation-depth` `execution-implementation`,
+  apply the matching domain review skill, and launch remaining runtimes from the recorded set minus the active
+  runtime with write set `runtime-directory`; if that set is empty, launch nothing, and a missing write set is
+  `writing-path-only` and cannot complete EVALUATION. Write `gate.md` from contract-gate verdicts only (PASS:
+  criteria met with no correction pending; REVISE: authorized correction remains; FAIL: safe correction
+  unavailable), treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete
+  and never PASS input, then reread the commit, diff, checks, reports, findings, and dispositions before the
+  next task and amend only pending plan work when an in-contract plan defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
@@ -323,13 +273,15 @@ Continue.
 
 - Freeze the actual closure tree, name `evaluation-depth` `by-owning-stage`, and evaluate it with the Memory
   diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
-  matching-specialist agent and one Partner wrapper subagent per remaining runtime over the same subject and
-  criteria at `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}`; each reviewing agent applies the
-  matching domain review skill. A launchable runtime produces both files, and an Unavailable
-  attempt produces Unavailable evidence, not a Partner Handoff.
-- Apply the Workflow gate. REVISE returns to Phase 3 DISCUSSION and repeats the changed WORK; FAIL means a
-  safe correction is unavailable and preserves the branch, worktree, session root, reports, working
-  checklists, and exact stopped state.
+  matching-specialist agent and one Partner wrapper per remaining runtime at
+  `wrap-up/evaluation/iteration-N/<runtime>/{report.md,checklist.md}` with write set `runtime-directory`; if
+  that set is empty, launch nothing, a missing write set is `writing-path-only` and cannot complete EVALUATION,
+  and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+- Apply the Workflow gate from contract-gate verdicts only: PASS when criteria are met with no correction
+  pending, REVISE when an authorized correction remains and then return to Phase 3 DISCUSSION and repeat the
+  changed WORK, and FAIL when a safe correction is unavailable. A runtime directory that holds only one of
+  `report.md` and `checklist.md` is incomplete and never PASS input; quality `does-not-meet` with contract-gate
+  PASS is not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design.
 - Any tracked correction makes prior coverage stale and repeats WORK and EVALUATION. Retry a bounded agent or
   Partner operation only when its prior effect is absent or safely reusable.
 
