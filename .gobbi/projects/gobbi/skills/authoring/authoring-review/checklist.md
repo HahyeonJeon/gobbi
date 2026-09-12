@@ -3,7 +3,7 @@
 > **Document role:** Reusable unchecked evaluation source<br>
 > **Subject:** Documentation work and documentation artifacts<br>
 > **Applicability:** General documentation self-review and evaluation; the applying operation binds the exact artifact, revision, and intended readers under review<br>
-> **Purpose:** Provide baseline coverage for trustworthy, clear, compact, usable, and maintainable documentation during Authoring Execution self-review and independent Evaluation<br>
+> **Purpose:** Provide baseline coverage for trustworthy, clear, compact, usable, and maintainable documentation during Authoring Execution self-review and independent review<br>
 > **Scope:** Purpose, scope, change coverage, content, structure, headings, prose, vocabulary, lists, tables, readability, complexity, reader use, reading contexts, and maintenance<br>
 > **Exclusions:** Product behavior beyond the documentation artifact; domain-, document-type-, accessibility-, locale-, safety-, privacy-, and sensitivity-specific expectations not activated by the target<br>
 > **Governing sources:** [Authoring Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), the accepted work contract, and applicable project or document sources<br>

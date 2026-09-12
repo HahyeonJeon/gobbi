@@ -66,6 +66,6 @@
 | Identity source | {fresh observations or prior configuration path and hash} |
 | Recovery owner | Cowork |
 | Recovery binding | Continue only in the Absolute worktree and Session root above; never create a replacement for this UUID |
-| Accepted topics | {topic-NN-slug and record path, or None} |
+| Accepted topics | {each topic-NN-slug and record path, newest last, or None} |
 | First safe recovery command | {exact command to re-enter the Absolute worktree} |
 | Recovery limits | {exact ambiguity or blocked action, or None} |

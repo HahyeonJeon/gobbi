@@ -207,11 +207,11 @@ CW · Wrap-up
 - Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
   work. An in-stage review cannot replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
-- Complete PASS only after every selected result is accepted and verified, then update `configuration.md`
-  `Accepted topics` with that topic ID and record path only and do not copy TODO statuses, hashes, or idle
-  state. Do not require a focused implementation commit or a clean tracked tree; report outcome, scope,
-  results, commits, checks, exclusions, concerns, partner evidence, and review coverage separately, then
-  wait with no active item.
+- Complete PASS only after every selected result is accepted and verified, then append that topic ID and
+  record path to `configuration.md` `Accepted topics`. Do not copy TODO statuses, hashes, or idle state, and
+  do not replace earlier pointers. Do not require a focused implementation commit or a clean tracked tree;
+  report outcome, scope, results, commits, checks, exclusions, concerns, partner evidence, and review
+  coverage separately, then wait with no active item.
 
 ### Phase 3 — Commit on User Call
 

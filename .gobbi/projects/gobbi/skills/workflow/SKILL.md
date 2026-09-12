@@ -217,14 +217,19 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
   focused local commit. An in-stage review cannot replace mandatory user-called or stage review.
-- **REVIEW → RECORD:** Freeze the commit and result, name `review-depth` `execution-implementation`,
+- **REVIEW:** Freeze the commit and result, name `review-depth` `execution-implementation`,
   apply the matching domain review skill, and launch remaining runtimes from the recorded set minus the active
   runtime with write set `runtime-directory`; if that set is empty, launch nothing, and a missing write set is
-  `writing-path-only` and cannot complete REVIEW. Write `gate.md` from contract-gate verdicts only (PASS:
-  criteria met with no correction pending; REVISE: authorized correction remains; FAIL: safe correction
-  unavailable), treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete
-  and never PASS input, then reread the commit, diff, checks, reports, findings, and dispositions before the
-  next task and amend only pending plan work when an in-contract plan defect appears.
+  `writing-path-only` and cannot complete REVIEW. A runtime directory that holds only one of `report.md` and
+  `checklist.md` is incomplete and never PASS input.
+- **RECORD:** Write `gate.md` from contract-gate verdicts only. PASS means criteria are met with no correction
+  pending. REVISE means an authorized correction remains; return to this task's WORK with a new `iteration-N`.
+  FAIL means a safe correction is unavailable; stop and do not start the next task. Write and verify the
+  receipt at `<record-directory>/record/iteration-N.md`. Quality `does-not-meet` with contract-gate PASS is
+  not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design. Any
+  tracked correction makes prior coverage stale and repeats WORK and REVIEW. After PASS, reread the commit,
+  diff, checks, reports, findings, and dispositions before the next task and amend only pending plan work
+  when an in-contract plan defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 

@@ -42,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflow SKILL.md has no Workflow Frame section. Unique REVIEW and RECORD rules live in Procedure.
 - Independent agent review replaces the evaluation name: Workflow stage `REVIEW`, Cowork call `review` and
   TODO `CW · Review`, token `review-depth`, and paths `review/`. User Review and self-review are unchanged.
+- Workflow Execution RECORD now writes the receipt, continues REVISE on a new `iteration-N`, and stops on
+  FAIL. Cowork `Accepted topics` is append-only. Authoring and Coding review checklists name the agent pass
+  independent review.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
