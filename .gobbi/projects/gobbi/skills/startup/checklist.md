@@ -6,7 +6,7 @@
 > **Purpose:** Evaluate whether the family produces enough design, stack, first-check, and first-horizon order for a contributor to start development, without becoming a complete-design interrogation<br>
 > **Scope:** Family contract, identity, gates, re-entry, topic coverage, specification templates, derivation, roadmap order, bootstrap first-check, Memory handoff, procedure, and document quality<br>
 > **Exclusions:** Planning task hierarchies; feature implementation; publication and merge; operating product behavior; live interview answers from one run except as evidence for a bound target; general documentation, skill, and operation-skill quality already covered by those checklists<br>
-> **Governing sources:** [Authoring Review](../authoring/authoring-review/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Startup](SKILL.md), [Gobbi Skill](../gobbi-skill/SKILL.md), [Operation Skill](../gobbi-skill/operation-skill/SKILL.md), [Memory](../memory/SKILL.md), [Design Memory](../memory/design/SKILL.md), [Git](../git/SKILL.md), the accepted Startup design, and the owners the family delegates to<br>
+> **Governing sources:** [Authoring Review](../authoring/authoring-review/SKILL.md), [Checklist](../checklist/SKILL.md), [Principles](../principles/SKILL.md), [Startup](SKILL.md), [Gobbi Skill](../gobbi-skill/SKILL.md), [Operation Skill](../gobbi-skill/operation-skill/SKILL.md), [Memory](../memory/SKILL.md), [Git](../git/SKILL.md), the accepted Startup design, and the owners the family delegates to<br>
 > **Context:** Evaluate the conductor and its children as one work-artifact family. Documents and skills stay in Design and Development. Ready to start development means a contributor can begin without inventing missing design, stack, first-check, or first-horizon order. Apply the [Documentation checklist](../authoring/authoring-review/checklist.md), [Gobbi Skill checklist](../gobbi-skill/checklist.md), and [Operation Skill checklist](../gobbi-skill/operation-skill/checklist.md) in parallel.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
@@ -221,16 +221,16 @@
 
 #### Durable design is missing, copied blindly, or placed under the wrong name
 
-- [ ] Session drafts are never Memorized into the locked Design Memory paths.
+- [ ] Session drafts are never written into the locked design memory paths.
 - [ ] A session draft required for the durable result has no presence check.
-- [ ] Memorize is called without the session identity Memory requires.
+- [ ] Durable Memory is written without the session identity Memory requires.
 - [ ] The durable write set differs from the set the contract locked.
 - [ ] Locked Startup filenames are merged into older differently named design files.
 - [ ] Navigation is not updated when a durable file is added.
 - [ ] A second run duplicates navigation entries.
 - [ ] Unrelated existing design links are dropped.
 - [ ] A durable file left behind by an earlier run is neither updated nor reconciled.
-- [ ] A Memory commit is invented after a verified no-change Memorize.
+- [ ] A Memory commit is invented after a verified no-change durable write.
 - [ ] A change that should be committed is left uncommitted without a stated reason.
 
 ### Procedure

@@ -3,7 +3,7 @@
 ## Intent
 
 Startup is a conductor plus four children: Interview, Project Design, Roadmap, and
-Bootstrap. It writes session drafts, then Memory Memorize. It does not load Planning,
+Bootstrap. It writes session drafts, then durable design memory. It does not load Planning,
 the Wrap-up skill, or feature Execution. It does not publish, push, open a pull
 request, or merge.
 
@@ -33,13 +33,13 @@ Blocking missing answers: `products`, `core-tasks`, `stack`, `first-check`, and,
 when `core-tasks` is not none, `task-actors`, `task-scope`, and `task-behavior`.
 Never copy `{session-root}/interview.md` into Memory.
 
-## Session drafts then Memorize
+## Session drafts then durable design
 
-Project Design and Roadmap write Temporary Records that use Design Memory path
-names. Session drafts carry `## Acceptance`. File existence is not acceptance.
-Memorize copies every other heading and omits `## Acceptance`.
+Project Design and Roadmap write ignored session drafts that use Memory design
+path names. Session drafts carry `## Acceptance`. File existence is not acceptance.
+Durable writes copy every other heading and omit `## Acceptance`.
 
-Durable destinations stay in the existing Design Memory categories:
+Durable destinations stay in the existing design memory categories:
 
 - `architecture/overview.md`
 - `architecture/system.md` — composition, stack, and First check. Not `platform.md`.
@@ -52,6 +52,6 @@ Do not add a fifth Memory category.
 ## Boundaries
 
 - Planning, not Startup, turns one horizon into a task hierarchy.
-- Startup Memory Wrap-up loads Memory Memorize and makes one Memory-only commit.
-  It is not the Wrap-up skill.
+- Startup Memory Wrap-up applies Memory preferences and makes one Memory-only
+  commit. It is not the Wrap-up skill.
 - Startup itself does not merge.

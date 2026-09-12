@@ -9,7 +9,7 @@ skill-type: operation
 
 Project Design derives session design drafts from an accepted interview and
 creates the Gobbi namespace. Use it when a caller has an accepted
-`{session-root}/interview.md` and needs Temporary Records under
+`{session-root}/interview.md` and needs session drafts under
 `{session-root}/tmp/startup/design/`.
 
 ## Principles
@@ -19,9 +19,9 @@ creates the Gobbi namespace. Use it when a caller has an accepted
 Project Design restates accepted interview answers as design drafts. It does
 not invent a lifecycle, stack, or feature.
 
-### Write session Temporary Records
+### Write session drafts
 
-Write under `{session-root}/tmp/startup/design/` using Design Memory path names.
+Write under `{session-root}/tmp/startup/design/` using Memory design path names.
 Durable Memory waits for the conductor.
 
 ### Keep every heading
@@ -29,7 +29,7 @@ Durable Memory waits for the conductor.
 Fill each required heading, mark it not applicable, or mark it open. Never
 delete a heading.
 
-### Create the namespace without Memorize
+### Create the namespace without durable Memory writes
 
 Create the Gobbi ignore file and memory directory only when they are missing.
 Stop when the ignore file exists and its bytes conflict.
@@ -43,8 +43,8 @@ Stop when the ignore file exists and its bytes conflict.
   and cited topic ids.** Ask one user question when a required lifecycle answer
   is missing; never invent it.
 
-- **MUST write session Temporary Records at `{session-root}/tmp/startup/design/`
-  using Memory path names `architecture/overview.md`, `architecture/system.md`,
+- **MUST write session drafts at `{session-root}/tmp/startup/design/` using
+  Memory path names `architecture/overview.md`, `architecture/system.md`,
   `process/product.md`, and `feature/<feature>.md`.**
 
 - **MUST fill every required heading with a derived statement,
@@ -56,7 +56,7 @@ Stop when the ignore file exists and its bytes conflict.
   `{target}/.gobbi/projects/<key>/memory/` if missing.
 
 - **NEVER write durable Memory design files, `{target}/.gitignore`, or
-  `## Roadmap` in any README, and never call Memorize or use Bash.**
+  `## Roadmap` in any README, and never write durable Memory or use Bash.**
 
 ## Procedure
 
@@ -147,7 +147,7 @@ Stop when the ignore file exists and its bytes conflict.
 - Write the session `## Acceptance` block on every written draft with
   `User accepted this draft: no`.
 - Do not treat file existence as acceptance.
-- Memorize later omits `## Acceptance`.
+- Durable Memory writes later omit `## Acceptance`.
 
 ### Phase 3 — Create namespace, obtain acceptance, and return
 
@@ -172,7 +172,7 @@ projects/*/worktrees/
 - Do not write durable Memory design files, `{target}/.gitignore`, `sessions/`,
   `worktrees/`, `rules/`, other Memory categories, or `## Roadmap` in any
   README.
-- Do not call Memorize.
+- Do not write durable Memory design files.
 
 #### 3.3 Obtain acceptance
 

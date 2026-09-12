@@ -91,8 +91,9 @@ route.
   `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` directly
   below it.
 - Render the [configuration template](templates/configuration.md) as the Configuration phase's accepted record,
-  apply Memory `Temporary Record`, and verify its identity, locations, settings, creation evidence, ignored
-  state, and the native TODO list before completing Configuration. A recovered session without this file may
+  write it as an ignored session record under [Memory](../memory/SKILL.md) preferences, and verify its
+  identity, locations, settings, creation evidence, ignored state, and the native TODO list before completing
+  Configuration. A recovered session without this file may
   create it only when one exact identity, branch, registered worktree, session root, and accepted topic history
   agree; do not rewrite `configuration.md` again until a topic reaches PASS.
 
@@ -236,8 +237,8 @@ CW · Wrap-up
   not name a subset, stop and ask for `commit` or a named subject.
 - Activate only `CW · Review`, name one locked `review-depth` token, define the decision criteria and
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
-  parent with per-runtime children `<runtime>/report.md` and `<runtime>/checklist.md`, apply Memory
-  `Temporary Record` to each exact file path under that parent, and keep runtime tokens `claude-code`,
+  parent with per-runtime children `<runtime>/report.md` and `<runtime>/checklist.md`, write each of those
+  paths as an ignored session record under Memory preferences, and keep runtime tokens `claude-code`,
   `codex`, `cursor`, and `grok`; do not use `claude` or alias historical names such as `codex.md`. Use
   `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
   integrity, required discussion, and user decisions, not implementation completeness or document polish),
@@ -276,9 +277,9 @@ CW · Wrap-up
   changes remain, stop and require `commit` first; otherwise organize the accepted closure input under
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
-- Assign one assistant through Delegation to apply Memory `Memorize` to the full session root and closure input.
-  Supply the exact absolute current-project Memory root, update only that boundary, verify it, and create one
-  focused commit or a verified no-change result.
+- Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md) preferences to the full
+  session root and closure input. Supply the exact absolute current-project Memory root, update only that
+  boundary, verify it, and create one focused commit or a verified no-change result.
 - Stop on invalid paths, unresolved decisions, failed checks, wrong-worktree evidence, or unrelated work.
   Never create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Note.
 
@@ -315,5 +316,5 @@ CW · Wrap-up
 | [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff. |
 | [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff. |
 | [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff. |
-| [Memory](../memory/SKILL.md) | Owns session validation, Temporary Record, durable reconciliation, and category routing. |
+| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

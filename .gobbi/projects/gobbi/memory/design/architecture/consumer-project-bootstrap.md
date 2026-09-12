@@ -67,7 +67,7 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
 - **The project memory root is `.gobbi/projects/<project>/memory/`, tracked, with no marker file.** "Tracked"
   means "not ignored"; git cannot track an empty directory. `gobbi-setup` creates the six Memory category
   directories and the named design, reports, and materials subject directories. It writes a 0-byte
-  `README.md` only at `agents/`, `skills/`, and the five category roots whose category skill defines a
+  `README.md` only at `agents/`, `skills/`, and the five category roots whose Memory conventions define a
   README: design, reports, history, materials, and backlogs. It does not create `memory/README.md`,
   `learnings/README.md`, a leaf README, or invented learnings or backlog files. After commit and clone,
   `learnings/` and the leaf subject directories vanish until a later file lands.

@@ -8,7 +8,7 @@ skill-type: operation
 # Startup
 
 Startup conducts Interview, Project Design, Roadmap, and Bootstrap, then Memory
-Wrap-up. Use it when a caller needs that pipeline and locked Design Memory from
+Wrap-up. Use it when a caller needs that pipeline and locked design memory from
 session drafts.
 
 ## Principles
@@ -26,10 +26,10 @@ that key. Children never invent identity.
 
 A later child starts only after the previous child's acceptance evidence exists.
 
-### Memorize after Bootstrap
+### Write durable design after Bootstrap
 
-Memory Wrap-up loads Memory Memorize and makes one Memory-only commit. It is
-not the Wrap-up skill.
+Memory Wrap-up applies Memory preferences and makes one Memory-only commit. It
+is not the Wrap-up skill.
 
 ## Rules
 
@@ -37,8 +37,8 @@ not the Wrap-up skill.
   only owner of project-key derivation.
 - **MUST start a later child only after the previous child's acceptance
   evidence exists.**
-- **MUST confine durable Memory writes to Memory Wrap-up:** the locked Design
-  Memory paths, the design README including the Roadmap heading, and one
+- **MUST confine durable Memory writes to Memory Wrap-up:** the locked design
+  memory paths, the design README including the Roadmap heading, and one
   Memory-only commit.
 - **NEVER load Wrap-up, Planning, or feature Execution, and never add a fifth
   child.**
@@ -117,15 +117,13 @@ not the Wrap-up skill.
 
 ### Phase 3 — Memory Wrap-up
 
-#### 3.1 Memorize session design
+#### 3.1 Write session design into durable memory
 
-- Load [Memory](../memory/SKILL.md) and
-  [Design Memory](../memory/design/SKILL.md). This named Memory stage
-  authorizes `Memorize` with write boundary
-  `{target}/.gobbi/projects/<key>/memory/design/` and session identity
-  from the session-root leaf: original UTC start date, normalized slug,
+- Load [Memory](../memory/SKILL.md). This named Memory stage authorizes durable
+  writes under `{target}/.gobbi/projects/<key>/memory/design/` with session
+  identity from the session-root leaf: original UTC start date, normalized slug,
   full lowercase hyphenated UUID, and exact session root.
-- Memorize from `{session-root}/tmp/startup/design/` into
+- Write from `{session-root}/tmp/startup/design/` into
   `architecture/overview.md`, `architecture/system.md`,
   `process/product.md`, each listed `feature/<feature>.md` or none, and
   `roadmap/project.md`.
@@ -147,11 +145,11 @@ not the Wrap-up skill.
 
 - Load [Git](../git/SKILL.md), stage only paths under
   `{target}/.gobbi/projects/<key>/memory/design/`, and create one Memory-only
-  local commit. If Memorize reports a verified no-change result, do not invent
-  a commit.
+  local commit. If the durable write is a verified no-change result, do not
+  invent a commit.
 - Return the Memory paths, the commit hash or no-change result, and remaining
-  Open items. Startup is complete only when Memorize succeeded and that commit
-  or no-change result exists.
+  Open items. Startup is complete only when those durable writes succeeded and
+  that commit or no-change result exists.
 
 ## References
 
@@ -161,7 +159,6 @@ not the Wrap-up skill.
 | [Project Design](project-design/SKILL.md) | Writes session design drafts and creates the Gobbi namespace. |
 | [Roadmap](roadmap/SKILL.md) | Writes the session project-horizon draft. |
 | [Bootstrap](bootstrap/SKILL.md) | Creates the smallest local repository that can pass a first-check. |
-| [Memory](../memory/SKILL.md) | Owns Memorize from session Temporary Records into durable design. |
-| [Design Memory](../memory/design/SKILL.md) | Owns design path names and category structure. |
+| [Memory](../memory/SKILL.md) | Defines design path names, directory conventions, and durable-write rules. |
 | [Git](../git/SKILL.md) | Conventions for the Memory-only local commit. |
 | [Startup checklist](checklist.md) | Reusable unchecked source for evaluating Startup family readiness. |

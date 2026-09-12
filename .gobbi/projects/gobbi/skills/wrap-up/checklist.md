@@ -38,7 +38,7 @@
 #### Durable Memory becomes stale, fragmented, duplicated, or historically inaccurate
 
 - [ ] The full session root or related existing Memory is not reviewed before durable changes are chosen.
-- [ ] A Memory change lacks an applicable category owner.
+- [ ] A Memory change lacks an applicable Memory directory.
 - [ ] Session-shaped content is appended when existing durable context should be updated or merged.
 - [ ] A current fact remains stale or appears in unexplained duplicate records after closure.
 - [ ] A completed point-in-time record is rewritten as though it were current-state documentation.
@@ -89,7 +89,7 @@
 - [ ] The Note type, status, session, assignment, or recorded time conflicts with the closure evidence.
 - [ ] Context is insufficient for a cold reader to understand the purpose, requirements, scope, exclusions, decisions, sources, and acceptance.
 - [ ] A material delivered result or its evidence is absent from Work.
-- [ ] A Memory row omits the category owner, change and reason, affected paths, or verification.
+- [ ] A Memory row omits the directory, change and reason, affected paths, or verification.
 - [ ] A verification row reports a claim without its method, factual result, and evidence.
 - [ ] A Git row omits a material accepted-work, commit, base, merge, branch, worktree, or observation state.
 - [ ] An intended, unavailable, deferred, failed, or unproved action is described as completed.

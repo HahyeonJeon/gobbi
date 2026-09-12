@@ -336,5 +336,5 @@ invalid result remains a visible failure rather than transformed or relabeled co
 |---|---|
 | [Delegation](../../delegation/SKILL.md) | Defines the base prompt, skills and docs indexes, and final Handoff contract. |
 | [Gobbi](../SKILL.md) | Owns the session-wide Partner policy and route. |
-| [Memory](../../memory/SKILL.md) | Owns validation and retention of ignored session results. |
+| [Memory](../../memory/SKILL.md) | Defines the memory tree and ignored session-record conventions. |
 | [Agent Teams](../agent-teams/SKILL.md) | Distinguishes reusable Claude teammates from fresh Partner processes. |

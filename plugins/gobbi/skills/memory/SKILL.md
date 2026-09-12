@@ -1,157 +1,225 @@
 ---
 name: memory
-description: "Memory is an operation for recording temporary session context and maintaining durable project knowledge."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
-skill-type: operation
+description: "Memory defines the Gobbi memory tree, what belongs in each directory, and the conventions for those files."
+allowed-tools: Read, Grep, Glob
+skill-type: preference
 ---
 
 # Memory
 
-Memory records compact recovery context for active sessions and keeps durable project knowledge current and
-clear. Use **Temporary Record** for ignored recovery evidence and memory change points; use **Memorize** only
-on an explicit user request or at a loaded caller skill's named Memory stage.
+Memory is the map of Gobbi project knowledge: the durable `memory/` tree, ignored `sessions/` records, and
+the conventions for each directory. Use it when reading or writing `.gobbi/projects/<project>/memory/` or
+`sessions/`. The loaded caller or an explicit user request owns when a write happens.
 
 ## Principles
 
-### Preserve only useful future context
+### Keep a current model, not a session stack
 
-Temporary records preserve only accepted recovery context while their worktree remains. Durable memory keeps
-evidence-backed context that will help future work understand or decide something.
+Durable memory explains the project now. Update, merge, or remove current facts. Preserve completed
+point-in-time records under their directory rules.
 
-### Write simply and compactly
+### Put each item in one home
 
-Use short, descriptive titles, plain words, direct sentences, and a clear section hierarchy. Use lists for
-parallel points and tables only for repeated fields or comparisons.
+The reason a future agent will look for the item chooses its directory. Link from related records instead of
+copying.
 
-### Keep memory current and clear
+### Write only useful future context
 
-Durable memory is a current, navigable model of project knowledge, not a stack of session records. Use
-category-owned CRUD to update, move, merge, reorganize, or remove related content while preserving completed
-point-in-time records.
+Keep evidence-backed knowledge that will help later work decide or act. Exclude secrets, transcripts, raw
+logs, trivia, and operational exhaust.
 
 ## Rules
 
-- **MUST take each action from an authorized call.** `Temporary Record` requires a caller skill that owns the
-  exact session path; `Memorize` requires an explicit user request or a loaded caller skill's named Memory
-  stage.
-- **MUST validate one caller-supplied canonical session identity when an action uses session state.** Stop
-  without writing when its format, containment, UUID uniqueness, or ownership is missing or conflicting.
-- **MUST keep every Temporary Record below the active project's `sessions/*` tree and out of Git history.**
-  The caller names its exact path: unfinished inputs stay below `tmp/`, while an accepted record may use the
-  caller's owning phase directory; a mode's accepted Configuration record may sit directly below its session
-  root. Record durable change points below `tmp/` instead of changing `memory/*`.
-- **MUST reconcile durable knowledge before creating memory.** Read the full session root and all related
-  project memory, then use category-owned CRUD to update, move, merge, reorganize, or remove existing content;
-  create only truly missing context.
-- **MUST verify and repair every write before returning.** Prove exact containment, content, affected paths,
-  navigation, and unchanged protected paths for the selected action.
-- **NEVER delete a session root or its contents directly.** A session may disappear only through separately
-  authorized worktree cleanup after its recovery value is resolved.
+- **MUST write durable knowledge only under the project `memory/` root, and ignored session records only under
+  that project's `sessions/` tree.** Reject parent traversal, symlink escape, and a different project.
+- **MUST reconcile related records before creating a file.** Update or merge an existing home; create only
+  missing content; remove stale or duplicate current content; keep indexes and links current.
+- **MUST keep one canonical home per item.** Place it under the directory that owns that kind of knowledge and
+  link from related files.
+- **MUST preserve history files and dated reports as point-in-time records.** Correct factual errors in place;
+  record later work in a new dated file.
+- **NEVER delete a session root, store secrets or unpermitted material, or invent a Memory write without a
+  caller or user naming that write.** Session cleanup is a separately authorized worktree action.
 
-## Procedure
+## Preferences
 
-### Phase 1 — Bind the Memory Action
+### Tree
 
-#### 1.1 Accept an authorized action
+#### Separate session records from durable memory
 
-- Accept `Temporary Record` only when a loaded caller skill names the exact ignored session path it owns.
-  Unfinished inputs stay below `tmp/`, an accepted record may use the caller's phase directory, and Memory
-  owns the compact change-point schema while the caller owns its filename and directory. A mode may name its
-  accepted Configuration record directly below the session root.
-- Accept `Memorize` only on an explicit user request or when a loaded caller skill names its Memory stage and
-  supplies the durable write boundary. An agent's observation that memory should change is not authorization.
-- Require the action, caller, verified worktree, project, and exact output or input boundary. `Temporary Record`
-  and caller-skill `Memorize` require a session identity and root; direct user `Memorize` requires the selected
-  evidence and project memory root.
+- Keep ignored recovery files under `sessions/<YYYY-MM-DD>-<slug>-<uuid>/`. Callers name exact paths: `tmp/`
+  for drafts, a phase directory for accepted session records, or `configuration.md` at the session root.
+- Keep durable knowledge under `memory/` and tracked in Git.
 
-#### 1.2 Validate the canonical session identity when used
-
-- Enter when the action uses session state. Require the caller's original UTC session-start date, normalized
-  slug, full lowercase hyphenated UUID, and exact session root; Memory never derives Git identity.
-- Require the session leaf to match `<YYYY-MM-DD>-<slug>-<full-uuid>` and this exact grammar:
-
-```regex
-^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```text
+.gobbi/projects/<project>/
+├── memory/                                      tracked
+│   ├── design/
+│   │   ├── README.md
+│   │   ├── architecture/
+│   │   ├── feature/
+│   │   ├── process/
+│   │   └── roadmap/
+│   ├── learnings/
+│   │   ├── design/{tips.md,mistakes.md}
+│   │   ├── authoring/{tips.md,mistakes.md}
+│   │   ├── work/{tips.md,mistakes.md}
+│   │   ├── memory/{tips.md,mistakes.md}
+│   │   ├── dev/{tips.md,mistakes.md}
+│   │   └── {domain}/{tips.md,mistakes.md}
+│   ├── reports/
+│   │   ├── README.md
+│   │   ├── note/
+│   │   ├── review/
+│   │   └── analysis/
+│   ├── history/
+│   │   ├── README.md
+│   │   └── YYYY-MM-DD-{descriptive-title}.md
+│   ├── materials/
+│   │   ├── README.md
+│   │   ├── references/
+│   │   ├── assets/
+│   │   ├── docs/
+│   │   └── data/
+│   └── backlogs/
+│       ├── README.md
+│       ├── project.md
+│       └── {feature}.md
+└── sessions/                                    ignored
+    └── <YYYY-MM-DD>-<slug>-<uuid>/
 ```
 
-- Require a real Gregorian date and exact date, slug, and UUID equality with the caller. Require a 1–20
-  character slug and reject `con`, `prn`, `aux`, `nul`, `com1`–`com9`, and `lpt1`–`lpt9`, case-insensitively.
+#### Route by what the item is for
 
-#### 1.3 Resolve and freeze the boundaries
+| Directory | Holds |
+|---|---|
+| `design/` | Current architecture, feature, process, and roadmap intent |
+| `learnings/` | Reusable tips and repeatable mistakes |
+| `reports/` | Final accounts of completed work |
+| `history/` | One compact record per completed session that changed the project |
+| `materials/` | Permitted source inputs and evidence |
+| `backlogs/` | Deferred outcomes and why they wait |
 
-- Resolve the project memory root for `Memorize`; when session state is used, also resolve
-  `.gobbi/projects/<project>/sessions/` and the caller-supplied session root below it. Reject parent traversal,
-  symbolic-link components, a different project, or any root outside the verified worktree.
-- When session state is used, require the caller UUID to identify only the supplied session root. Report every
-  conflict; never choose a root, append a suffix, or create a replacement.
-- Freeze the action, caller, applicable identity, roots, containment checks, UUID inventory, and exact output or
-  input boundary. On any pre-write stop, return those facts, the failed check, unchanged inputs, protected paths,
-  unresolved change points, and first safe recovery step.
+- Do not add a seventh durable category unless the same distinct purpose recurs.
 
-### Phase 2 — Record Temporary Context
+### Design
 
-#### 2.1 Write and verify the temporary record
+#### Keep current intent in one subject home
 
-- Enter only for `Temporary Record`. Confirm the exact output resolves below the session root in the caller's
-  named `tmp/`, phase boundary, or accepted root-level Configuration boundary and every session path is ignored,
-  untracked, unstaged, and uncommitted.
-- Write the smallest accepted recovery state and exclude secrets, transcripts, raw logs, token data, private
-  capture, and unsupported claims. For a caller-designated change-point record, use only the
-  `# Memory Change Points` heading and a `Change point | Evidence` table; merge repeats and treat each row as a
-  later review candidate.
-- Reread the output and repeat its containment, ignore, index, staging, history, and tracked-tree checks.
-  Repair an in-scope content defect and repeat this step, or return the path or no-write result, failed check,
-  unchanged inputs, protected paths, and recovery state.
+- Use `design/` for the project's current intended shape. Revise or remove obsolete intent.
+- Record significant decisions in the design they shape. Do not require a separate decision system.
+- Name files `design/{architecture,feature,process,roadmap}/<descriptive-kebab-case-name>.md`.
 
-### Phase 3 — Memorize Durable Context
+#### Subdirectories
 
-#### 3.1 Select and route durable value
-
-- Enter only for an authorized `Memorize` call. Read the full session root and recorded change points when
-  present, supplied user or closure evidence, accepted commits when applicable, current project state, all
-  related project memory, and required navigation.
-- Keep only evidence-backed context that will help future work. Reject secrets, raw conversation, speculative
-  conclusions, temporary routing state, plans, evaluation results, receipts, and other operational exhaust
-  unless a category skill independently justifies their durable content.
-- Route every retained item through its category owner:
-
-| Durable content | Category skill | Home below the project memory root |
+| Path | Description | Example |
 |---|---|---|
-| Current project design and direction | [`design`](design/SKILL.md) | `design/` |
-| Reusable knowledge and repeated mistakes | [`learnings`](learnings/SKILL.md) | `learnings/` |
-| Completed work reports | [`reports`](reports/SKILL.md) | `reports/` |
-| Completed session history and project progression | [`history`](history/SKILL.md) | `history/` |
-| Durable sources and supporting inputs | [`materials`](materials/SKILL.md) | `materials/` |
-| Deferred project or feature outcomes | [`backlogs`](backlogs/SKILL.md) | `backlogs/` |
+| `design/README.md` | Recursive navigation across design memory. | `design/README.md` — links to architecture, feature, process, and roadmap |
+| `design/architecture/` | Platform architecture, technology stack, system composition, data architecture, infrastructure, deployment topology, and cross-cutting technical foundations. | `design/architecture/platform-architecture.md` — stack and deploy; `design/architecture/data-architecture.md` — stores and flows |
+| `design/feature/` | Named project features: structure, behavior, data, interfaces, flows, states, and failure handling. | `design/feature/login.md` — auth flows; `design/feature/payment.md` — checkout states |
+| `design/process/` | Project processes, workflows, and pipelines: development, documentation, design, testing, review, release, migration, maintenance, and collaboration. | `design/process/release-workflow.md` — ship path; `design/process/review-pipeline.md` — independent review |
+| `design/roadmap/` | Past direction, current focus, future horizons, sequencing, and rationale. | `design/roadmap/memory-system.md` — memory horizons; `design/roadmap/project.md` — project horizons |
 
-#### 3.2 Reconcile category-owned memory
+### Learnings
 
-- Load every applicable category skill, including both owners for a cross-category change. Map each item to
-  related content, one owner, and one create, update, move, merge, reorganize, or remove action; before writing,
-  return the no-write failure result when a category owner or required user decision is missing.
-- Prefer updating or consolidating an existing source over creating another file. Create only missing
-  context, preserve unique current knowledge and completed point-in-time records, and remove stale or
-  duplicate current content.
-- Keep the resulting structure, indexes, and links clear and current. Create history only when the completed
-  session produced durable change, and stop when category guidance or a required user decision is missing.
+#### Store only important reusable knowledge
 
-#### 3.3 Verify and return the durable result
+- Record a tip when it will change a future decision or check. Record a mistake when the failure pattern can
+  recur. Skip trivia and one-off incidents.
+- Place each learning as one second-level heading in `tips.md` or `mistakes.md` under its most specific stable
+  domain. Update or merge instead of copying across domains.
+- Shape tips with `Context` and `Tip`, plus `Application` when future use is not already clear. Shape mistakes
+  with `Context`, `Mistake`, and `Correction`.
 
-- Reread every changed path, related retained content, and required navigation. Confirm category compliance,
-  tracked-root containment, one clear current home for each retained item, no unexplained duplicate, and
-  unchanged session input and protected paths.
-- Repair each in-scope defect and repeat verification. Stop when repair would cross the supplied scope,
-  authority, memory root, or category contract.
-- Return the source boundary and session root when used, exact durable path and action set or verified
-  no-change result, loaded categories, checks, unresolved change points, and retained recovery state.
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `learnings/design/` | Knowledge about shaping architecture, features, interfaces, and experiences. | `learnings/design/tips.md` — one home for a design; `learnings/design/mistakes.md` — copied designs |
+| `learnings/authoring/` | Knowledge about writing durable prose: docs, skills, changelog, structure, claims, and voice. | `learnings/authoring/tips.md` — skill-writing defaults; `learnings/authoring/mistakes.md` — vague claims |
+| `learnings/work/` | Knowledge about planning, collaboration, execution, study, review, release, and maintenance. | `learnings/work/tips.md` — keep review independent; `learnings/work/mistakes.md` — mixing implement and review |
+| `learnings/memory/` | Knowledge about capturing, organizing, retrieving, and maintaining durable project memory. | `learnings/memory/tips.md` — update indexes on move; `learnings/memory/mistakes.md` — duplicated learnings |
+| `learnings/dev/` | Technology-independent implementation, testing, debugging, security, performance, and tooling knowledge. | `learnings/dev/tips.md` — isolate side effects; `learnings/dev/mistakes.md` — untested failure paths |
+| `learnings/{domain}/` | Knowledge that depends on another stable subject such as Python, TypeScript, web, CLI, or Git. Add a domain only when future work will search it directly. Do not add `general/`, `misc/`, or `other/`. | `learnings/python/tips.md` — Python-specific behavior; `learnings/git/mistakes.md` — Git recovery traps |
+| `learnings/{domain}/tips.md` | Reusable facts, techniques, constraints, patterns, and counter-cases for one domain. | `learnings/python/tips.md` — Python-specific behavior; `learnings/authoring/tips.md` — skill-writing defaults |
+| `learnings/{domain}/mistakes.md` | Repeatable failure patterns with causes, recognition signals, and corrected approaches. | `learnings/memory/mistakes.md` — duplicated learnings; `learnings/work/mistakes.md` — mixing implement and review |
+
+### Reports
+
+#### Keep one final account per completed work event
+
+- Classify by the work that produced it. Link from related memory instead of copying.
+- Name files `reports/{note,review,analysis}/YYYY-MM-DD-<descriptive-title>.md` with the work-completion date.
+- Let each report use the smallest readable shape. Do not require one frontmatter or heading schema.
+
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `reports/README.md` | Link-only navigation grouped by category, newest first within each category. | `reports/README.md` — newest notes, reviews, and analyses |
+| `reports/note/` | Final records of completed development, research, design, migration, release, investigation, and other general work. Include the completed work, durable result, evidence, verification, and remaining limits. Exclude scratchpads, raw logs, and routine status. | `reports/note/2026-07-30-memory-taxonomy.md` — taxonomy result; `reports/note/2026-08-16-startup-redesign.md` — Startup family result |
+| `reports/review/` | Final records of code, documentation, project, design, security, process, audit, and other review work. Include subject, scope, criteria, evidence, findings, and conclusion or verdict. | `reports/review/2026-07-30-authentication-boundary.md` — code review; `reports/review/2026-08-12-memory-skill.md` — writing review |
+| `reports/analysis/` | Final records of quantitative or qualitative analysis, benchmarks, comparisons, root causes, incidents, and post-mortems. Include the question, inputs, method, findings, uncertainty, and conclusion. | `reports/analysis/2026-07-30-request-latency-distribution.md` — latency; `reports/analysis/2026-08-04-error-budget.md` — error budget |
+
+### History
+
+#### Record net session change, then leave it still
+
+- Create exactly one history file when a completed session made a durable project change. Create none when
+  the session did not.
+- Use heading, `Completed at` (ISO 8601 UTC), and `## Changes` with net additions, revisions, moves, and
+  removals. Exclude commands, attempts, and transcripts.
+- When later work corrects or reverses that account, write a new history file and link the earlier one.
+
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `history/README.md` | Link-only index of every history record, newest first by completion date and time. | `history/README.md` — newest session records first |
+| `history/YYYY-MM-DD-{descriptive-title}.md` | One compact chronological record of a completed session's durable changes. Use the UTC completion date and a title that names the overall change. Distinguish same-day records with a more specific title, not a sequence number. | `history/2026-07-30-memory-skill-categories.md` — category homes; `history/2026-08-16-startup-family-redesign.md` — Startup redesign |
+
+### Materials
+
+#### Keep inputs faithful and purpose-owned
+
+- Do not edit imported content. Adopt a newer source version deliberately.
+- Give each purpose-owned copy its own index context. Do not auto-sync copies kept for different uses.
+- Index what it is, where it came from, why it is retained, and license or access limits. Avoid `code/`,
+  `media/`, `misc/`, and `other/`. Route those by intended use.
+
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `materials/README.md` | Recursive navigation and provenance: what each retained material is, where it came from, why it is kept, and any source date, version, attribution, or usage restriction. | `materials/README.md` — provenance for each retained file |
+| `materials/references/` | External guidance and prior art: API references, official docs, standards, papers, reference implementations, competitor examples, and inspiration images. | `materials/references/openai-responses-api.md` — API docs; `materials/references/competitor-checkout.png` — prior-art screenshot |
+| `materials/assets/` | Reusable non-document inputs: images, illustrations, icons, logos, audio, video, and fonts. Shipped assets belong in product source. | `materials/assets/brand-logo.svg` — supplied logo; `materials/assets/brand-font.woff2` — supplied font |
+| `materials/docs/` | Supplied or imported project-context documents: specifications, contracts, policies, existing-system docs, and user research. Project-authored intent stays in design, reports, or learnings. | `materials/docs/customer-data-retention-policy.pdf` — customer policy; `materials/docs/legacy-system.md` — existing-system notes |
+| `materials/data/` | Durable machine-readable evidence: datasets, exports, traces, measurements, benchmark inputs, and captured responses. Exclude caches, build output, and generated files with no future value. | `materials/data/request-latency-sample.csv` — latency sample; `materials/data/auth-error-trace.json` — captured errors |
+
+### Backlogs
+
+#### Preserve the deferral, not a plan
+
+- Keep one independently discussable outcome per second-level heading. Require labels `Backlogged at`
+  (immutable UTC), `What`, `Why backlogged`, and `Context`.
+- Index every heading alphabetically without ranking. Do not store priority, owner, estimate, or acceptance
+  criteria.
+- Remove an item after active work durably accepts it. Prune obsolete or duplicate items. Use Git for prior
+  versions; do not keep closed records.
+
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `backlogs/README.md` | Recursive index that links every deferred item heading, grouped by project or feature, ordered alphabetically without implying priority. | `backlogs/README.md` — alphabetical heading links |
+| `backlogs/project.md` | Project-wide or genuinely cross-feature deferred outcomes. | `backlogs/project.md` — repo-wide localization and shared telemetry |
+| `backlogs/{feature}.md` | Several independently discussable deferred outcomes owned by one stable feature. Prefer a name that matches `design/feature/` when one exists. Do not add readiness, status, or archive directories. | `backlogs/login.md` — passwordless sign-in; `backlogs/payment.md` — retry receipts |
 
 ## References
 
 | Name | Description |
 |---|---|
-| [`design`](design/SKILL.md) | Owns current architecture, feature, process, and roadmap memory. |
-| [`learnings`](learnings/SKILL.md) | Owns reusable knowledge and repeated failure patterns. |
-| [`reports`](reports/SKILL.md) | Owns durable notes, reviews, and analyses. |
-| [`history`](history/SKILL.md) | Owns compact completed-session history. |
-| [`materials`](materials/SKILL.md) | Owns durable sources and supporting evidence. |
-| [`backlogs`](backlogs/SKILL.md) | Owns deferred outcomes and their reasons. |
+| [Preference Skill](../gobbi-skill/preference-skill/SKILL.md) | Shape for rules, conventions, and defaults without an SOP. |
+| [Wrap-up](../wrap-up/SKILL.md) | Caller that applies these preferences at closure. |
+| [Git](../git/SKILL.md) | Conventions for focused Memory commits. |

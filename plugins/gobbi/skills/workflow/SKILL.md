@@ -100,7 +100,8 @@ P3 · Note
   `Base branch` without asking which branch is the base, give the worktree and session leaves the byte-equal
   name `<YYYY-MM-DD>-<slug>-<full-uuid>`, set the session root to
   `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and render the
-  [configuration template](templates/configuration.md) directly below it through Memory `Temporary Record`.
+  [configuration template](templates/configuration.md) directly below it as an ignored session record under
+  Memory preferences.
 - Verify identity, settings, roots, observed `Base branch`, registration, containment, ignored state, tracked
   tree, base checkout, and the rendered configuration. Do not activate `P1 · Ideation`.
 
@@ -128,8 +129,8 @@ P3 · Note
   `codex.md`; accepted results remain at their owner-defined paths, and later directories are created only
   when their first result needs them.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
-  `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and apply Memory `Temporary Record` to each
-  exact ignored output path. Do not update `configuration.md` after the Configuration write except when
+  `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and write each of those paths as an ignored
+  session record under Memory preferences. Do not update `configuration.md` after the Configuration write except when
   writing a phase `handoff.md`, and then set only `Latest handoff` to that path.
 - Complete `P1 · Configuration` as an idle wait after those location rules are recorded. Leave every later
   item `pending` with no item `in_progress`, and do not run 1.4 or activate `P1 · Ideation`.
@@ -328,6 +329,6 @@ Continue.
 | [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
 | [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
-| [Memory](../memory/SKILL.md) | Owns Temporary Record, durable Memory reconciliation, and session validation. |
+| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

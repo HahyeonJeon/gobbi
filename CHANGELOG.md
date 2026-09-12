@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflow Execution RECORD now writes the receipt, continues REVISE on a new `iteration-N`, and stops on
   FAIL. Cowork `Accepted topics` is append-only. Authoring and Coding review checklists name the agent pass
   independent review.
+- Memory is a preference skill. One `SKILL.md` describes the memory tree and per-directory conventions.
+  Category child skills are removed. Temporary Record and Memorize are not Memory actions.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
