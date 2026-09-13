@@ -131,16 +131,18 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   projects/*/worktrees/
   ```
 
-- Gobbi writes none of this layout. [Gobbi Setup](../gobbi-setup/SKILL.md) is its write owner and creates the
-  namespace, Memory tree, placeholders, settings, and Codex roles when the user invokes it; it creates no
-  `sessions/`, `worktrees/`, marker, or `rules/` path.
+- Gobbi writes none of this layout. Setup is not a skill. Runtime guides
+  [claude.md](setup/claude.md), [codex.md](setup/codex.md), [cursor.md](setup/cursor.md), and
+  [grok.md](setup/grok.md) tell how to create the namespace, Memory tree, placeholders, settings, and Codex
+  roles; they create no `sessions/`, `worktrees/`, marker, or `rules/` path.
 
 #### 1.3 Stop on an unsafe layout
 
 - Probe local layout paths and ignore ownership with `test` and `git check-ignore`. Do not invoke setup or
   a prerequisite script.
 - Stop before routing when those probes show a partial, contradictory, unreadable, or unsafe layout, and
-  point the user at [Gobbi Setup](../gobbi-setup/SKILL.md).
+  point the user at the matching setup guide: [claude.md](setup/claude.md), [codex.md](setup/codex.md),
+  [cursor.md](setup/cursor.md), or [grok.md](setup/grok.md).
 - For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:developer)` and
   `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
   the [Partner Manual](partner/SKILL.md#availability).
@@ -223,4 +225,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
-| [Gobbi Setup](../gobbi-setup/SKILL.md) | Owns the separately invoked operation that writes a consumer project's missing layout, placeholders, settings, and Codex role contracts, and reports the rest. |
+| [Claude Code setup](setup/claude.md) | How to install Gobbi and create missing layout for Claude Code. |
+| [Codex setup](setup/codex.md) | How to install Gobbi and create missing layout for Codex. |
+| [Cursor setup](setup/cursor.md) | How to load Gobbi and create missing layout for Cursor. |
+| [Grok setup](setup/grok.md) | How to install Gobbi and create missing layout for Grok. |

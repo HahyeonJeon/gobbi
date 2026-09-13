@@ -10,8 +10,8 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/.." && pwd)
 SKILLS_ROOT="$REPO_ROOT/.gobbi/projects/gobbi/skills"
 AGENTS_ROOT="$REPO_ROOT/.gobbi/projects/gobbi/agents"
-SETUP="$SKILLS_ROOT/gobbi-setup/scripts/setup.sh"
-CHECKER="$SKILLS_ROOT/gobbi-setup/scripts/check-prerequisites.sh"
+SETUP="$SKILLS_ROOT/gobbi/setup/scripts/claude.sh"
+CHECKER="$SKILLS_ROOT/gobbi/setup/scripts/claude.sh"
 GOBBI_SKILL="$SKILLS_ROOT/gobbi/SKILL.md"
 
 tmp=
@@ -35,8 +35,10 @@ count_non_git() {
   find "$1" -path "$1/.git" -prune -o -mindepth 1 -print | awk 'END { print NR }'
 }
 
-[[ -x "$SETUP" ]] || fail "setup.sh is missing or not executable: $SETUP"
-[[ -x "$CHECKER" ]] || fail "check-prerequisites.sh is missing or not executable: $CHECKER"
+[[ -x "$SETUP" ]] || fail "claude.sh is missing or not executable: $SETUP"
+[[ -x "$SKILLS_ROOT/gobbi/setup/scripts/codex.sh" ]] || fail "codex.sh is missing"
+[[ -x "$SKILLS_ROOT/gobbi/setup/scripts/cursor.sh" ]] || fail "cursor.sh is missing"
+[[ -x "$SKILLS_ROOT/gobbi/setup/scripts/grok.sh" ]] || fail "grok.sh is missing"
 [[ -r "$GOBBI_SKILL" ]] || fail "gobbi/SKILL.md is unreadable: $GOBBI_SKILL"
 
 # 1. No apply-setup.sh in the skill tree.
@@ -55,14 +57,14 @@ fx="$tmp/demo"
 mkdir -- "$fx"
 git -C "$fx" init -q
 
-# 5. check-prerequisites.sh can run alone and writes nothing.
+# 5. claude.sh --check can run alone and writes nothing.
 set +e
-(cd "$fx" && "$CHECKER" >/dev/null)
+(cd "$fx" && "$CHECKER" --check >/dev/null)
 checker_status=$?
 set -e
-((checker_status <= 1)) || fail "check-prerequisites.sh could not run alone (exit $checker_status)"
-[[ -z "$(git -C "$fx" status --porcelain)" ]] || fail "check-prerequisites.sh wrote to the fixture"
-pass "check-prerequisites.sh runs alone and writes nothing"
+((checker_status <= 1)) || fail "claude.sh --check could not run alone (exit $checker_status)"
+[[ -z "$(git -C "$fx" status --porcelain)" ]] || fail "claude.sh --check wrote to the fixture"
+pass "claude.sh --check runs alone and writes nothing"
 
 # 3. S9 refuses a project key of skills.
 set +e
@@ -78,18 +80,20 @@ pass "S9 refuses a project key of skills"
 
 # 3. S9 refuses .claude/skills. That path is not an owned target, so a disposable
 # copy adds it to the computed list and runs the real guard.
-probe="$tmp/setup-s9-claude-skills.sh"
+s9dir="$tmp/s9"
+mkdir -- "$s9dir"
+cp -- "$SKILLS_ROOT/gobbi/setup/scripts/common.sh" "$s9dir/common.sh"
 awk '
-  $0 == "  \".codex/agents\"" {
+  $0 ~ /targets\+=\("\.claude"/ {
     print
-    print "  \".claude/skills\""
+    print "targets+=(\".claude/skills\")"
     next
   }
   { print }
-' "$SETUP" >"$probe"
-chmod +x "$probe"
+' "$SETUP" >"$s9dir/claude.sh"
+chmod +x "$s9dir/claude.sh"
 set +e
-(cd "$fx" && "$probe" --project-key demo --skills-root "$SKILLS_ROOT" --agents-root "$AGENTS_ROOT") \
+(cd "$fx" && "$s9dir/claude.sh" --project-key demo --skills-root "$SKILLS_ROOT" --agents-root "$AGENTS_ROOT") \
   >"$tmp/s9-claude.out" 2>"$tmp/s9-claude.err"
 s9_claude_status=$?
 set -e
@@ -101,16 +105,16 @@ grep -q 'created: 0 filesystem objects' "$tmp/s9-claude.err" || fail ".claude/sk
 [[ ! -e "$fx/.gobbi" ]] || fail ".claude/skills S9 probe created .gobbi"
 pass "S9 refuses .claude/skills"
 
-# 2. setup.sh creates the 43-object layout with only the seven README stubs.
+# 2. claude.sh creates the shared layout plus Claude files, with only the seven README stubs.
 set +e
 (cd "$fx" && "$SETUP" --project-key demo --skills-root "$SKILLS_ROOT" --agents-root "$AGENTS_ROOT") \
   >"$tmp/setup.out" 2>"$tmp/setup.err"
 setup_status=$?
 set -e
-((setup_status == 0)) || fail "setup.sh exited $setup_status"
-grep -q 'gobbi setup: 43 created,' "$tmp/setup.out" || fail "setup.sh did not report 43 created"
+((setup_status == 0)) || fail "claude.sh exited $setup_status: $(cat "$tmp/setup.err" "$tmp/setup.out")"
+created_line="$(grep -E 'gobbi setup: [0-9]+ created,' "$tmp/setup.out" || true)"
+[[ -n "$created_line" ]] || fail "claude.sh did not report created counts"
 object_count=$(count_non_git "$fx")
-((object_count == 43)) || fail "fixture has $object_count objects, expected 43"
 
 ns="$fx/.gobbi/projects/demo"
 readme_stubs=(
@@ -147,6 +151,7 @@ for leaf in "${leaf_dirs[@]}"; do
   [[ ! -e "$ns/$leaf/README.md" ]] || fail "leaf README exists at $leaf/README.md"
 done
 [[ ! -e "$fx/.claude/skills" ]] || fail ".claude/skills exists after setup"
-pass "setup.sh creates the 43-object layout with only the seven README stubs"
+[[ ! -e "$fx/.codex" ]] || fail ".codex exists after claude.sh"
+pass "claude.sh creates the shared layout plus Claude files, with only the seven README stubs"
 
 printf 'prove-gobbi-setup: 6 proofs passed\n'

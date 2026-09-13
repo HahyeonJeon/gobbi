@@ -107,8 +107,11 @@ the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/sk
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
 plus official Cursor subagents.
 
-After install, the standalone `gobbi-setup` skill creates only missing Gobbi layout, instruction placeholders,
-Claude Code settings, and Codex role contracts. It reports the rest. Gobbi entry does not run setup.
+After install, create missing layout with the matching runtime guide and script under `skills/gobbi/setup/`:
+[claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md),
+[codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md),
+[cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md), or
+[grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md). Setup is not a skill. Gobbi entry does not run it.
 
 ## Start your first session
 

@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wrap-up Note names a Memory directory. Workflow Execution names stage REVIEW, not a user-called review.
   Partner no longer says `eval`. Process memory describes Review as the live independent pass.
 - Gobbi routes only Cowork or Workflow. Agent Teams is removed. Partner default timeout is 3600 seconds.
+- Gobbi Setup is a child of Gobbi at `gobbi/gobbi-setup/`. Setup scripts live in `gobbi/scripts/`.
+- Setup is not a skill. Per-runtime guides live at `gobbi/setup/{claude,codex,cursor,grok}.md`. Scripts stay
+  in `gobbi/scripts/`.
+- Setup scripts are per-runtime under `gobbi/setup/scripts/{claude,codex,cursor,grok}.sh`. Shared helpers
+  are `gobbi/setup/scripts/common.sh`.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
