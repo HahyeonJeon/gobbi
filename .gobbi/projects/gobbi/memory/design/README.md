@@ -23,7 +23,7 @@ Recursive navigation across design memory, grouped by category.
 - [Collaborative design and delegated results](process/collaborative-design-and-delegated-results.md)
 - [Cowork implementation commits](process/cowork.md)
 - [Discussion question flow](process/discussion.md)
-- [Evaluation](process/evaluation.md)
+- [Review](process/evaluation.md)
 - [Identity-and-load role contracts](process/identity-and-load-role-contracts.md)
 - [React skill family](process/react-skill-family.md)
 - [Startup](process/startup.md)

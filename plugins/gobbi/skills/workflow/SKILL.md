@@ -217,7 +217,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
-  focused local commit. An in-stage review cannot replace mandatory user-called or stage review.
+  focused local commit. An in-stage self-review cannot replace stage REVIEW.
 - **REVIEW:** Freeze the commit and result, name `review-depth` `execution-implementation`,
   apply the matching domain review skill, and launch remaining runtimes from the recorded set minus the active
   runtime with write set `runtime-directory`; if that set is empty, launch nothing, and a missing write set is

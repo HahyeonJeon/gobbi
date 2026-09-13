@@ -76,4 +76,4 @@ starts fresh to preserve named-runtime independence.
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
 - [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)
-- [Evaluation](../process/evaluation.md)
+- [Review](../process/evaluation.md)

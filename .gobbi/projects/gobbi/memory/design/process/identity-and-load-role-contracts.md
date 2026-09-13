@@ -30,12 +30,12 @@ Manager roots come from Gobbi 1.1. Specialist Codex wrappers name Delegation. `c
 Gobbi 1.1 and does not run `NO_GOBBI_ROOT`.
 
 Status stays role-owned: manager `PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`; other
-roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. Evaluator adds `VERDICT` on complete work.
+roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. A reviewer adds `VERDICT` on complete work.
 
 ## Conditional domain load map
 
 Domain families change conditional loads, not the five-role set or role procedures. Leader, Executor, and
-Evaluator below name the load map, not a requirement to restore those pipeline files. The same semantic map
+Reviewer below name the load map, not a requirement to restore those pipeline files. The same semantic map
 appears in all four canonical runtime variants.
 
 | Role | Conditional load | Boundary |
@@ -43,7 +43,7 @@ appears in all four canonical runtime variants.
 | Manager | Load the matching domain root — [Coding](../../../skills/coding/SKILL.md), [Authoring](../../../skills/authoring/SKILL.md), or [Design](../../../skills/design/SKILL.md) — when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In General, sequence matching children as dependencies become current. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. General retains sequencing, re-entry, and acceptance; each mode retains its paths, gates, policies, and handoff. |
 | Leader | Load the matching domain ideation skill for an unresolved material design choice: [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md), [Authoring Ideation](../../../skills/authoring/authoring-ideation/SKILL.md), or [Design Ideation](../../../skills/design/design-ideation/SKILL.md). Load the matching domain planning skill when decomposition is needed: [Coding Planning](../../../skills/coding/coding-planning/SKILL.md), [Authoring Planning](../../../skills/authoring/authoring-planning/SKILL.md), or [Design Planning](../../../skills/design/design-planning/SKILL.md). | Generic Ideation and Generic Planning are gone. The leader does not implement or review. |
 | Executor | Load the matching domain execution skill when the settled writer frontier matches that domain: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). In explicit review-only mode, load the matching domain review skill instead. | Generic Execution is gone. Implementation and review-only modes are mutually exclusive. Review-only writes only the caller-bound report, changes no subject, never stages or commits, and issues no verdict. |
-| Evaluator | Generic Evaluation is removed. Cowork still has a user-called `review` phase. This evaluator load map is stale until Review is redesigned. | Do not invent a replacement evaluation skill. Domain Review remains non-gating feedback, not a new Review owner. |
+| Reviewer | Load the matching domain review skill for independent review: [Coding Review](../../../skills/coding/coding-review/SKILL.md), [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), or [Design Review](../../../skills/design/design-review/SKILL.md). | Generic Evaluation is gone. Domain Review writes `report.md` and working `checklist.md`. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
 | Assistant | No domain-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation or review. |
 
 An executor in review-only mode may provide independent review when not the author. An author may provide only
@@ -51,9 +51,9 @@ caller-permitted disclosed self-review. The report remains non-gating in either 
 [Coding skill family](../feature/coding-skill-family.md), [Authoring skill family](../feature/authoring-skill-family.md),
 and [Design skill family](../feature/design-skill-family.md).
 
-Former evaluator loads of Generic Evaluation and both evaluation templates are stale. Cowork still
-names `review`, `report.md`, working `checklist.md`, and `review-depth`. Until Review is
-redesigned, do not treat domain Review as that missing skill.
+Former evaluator loads of Generic Evaluation and both evaluation templates are gone. Cowork still
+names `review`, `report.md`, working `checklist.md`, and `review-depth`. Domain Review is the
+independent-review writer, not a second mode owner.
 
 ## Ownership
 

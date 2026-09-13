@@ -127,9 +127,9 @@ invalid result remains a visible failure rather than transformed or relabeled co
   without reproducing the saved result.>
   ```
 
-- The saved file is the authoritative result and stdout is only its final Handoff; review, ideation, and eval
-  still place `writing-path` in the session, while implementation may name another worktree file. Stop before
-  writing when the brief, material, boundary, or authority is incomplete.
+- The saved file is the authoritative result and stdout is only its final Handoff; review, ideation, and
+  planning still place `writing-path` in the session, while implementation may name another worktree file. Stop
+  before writing when the brief, material, boundary, or authority is incomplete.
 
 #### Bind the write surface
 

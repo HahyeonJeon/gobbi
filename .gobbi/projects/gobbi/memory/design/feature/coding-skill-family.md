@@ -51,9 +51,8 @@ becomes a prerequisite for direct child use.
 - Route by the productive subject and owned outcome, not by whether the repository contains code. Keep
   consistency-bound tests, configuration, schemas, generated views, documents, behavior, failures, recovery,
   and consumers in one code-primary unit. Split independently assignable outcomes through Coding Planning.
-- There is no Generic Evaluation skill. Cowork still has a user-called `review` phase. That load map is
-  stale until Review is redesigned; see [Evaluation](../process/evaluation.md). Do not invent a
-  replacement evaluation skill.
+- There is no Generic Evaluation skill. Cowork owns the user-called `review` call. Domain Review writes
+  the independent report; see [Review](../process/evaluation.md).
 - Re-entry starts at the earliest owner whose accepted input changed. The manager or mode tracks result identity
   and freshness; the Coding root does not.
 
@@ -93,7 +92,6 @@ released changelog entries retain their point-in-time names and facts.
 
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
   use the same four-child navigation-only shape.
-- [Evaluation](../process/evaluation.md) records that Generic Evaluation is removed and that Cowork
-  `review` remains.
+- [Review](../process/evaluation.md) records live Review facts and that Generic Evaluation is gone.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
   discovery and matching-child loads.

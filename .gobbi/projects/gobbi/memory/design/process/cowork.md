@@ -19,7 +19,7 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 ## Review and wrap-up interaction
 
 - Reviewer briefs name one `review-depth` token. Tokens and in-contract bars live in
-  [Evaluation](evaluation.md#review-depth).
+  [Review](evaluation.md#review-depth).
 - Whole-branch `review` uses `by-owning-stage`.
 - If uncommitted tracked implementation changes exist, default whole-branch `review` still stops and
   asks for `commit` or a named subject.
@@ -34,7 +34,7 @@ Per-runtime children are `<runtime>/report.md` and `<runtime>/checklist.md`. Run
 write set `runtime-directory`. A directory that holds only one of the two files is incomplete
 evidence and never PASS input. Wrapper capture stays outside the session.
 
-The review SOP, dual record, depth tokens, and Workflow layout live in [Evaluation](evaluation.md).
+The review SOP, dual record, depth tokens, and Workflow layout live in [Review](evaluation.md).
 This file keeps the Cowork commit gate, `review-depth` routing, and the Cowork-specific review
 parent.
 
