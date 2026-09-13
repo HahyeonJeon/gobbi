@@ -11,9 +11,8 @@ Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 </p>
 
 Gobbi is an orchestration system that brings structured planning, implementation, review, and durable
-handoffs to the AI coding tools you already use. You choose the operating depth for each session, from
-ordinary assistance to fast topic-by-topic work or a fully recorded lifecycle. Gobbi never preselects the
-mode for you.
+handoffs to the AI coding tools you already use. You choose Cowork for topic-by-topic work or Workflow for a
+fully recorded lifecycle. Gobbi never preselects the mode for you.
 
 The name comes from 고삐 (*gobbi*), Korean for "reins."
 
@@ -29,16 +28,12 @@ Run these commands in a Claude Code session:
 /reload-plugins
 ```
 
-Enable Agent Teams and allow the five Gobbi roles in your project `.claude/settings.json`.
+Allow the five Gobbi roles in your project `.claude/settings.json`.
 Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
 Developer, designer, and author are specialists. Pipeline work is a briefed phase, not a role.
 
 ```json
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-  "teammateMode": "in-process",
   "permissions": {
     "allow": [
       "Skill(gobbi:gobbi)",
@@ -63,7 +58,7 @@ codex plugin marketplace add HahyeonJeon/gobbi
 codex plugin add gobbi@gobbi-workspace
 ```
 
-Codex needs no Claude Code Agent Teams or permission configuration. A repository checkout also includes local
+Codex needs no Claude Code permission configuration. A repository checkout also includes local
 entrypoints, so contributors working in the clone do not need to install the plugin.
 
 ### Grok
@@ -101,7 +96,7 @@ A repository checkout already exposes the package through `.grok/plugins/gobbi` 
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
 `enabled` true, and `path` ending in `.grok/plugins/gobbi`.
 
-Grok participants are the project `.grok/agents` roles plus official Grok subagents. Agent Teams is Claude-only.
+Grok participants are the project `.grok/agents` roles plus official Grok subagents.
 
 ### Cursor
 
@@ -110,7 +105,7 @@ the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/sk
 `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
-plus official Cursor subagents. Agent Teams is Claude-only.
+plus official Cursor subagents.
 
 After install, the standalone `gobbi-setup` skill creates only missing Gobbi layout, instruction placeholders,
 Claude Code settings, and Codex role contracts. It reports the rest. Gobbi entry does not run setup.
@@ -130,9 +125,9 @@ After `.grok/skills/gobbi` exists, checkout-local Grok invokes Gobbi as `/local:
 project-plugin load invokes it as `/gobbi:gobbi`. The two forms differ; do not invent a `$gobbi` alias for
 Grok.
 
-Gobbi presents all three modes and waits for your selection. For Cowork or Workflow, it next asks for a
-privacy-safe session slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of
-`claude-code`, `codex`, `cursor`, and `grok`.
+Gobbi presents Cowork and Workflow and waits for your selection. It next asks for a privacy-safe session
+slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of `claude-code`, `codex`,
+`cursor`, and `grok`.
 
 ## Cowork
 

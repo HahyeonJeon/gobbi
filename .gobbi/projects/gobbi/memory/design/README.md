@@ -9,7 +9,6 @@ Recursive navigation across design memory, grouped by category.
 
 ## Feature
 
-- [Agent Teams](feature/agent-teams.md)
 - [Authoring skill family](feature/authoring-skill-family.md)
 - [CLI skill family](feature/cli-skill-family.md)
 - [Coding skill family](feature/coding-skill-family.md)

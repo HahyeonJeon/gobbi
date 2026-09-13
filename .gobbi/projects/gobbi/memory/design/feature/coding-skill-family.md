@@ -16,7 +16,7 @@ procedures.
 
 | Skill | Type | Current owner | Authority boundary |
 |---|---|---|---|
-| [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts General, Cowork, or Workflow work. |
+| [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts Cowork or Workflow work. |
 | [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) | Operation | Owns study, discussion, the code-design ladder, and one indexed ideation result for an unresolved material code-design choice. | Stops before Planning or realization. |
 | [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Owns decomposition, grouping, order, and dispatch for defined code work. | Stops before implementation recipes. Coding Execution may order work only inside one accepted task. |
 | [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, the applicable checklist pass, and handoff for one settled code task, with code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
@@ -28,7 +28,6 @@ without becoming lifecycle drivers.
 Composition is one-way:
 
 ```text
-General manager -> coding root --discovery--> matching coding child
 Cowork manager  --------------------------------> matching coding child
 Workflow manager -------------------------------> matching coding child
 direct caller    -------------------------------> matching coding child
@@ -41,11 +40,6 @@ becomes a prerequisite for direct child use.
 
 - The root applies exactly when at least one child applies. Load every currently matching child. Do not load a
   future dependent child before its own start contract is current.
-- General uses the root for discovery, then sequences matching children as dependencies become current. It uses
-  Coding Planning only when several accountable tasks or writer frontiers need decomposition.
-- General may enter any child directly from a complete current contract. Code design, Planning, and Execution
-  form a dependency path when needed, not a mandatory pipeline. Coding Review is an independent non-gating
-  branch.
 - Cowork and Workflow keep their existing stages, paths, participant policy, commit policy, `review` call,
   gates, acceptance, and handoffs. They select matching children directly inside those stages.
 - Route by the productive subject and owned outcome, not by whether the repository contains code. Keep

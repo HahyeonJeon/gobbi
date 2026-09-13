@@ -66,13 +66,12 @@ stop.
 The caller starts each launch through one local wrapper subagent using the active runtime's ordinary
 execute-capable spawn. Wrappers for different remaining runtimes may run in parallel. The wrapper only runs
 the Partner command and returns the Handoff. Partner is not a persistent teammate. Context-aware
-re-delegation belongs to Agent Teams and other active-runtime subagent controls; every Partner process
-starts fresh to preserve named-runtime independence.
+re-delegation belongs to active-runtime subagent controls; every Partner process starts fresh to preserve
+named-runtime independence.
 
 ## References
 
 - [Canonical Partner skill](../../../skills/gobbi/partner/SKILL.md)
-- [Agent Teams](../../../skills/gobbi/agent-teams/SKILL.md)
 - [Plugin skill locator](../architecture/plugin-skill-locator.md)
 - [Measured Codex CLI behavior](../../learnings/codex/tips.md)
 - [Measured Cursor CLI behavior](../../learnings/cursor/tips.md)

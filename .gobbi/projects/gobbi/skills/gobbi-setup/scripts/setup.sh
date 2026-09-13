@@ -17,7 +17,7 @@ set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
 roles=(manager developer designer author assistant)
-permission_skills=(gobbi principles discussion delegation agent-teams gobbi-setup)
+permission_skills=(gobbi principles discussion delegation gobbi-setup)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
 # slash, which anchors them to .gobbi/; a slashless sessions/ would also swallow memory/design/sessions/.
@@ -29,13 +29,12 @@ projects/*/worktrees/
 # The minimum .claude/settings.json, created only when the file is absent. Namespaced, because a plugin
 # consumer's entries read Agent(gobbi:<role>) and Skill(gobbi:<name>).
 minimum_claude_settings='{
-  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
   "permissions": {
     "allow": [
       "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
       "Agent(gobbi:author)", "Agent(gobbi:assistant)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
-      "Skill(gobbi:delegation)", "Skill(gobbi:agent-teams)", "Skill(gobbi:gobbi-setup)"
+      "Skill(gobbi:delegation)", "Skill(gobbi:gobbi-setup)"
     ]
   }
 }
@@ -467,9 +466,6 @@ report_settings_gaps() {
   local role
   local skill
 
-  if ! jq -e '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == "1"' "$settings" >/dev/null 2>&1; then
-    missing+=("env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS")
-  fi
   for role in "${roles[@]}"; do
     if ! has_claude_permission "Agent($role)" "Agent(gobbi:$role)" "$settings"; then
       missing+=("Agent(gobbi:$role)")

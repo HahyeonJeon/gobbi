@@ -1,6 +1,6 @@
 ---
 name: gobbi
-description: "Gobbi is the read-only entry operation that establishes and routes General, Cowork, or Workflow session state."
+description: "Gobbi is the read-only entry operation that establishes and routes Cowork or Workflow session state."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
@@ -19,8 +19,7 @@ and a surviving task list do not replace these sources.
 
 ### Let the user select the mode
 
-General, Cowork, and Workflow make different commitments. Present all three at fresh entry and let the user
-choose.
+Cowork and Workflow make different commitments. Present both at fresh entry and let the user choose.
 
 ### Preserve proved entry state
 
@@ -159,24 +158,22 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 #### 2.1 Obtain or preserve the mode
 
-- At fresh entry, use Discussion and the active structured input control to present all three choices:
+- At fresh entry, use Discussion and the active structured input control to present both choices:
 
   | Mode | Use when | Commitment |
   |---|---|---|
-  | **General** | Ordinary assistance needs no Gobbi lifecycle. | Task owners decide participants and review. |
   | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, review calls, and closure. |
   | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review TODO, then wait for explicit continue. |
 
 - After selection, publish the selected owner's complete native TODO template before asking for a slug or
-  partner policy. General publishes no Gobbi TODO; Cowork and Workflow supply their own fixed templates.
+  partner policy. Cowork and Workflow supply their own fixed templates.
 - Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,
   or conflicting.
 
 #### 2.2 Resolve the slug and partner policy
 
-- For Cowork or Workflow, warn that the slug enters paths and branch names. Ask for the slug and session-wide
-  partner policy together through one structured request; General records `slug: not-applicable` and asks only
-  for the policy.
+- Warn that the slug enters paths and branch names. Ask for the slug and session-wide partner policy together
+  through one structured request.
 - Normalize the slug by lowercasing each maximal ASCII alphanumeric sequence, joining sequences with one
   hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
   matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
@@ -195,7 +192,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 - Correct a finding automatically only when its severity is High, Medium, or Low; `blocking: no`; it stays
   inside the locked contract; and it is reversible, authority-neutral, non-destructive, and non-external.
-- Send every other finding to the user in General, Cowork, and Workflow Phase 1. After completed
+- Send every other finding to the user in Cowork and in Workflow Phase 1. After completed
   `P1 · User Review`, the manager decides from the accepted design, authority, available subagents or
   teammates, and remaining Partner runtimes, or writes a stopped `handoff.md` without asking the user.
 - Run fresh review after every correction. Continue automatically only from a verified PASS.
@@ -206,7 +203,6 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
   | Mode | Handoff |
   |---|---|
-  | **General** | Mode, `slug: not-applicable`, and partner policy; no orchestration owner or session state. |
   | **Cowork** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Cowork](../cowork/SKILL.md). |
   | **Workflow** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Workflow](../workflow/SKILL.md). |
 
@@ -227,5 +223,4 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
-| [Agent Teams](agent-teams/SKILL.md) | Defines Claude Code teammate coordination and context-aware re-delegation. |
 | [Gobbi Setup](../gobbi-setup/SKILL.md) | Owns the separately invoked operation that writes a consumer project's missing layout, placeholders, settings, and Codex role contracts, and reports the rest. |

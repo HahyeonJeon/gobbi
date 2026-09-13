@@ -48,7 +48,8 @@ invalid result remains a visible failure rather than transformed or relabeled co
 - **MUST use one fresh named-runtime process with help-backed flags, workspace-bounded Bash, and no bypass
   flags.** One invocation produces one saved result and one compact final Handoff; do not pass `--session-id`,
   `--resume`, `--continue`, `--worktree`, `--yolo`, `--always-approve`, `danger-full-access`, skip-permissions,
-  or `bypassPermissions`.
+  or `bypassPermissions`. Default `partner_timeout` is 3600 seconds unless the caller names another positive
+  integer.
 - **MUST validate the process, listed write set, unchanged main checkout, worktree git semantic state, saved
   result, and Handoff before acceptance.** Runtime status or a plausible stdout summary is not completion
   evidence.
@@ -216,6 +217,8 @@ invalid result remains a visible failure rather than transformed or relabeled co
 
 ### Launch
 
+Set `partner_timeout` to 3600 unless the caller already named another positive integer seconds value.
+
 #### Launch Codex
 
 - Run one bounded process with the worktree as its writable sandbox root:
@@ -337,4 +340,3 @@ invalid result remains a visible failure rather than transformed or relabeled co
 | [Delegation](../../delegation/SKILL.md) | Defines the base prompt, skills and docs indexes, and final Handoff contract. |
 | [Gobbi](../SKILL.md) | Owns the session-wide Partner policy and route. |
 | [Memory](../../memory/SKILL.md) | Defines the memory tree and ignored session-record conventions. |
-| [Agent Teams](../agent-teams/SKILL.md) | Distinguishes reusable Claude teammates from fresh Partner processes. |

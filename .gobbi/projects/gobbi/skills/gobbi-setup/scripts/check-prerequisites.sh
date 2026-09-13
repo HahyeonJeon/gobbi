@@ -287,20 +287,6 @@ else
 fi
 
 if [[ "$claude_settings_valid" == true ]]; then
-  if jq -e '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == "1"' \
-    "$claude_settings" >/dev/null 2>&1; then
-    pass "Claude Agent Teams environment flag is enabled"
-  else
-    fail "Claude Agent Teams environment flag is not set to 1"
-  fi
-
-  teammate_mode="$(jq -r '.teammateMode // empty' "$claude_settings")"
-  if [[ -n "$teammate_mode" ]]; then
-    pass "Claude teammate mode: $teammate_mode"
-  else
-    warn "Claude teammateMode is absent; Claude will use its runtime default"
-  fi
-
   if jq -e '(.permissions.allow | type) == "array"' \
     "$claude_settings" >/dev/null 2>&1; then
     pass "Claude permission allow-list is present"
@@ -319,7 +305,7 @@ if [[ "$claude_permissions_valid" == true ]]; then
     fi
   done
 
-  skills=(gobbi principles discussion delegation agent-teams gobbi-setup)
+  skills=(gobbi principles discussion delegation gobbi-setup)
   for skill in "${skills[@]}"; do
     if has_claude_permission "Skill($skill)" "Skill(gobbi:$skill)" "$claude_settings"; then
       pass "Claude Skill permission: $skill"

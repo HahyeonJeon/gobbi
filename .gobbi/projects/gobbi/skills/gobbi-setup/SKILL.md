@@ -223,8 +223,7 @@ what setup did. Everything outside the project root is the user's action, printe
 - Report a run whose Codex source did not resolve as a separate case: its five role rows and `.codex/agents/`
   read `skipped source-missing`, the residual becomes 40, and those six rows are a packaging defect rather
   than expected residual. Print every user-owned action as an exact command, such as removing a stale
-  `~/.grok/hooks/hooks.json`, or adding a missing Agent Teams flag or permission to a pre-existing
-  `.claude/settings.json`.
+  `~/.grok/hooks/hooks.json`, or adding a missing permission to a pre-existing `.claude/settings.json`.
 
 ## References
 

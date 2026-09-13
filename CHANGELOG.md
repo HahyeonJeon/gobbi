@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Category child skills are removed. Temporary Record and Memorize are not Memory actions.
 - Wrap-up Note names a Memory directory. Workflow Execution names stage REVIEW, not a user-called review.
   Partner no longer says `eval`. Process memory describes Review as the live independent pass.
+- Gobbi routes only Cowork or Workflow. Agent Teams is removed. Partner default timeout is 3600 seconds.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
