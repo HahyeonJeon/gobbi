@@ -15,7 +15,7 @@ without a plan.
 
 ### Draft sequence, not a plan
 
-Roadmap records project-level horizons and feature order. Planning, not Startup,
+Roadmap records project-level horizons and feature order. Planning, not Roadmap,
 turns one horizon into a task hierarchy.
 
 ### Derive from accepted design drafts
@@ -146,7 +146,7 @@ check is mechanical.
 #### 3.2 Obtain acceptance
 
 - Present `{session-root}/tmp/startup/design/roadmap/project.md` as a
-  session-only draft. Planning, not Startup, turns one horizon into a task
+  session-only draft. Planning, not Roadmap, turns one horizon into a task
   hierarchy.
 - On rejection, return to the earliest disputed placement or rule and revise
   the draft in place.
