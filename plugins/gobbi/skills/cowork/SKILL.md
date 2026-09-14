@@ -302,7 +302,7 @@ CW · Wrap-up
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry, the finding predicate, user boundary, and fresh-review rule. |
 | [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
-| [Discussion](../discussion/SKILL.md) | Owns context understanding, design options, recommendations, and user decisions. |
+| [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist prompt, skills and docs indexes, and final Handoff contract. |
 | [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Light code-work decomposition and its indexed result. |
 | [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Light writing-work decomposition and its indexed result. |

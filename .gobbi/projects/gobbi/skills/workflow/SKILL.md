@@ -172,7 +172,7 @@ P3 · Note
   first unproved action, and recovery command.
 - For Complete, record `Next TODO: P1 · User Review`, set `configuration.md` `Latest handoff` to
   `1-ideation/handoff.md`, activate `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
-  the runtime ask tool for Continue or Stop only, not a design-question card. For Stopped, keep the current
+  the runtime ask tool for Continue or Stop only. For Stopped, keep the current
   first unproved productive TODO and do not activate User Review as a next-phase gate.
 - Do not activate Planning from the file, from silence, or from the absence of an interrupt. Continue
   completes `P1 · User Review` and then activates `P2 · Planning`; Stop leaves User Review `in_progress` or
@@ -241,7 +241,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, set
   `configuration.md` `Latest handoff` to `3-execution/handoff.md`, verify the handoff against all named evidence,
   activate `P2 · User Review`, display the file, and use Discussion with the runtime ask tool for Continue or
-  Stop only, not a design-question card.
+  Stop only.
 - Do not activate Wrap-up from the file, from silence, or from the absence of an interrupt. Continue completes
   `P2 · User Review` and then activates `P3 · Wrap-up`; Stop leaves User Review `in_progress` or records a stop
   and does not activate Wrap-up; recovery returns to the first unproved action without replacing accepted
@@ -302,7 +302,7 @@ Continue.
   `Next TODO: P3 · User Review`, and a Stopped handoff never claims Phase 3 completion or opens User Review as a
   next-phase gate.
 - For Complete, activate `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
-  Continue or Stop only, not a design-question card; do not start `P3 · Note` from the file or from the absence
+  Continue or Stop only; do not start `P3 · Note` from the file or from the absence
   of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's
   [Note template](../wrap-up/templates/note.md) from the verified terminal state and complete `P3 · Note` only
   when it agrees with the handoff and result; publication and cleanup remain separate authorized actions.
@@ -315,7 +315,7 @@ Continue.
 | [Handoff template](templates/handoff.md) | Defines each ignored phase-completion and recovery checkpoint. |
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
 | [Delegation](../delegation/SKILL.md) | Owns the base specialist brief, skills and docs indexes, and final assignment handoff. |
-| [Discussion](../discussion/SKILL.md) | Owns context understanding, evidence-backed options, recommendations, Phase 1 user decisions, and User Review Continue / Stop asks. |
+| [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, deciding with the user, and User Review Continue / Stop asks. |
 | [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work decomposition and its indexed result. |
 | [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work decomposition and its indexed result. |
 | [Design Planning](../design/design-planning/SKILL.md) | Owns Phase 2 visual-work decomposition and its indexed result. |

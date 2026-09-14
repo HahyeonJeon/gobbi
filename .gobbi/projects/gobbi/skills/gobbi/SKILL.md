@@ -219,7 +219,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | Name | Description |
 |---|---|
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
-| [Discussion](../discussion/SKILL.md) | Defines structured questions, evidence-backed options, and user decisions. |
+| [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
 | [Delegation](../delegation/SKILL.md) | Defines every specialist prompt, skills and docs indexes, and final Handoff. |
 | [Manager role](../../agents/claude/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../agents/grok/manager.md), [Codex](../../agents/codex/manager.toml), [Cursor](../../agents/cursor/manager.md). |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |

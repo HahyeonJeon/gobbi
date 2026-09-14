@@ -55,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in `gobbi/scripts/`.
 - Setup scripts are per-runtime under `gobbi/setup/scripts/{claude,codex,cursor,grok}.sh`. Shared helpers
   are `gobbi/setup/scripts/common.sh`.
+- Discussion is an operation skill. Its SOP is understand the task, study options with subagents, then decide
+  with the user. Structural choices get a schema, diagram, or generated image when text alone is hard to
+  compare. The Decision Question card is removed; the runtime ask tool is the ask.
 - Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
   child checklist that still had one. The Checklist skill template and its own document checklist keep the
   account.
