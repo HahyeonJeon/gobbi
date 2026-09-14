@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-09-14 — Skills reorg completed](2026-09-14-skills-reorg.md)
 - [2026-09-06 — Domain skill families completed](2026-09-06-domain-skill-families.md)
 - [2026-09-02 — Coding skill family completed](2026-09-02-coding-skill-family.md)
 - [2026-08-30 — Ideation and Planning evaluation depth completed](2026-08-30-evaluation-depth.md)

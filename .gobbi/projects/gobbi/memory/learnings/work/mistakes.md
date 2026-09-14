@@ -1,5 +1,17 @@
 # Work Mistakes
 
+## Staging a deleted path that aborts the rest of `git add`
+
+**Context:** Committing a topic that deletes files and also updates other files.
+
+**Mistake:** Passing the deleted path to `git add --` after `git rm` had already staged it. Git
+exited `fatal: pathspec ... did not match any files` and left the remaining paths unstaged. The
+topic then needed a second commit.
+
+**Correction:** After `git rm`, do not re-add the deleted path. Stage remaining updates in the same
+command list only after confirming those paths still exist, or inspect `git status --short` and add
+the leftover paths.
+
 ## Treating a teammate's idle notification as a completion signal
 
 **Context:** Coordinating multiple teammate agents in a session and reacting to their idle or notification
