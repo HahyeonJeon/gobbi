@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.3.0 - 2026-09-21
+
+This minor is a project exception to Semantic Versioning 2.0.0 rule 8: Gobbi remains a 1.x minor despite incompatible public skill, agent, and mode removals.
+
 ### Added
 
 - Added developer, designer, and author role contracts. They are subject specialists. Designer owns visual work
@@ -40,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `configuration.md` no longer stores live TODO, progress, or idle state. Workflow updates it only when a
   phase `handoff.md` is written. Cowork updates it only at topic PASS. Those updates are pointers only.
 - Workflow SKILL.md has no Workflow Frame section. Unique REVIEW and RECORD rules live in Procedure.
-- Independent agent review replaces the evaluation name: Workflow stage `REVIEW`, Cowork call `review` and
+- **Breaking:** Independent agent review replaces the evaluation name: Workflow stage `REVIEW`, Cowork call `review` and
   TODO `CW · Review`, token `review-depth`, and paths `review/`. User Review and self-review are unchanged.
 - Workflow Execution RECORD now writes the receipt, continues REVISE on a new `iteration-N`, and stops on
   FAIL. Cowork `Accepted topics` is append-only. Authoring and Coding review checklists name the agent pass
@@ -49,9 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Category child skills are removed. Temporary Record and Memorize are not Memory actions.
 - Wrap-up Note names a Memory directory. Workflow Execution names stage REVIEW, not a user-called review.
   Partner no longer says `eval`. Process memory describes Review as the live independent pass.
-- Gobbi routes only Cowork or Workflow. Agent Teams is removed. Partner default timeout is 3600 seconds.
+- **Breaking:** Gobbi routes only Cowork or Workflow. Agent Teams is removed. Partner default timeout is 3600 seconds.
 - Gobbi Setup is a child of Gobbi at `gobbi/gobbi-setup/`. Setup scripts live in `gobbi/scripts/`.
-- Setup is not a skill. Per-runtime guides live at `gobbi/setup/{claude,codex,cursor,grok}.md`. Scripts stay
+- **Breaking:** Setup is not a skill. Per-runtime guides live at `gobbi/setup/{claude,codex,cursor,grok}.md`. Scripts stay
   in `gobbi/scripts/`.
 - Setup scripts are per-runtime under `gobbi/setup/scripts/{claude,codex,cursor,grok}.sh`. Shared helpers
   are `gobbi/setup/scripts/common.sh`.
@@ -79,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and 6 (docs as memory) were removed; the remaining eight items are numbered 1–8.
 - Domain families now require at least two independently loadable direct children, each truthfully classified as
   an operation, tool, or preference, instead of requiring one child of every type.
-- General discovers applicable operations through the `coding` domain and sequences matching children as their
+- **Breaking:** General discovers applicable operations through the `coding` domain and sequences matching children as their
   dependencies become current. Cowork and Workflow keep their existing conduct and select matching children
   directly inside current stages. Runtime specialist roles load those children directly.
 - The shared code-review checklist moves from

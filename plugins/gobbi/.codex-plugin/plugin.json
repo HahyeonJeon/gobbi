@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "Gobbi workflow skills for Codex.",
   "author": {
     "name": "HahyeonJeon",
@@ -11,7 +11,7 @@
     "gobbi",
     "workflow",
     "orchestration",
-    "evaluation",
+    "review",
     "planning",
     "codex"
   ],
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",
-    "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, evaluation, temporary session evidence, durable memory, and terminal notes in Codex.",
+    "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, review, temporary session evidence, durable memory, and terminal notes in Codex.",
     "developerName": "HahyeonJeon",
     "category": "Productivity",
     "capabilities": [
@@ -30,7 +30,7 @@
     "defaultPrompt": [
       "Use Gobbi principles for this task.",
       "Plan this task with Gobbi workflow skills.",
-      "Evaluate this work with Gobbi criteria."
+      "Review this work with Gobbi criteria."
     ]
   }
 }
