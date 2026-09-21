@@ -57,7 +57,7 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
 - **Nested layout, not flat.** `.gobbi/projects/<project>/...` stays; a flat top-level form was considered
   and rejected.
 - **The layout is defined, not built, by `gobbi/SKILL.md`.** Step 1.2 states the shape inline and creates
-  nothing. `gobbi-setup` is the write owner and creates a missing path only when the user invokes it. Cowork
+  nothing. Setup scripts under `gobbi/setup/` create a missing path only when the user runs them. Cowork
   and Workflow still create a session path only when its first record needs it.
 - **`.gobbi/.gitignore` is the only file carrying Gobbi's ignore rules.** Gobbi never writes a consumer
   project's root `.gitignore`. That file's canonical content is one comment line plus
@@ -65,9 +65,9 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   to `.gobbi/`. A slashless pattern such as `sessions/` would match at any depth and swallow durable memory
   under `memory/design/sessions/`.
 - **The project memory root is `.gobbi/projects/<project>/memory/`, tracked, with no marker file.** "Tracked"
-  means "not ignored"; git cannot track an empty directory. `gobbi-setup` creates the six Memory category
+  means "not ignored"; git cannot track an empty directory. Setup scripts create the six Memory category
   directories and the named design, reports, and materials subject directories. It writes a 0-byte
-  `README.md` only at `agents/`, `skills/`, and the five category roots whose category skill defines a
+  `README.md` only at `agents/`, `skills/`, and the five category roots whose Memory conventions define a
   README: design, reports, history, materials, and backlogs. It does not create `memory/README.md`,
   `learnings/README.md`, a leaf README, or invented learnings or backlog files. After commit and clone,
   `learnings/` and the leaf subject directories vanish until a later file lands.
@@ -79,7 +79,7 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   live; the smoke script now uses an OS temp directory instead.
 - **This Gobbi authoring repository is expected to FAIL the checker** on `memory/materials/`
   (and its README and subject dirs), `.gobbi/projects/gobbi/skills/README.md`, and
-  `memory/design/roadmap` until the user invokes `gobbi-setup` here. Do not create those
+  `memory/design/roadmap` until the user runs setup scripts here. Do not create those
   paths.
 
 ## Bootstrap ordering
@@ -108,7 +108,7 @@ verification mechanics behind these checks.
 ## References
 
 - `gobbi/SKILL.md` Procedure Step 1.2 — canonical layout definition
-- `gobbi-setup/SKILL.md` — write owner of the consumer layout
+- `gobbi/setup/<runtime>.md` and `gobbi/setup/scripts/<runtime>.sh` — per-runtime setup guides and writers
 - `cowork/SKILL.md` Rule 1 and Step 1.1 — Cowork bootstrap authority and verification
 - `workflow/SKILL.md` Step 1.2 — Workflow bootstrap authority and verification
 - `git/SKILL.md` — repository-state, commit, and recovery preferences

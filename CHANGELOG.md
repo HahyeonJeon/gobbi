@@ -7,6 +7,130 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.3.0 - 2026-09-21
+
+This minor is a project exception to Semantic Versioning 2.0.0 rule 8: Gobbi remains a 1.x minor despite incompatible public skill, agent, and mode removals.
+
+### Added
+
+- Added developer, designer, and author role contracts. They are subject specialists. Designer owns visual work
+  including UI, images, video, presentations, reports, and other visual artifacts. Pipeline work comes from
+  the Delegation prompt and loaded skills.
+- Added the navigation-only `coding` domain for discovering three direct operations: `coding-ideation`,
+  `coding-execution`, and `coding-review`.
+- Added placeholder navigation-only `authoring` and `design` domains. Each discovers three direct operations:
+  `{domain}-ideation`, `{domain}-execution`, and `{domain}-review`. Child procedures are not written yet.
+- Added a placeholder `handoff.md` beside `coding-execution`, `authoring-execution`, and `design-execution`.
+- Added `report.md` beside each review skill, a placeholder `design-review` checklist, and Evaluation-based
+  draft `SKILL.md` files for `coding-review`, `authoring-review`, and `design-review`.
+- Added compacted `SKILL.md` files and domain-specific requirements, discussion, and ideation templates for
+  `coding-ideation`, `authoring-ideation`, and `design-ideation`. Each idea part's Design headings follow that
+  domain's design ladder. Phase 2 is Study and Discuss. Phase 3 is Design. Design Ideation decides from two
+  image passes — greybox structure, then styled direction — and lists illustration PNGs in the result.
+  Each ideation checklist is a tight problem-sign list with a three-line header.
+- Added Planning-based draft `SKILL.md` files and domain-specific plan and task templates for
+  `coding-planning`, `authoring-planning`, and `design-planning`.
+- Each domain ideation skill now absorbs Study as rough frame, inspect, and compare steps. The required
+  discussion view records topic groups keyed to the Design headings (topic, discussion, decision) and a
+  pointed Study ledger below. Authoritative ideation parts define the work and the idea for planning and
+  execution.
+
+### Changed
+
+- Workflow Ideation and Planning skip independent `REVIEW`. Those units use `DISCUSSION → WORK → RECORD`
+  and write a receipt from self-verified WORK. Execution tasks and Wrap-up still run `REVIEW`.
+- Workflow has no numeric pass cap. REVISE continues while an authorized in-contract correction remains.
+  FAIL means a safe correction is unavailable. `iteration-N` remains an evidence counter.
+- `configuration.md` no longer stores live TODO, progress, or idle state. Workflow updates it only when a
+  phase `handoff.md` is written. Cowork updates it only at topic PASS. Those updates are pointers only.
+- Workflow SKILL.md has no Workflow Frame section. Unique REVIEW and RECORD rules live in Procedure.
+- **Breaking:** Independent agent review replaces the evaluation name: Workflow stage `REVIEW`, Cowork call `review` and
+  TODO `CW · Review`, token `review-depth`, and paths `review/`. User Review and self-review are unchanged.
+- Workflow Execution RECORD now writes the receipt, continues REVISE on a new `iteration-N`, and stops on
+  FAIL. Cowork `Accepted topics` is append-only. Authoring and Coding review checklists name the agent pass
+  independent review.
+- Memory is a preference skill. One `SKILL.md` describes the memory tree and per-directory conventions.
+  Category child skills are removed. Temporary Record and Memorize are not Memory actions.
+- Wrap-up Note names a Memory directory. Workflow Execution names stage REVIEW, not a user-called review.
+  Partner no longer says `eval`. Process memory describes Review as the live independent pass.
+- **Breaking:** Gobbi routes only Cowork or Workflow. Agent Teams is removed. Partner default timeout is 3600 seconds.
+- Gobbi Setup is a child of Gobbi at `gobbi/gobbi-setup/`. Setup scripts live in `gobbi/scripts/`.
+- **Breaking:** Setup is not a skill. Per-runtime guides live at `gobbi/setup/{claude,codex,cursor,grok}.md`. Scripts stay
+  in `gobbi/scripts/`.
+- Setup scripts are per-runtime under `gobbi/setup/scripts/{claude,codex,cursor,grok}.sh`. Shared helpers
+  are `gobbi/setup/scripts/common.sh`.
+- Discussion is an operation skill. Its SOP is understand the task, study options with subagents, then decide
+  with the user. Structural choices get a schema, diagram, or generated image when text alone is hard to
+  compare. The Decision Question card is removed; the runtime ask tool is the ask.
+- The Startup conductor skill is removed. Interview, Project Design, Roadmap, and Bootstrap remain as
+  independently loadable operations.
+- Removed Coverage Account tables from domain child checklists. `coding-review` was the only remaining
+  child checklist that still had one. The Checklist skill template and its own document checklist keep the
+  account.
+- Manager and assistant role contracts now match the thin specialist shape: identity, Responsibility, In scope,
+  and Out of scope. Skills-to-load tables and status vocabularies live in the loaded mode and Delegation brief.
+- Every role intro names what that agent considers while working. Responsibility is the quality bar the role
+  owns. In scope is four CRUD operations, then named specialist subjects. Out of scope bullets start with Never.
+  Designer subjects now include visual materials, design concept, and layout, kept separate from composition.
+- Delegation Role is a subject specialist (developer, designer, or author). Phase (ideate, plan, implement,
+  review) lives in Task and the skills index, not in a pipeline role name.
+- Delegation no longer owns the Gobbi root-pair protocol. Specialists validate roots as Gobbi specifies.
+  Every brief includes a skills index of skill, path, and description and a docs index of doc, path, and
+  description; delegated agents load a listed skill or document only when the assignment cannot proceed
+  without it.
+- Principles dropped Why, Anti-pattern, and the Practice label while keeping every practice bullet. The
+  description and intro now require every agent to follow the principles. Principles 5 (scope contract)
+  and 6 (docs as memory) were removed; the remaining eight items are numbered 1–8.
+- Domain families now require at least two independently loadable direct children, each truthfully classified as
+  an operation, tool, or preference, instead of requiring one child of every type.
+- **Breaking:** General discovers applicable operations through the `coding` domain and sequences matching children as their
+  dependencies become current. Cowork and Workflow keep their existing conduct and select matching children
+  directly inside current stages. Runtime specialist roles load those children directly.
+- The shared code-review checklist moves from
+  `.gobbi/projects/gobbi/skills/code-review/checklist.md` to
+  `.gobbi/projects/gobbi/skills/coding/coding-review/checklist.md`. Coding Execution and Coding Review consume the
+  moved baseline directly.
+- The documentation checklist moves from
+  `.gobbi/projects/gobbi/skills/execution/docs/checklist.md` to
+  `.gobbi/projects/gobbi/skills/authoring/authoring-review/checklist.md`. Authoring Review consumes
+  the moved baseline.
+- Cowork, Workflow, and Delegation route ideate work to `coding-ideation`, `authoring-ideation`, or
+  `design-ideation` by subject.
+- Cowork, Workflow, and Delegation route plan work to `coding-planning`, `authoring-planning`, or
+  `design-planning` by subject.
+- Discussion no longer loads a separate Study skill. Bounded design-evidence study belongs to the matching
+  domain ideation skill. Discussion consumes evidence and records the user's decision; it does not replace
+  that study or decide for the user.
+
+### Removed
+
+- **Breaking:** Removed the `cli`, `desktop`, `electron`, `go`, `html-css`, `python`, `react`, `typescript`, and
+  `web` skill families and discovery names without aliases. Direct calls and `skills/<family>/` paths for these
+  families no longer resolve.
+- **Breaking:** Removed the top-level `code-review` skill and discovery name without an alias. Consumers must
+  replace direct `code-review` calls with the `coding-review` child under `coding` and replace
+  `skills/code-review/` paths with `skills/coding/coding-review/`; old calls and paths no longer resolve.
+- **Breaking:** Removed the top-level `execution` skill and discovery name without an alias. Dispatch uses
+  `coding-execution`, `authoring-execution`, or `design-execution` by writer frontier.
+  `Skill(execution)` and `skills/execution/` paths no longer resolve.
+- **Breaking:** Removed the top-level `evaluation` skill and discovery name without an alias. Independent
+  critique now uses `coding-review`, `authoring-review`, or `design-review` by subject.
+  `Skill(evaluation)` and `skills/evaluation/` paths no longer resolve.
+- **Breaking:** Removed the top-level `ideation` skill and discovery name without an alias. Design work
+  now uses `coding-ideation`, `authoring-ideation`, or `design-ideation` by subject.
+  `Skill(ideation)` and `skills/ideation/` paths no longer resolve.
+- **Breaking:** Removed the top-level `planning` skill and discovery name without an alias. Decomposition
+  now uses `coding-planning`, `authoring-planning`, or `design-planning` by subject.
+  `Skill(planning)` and `skills/planning/` paths no longer resolve.
+- **Breaking:** Removed the top-level `study` skill and discovery name without an alias. Design-evidence
+  study now lives in `coding-ideation`, `authoring-ideation`, or `design-ideation`.
+  `Skill(study)` and `skills/study/` paths no longer resolve.
+- **Breaking:** Removed the `executor`, `leader`, and `evaluator` agent roles without aliases. Dispatch uses
+  developer, designer, or author plus a named phase. `Agent(gobbi:executor)`, `Agent(gobbi:leader)`, and
+  `Agent(gobbi:evaluator)` no longer resolve.
+- Removed the unreleased `coding-evaluation` child. Coding Review remains non-gating and owns the shared code
+  checklist; Generic Evaluation remains the independent gate and retains verdict authority.
+
 ## 1.2.4 - 2026-08-30
 
 ### Fixed

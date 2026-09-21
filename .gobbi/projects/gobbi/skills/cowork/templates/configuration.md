@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document role | Canonical ignored Cowork configuration and recovery record |
-| Authority | Records the last accepted Configuration observation; current TODO, work evidence, Git state, and user authority remain controlling |
+| Authority | Records identity, locations, settings, and creation evidence; current TODO, topic records, Git state, and user authority remain controlling |
 | Recorded at | {exact UTC timestamp} |
 
 ## Identity
@@ -55,9 +55,8 @@
 | Worktree registration | {command and observed registration} |
 | Session identity and containment | {path and identity checks} |
 | Ignored session record | {ignore check} |
-| Tracked worktree | {status observation} |
-| Base checkout preservation | {preimage and current status} |
-| Native TODO route | {fixed titles and current statuses} |
+| Tracked worktree | {status observation at Configuration} |
+| Base checkout preservation | {preimage and status at Configuration} |
 
 ## Recovery
 
@@ -67,9 +66,6 @@
 | Identity source | {fresh observations or prior configuration path and hash} |
 | Recovery owner | Cowork |
 | Recovery binding | Continue only in the Absolute worktree and Session root above; never create a replacement for this UUID |
-| Verified route point | {evidence-backed route at Recorded at} |
-| Delivered work | {user statement of the outcome, topic, or request, or absent} |
-| Idle wait | When delivered work is absent, keep later items `pending` with no item `in_progress`; do not activate Ideation |
-| Progress evidence | {accepted topics, result hashes, commits, coverage, or None} |
-| First safe recovery command | {exact command; idle-wait when Configuration is complete and delivered work is absent} |
+| Accepted topics | {each topic-NN-slug and record path, newest last, or None} |
+| First safe recovery command | {exact command to re-enter the Absolute worktree} |
 | Recovery limits | {exact ambiguity or blocked action, or None} |

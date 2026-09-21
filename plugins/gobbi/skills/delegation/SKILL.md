@@ -1,21 +1,21 @@
 ---
 name: delegation
-description: "Delegation is guidance for writing concise subagent prompts that define Role, Task, Materials, and handoff expectations, and for validating a specialist Gobbi root pair."
+description: "Delegation is guidance for writing concise subagent prompts that define Role, Task, Materials, and handoff expectations, and for delivering skills and docs indexes the subagent reads only when an item is absolutely necessary."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
 
 # Delegation
 
-Delegation standardizes the Role, Task, and Materials a manager writes into a subagent prompt, the specialist
-Gobbi root-pair protocol, and the handoff the subagent returns. Use it when assigning bounded work across
-runtimes or roles so the subagent can act without private context and the manager can verify the result.
+Delegation standardizes the Role, Task, and Materials a manager writes into a subagent prompt and the handoff
+the subagent returns. Use it when assigning bounded work across runtimes or roles so the subagent can act
+without private context and the manager can verify the result.
 
 ## Principles
 
 ### Grant a Role so the agent thinks how it will act
 
-Role names the persona and expertise for this assignment. The agent works from that craft's stance, not from a
+Role names the persona and expertise for this assignment. The agent works from that specialist's stance, not from a
 generic helper voice.
 
 ### Command the goal and the quality bar
@@ -41,10 +41,10 @@ context.
   quality bar, and minimum result in `## Task`; put purpose, authority, constraints, method, verification, stops,
   and prohibited work in `## Instructions`.
 - **MUST include `## Role` above `## Context` in every delegation prompt.** Role grants persona and expertise so
-  the agent thinks how it will act; Metadata `agent` stays the Gobbi role name and is not a substitute for Role.
-- **MUST name required skills-to-load in `## Materials` and keep `## Materials` required, not exclusive.** List
-  exact skill paths with read order, remaining sources, purpose, and conflict precedence, then require the agent
-  to load any other skill the work needs; do not rely on conversation history or inherited skill loads.
+  the agent thinks how it will act; Metadata `agent` stays the role name and is not a substitute for Role.
+- **MUST include a skills index and a docs index in `## Materials` and keep loads exceptional.** Each table
+  lists name, absolute path, and description; the Materials body must tell the subagent not to read other
+  skills or documents unless that read is absolutely necessary.
 - **MUST include a `## Return` section and make the final handoff verifiable.** The delegating agent defines the
   return contract; the subagent writes the final Handoff with status, summary, exact durable locator or response
   subject, conclusion and consumer, changed paths or findings, verification, concerns, open work, and next action.
@@ -63,13 +63,14 @@ context.
   ## Metadata
   **Required**
 
-  - agent: <specialist role>
+  - agent: developer|designer|author
   - assignment: <stable assignment identifier>
 
   **Optional**
 
   - step: <owning operation step>
   - stage: <work stage>
+  - phase: <ideate, plan, implement, or review>
   - iteration: <current iteration>
 
   ## Role
@@ -81,7 +82,7 @@ context.
   ## Task
   Goal: <one user-visible or assignment-visible outcome>
 
-  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+  Quality: Meet a world-best <specialist> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or specialist-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
 
   Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 
@@ -89,10 +90,21 @@ context.
   <State purpose, rules, authority, constraints, independence, method, verification, stops, and prohibited work.>
 
   ## Materials
-  Required skills, in this order:
-  1. <path>
-  Also load any other skill this work needs. The list above is required, not the full set.
-  <Add remaining sources, purpose, and conflict precedence.>
+  Do not read other skills or documents unless that read is absolutely necessary for this assignment.
+
+  Skills index:
+
+  | Skill | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <frontmatter description> |
+
+  Docs index:
+
+  | Doc | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <one-line description> |
+
+  <Add remaining sources, purpose, and conflict precedence. Omit a Load-now list unless an item is already known to be absolutely necessary.>
 
   ## Return
   <Require the subagent to write a final Handoff for every terminal status. Name the owning status format,
@@ -116,7 +128,7 @@ context.
   You are a world-best UI/UX designer. Think and work the way a world-best UI/UX designer would: start from the user, the current surface, and proven patterns, then raise the result to that bar.
   ```
 
-- For any other craft, keep that two-sentence frame and change only the persona and stance.
+- For any other specialist, keep that two-sentence frame and change only the persona and stance.
 
 #### Write Task as goal, world-best bar, and minimum result
 
@@ -134,35 +146,46 @@ context.
 - The quality bar states how well the minimum result must be done and never authorizes extra result. Minimum
   result is the acceptance floor and the scope ceiling; extra work is an Instructions exclusion or a Handoff
   follow-up.
-- For executor, evaluator, and planner, keep Goal, Quality, and Minimum result. Do not move method into Task.
+- For every specialist and phase, keep Goal, Quality, and Minimum result. Do not move method into Task.
 
-#### Write Materials as required, not exclusive
+#### Write Materials as skills and docs indexes
 
-- Use the locked sentences as the Materials body:
+- Put two index tables in `## Materials`: skills with columns Skill, Path, and Description, and docs with
+  columns Doc, Path, and Description. Use each skill's name, absolute path, and frontmatter description, and
+  each document's name, absolute path, and one-line description.
+- Start `## Materials` with the locked sentence: `Do not read other skills or documents unless that read is absolutely necessary for this assignment.` Do not instruct the subagent to load either table, and do not rely on conversation history or inherited loads.
+- List every skill and document the assignment might need; the subagent reads a row only when the assignment
+  cannot proceed without that item. Omit a Load-now list unless an item is already known to be absolutely
+  necessary.
 
-  ```markdown
-  ## Materials
-  Required skills, in this order:
-  1. <path>
-  Also load any other skill this work needs. The list above is required, not the full set.
-  ```
+#### Specialist substitution table
 
-- Add remaining sources, purpose, and conflict precedence in the same section after the locked body.
-- Load an unlisted skill only when that skill's trigger applies or the brief names the need.
+- Use this table to write `## Role` for the specialist. Do not paste the table into the brief as extra
+  sections. Metadata `agent` is `developer`, `designer`, or `author`.
 
-#### Craft substitution table
-
-- Use this table to write Role and Task for non-UI crafts. Do not paste the table into the brief as extra
-  sections.
-
-  | Craft | Role persona | Role stance | Quality contrast | Minimum result pattern |
-  |---|---|---|---|---|
-  | Executor | world-best implementer of `{subject}` | locked contract, current bytes, named callers | world-best implementation bar, not a generic code pass; cover the contracted path, failure, and verification | One accepted change that meets that bar. Do not add extra files or features. |
-  | Evaluator | world-best adversarial evaluator of `{subject}` | frozen subject, locked criteria, unaided critical review before the working checklist | world-best evaluation bar, not a generic review pass; cover the main path, missing evidence, and recovery | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
-  | Planner | world-best planner of `{subject}` | accepted design, current file set, smallest lawful change | world-best planning bar, not a generic task-list pass; cover ownership, order, verification, and stops | One accepted plan Execution can follow. Do not implement the work. |
+  | Specialist | Role persona | Role stance | Quality contrast |
+  |---|---|---|---|
+  | Developer | world-best developer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
+  | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
+  | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- A leader Ideation brief uses the planner row unless the assignment is a different craft.
+- Pick the specialist from the primary subject. Software, including software architecture, is Developer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+
+#### Phase substitution table
+
+- Use this table to write `## Task` and to choose skills for the indexes. Do not paste the table into the brief.
+  Phase is not a role.
+
+  | Phase | Skills to index | Minimum result pattern |
+  |---|---|---|
+  | Ideate | Coding Ideation, Authoring Ideation, or Design Ideation by subject | One accepted design the next phase can follow. Do not implement. |
+  | Plan | Coding Planning, Authoring Planning, or Design Planning by subject | One accepted plan the matching execution skill can follow. Do not implement. |
+  | Implement | Coding Execution, Authoring Execution, or Design Execution by writer frontier | One accepted change that meets the bar. Do not add extra files or features. |
+  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+
+- Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
+- For Review, assign a fresh agent of the matching specialist. Do not reuse the producer of the target.
 
 ### Handoff Content
 
@@ -175,35 +198,3 @@ context.
   references that result instead of reproducing or replacing it; otherwise the response is the result.
 - Require the subagent to report fresh verification, concerns, remaining work, and the next owner or action. For
   missing context or a blocker, it names the cause, evidence, safe retained state, and resumption condition.
-
-### Specialist root pair
-
-#### Hold one pair
-
-- The two roots are one pair. A brief supplies both as absolute expanded paths, or supplies neither.
-- A specialist that holds neither derives `{gobbi-agents-root}` from its own contract location and
-  `{gobbi-skills-root}` from the sibling `skills/` directory.
-- Never guess a root. Never substitute a hardcoded repository path.
-
-#### Validate the sentinels
-
-- Validate whichever pair the specialist holds before any other Gobbi skill load against
-  `{gobbi-skills-root}/gobbi/SKILL.md`, `{gobbi-skills-root}/principles/SKILL.md`, and
-  `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md`.
-- Each held value must be an absolute expanded path. The three sentinels must exist and be readable.
-
-#### Report a defective pair
-
-- Report the exact token and stop:
-  - exactly one root → `NO_GOBBI_ROOT: <missing-root> partial-pair`
-  - relative, unexpanded, or placeholder value → `NO_GOBBI_ROOT: <root> <value> not-an-absolute-path`
-  - missing or unreadable sentinel → `NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`
-  - neither root and location underivable → `NO_GOBBI_ROOT: both-roots location-underivable`
-- A brief that carries one root, a relative value, an unexpanded value, or a placeholder is a defect.
-  The manager repairs it before reassigning.
-
-## References
-
-| Name | Description |
-|---|---|
-| [`Gobbi Skill`](../gobbi-skill/SKILL.md) | Shared guidance for compact skill structure, language, rules, and references. |

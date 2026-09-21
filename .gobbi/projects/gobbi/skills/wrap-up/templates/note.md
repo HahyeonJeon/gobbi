@@ -19,7 +19,7 @@
 | Exclusions | {Explicit exclusions or `None`.} |
 | Decisions and constraints | {Material decisions, constraints, and preserved conditions.} |
 | Sources | {Primary artifacts, evidence, or references needed to understand the work.} |
-| Acceptance | {Caller acceptance and evaluation evidence, or the exact missing evidence.} |
+| Acceptance | {Caller acceptance and review evidence, or the exact missing evidence.} |
 
 ## Result
 
@@ -37,7 +37,7 @@
 
 | Action | Owner | Change and reason | Evidence |
 |---|---|---|---|
-| {Created, updated, moved, merged, reorganized, removed, no change, or not attempted} | {Category skill or `None`} | {Source and result paths, what changed, and why it was needed.} | {Verification or direct observation.} |
+| {Created, updated, moved, merged, reorganized, removed, no change, or not attempted} | {Memory directory or `None`} | {Source and result paths, what changed, and why it was needed.} | {Verification or direct observation.} |
 
 {Repeat for every material Memory action. Use one `No change` row with its reason and evidence when no durable
 update was needed.}

@@ -1,1 +1,0 @@
-../../../../../.gobbi/projects/gobbi/skills/electron/electron-delivery/state/checklists.md

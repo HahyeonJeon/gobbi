@@ -48,7 +48,8 @@ invalid result remains a visible failure rather than transformed or relabeled co
 - **MUST use one fresh named-runtime process with help-backed flags, workspace-bounded Bash, and no bypass
   flags.** One invocation produces one saved result and one compact final Handoff; do not pass `--session-id`,
   `--resume`, `--continue`, `--worktree`, `--yolo`, `--always-approve`, `danger-full-access`, skip-permissions,
-  or `bypassPermissions`.
+  or `bypassPermissions`. Default `partner_timeout` is 3600 seconds unless the caller names another positive
+  integer.
 - **MUST validate the process, listed write set, unchanged main checkout, worktree git semantic state, saved
   result, and Handoff before acceptance.** Runtime status or a plausible stdout summary is not completion
   evidence.
@@ -94,7 +95,7 @@ invalid result remains a visible failure rather than transformed or relabeled co
   ## Task
   Goal: <one user-visible or assignment-visible outcome>
 
-  Quality: Meet a world-best <craft> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or craft-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
+  Quality: Meet a world-best <specialist> bar, not a generic <weaker-label> pass. <Concrete bar: states, completeness, user outcome, or specialist-equivalent observables. Quality states how well the minimum result must be done. It never authorizes extra result.>
 
   Minimum result: <one accepted artifact that meets that bar. This is the acceptance floor and the scope ceiling. Extra work is an Instructions exclusion or a Handoff follow-up.>
 
@@ -105,10 +106,21 @@ invalid result remains a visible failure rather than transformed or relabeled co
   changed worktree path.>
 
   ## Materials
-  Required skills, in this order:
-  1. <path>
-  Also load any other skill this work needs. The list above is required, not the full set.
-  <Add remaining sources, purpose, and conflict precedence.>
+  Do not read other skills or documents unless that read is absolutely necessary for this assignment.
+
+  Skills index:
+
+  | Skill | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <frontmatter description> |
+
+  Docs index:
+
+  | Doc | Path | Description |
+  |---|---|---|
+  | <name> | <absolute-path> | <one-line description> |
+
+  <Add remaining sources, purpose, and conflict precedence. Omit a Load-now list unless an item is already known to be absolutely necessary.>
 
   ## Return
   <Require one compact final Handoff on stdout for every status. It names writing-path, every changed
@@ -116,9 +128,9 @@ invalid result remains a visible failure rather than transformed or relabeled co
   without reproducing the saved result.>
   ```
 
-- The saved file is the authoritative result and stdout is only its final Handoff; review, ideation, and eval
-  still place `writing-path` in the session, while implementation may name another worktree file. Stop before
-  writing when the brief, material, boundary, or authority is incomplete.
+- The saved file is the authoritative result and stdout is only its final Handoff; review, ideation, and
+  planning still place `writing-path` in the session, while implementation may name another worktree file. Stop
+  before writing when the brief, material, boundary, or authority is incomplete.
 
 #### Bind the write surface
 
@@ -204,6 +216,8 @@ invalid result remains a visible failure rather than transformed or relabeled co
   `--sandbox disabled` was not run and is not the bound; `--force` is not the bound.
 
 ### Launch
+
+Set `partner_timeout` to 3600 unless the caller already named another positive integer seconds value.
 
 #### Launch Codex
 
@@ -323,7 +337,6 @@ invalid result remains a visible failure rather than transformed or relabeled co
 
 | Name | Description |
 |---|---|
-| [Delegation](../../delegation/SKILL.md) | Defines the base prompt and final Handoff contract. |
+| [Delegation](../../delegation/SKILL.md) | Defines the base prompt, skills and docs indexes, and final Handoff contract. |
 | [Gobbi](../SKILL.md) | Owns the session-wide Partner policy and route. |
-| [Memory](../../memory/SKILL.md) | Owns validation and retention of ignored session results. |
-| [Agent Teams](../agent-teams/SKILL.md) | Distinguishes reusable Claude teammates from fresh Partner processes. |
+| [Memory](../../memory/SKILL.md) | Defines the memory tree and ignored session-record conventions. |

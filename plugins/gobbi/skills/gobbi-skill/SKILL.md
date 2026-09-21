@@ -82,7 +82,7 @@ evidence so the cold reader reaches the intended understanding directly.
 
 | `skill-type` | Description |
 |---|---|
-| `domain` | A navigation-only root for one domain with multiple independently loadable children, including at least one operation, tool, and preference. |
+| `domain` | A navigation-only root for one domain with at least two independently loadable direct children, each truthfully classified as operation, tool, or preference. |
 | `operation` | A repeatable end-to-end standard operating procedure with ordered Phases and Steps, even when it uses a tool or applies preferences. Local setup for lookup remains tool guidance. |
 | `tool` | Guidance for one named tool, platform, or cohesive tool collection. Use direct Tool Skill children when tools in a collection need independent lookup. |
 | `preference` | Rules, conventions, preferred styles, and defaults that make recurring agent choices and results consistent without an end-to-end SOP. |

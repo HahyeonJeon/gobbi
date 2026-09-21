@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/python/python-project-structure/checklists.md

@@ -23,8 +23,8 @@ remaining choices. Workflow applies the same definition to every design-bearing 
 Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
 The owning operation defines whether the result is a durable file, commit, or response without a result-kind
 field. Durable design and Partner results use exact caller-named absolute paths with containment and
-rereading checks. Evaluation results are the per-runtime pair `report.md` and working `checklist.md`
-under write set `runtime-directory`; see [Evaluation](evaluation.md). A printed Handoff references
+rereading checks. Review results are the per-runtime pair `report.md` and working `checklist.md`
+under write set `runtime-directory`; see [Review](evaluation.md). A printed Handoff references
 but never replaces a durable result.
 
 ## Delegation brief

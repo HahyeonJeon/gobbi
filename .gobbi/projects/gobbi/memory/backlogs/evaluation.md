@@ -27,20 +27,6 @@ working checklist" was added; the old order was not rewritten. Not blocking.
 **Context:** Plan task-01 required the Evaluation References line to name both files. Live
 Checklist skill References still starts with prepare-then-evaluate.
 
-## Coverage accounts on unrevisions
-
-**Backlogged at:** 2026-08-20T08:37:00Z
-
-**What:** Add coverage accounts, without adding items, to `execution/docs/checklist.md`,
-`ideation/checklist.md`, `planning/checklist.md`, and `wrap-up/checklist.md`.
-
-**Why backlogged:** This session revised only Checklist-owned files that the SOP now requires to
-carry an account. L8 left unrevisions without accounts.
-
-**Context:** The Code Review baseline now has its own account. Evaluation Step 3.2 already records a
-missing account as a Limit and still runs the working pass. Coverage-account audit items do not apply to
-the remaining unrevisions.
-
 ## Workflow Planning RECORD leftover writer-boundaries wording
 
 **Backlogged at:** 2026-08-30T04:54:57Z

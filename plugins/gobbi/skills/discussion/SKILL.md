@@ -1,146 +1,130 @@
 ---
 name: discussion
-description: "Discussion is guidance for evidence-backed conversations that make user intent, designs, tasks, and decisions concrete."
+description: "Discussion is the operation that makes a task concrete, studies options with subagents, and decides with the user."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch, AskUserQuestion
-skill-type: preference
+skill-type: operation
 ---
 
 # Discussion
 
-Discussion guides study-backed conversation that helps the user make designs, tasks, and decisions concrete.
-Use it when the user's intent, project context, or Who, What, When, Where, Why, and How is unclear, or when the
-user must choose a direction. The agent recommends the best-supported option, and the user decides.
+Discussion makes the user's task concrete, studies options with independent participants, and records the
+user's decision. Use it when intent, context, or How is unclear, or when the user must choose a direction.
+The agent recommends. The user decides.
 
 ## Principles
 
-### Understand the user's intent and context
+### Understand the task before offering options
 
-Understand the result the user is trying to achieve and the project context that shapes it, not only the literal
-wording of the request. Use Who, What, When, Where, Why, and How with the relevant project vision, roadmap,
-design, architecture, and current state to expose gaps and boundaries that could change the result.
+Understand the result the user is trying to achieve and the project context that shapes it. Use Who, What,
+When, Where, Why, and How until the task is concrete enough to study.
 
-### Study the problem and possible options
+### Study with independent participants
 
-Before suggesting options, study the request, current work, affected people, relevant evidence, prior decisions,
-constraints, and proven approaches. Use [Study](../study/SKILL.md) when the recommendation depends on a bounded
-internal or external evidence question; otherwise develop and compare options from the available evidence.
+One agent misses alternatives. For a consequential design or decision, gather separate supported suggestions
+and critique, then synthesize before asking the user.
 
-### Discuss consequential choices with participants
+### Help the user see the choice
 
-Independent participants reveal alternatives and weak assumptions that one agent can miss. Before recommending
-a consequential design or decision, seek separate supported suggestions and critique through the active owner's
-participant contract, compare their reasoning, resolve or expose conflicts, and synthesize before asking the user.
-
-### Help the user make the best decision
-
-Present only meaningful options that fit the user's intent and differ in consequences that matter. Recommend the
-best-supported option, explain why it fits, and state what evidence or changed constraint would change it.
+Present only meaningful options. Recommend one. Explain the choice with a schema, diagram, or generated image
+when that makes the difference easier to see than text alone.
 
 ## Rules
 
-- **MUST make every gap in the user's intent or project context that could change the result concrete before
-  dependent work.**
-  Understand Who, What, When, Where, Why, and How and the relevant project vision, roadmap, design, architecture,
-  and current state only as far as the work needs; leave unresolved points explicit.
-- **MUST use the active owner's participant contract to discuss consequential designs and decisions before
-  presenting options or asking the user.** Seek separate supported suggestions and critique from available
-  participants; direct documentation work with no project/work design decision does not trigger this loop.
-- **MUST route every user-owned decision that could change the result, scope, approach, risk, cost, or acceptance
-  through the Decision Question template, then the active runtime's structured input tool.** Use `AskUserQuestion`
-  in Claude Code, `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending),
-  or `ask_user_question` in Grok; a delegated agent sends the populated template to the user-facing manager
-  instead of calling those tools.
-- **MUST write for quick understanding.** Expand each domain abbreviation on first use, explain project-specific
-  names briefly, and cite evidence for numeric or project-specific claims.
-- **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary or missing
-  evidence may reopen the decision, but it does not change the task, scope, or design by itself.
+- **MUST make every gap in intent or project context that could change the result concrete before dependent
+  work.** Use Who, What, When, Where, Why, and How only as far as the work needs, and leave unresolved points
+  explicit.
+- **MUST use the active owner's participant contract to discuss a consequential design or decision before
+  presenting options.** Seek separate supported suggestions and critique; skip this loop for documentation-only
+  work with no project or work design decision.
+- **MUST route every user-owned decision that could change result, scope, approach, risk, cost, or acceptance
+  through the runtime structured-input tool.** Use `AskUserQuestion` in Claude Code, `request_user_input` in
+  Codex, the official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok. A
+  delegated agent sends the question and options to the user-facing manager instead of calling those tools.
+- **MUST explain a structural or visual choice with a schema, diagram, or generated image when text alone
+  makes the options hard to compare.** Use the runtime's image-generation tool when a picture helps; use a
+  compact schema or diagram when that is clearer. Skip decoration.
+- **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary evidence may
+  reopen the decision; it does not change the task by itself.
 - **NEVER use empty praise or soft agreement instead of a position.** State the conclusion and reason, or name
-  the exact dependency that prevents one; avoid filler such as “Great question,” “That could work,” or an unnamed
-  “It depends.”
+  the exact dependency that prevents one.
 
-## Preferences
+## Procedure
 
-### Context Understanding
+### Phase 1 — Understand the task
 
-#### Understand intent and project context
+#### 1.1 Restate the intended result
 
-- State the current understanding of the user's intended result and the relevant project vision, roadmap, design,
-  architecture, and current state before asking about a gap that could change the result.
-- Use Who, What, When, Where, Why, and How to identify information needed to choose or act safely.
-- Distinguish the user's literal request from the intended result, and ask only about differences or context that
-  is missing, ambiguous, or conflicting.
+- State the current understanding of the user's intended result and the relevant vision, roadmap, design,
+  architecture, and current state.
+- Distinguish the literal request from the intended result.
 
-#### Make the result concrete
+#### 1.2 Close gaps that could change the result
 
-- Turn accepted answers into a clear design or task with its intended result, scope, constraints, approach, and
-  evidence of completion.
-- Keep accepted decisions, assumptions, and unresolved points distinct so later work does not treat one as
-  another. Discussion consumes evidence and records the user's decision; it does not replace Study or decide for
-  the user.
+- Use Who, What, When, Where, Why, and How to name missing, ambiguous, or conflicting context.
+- Ask only about gaps that could change the result, scope, approach, or acceptance.
 
-### Decision Support
+#### 1.3 Confirm the task is ready to study
 
-#### Discuss participant reasoning
+- Turn accepted answers into a concrete task: intended result, scope, constraints, approach, and completion
+  evidence.
+- Keep accepted decisions, assumptions, and unresolved points distinct. Continue to Phase 2 when the task is
+  concrete enough to form options.
 
-- Treat a design or decision as consequential when a different choice could change scope, architecture, interfaces,
-  safety, cost, reversibility, acceptance, or a user-visible result. Identify the evidence, alternatives, or
-  assumptions where an independent perspective could improve it.
-- Ask the active owner to give available subagents or teammates separate bounded prompts for supported design or
-  decision suggestions and critique. Each remaining launchable Partner may provide an initial suggestion or
-  critique; an Unavailable attempt is evidence, not a silent skip.
-- Compare participant reasoning before synthesis. When a disagreement or weak assumption could change the
-  recommendation, send one focused follow-up to an addressable participant; because Partner is one-shot, use an
-  addressable subagent or teammate when Partner provided the initial result.
-- Resolve conflicts or expose them, then synthesize the strongest supported options and recommendation
-  before asking the user. Do not force consensus or repeat a follow-up without new evidence; when no eligible
-  participant is available, state the evidence limit.
+### Phase 2 — Study and form options
 
-#### Build meaningful options
+#### 2.1 Study the evidence
 
-- Offer two or three mutually exclusive options only when a real choice exists, and make each option feasible
-  under the known evidence and constraints.
-- Name each option by its direction and describe its main effect or trade-off in one sentence.
-- Put the recommended option first, explain why it best serves the user's intent, and name what would change the
-  recommendation.
+- Study the request, current work, affected people, relevant evidence, prior decisions, constraints, and
+  proven approaches.
+- Load the matching domain ideation skill when this is an unresolved material design choice. Otherwise compare
+  options from the available evidence.
 
-#### Use the Decision Question template
+#### 2.2 Discuss with independent participants
 
-- Use one Question card per decision. Show only the evidence or design material needed to decide immediately
-  above the card.
-- Author each decision with this Question card:
+- Treat a choice as consequential when a different answer could change scope, architecture, interfaces,
+  safety, cost, reversibility, acceptance, or a user-visible result.
+- Ask the active owner to give available subagents or teammates separate bounded prompts for supported
+  suggestions and critique. Each remaining launchable Partner may provide an initial suggestion or critique;
+  an Unavailable attempt is evidence, not a silent skip.
+- Compare reasoning, send one focused follow-up when a disagreement could change the recommendation, then
+  synthesize. Do not force consensus. When no eligible participant is available, state the evidence limit.
 
-  ```markdown
-  <Relevant context or design material, such as class shapes, a schema, or a diagram, when applicable>
+#### 2.3 Prepare two or three options and a recommendation
 
-  > **❓ Question**
-  >
-  > **Topic:** <one short phrase naming the decision>
-  >
-  > **Description:** <the literal question, recommendation and reason, and what would change it>
-  >
-  > **Options**
-  >
-  > - **<option name> (Recommended)**
-  >   - **Description:** <what the option means>
-  >   - **Pros:** <specific benefits>
-  >   - **Cons:** <specific costs, risks, or limits>
-  >
-  > - **<alternative name>**
-  >   - **Description:** <what the option means>
-  >   - **Pros:** <specific benefits>
-  >   - **Cons:** <specific costs, risks, or limits>
-  ```
+- Offer two or three mutually exclusive options only when a real choice exists. Make each feasible under the
+  known evidence.
+- Name each option by its direction, describe its main effect in one sentence, put the recommended option
+  first, and name what would change the recommendation.
 
-- Render the populated Question card in the conversation first, then call the required runtime tool. Map `Topic`
-  to the short header, `Description` to the one-sentence question, and each option name to its label; combine
-  its Description, Pros, and Cons into one compact native option description, keep the recommendation first,
-  and ask a direct question instead when no meaningful options exist.
+### Phase 3 — Decide with the user
+
+#### 3.1 Explain so the user can see the choice
+
+- Show the evidence or design material needed to decide immediately above the question.
+- When the choice is a structure, flow, layout, or relationship, add a schema, diagram, or generated image
+  that makes the options comparable. Skip this when the choice is a short yes/no, a name, or a wording-only
+  decision.
+
+#### 3.2 Ask with the runtime tool
+
+- Call the required runtime structured-input tool with one question, the recommended option first, and each
+  alternative as a compact label plus what it means, its benefit, and its cost. Ask a direct question when no
+  meaningful options exist. The tool is the ask.
+
+#### 3.3 Record the decision
+
+- Record the user's choice as the accepted direction. Do not change it until the user explicitly changes it.
+- Discussion consumes evidence and records the decision. It does not replace domain ideation's design-evidence
+  study or decide for the user.
 
 ## References
 
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../gobbi-skill/SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
-| [Study](../study/SKILL.md) | Source-grounded investigation for a bounded evidence question. |
-| [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent and teammate assignments. |
+| [Operation Skill](../gobbi-skill/operation-skill/SKILL.md) | Shape for ordered phases and steps. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns bounded code-design study during ideation. |
+| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns bounded writing-design study during ideation. |
+| [Design Ideation](../design/design-ideation/SKILL.md) | Owns bounded visual-design study during ideation. |
+| [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent assignments. |
 | [Partner](../gobbi/partner/SKILL.md) | Write-bounded external-runtime invocation and final Handoff contract. |

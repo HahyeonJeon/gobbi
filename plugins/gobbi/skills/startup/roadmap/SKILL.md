@@ -15,7 +15,7 @@ without a plan.
 
 ### Draft sequence, not a plan
 
-Roadmap records project-level horizons and feature order. Planning, not Startup,
+Roadmap records project-level horizons and feature order. Planning, not Roadmap,
 turns one horizon into a task hierarchy.
 
 ### Derive from accepted design drafts
@@ -23,7 +23,7 @@ turns one horizon into a task hierarchy.
 Roadmap restates accepted Project Design session drafts as horizon order. It
 does not invent features.
 
-### Write session Temporary Records
+### Write a session draft
 
 Write `{session-root}/tmp/startup/design/roadmap/project.md`. Durable Memory
 waits for the conductor.
@@ -43,7 +43,7 @@ check is mechanical.
   feature set or an explicit zero-feature statement.** Acceptance is the
   Acceptance block on each written draft, not file existence.
 
-- **MUST write the session Temporary Record
+- **MUST write the session draft
   `{session-root}/tmp/startup/design/roadmap/project.md` from the
   [project template](templates/project.md).** The only other allowed write is
   `## Roadmap` in `{session-root}/tmp/startup/design/README.md` when that draft
@@ -58,7 +58,7 @@ check is mechanical.
   Memory.
 
 - **NEVER write dates, estimates, assignees, sprints, or tasks, and never use
-  Bash, start Bootstrap, call Memorize, publish, or merge.**
+  Bash, start Bootstrap, write durable Memory, publish, or merge.**
 
 ## Procedure
 
@@ -146,7 +146,7 @@ check is mechanical.
 #### 3.2 Obtain acceptance
 
 - Present `{session-root}/tmp/startup/design/roadmap/project.md` as a
-  session-only draft. Planning, not Startup, turns one horizon into a task
+  session-only draft. Planning, not Roadmap, turns one horizon into a task
   hierarchy.
 - On rejection, return to the earliest disputed placement or rule and revise
   the draft in place.
@@ -161,10 +161,9 @@ check is mechanical.
 - State that Roadmap is complete only when every feature id is placed, every
   required heading is filled or marked, and the Acceptance block records
   `User accepted this draft: yes`.
-- Do not start Bootstrap, write durable Memory, or call Memorize. These
-  session files are later Memorize inputs for `{memory}/design/roadmap/project.md`
-  and the durable README `## Roadmap` heading; Memorize later omits
-  `## Acceptance`.
+- Do not start Bootstrap or write durable Memory. These session files are later
+  inputs for `{memory}/design/roadmap/project.md` and the durable README
+  `## Roadmap` heading; durable writes later omit `## Acceptance`.
 
 ## References
 

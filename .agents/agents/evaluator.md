@@ -1,1 +1,0 @@
-../../.gobbi/projects/gobbi/agents/grok/evaluator.md

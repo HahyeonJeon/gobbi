@@ -38,8 +38,8 @@ trigger is true, only to two levels below the core, and only within the child bu
 
 - **MUST stop if session root, target root, or project key is missing.** Do not derive a replacement
   identity or write the draft into the target project.
-- **MUST write only `{session-root}/interview.md` from the interview template.** Never write Memory,
-  Design Memory, or target-repo files.
+- **MUST write only `{session-root}/interview.md` from the interview template.** Never write Memory
+  or target-repo files.
 - **MUST derive a topic answer from cited project evidence when that evidence resolves it, and ask one
   user question at a time.** Ask only the earliest unresolved topic.
 - **MUST walk the core topic ids and triggered children in [topics.md](topics.md) with its recursion
@@ -121,7 +121,8 @@ trigger is true, only to two levels below the core, and only within the child bu
 
 - Present `{session-root}/interview.md` as a session-only draft that Project Design may change.
 - On rejection, return to the earliest disputed topic and revise the draft in place.
-- On acceptance, record the user and date in Acceptance, and do not copy the file into Design Memory.
+- On acceptance, record the user and date in Acceptance, and do not copy the file into durable
+  memory.
 
 #### 3.3 Return the draft
 

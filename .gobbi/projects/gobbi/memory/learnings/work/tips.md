@@ -1,5 +1,17 @@
 # Work Tips
 
+## Coverage Account tables do not catch a bad idea
+
+**Context:** Authoring or revising a domain child-skill checklist, or deciding whether a missing
+Coverage Account is a defect.
+
+**Tip:** A Coverage Account table does not catch a bad idea. Child-skill checklists omit the
+account. The Checklist skill template still owns the account.
+
+**Application:** Do not add Coverage Account blocks to coding, authoring, or design child
+checklists. Do not fail those checklists for a missing account. Keep the account on the Checklist
+skill template when authoring a reusable Checklist-owned source.
+
 ## After Phase 2 Complete, add a new tasks and plan part
 
 **Context:** The user asks for more work after Workflow Phase 2 is already Complete.
@@ -55,12 +67,12 @@ wrapper-host bash timeout as Grok's tool timeout, or the reverse. When Grok host
 wrapper, the ~300s host tool cap can kill the wrapper after the inner command finishes; see
 [A Grok host tool timeout can kill a finished Partner wrapper](../grok/tips.md).
 
-## A whole-branch Partner evaluation can exceed a 1200s wrapper timeout
+## A whole-branch Partner review can exceed a 3600s wrapper timeout
 
-**Context:** Launching a remaining-runtime evaluator over a large frozen tree with a host
-`timeout 1200` around the Partner wrapper.
+**Context:** Launching a remaining-runtime reviewer over a large frozen tree with a host
+`timeout 3600` around the Partner wrapper.
 
-**Tip:** A whole-branch evaluation can still be running at 1200s. `WRAPPER_EXIT 124` plus one of
+**Tip:** A whole-branch review can still be running at 3600s. `WRAPPER_EXIT 124` plus one of
 `report.md` or `checklist.md` is an incomplete pair. It is never PASS input, never a report to
 disposition, and never a file to extract, repair, or retry in place.
 
@@ -82,22 +94,22 @@ do not let prepared categories become the source of the first review.
 
 ## Thinning Ideation and Planning checklists does not stop completeness hunts
 
-**Context:** Changing Ideation or Planning so evaluation stops demanding executor-owned implementation
+**Context:** Changing Ideation or Planning so review stops demanding executor-owned implementation
 details.
 
-**Tip:** Removing checklist items that demand recipes is not enough. Evaluation criticizes before any
-checklist. Phase 2 prompts and gather stay stage-blind unless Evaluation binds caller-supplied
-`evaluation-depth`. Cowork `evaluate` has no Workflow RECORD filter.
+**Tip:** Removing checklist items that demand recipes is not enough. Independent review criticizes before any
+checklist. Phase 2 prompts and gather stay stage-blind unless Review binds caller-supplied
+`review-depth`. Cowork `review` has no Workflow RECORD filter.
 
-**Application:** Bind `evaluation-depth` in Evaluation and name the token in Workflow and Cowork evaluator
+**Application:** Bind `review-depth` in Review and name the token in Workflow and Cowork reviewer
 briefs. Keep Ideation and Planning checklists aligned with purpose and boundary, but do not treat
 checklist thinning as the depth bind.
 
-## Cowork whole-branch evaluate cannot freeze while tracked implementation is dirty
+## Cowork whole-branch review cannot freeze while tracked implementation is dirty
 
-**Context:** A Cowork `evaluate` call names no subset while accepted implementation is still uncommitted.
+**Context:** A Cowork `review` call names no subset while accepted implementation is still uncommitted.
 
-**Tip:** Whole-branch evaluate freezes the branch from the immutable base through current head.
+**Tip:** Whole-branch review freezes the branch from the immutable base through current head.
 Uncommitted tracked implementation is not in that freeze. The call stops and asks for `commit` or a
 named subject.
 

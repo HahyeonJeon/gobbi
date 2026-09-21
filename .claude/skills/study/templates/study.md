@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/study/templates/study.md

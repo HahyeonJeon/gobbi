@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/go/go-observability/checklists.md

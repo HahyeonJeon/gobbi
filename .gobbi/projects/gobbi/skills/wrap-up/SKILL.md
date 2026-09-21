@@ -16,9 +16,9 @@ and authority.
 
 ### Keep project memory current
 
-Memorize reconciles useful session context with existing project memory instead of adding a session-shaped
-record. Update current knowledge through category-owned CRUD, but preserve completed point-in-time records
-under their category rules.
+Reconcile useful session context with existing project memory instead of adding a session-shaped record.
+Update current knowledge through Memory directory conventions, but preserve completed point-in-time records
+under those conventions.
 
 ### Integrate the exact accepted work
 
@@ -40,10 +40,10 @@ altered completion claim.
 - **MUST freeze the closure subject, session and memory roots, complete Git state, stable closure assignment
   ID, and authority before changing memory.** Wrong-worktree evidence, unrelated changes, an active writer, or
   an unresolved material decision stops mutation.
-- **MUST reconcile the full caller-supplied session root with related existing memory through category-owned
-  CRUD before Git integration.** Read before writing; create only missing content, update current facts, move,
-  merge, or reorganize overlaps, and remove stale or duplicate current content while preserving point-in-time
-  records under their category owners.
+- **MUST reconcile the full caller-supplied session root with related existing memory through Memory
+  directory conventions before Git integration.** Read before writing; create only missing content, update
+  current facts, move, merge, or reorganize overlaps, and remove stale or duplicate current content while
+  preserving point-in-time records.
 - **MUST apply Git to commit every closure-owned tracked change and integrate the accepted work into the exact
   caller-supplied base branch.** Reject base drift and prove the accepted work tree and resulting base tree are
   equal from current Git evidence.
@@ -61,8 +61,8 @@ altered completion claim.
 #### 1.1 Accept the completed work
 
 - Enter only when the calling manager identifies accepted work as ready for terminal closure. The caller owns
-  acceptance, required evaluation, and the evidence gate.
-- Read the accepted scope, results, artifacts, commits, verification, evaluation coverage, user decisions,
+  acceptance, required review, and the evidence gate.
+- Read the accepted scope, results, artifacts, commits, verification, review coverage, user decisions,
   exclusions, risks, and unresolved items.
 - When a completion claim lacks evidence or a material decision remains unresolved, stop mutation and
   continue to Step 3.4 with the exact unattempted state.
@@ -85,7 +85,7 @@ altered completion claim.
 
 | Property | Required value |
 |---|---|
-| Session root | Full closing session root used as temporary Memorize input. |
+| Session root | Full closing session root used as input for durable Memory writes. |
 | Project memory root | Closing project's `.gobbi/projects/<project>/memory/` root and the boundary for durable memory changes. |
 | Base branch | Exact local branch that receives the accepted work head. |
 | Git state | Exact repository, base, branch, worktree, accepted heads, and current status from the caller contract. |
@@ -102,19 +102,19 @@ altered completion claim.
 
 - Give one writer the frozen closure evidence, session and memory roots, allowed and protected paths, required
   actions, expected result, and verification contract.
-- Require the writer to apply [Memory](../memory/SKILL.md) `Memorize` to the full session root, load every
-  applicable category skill, and read related records and navigation before deciding what changes.
-- Require one category-owned CRUD set: create only missing context; update current facts; move, merge, or
+- Require the writer to apply [Memory](../memory/SKILL.md) preferences to the full session root, read related
+  records and navigation, and decide what changes.
+- Require one directory-owned CRUD set: create only missing context; update current facts; move, merge, or
   reorganize overlapping content; and remove stale or duplicate content. Keep indexes and links current, then
   return every changed path, action, reason, and verification.
 
 #### 2.2 Accept current durable memory
 
 - Reread every changed path, related retained content, and required navigation. Confirm that the result stays
-  inside the project memory root, follows each category owner, and matches the accepted work.
-- Confirm that every CRUD action has a present need and one owner, and every recorded memory change point was
-  applied or rejected with a reason. Preserve completed point-in-time records; reject stacking, stale facts,
-  needless fragments, unclear placement, duplicates, and unresolved change points.
+  inside the project memory root, follows Memory directory conventions, and matches the accepted work.
+- Confirm that every CRUD action has a present need and one Memory directory, and every recorded memory change
+  point was applied or rejected with a reason. Preserve completed point-in-time records; reject stacking, stale
+  facts, needless fragments, unclear placement, duplicates, and unresolved change points.
 - When memory or its verification fails, stop before Git integration and continue to Step 3.4 with the exact
   retained worktree and recoverable state.
 
@@ -178,5 +178,5 @@ altered completion claim.
 |---|---|
 | [Wrap-up checklist](checklist.md) | Reusable unchecked source for evaluating closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting. |
 | [Note template](templates/note.md) | Response-only development, research, or work note for the final result, memory, verification, Git integration, and recovery. |
-| [Memory](../memory/SKILL.md) | Owns session review, durable memory selection, category routing, and memory verification. |
+| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
 | [Git](../git/SKILL.md) | Supplies focused-commit, integration, retained-object, and recovery preferences; Wrap-up owns the ordered Git actions. |

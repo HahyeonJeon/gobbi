@@ -24,9 +24,7 @@
 - [ ] A material operation lacks an independently loadable owner.
 - [ ] A material named tool or platform lacks an independently loadable owner.
 - [ ] A material judgment area lacks an independently loadable owner.
-- [ ] The family lacks an operation child.
-- [ ] The family lacks a tool child.
-- [ ] The family lacks a preference child.
+- [ ] The family has fewer than two independently loadable direct children.
 - [ ] A child mixes capability types that need separate skills.
 - [ ] A child mixes policy owners that need separate skills.
 - [ ] A child mixes applicability boundaries that need separate skills.

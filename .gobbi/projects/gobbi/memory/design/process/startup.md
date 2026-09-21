@@ -2,18 +2,17 @@
 
 ## Intent
 
-Startup is a conductor plus four children: Interview, Project Design, Roadmap, and
-Bootstrap. It writes session drafts, then Memory Memorize. It does not load Planning,
-the Wrap-up skill, or feature Execution. It does not publish, push, open a pull
-request, or merge.
-
-The canonical [Startup](../../../skills/startup/SKILL.md) skill owns this contract.
+There is no Startup conductor skill. Load [Interview](../../../skills/startup/interview/SKILL.md),
+[Project Design](../../../skills/startup/project-design/SKILL.md),
+[Roadmap](../../../skills/startup/roadmap/SKILL.md), and
+[Bootstrap](../../../skills/startup/bootstrap/SKILL.md) directly. They write session drafts. Durable
+design memory uses Memory preferences. They do not load Planning, the Wrap-up skill, or feature
+Execution. They do not publish, push, open a pull request, or merge.
 
 ## Family
 
 | Role | Owner | Current responsibility |
 |---|---|---|
-| Conductor | [Startup](../../../skills/startup/SKILL.md) | Order, identity, gates, and Memory Wrap-up |
 | Interview | [Interview](../../../skills/startup/interview/SKILL.md) | Walks 42 cores and 19 triggered children into `{session-root}/interview.md` |
 | Project Design | [Project Design](../../../skills/startup/project-design/SKILL.md) | Writes session drafts under `{session-root}/tmp/startup/design/` and creates the Gobbi namespace |
 | Roadmap | [Roadmap](../../../skills/startup/roadmap/SKILL.md) | Writes the session project-horizon draft |
@@ -33,13 +32,13 @@ Blocking missing answers: `products`, `core-tasks`, `stack`, `first-check`, and,
 when `core-tasks` is not none, `task-actors`, `task-scope`, and `task-behavior`.
 Never copy `{session-root}/interview.md` into Memory.
 
-## Session drafts then Memorize
+## Session drafts then durable design
 
-Project Design and Roadmap write Temporary Records that use Design Memory path
-names. Session drafts carry `## Acceptance`. File existence is not acceptance.
-Memorize copies every other heading and omits `## Acceptance`.
+Project Design and Roadmap write ignored session drafts that use Memory design
+path names. Session drafts carry `## Acceptance`. File existence is not acceptance.
+Durable writes copy every other heading and omit `## Acceptance`.
 
-Durable destinations stay in the existing Design Memory categories:
+Durable destinations stay in the existing design memory categories:
 
 - `architecture/overview.md`
 - `architecture/system.md` — composition, stack, and First check. Not `platform.md`.
@@ -51,7 +50,7 @@ Do not add a fifth Memory category.
 
 ## Boundaries
 
-- Planning, not Startup, turns one horizon into a task hierarchy.
-- Startup Memory Wrap-up loads Memory Memorize and makes one Memory-only commit.
-  It is not the Wrap-up skill.
-- Startup itself does not merge.
+- Planning, not Roadmap, turns one horizon into a task hierarchy.
+- Durable design writes apply Memory preferences and may make one Memory-only
+  commit. That is not the Wrap-up skill.
+- These operations do not merge.

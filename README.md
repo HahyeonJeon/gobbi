@@ -5,15 +5,14 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.2.4-blue" alt="Version 1.2.4"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.0-blue" alt="Version 1.3.0"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
-Gobbi is an orchestration system that brings structured planning, implementation, evaluation, and durable
-handoffs to the AI coding tools you already use. You choose the operating depth for each session, from
-ordinary assistance to fast topic-by-topic work or a fully recorded lifecycle. Gobbi never preselects the
-mode for you.
+Gobbi is an orchestration system that brings structured planning, implementation, review, and durable
+handoffs to the AI coding tools you already use. You choose Cowork for topic-by-topic work or Workflow for a
+fully recorded lifecycle. Gobbi never preselects the mode for you.
 
 The name comes from 고삐 (*gobbi*), Korean for "reins."
 
@@ -29,22 +28,20 @@ Run these commands in a Claude Code session:
 /reload-plugins
 ```
 
-Enable Agent Teams and allow the five Gobbi roles in your project `.claude/settings.json`:
+Allow the five Gobbi roles in your project `.claude/settings.json`.
+Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
+Developer, designer, and author are specialists. Pipeline work is a briefed phase, not a role.
 
 ```json
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-  "teammateMode": "in-process",
   "permissions": {
     "allow": [
       "Skill(gobbi:gobbi)",
       "Skill(gobbi:principles)",
       "Agent(gobbi:manager)",
-      "Agent(gobbi:leader)",
-      "Agent(gobbi:executor)",
-      "Agent(gobbi:evaluator)",
+      "Agent(gobbi:developer)",
+      "Agent(gobbi:designer)",
+      "Agent(gobbi:author)",
       "Agent(gobbi:assistant)"
     ]
   }
@@ -61,7 +58,7 @@ codex plugin marketplace add HahyeonJeon/gobbi
 codex plugin add gobbi@gobbi-workspace
 ```
 
-Codex needs no Claude Code Agent Teams or permission configuration. A repository checkout also includes local
+Codex needs no Claude Code permission configuration. A repository checkout also includes local
 entrypoints, so contributors working in the clone do not need to install the plugin.
 
 ### Grok
@@ -99,7 +96,7 @@ A repository checkout already exposes the package through `.grok/plugins/gobbi` 
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
 `enabled` true, and `path` ending in `.grok/plugins/gobbi`.
 
-Grok participants are the project `.grok/agents` roles plus official Grok subagents. Agent Teams is Claude-only.
+Grok participants are the project `.grok/agents` roles plus official Grok subagents.
 
 ### Cursor
 
@@ -108,10 +105,13 @@ the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/sk
 `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
-plus official Cursor subagents. Agent Teams is Claude-only.
+plus official Cursor subagents.
 
-After install, the standalone `gobbi-setup` skill creates only missing Gobbi layout, instruction placeholders,
-Claude Code settings, and Codex role contracts. It reports the rest. Gobbi entry does not run setup.
+After install, create missing layout with the matching runtime guide and script under `skills/gobbi/setup/`:
+[claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md),
+[codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md),
+[cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md), or
+[grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md). Setup is not a skill. Gobbi entry does not run it.
 
 ## Start your first session
 
@@ -128,16 +128,16 @@ After `.grok/skills/gobbi` exists, checkout-local Grok invokes Gobbi as `/local:
 project-plugin load invokes it as `/gobbi:gobbi`. The two forms differ; do not invent a `$gobbi` alias for
 Grok.
 
-Gobbi presents all three modes and waits for your selection. For Cowork or Workflow, it next asks for a
-privacy-safe session slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of
-`claude-code`, `codex`, `cursor`, and `grok`.
+Gobbi presents Cowork and Workflow and waits for your selection. It next asks for a privacy-safe session
+slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of `claude-code`, `codex`,
+`cursor`, and `grok`.
 
 ## Cowork
 
 Cowork is the fast path for implementation work that you direct one topic at a time. Fast delivery skips
 Ideation and Planning; Light delivery runs a bounded version of both before verified Execution.
 
-Independent evaluation and closure run only when you explicitly request them. One isolated branch and linked
+Independent review and closure run only when you explicitly request them. One isolated branch and linked
 worktree hold the session, keeping your main checkout separate from the ordered local commits.
 
 ## Workflow
@@ -151,15 +151,18 @@ Configuration → Ideation → Planning → Execution → Wrap-up
 Every productive step uses:
 
 ```text
-DISCUSSION → WORK → EVALUATION → RECORD
+DISCUSSION → WORK → RECORD
 ```
+
+Execution tasks and Wrap-up also run `REVIEW` between WORK and RECORD. Ideation and Planning skip it.
 
 After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
 develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
-Recorded evidence can rebuild the active route after a context boundary, and each gate must accept the frozen
-result before work advances. Workflow uses one isolated branch and linked worktree for the full session.
+Recorded evidence can rebuild the active route after a context boundary. Execution and Wrap-up gates must
+accept the frozen result before those units advance. Workflow uses one isolated branch and linked worktree
+for the full session.
 
 ## Partner
 

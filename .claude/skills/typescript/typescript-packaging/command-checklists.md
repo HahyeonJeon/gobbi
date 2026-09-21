@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/typescript/typescript-packaging/command-checklists.md

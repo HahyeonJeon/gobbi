@@ -11,7 +11,6 @@ each group. Order implies no priority, readiness, or sequence.
 ## Evaluation
 
 - `Checklist References leftover prepare-then-evaluate order` → `evaluation.md#checklist-references-leftover-prepare-then-evaluate-order`
-- `Coverage accounts on unrevisions` → `evaluation.md#coverage-accounts-on-unrevisions`
 - `Cursor evaluator write and Partner command` → `evaluation.md#cursor-evaluator-write-and-partner-command`
 - `Domain checklist family migration` → `evaluation.md#domain-checklist-family-migration`
 - `Evaluation 2.2 packed labeling substep` → `evaluation.md#evaluation-22-packed-labeling-substep`
