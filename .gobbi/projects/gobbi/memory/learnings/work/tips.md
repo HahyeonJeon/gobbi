@@ -115,3 +115,14 @@ named subject.
 
 **Application:** Commit accepted tracked implementation first, or name a subset. Do not treat Execution
 PASS as a freezeable whole-branch subject while those files remain dirty.
+
+## Offer the sequential minor when the user names a skipped version
+
+**Context:** A release request names a version such as 1.4.0 while the last shipped tag is 1.2.4 and
+CHANGELOG claims Semantic Versioning 2.0.0.
+
+**Tip:** The sequential 1.x minor is 1.3.0. A named skip is a user choice, not evidence that 1.3.0 is
+reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8 exception.
+
+**Application:** Present sequential 1.x, the named skip, and 2.0.0 as distinct options. Recommend from
+SemVer plus project exception history. Keep the user's recorded number after they choose.

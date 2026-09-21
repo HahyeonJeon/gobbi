@@ -152,3 +152,16 @@ sentence kept Gobbi Skill caps but packed extra policy into one substep.
 
 **Correction:** Prefer a Step split when new policy is more than a condition of the first sentence. A
 second sentence should only bound the first sentence, not introduce extra rules.
+
+## Matching a Breaking relabel by a distinctive phrase
+
+**Context:** Prefixing `**Breaking:**` on existing Changed bullets whose primary disclosure is a named
+shipped surface, such as General mode.
+
+**Mistake:** Treating the bullet that already contains a distinctive phrase ("Agent Teams", "Setup is
+not a skill") as the only match, and skipping a sibling bullet whose primary disclosure is the same
+surface under a different wording ("General discovers applicable operations").
+
+**Correction:** Walk every Changed bullet and ask what it discloses, not whether it contains the
+locked name string. Prefix each bullet whose primary disclosure is a locked surface. Keep the
+sentence. Do not recategorize it into Removed.

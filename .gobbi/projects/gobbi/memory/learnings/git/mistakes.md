@@ -23,3 +23,15 @@ choose the old merge base and display the previously squashed commits and files 
 work, leave the retained session branch unchanged. Create a clean non-session branch at the current base,
 apply the focused correction there, verify the exact delta, and publish that branch. Do not force-rewrite the
 retained session branch to make the comparison look smaller.
+
+## Updating a branch that another worktree has checked out
+
+**Context:** Fast-forwarding `develop` with `git update-ref` from a session worktree while the start
+checkout still has `develop` checked out.
+
+**Mistake:** Expecting that checkout's index and worktree to match the new `HEAD`. They stay at the
+old tree, so `git status` shows the new commit's files as modified or deleted.
+
+**Correction:** That dirtiness is the other checkout's stale index, not a second copy of the work.
+Do not restore, reset, or check out files there from the session. Leave it until a separately
+authorized tidy of that checkout.
