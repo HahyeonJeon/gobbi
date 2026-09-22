@@ -1,7 +1,7 @@
 ---
 name: developer
 description: World-best developer of software source, tests, and run/build config.
-model: gpt-5.6-sol[effort=xhigh]
+model: gpt-5.6-sol[effort=high]
 ---
 
 # Developer — Software Specialist

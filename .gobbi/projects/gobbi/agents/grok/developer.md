@@ -3,7 +3,7 @@ name: developer
 description: World-best developer of software source, tests, and run/build config.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
 model: grok-4.7
-effort: xhigh
+effort: high
 ---
 
 # Developer — Software Specialist

@@ -101,7 +101,7 @@ Grok participants are the project `.grok/agents` roles plus official Grok subage
 ### Cursor
 
 A repository checkout already exposes Cursor participants through `.cursor/agents` and `.cursor/skills`. Start
-the parent session as `grok-4.7[effort=xhigh]`, then load Gobbi from `.cursor/skills`. The required binary is
+the parent session as `grok-4.7[effort=high]`, then load Gobbi from `.cursor/skills`. The required binary is
 `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles

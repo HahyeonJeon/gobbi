@@ -26,7 +26,7 @@ Each role has one full copy per runtime, and all four runtimes live together in 
 
 Codex uses only `{role}.toml`. The role body lives in that file's `developer_instructions`.
 
-Cursor uses official bracket syntax on `model`. It has no separate `effort` key. The Cursor parent starts as Grok 4.7 xhigh.
+Cursor uses official bracket syntax on `model`. It has no separate `effort` key. The Cursor parent starts as Grok 4.7 high.
 
 Runtime mirrors (repository-local, not plugin components):
 

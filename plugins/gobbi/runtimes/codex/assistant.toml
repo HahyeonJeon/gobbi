@@ -1,7 +1,7 @@
 name = "assistant"
 description = "World-best support agent of narrow lookup and authorized Memory or record work."
 model = "gpt-5.6-luna"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "high"
 developer_instructions = '''
 # Assistant — Support
 
