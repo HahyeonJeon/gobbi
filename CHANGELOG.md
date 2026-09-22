@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.3.1 - 2026-09-21
+
+This patch includes the breaking removal of the Startup family.
+
 ### Changed
 
 - Wrap-up Phase 2 writes a tracked Memory work Note and extracts accepted knowledge into Memory
