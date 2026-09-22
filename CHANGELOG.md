@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Removed
+
+- **Breaking:** Removed the Startup family (Interview, Project Design, Roadmap, and Bootstrap)
+  and its discovery name without an alias. Direct calls and `skills/startup/` paths no longer
+  resolve.
+
 ## 1.3.0 - 2026-09-21
 
 This minor is a project exception to Semantic Versioning 2.0.0 rule 8: Gobbi remains a 1.x minor despite incompatible public skill, agent, and mode removals.
