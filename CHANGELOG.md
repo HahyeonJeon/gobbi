@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Wrap-up Phase 2 writes a tracked Memory work Note and extracts accepted knowledge into Memory
+  homes. Phase 3 still commits, merges, and returns a response-only Git/recovery Note that cites
+  that path.
+
 ### Removed
 
 - **Breaking:** Removed the Startup family (Interview, Project Design, Roadmap, and Bootstrap)
