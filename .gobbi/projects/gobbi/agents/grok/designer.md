@@ -2,7 +2,7 @@
 name: designer
 description: World-best designer of visual work: UI, images, video, presentations, reports, and other visual artifacts.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
-model: grok-4.6
+model: grok-4.7
 effort: xhigh
 ---
 

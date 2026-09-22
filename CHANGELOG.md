@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wrap-up Phase 2 writes a tracked Memory work Note and extracts accepted knowledge into Memory
   homes. Phase 3 still commits, merges, and returns a response-only Git/recovery Note that cites
   that path.
+- Grok role contracts use `grok-4.7`. Cursor manager and assistant, and the Cursor parent
+  start instruction, use the same model at `xhigh`.
 
 ### Removed
 

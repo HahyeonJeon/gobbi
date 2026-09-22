@@ -1,7 +1,7 @@
 ---
 name: manager
 description: World-best session manager of user discussion, mode, routing, assignment, and acceptance.
-model: grok-4.6[effort=xhigh]
+model: grok-4.7[effort=xhigh]
 ---
 
 # Manager — Session Authority

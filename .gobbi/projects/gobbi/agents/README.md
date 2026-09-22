@@ -20,13 +20,13 @@ Each role has one full copy per runtime, and all four runtimes live together in 
 | Runtime | Directory | Model field | Effort field |
 |---|---|---|---|
 | Claude Code | [`claude/`](claude/) | `model` (opus / sonnet / haiku) | `effort` |
-| Grok | [`grok/`](grok/) | `model` (grok-4.6) | `effort` |
+| Grok | [`grok/`](grok/) | `model` (grok-4.7) | `effort` |
 | Codex | [`codex/`](codex/) | `model` and `model_reasoning_effort` in `.toml` | same `.toml` |
 | Cursor | [`cursor/`](cursor/) | `model` (`id[effort=...]`) | same `model` bracket |
 
 Codex uses only `{role}.toml`. The role body lives in that file's `developer_instructions`.
 
-Cursor uses official bracket syntax on `model`. It has no separate `effort` key. The Cursor parent starts as Grok 4.6 xhigh.
+Cursor uses official bracket syntax on `model`. It has no separate `effort` key. The Cursor parent starts as Grok 4.7 xhigh.
 
 Runtime mirrors (repository-local, not plugin components):
 

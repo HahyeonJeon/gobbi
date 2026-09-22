@@ -8,7 +8,7 @@ skill.
 Gobbi does not ship a Cursor marketplace plugin. A repository checkout already exposes Cursor participants
 through `.cursor/agents` and `.cursor/skills`.
 
-Start the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/skills`. The required
+Start the parent session as `grok-4.7[effort=xhigh]`, then load Gobbi from `.cursor/skills`. The required
 binary is `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 ## Create missing project layout
