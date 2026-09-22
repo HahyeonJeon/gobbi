@@ -21,7 +21,7 @@ Each role has one full copy per runtime, and all four runtimes live together in 
 |---|---|---|---|
 | Claude Code | [`claude/`](claude/) | `model` (opus / sonnet / haiku) | `effort` |
 | Grok | [`grok/`](grok/) | `model` (grok-4.7) | `effort` |
-| Codex | [`codex/`](codex/) | `model` and `model_reasoning_effort` in `.toml` | same `.toml` |
+| Codex | [`codex/`](codex/) | `model` (gpt-6-astra) and `model_reasoning_effort` in `.toml` | same `.toml` |
 | Cursor | [`cursor/`](cursor/) | `model` (`id[effort=...]`) | same `model` bracket |
 
 Codex uses only `{role}.toml`. The role body lives in that file's `developer_instructions`.
