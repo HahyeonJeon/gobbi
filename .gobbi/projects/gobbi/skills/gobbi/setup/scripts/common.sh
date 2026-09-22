@@ -1021,7 +1021,7 @@ check_cursor() {
   done
   check_readable_file ".cursor/skills/gobbi/SKILL.md" "$project_root/.cursor/skills/gobbi/SKILL.md"
   check_readable_file ".cursor/skills/principles/SKILL.md" "$project_root/.cursor/skills/principles/SKILL.md"
-  warn "Cursor parent session must start as grok-4.6[effort=xhigh]"
+  warn "Cursor parent session must start as grok-4.7[effort=high]"
   check_cli cursor-agent
 }
 

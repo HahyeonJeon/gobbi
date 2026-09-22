@@ -94,7 +94,7 @@ limit causes and verdicts to what the evidence supports.
 
 - Load, in this order, whichever exist: current design memory under the project's
   `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
-  accepted session design. Use a startup draft only when it is the accepted current design.
+  accepted session design.
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
   gate criteria unless the caller listed them.
 - Freeze the exact artifact, state, version, or content hash only when that state is stable;

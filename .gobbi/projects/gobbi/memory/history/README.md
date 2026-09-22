@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-09-21 — Gobbi v1.3.0 published](2026-09-21-gobbi-v1-3-0.md)
 - [2026-09-14 — Skills reorg completed](2026-09-14-skills-reorg.md)
 - [2026-09-06 — Domain skill families completed](2026-09-06-domain-skill-families.md)
 - [2026-09-02 — Coding skill family completed](2026-09-02-coding-skill-family.md)

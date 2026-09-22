@@ -2,8 +2,8 @@
 name: manager
 description: World-best session manager of user discussion, mode, routing, assignment, and acceptance.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, EnterWorktree, ExitWorktree, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskStop, SendMessage
-model: grok-4.6
-effort: xhigh
+model: grok-4.7
+effort: high
 ---
 
 # Manager — Session Authority

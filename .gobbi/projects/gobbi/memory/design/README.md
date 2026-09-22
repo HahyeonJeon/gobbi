@@ -25,4 +25,3 @@ Recursive navigation across design memory, grouped by category.
 - [Review](process/evaluation.md)
 - [Identity-and-load role contracts](process/identity-and-load-role-contracts.md)
 - [React skill family](process/react-skill-family.md)
-- [Startup](process/startup.md)

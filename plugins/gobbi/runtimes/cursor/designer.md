@@ -1,7 +1,7 @@
 ---
 name: designer
 description: World-best designer of visual work: UI, images, video, presentations, reports, and other visual artifacts.
-model: gpt-5.6-sol[effort=xhigh]
+model: gpt-5.6-sol[effort=high]
 ---
 
 # Designer — Visual Specialist

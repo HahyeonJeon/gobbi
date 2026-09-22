@@ -2,8 +2,8 @@
 name: assistant
 description: World-best support agent of narrow lookup and authorized Memory or record work.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor
-model: grok-4.6
-effort: xhigh
+model: grok-4.7
+effort: high
 ---
 
 # Assistant — Support

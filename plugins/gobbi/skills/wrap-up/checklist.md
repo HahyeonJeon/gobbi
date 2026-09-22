@@ -1,13 +1,13 @@
 # Wrap-up Checklist
 
 > **Document role:** Reusable unchecked evaluation source<br>
-> **Subject:** Wrap-up work and response-only Notes produced through the Wrap-up operation<br>
-> **Applicability:** General Wrap-up evaluation; Evaluation binds the exact accepted closure, Memory result, frozen and integrated trees, Git evidence, terminal state, and Note<br>
+> **Subject:** Wrap-up work, Phase 2 durable Notes, and response-only Git/recovery Notes produced through the Wrap-up operation<br>
+> **Applicability:** General Wrap-up evaluation; Evaluation binds the exact accepted closure, Memory result, frozen and integrated trees, Git evidence, terminal state, durable Note, and response-only Note<br>
 > **Purpose:** Provide baseline coverage for closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting before target-specific items are added<br>
-> **Scope:** Acceptance and authority, closure boundaries, Memory reconciliation, verification and tree identity, commit and merge evidence, retained recovery state, and the final Note<br>
+> **Scope:** Acceptance and authority, closure boundaries, Memory reconciliation, verification and tree identity, commit and merge evidence, retained recovery state, the durable Note, and the response-only Git/recovery Note<br>
 > **Exclusions:** Quality of the already accepted work except its preservation through closure; detailed Memory-category or Git behavior outside Wrap-up's use; Workflow orchestration outside closure; operating product behavior<br>
-> **Governing sources:** [Checklist](../checklist/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md), [Principles](../principles/SKILL.md), [Wrap-up](SKILL.md), [Note template](templates/note.md), [Memory](../memory/SKILL.md), [Git](../git/SKILL.md), and the accepted closure contract<br>
-> **Context:** Evaluate the closure evidence, durable Memory result, Git result, and Note as one subject. Apply the [Documentation checklist](../authoring/authoring-review/checklist.md) to the Note in parallel and add target-specific items after study.<br>
+> **Governing sources:** [Checklist](../checklist/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md), [Principles](../principles/SKILL.md), [Wrap-up](SKILL.md), [Memory-note template](templates/memory-note.md), [Note template](templates/note.md), [Memory](../memory/SKILL.md), [Git](../git/SKILL.md), and the accepted closure contract<br>
+> **Context:** Evaluate the closure evidence, durable Memory result including the Phase 2 Note, Git result, and response-only Note as one subject. Apply the [Documentation checklist](../authoring/authoring-review/checklist.md) to both Notes in parallel and add target-specific items after study.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -45,6 +45,9 @@
 - [ ] A move, merge, reorganization, or removal leaves navigation or related retained content inconsistent.
 - [ ] A durable Memory action lacks a present reason or direct verification.
 - [ ] A justified no-change result is unproved or replaced with a needless Memory write.
+- [ ] Session talk, a transcript, or a standing-preference dump is stored as durable Memory.
+- [ ] Memory ran and no durable Note exists at `reports/note/`.
+- [ ] The durable Note contains Git action states, recovery commands, or session UUID as knowledge.
 
 ### Tree Integrity
 
@@ -56,6 +59,7 @@
 - [ ] The closure tree, work head, base head, or base checkout state is not frozen before Git mutation.
 - [ ] Worktree drift after verification is missed or accepted without repeating the responsible closure step.
 - [ ] Base head or tree drift is missed or accepted before integration.
+- [ ] The durable Note is edited after the closure tree is frozen.
 
 ### Git Integration
 
@@ -85,12 +89,12 @@
 
 #### The final Note is missing, incomplete, or misleading
 
-- [ ] A terminal path returns without one response-only Note.
+- [ ] A terminal path returns without one response-only Git/recovery Note.
 - [ ] The Note type, status, session, assignment, or recorded time conflicts with the closure evidence.
-- [ ] Context is insufficient for a cold reader to understand the purpose, requirements, scope, exclusions, decisions, sources, and acceptance.
-- [ ] A material delivered result or its evidence is absent from Work.
+- [ ] The Memory note locator is omitted, is `None` when Memory ran, or is a path when Phase 1 stopped before Memory.
+- [ ] Memory ran and the durable Note omits purpose, requirements, scope, exclusions, accepted decisions, work, Memory CRUD, or remaining limits.
 - [ ] A Memory row omits the directory, change and reason, affected paths, or verification.
-- [ ] A verification row reports a claim without its method, factual result, and evidence.
+- [ ] The response-only Note repeats the durable work account instead of citing the Memory note path.
 - [ ] A Git row omits a material accepted-work, commit, base, merge, branch, worktree, or observation state.
 - [ ] An intended, unavailable, deferred, failed, or unproved action is described as completed.
 - [ ] A remaining concern, preserved unrelated change, retained object, recovery owner, or first safe command is omitted.

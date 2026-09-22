@@ -102,6 +102,19 @@ logs, trivia, and operational exhaust.
 
 - Do not add a seventh durable category unless the same distinct purpose recurs.
 
+### Closure
+
+#### Extract accepted session knowledge at wrap-up
+
+- Callers Wrap-up and Cowork wrap-up extract accepted design, decisions, intended behaviors, and standing
+  preferences into the existing homes in the table above. Place decisions in the design they shape, and standing
+  user project preferences in `design/process/` unless they constrain a named feature or architecture file.
+- Write one `reports/note/` file as the durable work account. Write one `history/` file only when the session
+  made a durable project change.
+- Exclude talk, transcripts, rejected options, one-session instructions, Git action states, recovery commands,
+  and secrets. Cowork wrap-up still writes the durable `reports/note/` without loading Wrap-up and without a
+  Workflow Note or merge.
+
 ### Design
 
 #### Keep current intent in one subject home
@@ -221,5 +234,5 @@ logs, trivia, and operational exhaust.
 | Name | Description |
 |---|---|
 | [Preference Skill](../gobbi-skill/preference-skill/SKILL.md) | Shape for rules, conventions, and defaults without an SOP. |
-| [Wrap-up](../wrap-up/SKILL.md) | Caller that applies these preferences at closure. |
+| [Wrap-up](../wrap-up/SKILL.md) | Caller that applies these preferences at closure, including the durable `reports/note/`. |
 | [Git](../git/SKILL.md) | Conventions for focused Memory commits. |

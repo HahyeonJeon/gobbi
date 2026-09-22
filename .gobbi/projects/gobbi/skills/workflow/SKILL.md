@@ -250,8 +250,8 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 ### Phase 3 — Wrap Up and Report
 
 Phase 3 applies `DISCUSSION → WORK → REVIEW → RECORD` to the actual closure. It then integrates only the
-reviewed tree, writes the terminal `handoff.md`, waits at `P3 · User Review`, and returns the Note after
-Continue.
+reviewed tree, writes the terminal `handoff.md`, waits at `P3 · User Review`, and returns the Git/recovery
+Note after Continue.
 
 #### 3.1 Run closure DISCUSSION
 
@@ -268,21 +268,23 @@ Continue.
 #### 3.2 Run closure WORK
 
 - Give one assistant the complete session root, exact current-project Memory root, accepted evidence, allowed
-  and protected paths, and checks through Delegation. Apply Wrap-up and [Memory](../memory/SKILL.md), then
-  self-review the Memory CRUD, retained paths, indexes, links, and complete worktree diff.
-- Verify the actual pre-Git tree, task commits, checks, heads, merge plan, authority, risks, and recovery state.
-  Keep the response-only Note outside the review subject.
+  and protected paths, and checks through Delegation. Apply Wrap-up Phase 2 and [Memory](../memory/SKILL.md),
+  then self-review the Memory CRUD, durable `reports/note/`, retained paths, indexes, links, and complete
+  worktree diff.
+- Verify the actual pre-Git tree, including the durable Note when Memory ran, task commits, checks, heads,
+  merge plan, authority, risks, and recovery state. Keep the response-only Git/recovery Note outside the review
+  subject.
 - Stop at the exact recoverable state when any promised closure result, containment check, authority, or
   verification is missing; do not ask a design question or invent a replacement route.
 
 #### 3.3 Run closure REVIEW
 
 - Freeze the actual closure tree, name `review-depth` `by-owning-stage`, and review it with the Memory
-  diff, accepted commits, checks, merge plan, authority, exclusions, risks, and recovery paths. Use one fresh
-  matching-specialist agent and one Partner wrapper per remaining runtime at
-  `wrap-up/review/iteration-N/<runtime>/{report.md,checklist.md}` with write set `runtime-directory`; if
-  that set is empty, launch nothing, a missing write set is `writing-path-only` and cannot complete REVIEW,
-  and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+  diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
+  risks, and recovery paths. Use one fresh matching-specialist agent and one Partner wrapper per remaining
+  runtime at `wrap-up/review/iteration-N/<runtime>/{report.md,checklist.md}` with write set
+  `runtime-directory`; if that set is empty, launch nothing, a missing write set is `writing-path-only` and
+  cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only: PASS when criteria are met with no correction
   pending, REVISE when an authorized correction remains and then return to Phase 3 DISCUSSION and repeat the
   changed WORK, and FAIL when a safe correction is unavailable. A runtime directory that holds only one of
@@ -303,9 +305,10 @@ Continue.
   next-phase gate.
 - For Complete, activate `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
   Continue or Stop only; do not start `P3 · Note` from the file or from the absence
-  of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's
-  [Note template](../wrap-up/templates/note.md) from the verified terminal state and complete `P3 · Note` only
-  when it agrees with the handoff and result; publication and cleanup remain separate authorized actions.
+  of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's response-only
+  [Note template](../wrap-up/templates/note.md) from the verified Git and recovery state, citing the durable
+  Note path or `None`, and complete `P3 · Note` only when it agrees with the handoff and result; publication
+  and cleanup remain separate authorized actions.
 
 ## References
 
@@ -328,7 +331,7 @@ Continue.
 | [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
 | [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
 | [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
-| [Wrap-up](../wrap-up/SKILL.md) | Owns Memory closure, commit, merge, Note delivery, and recovery. |
+| [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable work Note, commit, merge, Git/recovery Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

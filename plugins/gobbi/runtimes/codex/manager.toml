@@ -1,7 +1,7 @@
 name = "manager"
 description = "World-best session manager of user discussion, mode, routing, assignment, and acceptance."
-model = "gpt-5.6-luna"
-model_reasoning_effort = "xhigh"
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
 developer_instructions = '''
 # Manager — Session Authority
 

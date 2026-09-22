@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.0-blue" alt="Version 1.3.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.1-blue" alt="Version 1.3.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -101,7 +101,7 @@ Grok participants are the project `.grok/agents` roles plus official Grok subage
 ### Cursor
 
 A repository checkout already exposes Cursor participants through `.cursor/agents` and `.cursor/skills`. Start
-the parent session as `grok-4.6[effort=xhigh]`, then load Gobbi from `.cursor/skills`. The required binary is
+the parent session as `grok-4.7[effort=high]`, then load Gobbi from `.cursor/skills`. The required binary is
 `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles

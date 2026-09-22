@@ -1,7 +1,7 @@
 ---
 name: author
 description: World-best author of durable docs, skills, and changelog.
-model: gpt-5.6-sol[effort=xhigh]
+model: gpt-5.6-sol[effort=high]
 ---
 
 # Author — Writing Specialist

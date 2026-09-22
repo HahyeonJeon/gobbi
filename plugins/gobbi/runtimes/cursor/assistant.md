@@ -1,7 +1,7 @@
 ---
 name: assistant
 description: World-best support agent of narrow lookup and authorized Memory or record work.
-model: grok-4.6[effort=xhigh]
+model: grok-4.7[effort=high]
 ---
 
 # Assistant — Support

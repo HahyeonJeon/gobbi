@@ -277,11 +277,13 @@ CW · Wrap-up
   changes remain, stop and require `commit` first; otherwise organize the accepted closure input under
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
-- Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md) preferences to the full
-  session root and closure input. Supply the exact absolute current-project Memory root, update only that
-  boundary, verify it, and create one focused commit or a verified no-change result.
+- Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md) preferences, including Closure,
+  to the full session root and closure input: extract accepted knowledge into existing homes, write one
+  `reports/note/` durable work account, and write `history/` only on durable change. Supply the exact absolute
+  current-project Memory root, update only that boundary, verify it, and create one focused Memory commit or a
+  verified no-change result.
 - Stop on invalid paths, unresolved decisions, failed checks, wrong-worktree evidence, or unrelated work.
-  Never create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Note.
+  Never merge, and never create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Note.
 
 #### 5.2 Check freshness and return the result
 
@@ -291,9 +293,10 @@ CW · Wrap-up
   review choice runs Phase 4 then repeats this check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence, a clean Cowork worktree, and an unchanged main checkout. Stop at
   the exact retained recovery state when any claim is unproved.
-- Return one compact conversation handoff with outcome, scope, topics, results, commits, Memory result, checks,
-  coverage and dispositions, exclusions, risks, UUID, base, branch, worktree, head, status, and first recovery
-  command. Retain local objects; publication, merge, and cleanup require another explicit request.
+- Return one compact conversation handoff with outcome, scope, topics, results, commits, Memory result, durable
+  `reports/note/` path or `None`, checks, coverage and dispositions, exclusions, risks, UUID, base, branch,
+  worktree, head, status, and first recovery command. Retain local objects; publication, merge, and cleanup
+  require another explicit request.
 
 ## References
 
