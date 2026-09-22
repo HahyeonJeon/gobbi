@@ -15,6 +15,7 @@ their IDE. The manager does not render the diff. The call is the confirmation.
   the normal case, or one commit per accepted topic when the dirty set spans more than one topic.
 - Executors own those implementation commits once authority is granted.
 - Wrap-up Memory commits stay on `wrap up`.
+- Cowork wrap-up extracts accepted knowledge through [Wrap-up memory](wrap-up.md) and writes one `reports/note/` account. It does not load the Wrap-up skill.
 
 ## Review and wrap-up interaction
 

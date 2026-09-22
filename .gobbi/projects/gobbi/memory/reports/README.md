@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Skill redesign and v1.3.1](note/2026-09-22-skill-redesign.md)
 - [Gobbi v1.3.0](note/2026-09-21-gobbi-v1-3-0.md)
 - [Coding skill family](note/2026-09-02-coding-skill-family.md)
 - [Ideation and Planning evaluation depth](note/2026-08-30-evaluation-depth.md)
