@@ -10,21 +10,20 @@
 
 ```text
 {Problem and Desired Outcome}
-├── {1} Architecture and Structure
+├── {1} Conceptual Definition
 │   └── {1.1} {Child Topic}
-├── {2} Strategy and Policy
-├── {3} Pattern and Class Diagram
-└── {4} Public Contract
+├── {2} Class and Method Design
+└── {3} Codebase Structure
 ```
 
-{Place this tree once, in the first listed part. Parent topics are the Design headings in ladder order. Keep every heading. Record inherited or not-applicable when unscoped. The problem and outcome are the visual root, not a topic.}
+{Place this tree once, in the first listed part. Parent topics are the Design headings in level order. Keep every heading. Record inherited or not-applicable when unscoped. The problem and outcome are the visual root, not a topic.}
 
-## Topic {1} — Architecture and Structure
+## Topic {1} — Conceptual Definition
 
 > **Question:** {Material decision question.}<br>
 > **Parent:** `{Root}`<br>
 > **Status:** `{Resolved, Deferred, or Reopened}`<br>
-> **Design:** `Architecture and Structure`<br>
+> **Design:** `Conceptual Definition`<br>
 > **Requirements:** {Requirement heading names in the authoritative part. Names only.}<br>
 > **Study:** `S1`, `S2`
 
@@ -38,13 +37,9 @@
 |---|---|---|---|---|
 | `{option}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
 
-#### Suggestions and Critique
-
-{Keep supported suggestions and critique separate. Resolve or expose conflict. Record one focused follow-up when it could change the recommendation.}
-
 ### Decision
 
-{State the selected direction, the user decision when required, why it won, and what evidence would change it. Phase 3 writes this Decision into the Design heading named above.}
+{State the confirmed direction, why it won, and what evidence would change it. Phase 3 writes this Decision into the Design heading named above only after the user confirms the design.}
 
 #### Consequences
 

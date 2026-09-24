@@ -52,20 +52,16 @@
 
 ## Design
 
-{State the accepted idea: what to do and how to do it, to the depth planning and execution need. These headings are the code-design ladder in dependency order. Fill each heading only when that object is in the supplied design-and-decision scope. Keep the headings. An empty unscoped section is not an in-contract absence.}
+{These headings are the confirmed Phase 2 design, in order. Phase 3 writes them after the user confirms. Fill each heading only when that object is in scope. Keep the headings. An empty unscoped section is not an in-contract absence.}
 
-### Architecture and Structure
+### Conceptual Definition
 
-{System context, responsibilities, logical units, boundaries, dependency direction, integration seams, control and data flow, trust boundaries, failure containment, and data ownership.}
+{What will be implemented, and the vocabulary and terms for that target. This prepares class and method design. No classes, methods, files, or directories.}
 
-### Strategy and Policy
+### Class and Method Design
 
-{Behavior, state transitions, error and recovery, data consistency, concurrency, retention, migration, security, privacy, compatibility, performance, and observability. Keep strategy above construction.}
+{Patterns selected from design-pattern.md, the classes, the methods, responsibilities, boundaries, relationships, and each participant's role. Include the operations, inputs, outputs, errors, and failure behavior a caller must rely on. When no pattern applies, record why. Do not place files or directories here.}
 
-### Pattern and Class Diagram
+### Codebase Structure
 
-{Selected pattern and the class or equivalent structural diagram from the accepted responsibilities and policies. When classes do not apply, record why and which structure replaces them.}
-
-### Public Contract
-
-{Consumer examples, public operations, boundary-visible data, inputs, outputs, effects, ownership, invariants, errors, and lifecycle. Exclude private construction.}
+{Project directories and files that hold the accepted classes and methods. Reopen Class and Method Design when a file placement shows that level cannot stand.}
