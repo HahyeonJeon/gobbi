@@ -107,8 +107,8 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
   [discussion](templates/ideation/discussion/discussion-index.md) templates.
 - Record each study as one `S{N}` block under `## Study`. Write each topic through `### Discussion`,
   `#### Options`, and `### Decision`. Do not add a suggestions or critique section.
-- Copy each confirmed Decision into Conceptual Definition, Class and Method Design, and Codebase Structure.
-  Keep actor need and outcome in Requirements Result. List every file from the root index. Add no unlisted file.
+- Copy each confirmed Decision only into the Design heading named on that topic. Keep actor need and
+  outcome in Requirements Result. List every file from the root index. Add no unlisted file.
 
 #### 3.3 Review and freeze
 
