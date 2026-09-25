@@ -1,7 +1,7 @@
 # {Work Name} — Task Hierarchy Part {NN}
 
 > **Index:** [Task Hierarchy](tasks-index.md)<br>
-> **Result:** [Coding Planning](../plan-index.md)<br>
+> **Result:** [Coding Planning](plan-index.md)<br>
 > **Covers:** {One coherent work-summary group or hierarchy branch.}
 
 {Keep only the applicable complete content groups below. Do not split one work-item block, group node, leaf
@@ -18,7 +18,7 @@ task, or table row across parts.}
 | Purpose | {Why this work is needed.} |
 | Scope | {What is included and excluded, and where the work stops.} |
 | Output | {What must exist or be observable when this work is complete.} |
-| Design | {The accepted code design and decisions that shape execution.} |
+| Design | {Link to the accepted design: the Ideation result, or the caller's topic contract when there was no Ideation. Do not restate it.} |
 | Hierarchy paths | {Every group or leaf path that traces this work item.} |
 
 {Repeat this work-item section as needed. A work item may trace several paths, and a coherent top-level group

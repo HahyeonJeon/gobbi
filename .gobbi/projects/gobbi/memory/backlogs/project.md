@@ -132,3 +132,68 @@ and assigning bootstrap to the selected Cowork or Workflow owner instead, withou
 **Context:** `packages/cli` was deleted when Gobbi moved to plugin-only distribution for v1.0.0; that
 deletion is the root cause analyzed in
 [`reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md`](../reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md).
+
+## Authoring and Design Execution handoff placeholders
+
+**Backlogged at:** 2026-09-25T15:10:31Z
+
+**What:** Replace the placeholder `handoff.md` in Authoring Execution and Design Execution. Coding Execution
+deleted its copy and returns the Delegation Handoff with a short list of Execution fields.
+
+**Why backlogged:** The 2026-09-25 coding review found the same defect in the sibling families. The topic
+contract kept Authoring and Design out of scope.
+
+**Context:** Both files read "This file is a placeholder. The handoff fields are not written yet." See
+[Authoring Execution](../../skills/authoring/authoring-execution/SKILL.md), [Design
+Execution](../../skills/design/design-execution/SKILL.md), and [Coding
+Execution](../../skills/coding/coding-execution/SKILL.md) Step 5.1 for the Coding form.
+
+## Authoring and Design Ideation and Planning templates
+
+**Backlogged at:** 2026-09-25T15:10:31Z
+
+**What:** Decide whether Authoring and Design Ideation and Planning should match Coding: flat templates and
+flat results, no optional Requirements snapshot, and one level-label vocabulary.
+
+**Why backlogged:** Coding Ideation and Coding Planning made these changes on 2026-09-25. The topic contract
+kept the sibling families out of scope.
+
+**Context:** Authoring and Design Ideation keep nested `templates/ideation/` with `discussion/` and
+`requirements/` subdirectories and an optional Requirements snapshot. Authoring and Design Planning keep nested
+`templates/planning/` with `tasks/tasks-index.md` and `tasks/tasks-NN.md`. Authoring Ideation labels a level
+`inherited/current`, where Coding Ideation uses `Inherited`. See the [Authoring skill
+family](../design/feature/authoring-skill-family.md) and [Design skill family](../design/feature/design-skill-family.md).
+
+## Review gating wording outside Coding
+
+**Backlogged at:** 2026-09-25T15:10:31Z
+
+**What:** Replace "non-gating" Review wording outside Coding with the live contract: a domain Review derives a
+contract-gate verdict, and Cowork and Workflow gate on it. Reconcile the self-review wording at the same time.
+
+**Why backlogged:** The Coding root and Coding family design were corrected on 2026-09-25. The topic contract
+kept the Authoring and Design families and process memory out of scope.
+
+**Context:** "Non-gating" remains in the [Authoring](../../skills/authoring/SKILL.md) and
+[Design](../../skills/design/SKILL.md) root Intros, in the [Authoring skill
+family](../design/feature/authoring-skill-family.md) and [Design skill
+family](../design/feature/design-skill-family.md) designs, and in [Identity-and-load role
+contracts](../design/process/identity-and-load-role-contracts.md), which also allows caller-permitted disclosed
+self-review. Coding Review requires a reviewer who did not design, author, or implement the target. See
+[Review](../design/process/evaluation.md).
+
+## Stale draft lines in Authoring and Design skills
+
+**Backlogged at:** 2026-09-25T15:10:31Z
+
+**What:** Remove the "This skill is a draft adapted from …" line from Authoring Planning, Authoring Review,
+Design Planning, and Design Review. In the two Review skills, also replace "prompts 3 and 4" with the prompt
+names.
+
+**Why backlogged:** Coding Planning and Coding Review dropped these lines on 2026-09-25. The topic contract
+kept Authoring and Design out of scope.
+
+**Context:** The line tells a cold reader the skill may not bind, and it names retired Planning and Evaluation
+skills. The Review prompt table has named rows, not numbers. See [Authoring
+Review](../../skills/authoring/authoring-review/SKILL.md) and [Design
+Review](../../skills/design/design-review/SKILL.md).

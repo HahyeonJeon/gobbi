@@ -4,10 +4,10 @@
 > **Subject:** Code artifacts and code changes<br>
 > **Applicability:** General Coding Review, Execution self-review, and independent review; the applying operation binds the exact artifact, revision, behavior, and affected surfaces under review<br>
 > **Purpose:** Provide one language-independent baseline for category-by-category code review across the project, design and development, and conditional product lifecycles<br>
-> **Scope:** Project Fit, Affected Surfaces, Project Structure, Architecture, Design Pattern, Abstraction, Data Model, Public API, Parameters, Modularization, Reusability, Performance, Optimization, Unintended Overengineering, Code Complexity, Readability, Vocabulary, Naming Convention, Docstring, Correctness, Testing, Verification, Delivery, Usability, Operations, and Compatibility<br>
+> **Scope:** Project Fit, Affected Surfaces, Project Structure, Architecture, Design Pattern, Abstraction, Data Model, Public API, Parameters, Modularization, Reusability, Performance, Optimization, Overengineering, Code Complexity, Readability, Vocabulary, Naming Convention, Docstring, Correctness, Testing, Verification, Delivery, Usability, Operations, and Compatibility<br>
 > **Exclusions:** Language-, framework-, platform-, domain-, and specialist-specific expectations unless the applying operation activates their owning source; Security, Privacy, Concurrency, Accessibility, Localization, Dependencies, Build, Packaging, Release, Deployment, Configuration, Observability, Migration, Deprecation, and Retirement remain overlays<br>
-> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Coding Execution](../coding-execution/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
-> **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product.<br>
+> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Coding Principles](../principles.md), [OOP Principles](../coding-object-oriented-programming/oop-principles.md), [SOLID](../coding-object-oriented-programming/solid.md), [Design Patterns](../coding-object-oriented-programming/design-pattern.md), [Coding Execution](../coding-execution/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
+> **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product. Apply an item that begins "In object-oriented code" only when the code defines or changes classes, interfaces, or inheritance.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -51,6 +51,8 @@
 - [ ] Code ordering inside a file conflicts with the project's accepted structure.
 - [ ] Code visibility does not match its structural owner.
 - [ ] The source, generator, inputs, output location, or regeneration owner is unclear for generated or derived code.
+- [ ] A directory holds only one file, and no project or framework layout requires it.
+- [ ] Directories nest more than two levels below the package root, and no project or framework layout requires it.
 
 #### Refactoring leaves the project structure worse
 
@@ -78,6 +80,8 @@
 - [ ] A recognizable design pattern conflicts with the accepted design.
 - [ ] A design pattern hides control, data, state, or failure flow that its consumers must understand.
 - [ ] Participants in one design pattern follow conflicting roles or lifecycle rules.
+- [ ] In object-oriented code, a design pattern answers no [present force](../coding-object-oriented-programming/SKILL.md#name-the-force-before-the-abstraction).
+- [ ] In object-oriented code, a design pattern is used where the "Check first" form in the [problem-sign table](../coding-object-oriented-programming/SKILL.md#match-the-problem-sign-not-the-pattern-name) solves the same problem.
 
 ### Abstraction
 
@@ -88,6 +92,16 @@
 - [ ] Consumer-specific branching makes one abstraction serve conflicting concepts.
 - [ ] An abstraction hides an invariant, effect, state, or failure that consumers must reason about.
 - [ ] The abstraction level forces current consumers to work above or below the concept boundary they need.
+- [ ] In object-oriented code, callers change an object's fields directly and repeat the rule that keeps them valid.
+- [ ] In object-oriented code, an interface or base class answers no [present force](../coding-object-oriented-programming/SKILL.md#name-the-force-before-the-abstraction).
+- [ ] In object-oriented code, an implementer or test double stubs interface methods that its callers never use.
+- [ ] In object-oriented code, high-level policy creates its own database, network, file, or clock object, so a test cannot replace it.
+
+#### Subtypes or variants cannot be substituted or added safely
+
+- [ ] In object-oriented code, a subclass exists only to reuse its base's code.
+- [ ] In object-oriented code, a subtype raises on, ignores, or narrows a method that its base type promises.
+- [ ] In object-oriented code, each new variant edits the same type tests or branch chains in several functions.
 
 ### Data Model
 
@@ -110,6 +124,8 @@
 - [ ] Public failure or recovery behavior is hidden from its consumer.
 - [ ] Overlapping public entry points leave the intended choice unclear.
 - [ ] A caller must inspect private implementation details to use the public surface correctly.
+- [ ] A public entry point has a [learning depth](../principles.md#intuitive-public-api) greater than 2.
+- [ ] Related public calls take the same input under a different name, position, or type.
 
 ### Parameters
 
@@ -135,6 +151,8 @@
 - [ ] A unit exposes more surface than its consumers need.
 - [ ] A unit cannot be understood or tested without unrelated parts of the system.
 - [ ] A dependency cycle makes unit ownership or change order unclear.
+- [ ] A unit's one-sentence [conceptual definition](../principles.md#modularization) needs "and".
+- [ ] A catch-all unit, such as a `utils`, `common`, or `helpers` directory, holds functions with no shared conceptual definition.
 
 ### Reusability
 
@@ -143,6 +161,7 @@
 - [ ] Current consumers duplicate one behavior or domain rule in implementations that must agree but can drift independently.
 - [ ] Shared code branches by consumer because it combines different responsibilities.
 - [ ] Reuse forces independent consumers to coordinate unrelated changes.
+- [ ] A shared unit depends on caller-specific context that it does not take as an explicit input.
 
 ### Performance
 
@@ -162,7 +181,7 @@
 - [ ] The optimization shifts material cost outside its target workload.
 - [ ] The optimization's measured benefit is disproportionate to its added non-performance cost.
 
-### Unintended Overengineering
+### Overengineering
 
 #### A mechanism has no support from current requirements or observed need
 
@@ -174,6 +193,9 @@
 - [ ] A forwarding layer adds no ownership, policy, transformation, or stable boundary.
 - [ ] A mechanism remains after its load-bearing current-need premise is disproved.
 - [ ] A mechanism that serves no current execution or supported path remains in the affected surface.
+- [ ] Inlining a unit would not lengthen its callers, repeat a rule, or expose a secret, as the [Simplicity](../principles.md#simplicity) inline test asks.
+- [ ] A parameter or hook has no current caller that supplies or uses it.
+- [ ] A class has one method and no state, and no caller or framework needs it to be a class.
 
 ### Code Complexity
 
@@ -196,6 +218,8 @@
 - [ ] Local formatting obscures code grouping or flow.
 - [ ] An internal comment conflicts with the code it describes.
 - [ ] Internal comments restate syntax while a non-obvious reason or constraint remains hidden.
+- [ ] A unit's input or output has no declared type where the language supports one.
+- [ ] A dictionary or map with known keys stands in for a small typed record.
 
 ### Vocabulary
 
@@ -205,6 +229,7 @@
 - [ ] One term names different domain concepts in the affected surface.
 - [ ] A term describes an accidental mechanism instead of the domain concept it represents.
 - [ ] A term misstates the responsibility, state, value, or effect it names.
+- [ ] A new term is coined where the request, specification, data, existing code, or domain already has one.
 
 ### Naming Convention
 
@@ -214,6 +239,10 @@
 - [ ] An abbreviation or spelling conflicts with the applicable project or language convention.
 - [ ] A visibility or namespace name conflicts with the role of the identified code.
 - [ ] Definitions and uses apply inconsistent names to the same program role.
+- [ ] A name repeats context that its owner, module, or directory already states.
+- [ ] A name uses an empty word, such as `Manager`, `Helper`, `Data`, or `process`.
+- [ ] A name keeps a word whose removal leaves the name true and unique in its scope.
+- [ ] A file or module name shadows a standard-library module.
 
 ### Docstring
 

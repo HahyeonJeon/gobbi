@@ -1,7 +1,7 @@
 # {Work Name} — Task Hierarchy
 
 > **Document role:** Authoritative task-hierarchy view index<br>
-> **Result:** [Coding Planning](../plan-index.md)<br>
+> **Result:** [Coding Planning](plan-index.md)<br>
 > **Reading rule:** Read every part once in the order below. A missing, duplicate, or unlisted task part makes this view incomplete.<br>
 > **View boundary:** This view decomposes work. It does not assign agents or define execution order.
 

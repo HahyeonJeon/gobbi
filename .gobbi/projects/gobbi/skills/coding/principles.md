@@ -9,7 +9,8 @@ the other entries shape each unit that remains.
 
 **Description.** Write the least mechanism that meets a current need. Most overengineered code should not
 exist: units that only forward calls, wrappers with one use, classes that hold one function, and options kept
-for later. Each adds a name to learn and a place to change, and none adds behavior. Apply two tests:
+for later. Each adds a name to learn and a place to change, and none adds behavior. A class with one method and
+no state is usually better as a function. Apply two tests:
 
 - **Inline test.** Ask of each unit: "If I inline it into its callers, do they get longer, repeat a rule, or
   expose a secret?" A secret is the one decision or fact that only this unit changes. If all three answers are
@@ -34,7 +35,8 @@ assert tax(Decimal("25.00")) == Decimal("2.50")
 ```
 
 **Anti-pattern: a class that only forwards calls, a class that holds one function, and an option with no
-caller.** Inlining both classes gives the good example.
+caller.** Inlining `TaxService`, deleting `rounding`, and turning `TaxCalculator` into a function with a
+constant rate gives the good example.
 
 ```python
 from decimal import Decimal
@@ -65,8 +67,9 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 **Description.** Modularization gives each unit one conceptual definition, one responsibility, one boundary,
 and one-way relationships. A reader then finds where a change goes from the definition alone, and the unit
 can change its private parts without breaking callers. Before you create a directory, file, public class,
-or public function, write one line for each term. If a line fails, split, merge, or move the unit. Private
-helpers need only a good name.
+or public function, write one line for each term in the design record: the Ideation design, or the Execution
+handoff when there was no Ideation. Source code does not carry these lines as comments. If a line fails,
+split, merge, or move the unit. Private helpers need only a good name.
 
 - **Conceptual definition:** one sentence in domain words, with no "and".
 - **Responsibility:** its secret, the one decision or fact that only this unit changes.
@@ -83,21 +86,23 @@ The same terms set the defaults for directories and files. An existing project o
 - A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
   long.
 
-**Good example.** A flat package, and a module that passes all four lines and shares one public name.
+**Good example.** A flat package, and a module that passes all four lines and shares one public name. The
+design record gives these lines for `pricing.py`:
+
+- **Conceptual definition:** the price of one line.
+- **Responsibility:** how a line's tax is computed.
+- **Boundary:** hides `_TAX_RATE` and shares only `quote`; never imports `cart` or `checkout`.
+- **Relationship:** uses nothing in `shop`; `checkout` uses `quote`.
 
 ```text
 shop/
   cart.py       # the items a shopper will buy
-  pricing.py    # the price of one order line; uses nothing in shop
+  pricing.py    # the price of one line; uses nothing in shop
   checkout.py   # charging for a cart; uses cart and pricing
 ```
 
 ```python
 # pricing.py
-# Conceptual definition: the price of one order line.
-# Responsibility: the tax rate and rounding.
-# Boundary: hides _TAX_RATE and shares only quote; never imports cart or checkout.
-# Relationship: uses nothing in shop; checkout uses quote.
 from decimal import Decimal
 
 __all__ = ["quote"]
@@ -148,7 +153,7 @@ a sign of reuse forced too early.
 from collections.abc import Callable
 
 
-def retry[T](call: Callable[[], T], attempts: int = 3) -> T:
+def retry[T](call: Callable[[], T], attempts: int) -> T:
     for _ in range(attempts - 1):
         try:
             return call()
@@ -167,7 +172,7 @@ def flaky() -> str:
     return "ok"
 
 
-assert retry(flaky) == "ok" and len(calls) == 3
+assert retry(flaky, attempts=3) == "ok" and len(calls) == 3
 ```
 
 **Anti-pattern: each new caller added a flag, so every caller now depends on every other caller's case.**
@@ -262,8 +267,8 @@ not already say, such as the unit in `total_cents`. Check each new name, file, a
   `mgr` or `cfg`. Casing follows the language.
 - **No empty words.** Use no `Manager`, `Helper`, `Data`, `process`, `utils`, `common`, or `misc`.
 - **Files and directories.** Use one word by default. Use two only when the concept itself is two words, such
-  as `line_item.py` or `rate_limit.py`, or when one word is ambiguous among siblings. Never abbreviate to reach
-  one word, and do not shadow a standard-library module, such as `random.py`.
+  as `rate_limit.py`, or when one word is ambiguous among siblings. Never abbreviate to reach one word, and do
+  not shadow a standard-library module, such as `random.py`.
 
 **Good example.** In `billing/invoice.py`, each name adds one fact its container does not state.
 
@@ -274,7 +279,7 @@ from decimal import Decimal
 
 @dataclass(frozen=True)
 class Line:
-    price: Decimal
+    unit_price: Decimal
     quantity: int
 
 
@@ -283,7 +288,7 @@ class Invoice:
     lines: tuple[Line, ...]
 
     def total(self) -> Decimal:
-        return sum((line.price * line.quantity for line in self.lines), Decimal(0))
+        return sum((line.unit_price * line.quantity for line in self.lines), Decimal(0))
 
 
 assert Invoice((Line(Decimal("2.50"), 4),)).total() == Decimal("10.00")
@@ -297,21 +302,21 @@ from decimal import Decimal
 
 
 @dataclass(frozen=True)
-class InvoiceLineItemData:
-    line_item_unit_price: Decimal
-    line_item_quantity: int
+class InvoiceLineData:
+    invoice_line_unit_price: Decimal
+    invoice_line_quantity: int
 
 
 @dataclass(frozen=True)
 class InvoiceDataManager:
-    invoice_line_items_list: tuple[InvoiceLineItemData, ...]
+    invoice_lines_list: tuple[InvoiceLineData, ...]
 
     def calculate_invoice_total_amount(self) -> Decimal:
-        items = self.invoice_line_items_list
-        return sum((i.line_item_unit_price * i.line_item_quantity for i in items), Decimal(0))
+        lines = self.invoice_lines_list
+        return sum((i.invoice_line_unit_price * i.invoice_line_quantity for i in lines), Decimal(0))
 
 
-manager = InvoiceDataManager((InvoiceLineItemData(Decimal("2.50"), 4),))
+manager = InvoiceDataManager((InvoiceLineData(Decimal("2.50"), 4),))
 assert manager.calculate_invoice_total_amount() == Decimal("10.00")
 ```
 
@@ -330,37 +335,36 @@ first successful call:
 - Keep learning depth at 2 or less. A chain such as public API → second API → argument dataclass → nested
   argument type is too deep, however natural each step looks alone.
 
-**Good example.** The first call needs only `Client` (depth 1). A caller who tunes retries learns one flat
-type, `Retry` (depth 2).
+**Good example.** The first call needs only `Client` (depth 1). A caller who tunes retries passes one keyword
+argument, so the depth stays 1.
 
 ```python
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True)
-class Retry:
-    attempts: int = 3
-    base_seconds: float = 0.5
-    factor: float = 2.0
+def _send(url: str) -> str:  # stands in for the network call
+    return f"200 {url}"
 
 
 class Client:
-    def __init__(self, base_url: str, *, retry: Retry = Retry()) -> None:
+    def __init__(self, base_url: str, *, attempts: int = 3) -> None:
         self.base_url = base_url
-        self.retry = retry
+        self.attempts = attempts
 
     def get(self, path: str) -> str:
-        return self.base_url + path
+        for _ in range(self.attempts - 1):
+            try:
+                return _send(self.base_url + path)
+            except TimeoutError:
+                pass
+        return _send(self.base_url + path)
 
 
 client = Client("https://api.example.com")
-assert client.get("/users") == "https://api.example.com/users"
-tuned = Client("https://api.example.com", retry=Retry(attempts=5))
-assert tuned.retry.attempts == 5
+assert client.get("/users") == "200 https://api.example.com/users"
+tuned = Client("https://api.example.com", attempts=5)
+assert tuned.get("/users") == "200 https://api.example.com/users"
 ```
 
 **Anti-pattern: a depth-4 chain before the first call.** The good example above is its fix: defaults remove
-the required types, and the remaining option type is flat.
+the required types, and a keyword argument replaces the nested option types.
 
 ```python
 from dataclasses import dataclass

@@ -61,7 +61,8 @@ assert test.sent == ["ada@example.com: due 2026-01-01"]
 ### Builder Pattern
 
 The Builder Pattern assembles one complex object through named steps and checks the whole object once, in
-`build()`. Here `where` may repeat, so keyword arguments alone cannot express the query.
+`build()`. Here separate code paths add conditions one at a time, and no half-built query escapes before
+`build()` checks it.
 
 ```python
 from dataclasses import dataclass
@@ -95,15 +96,23 @@ class QueryBuilder:
         return Query(self._table, tuple(self._filters), self._limit)
 
 
-query = QueryBuilder("orders").where("paid").where("total > 10").limit(5).build()
-assert query.filters == ("paid", "total > 10")
+def paid_orders(min_total: int | None) -> Query:
+    builder = QueryBuilder("orders").where("paid").limit(5)
+    if min_total is not None:  # a condition only this path adds
+        builder.where(f"total > {min_total}")
+    return builder.build()
+
+
+assert paid_orders(10).filters == ("paid", "total > 10")
+assert paid_orders(None).filters == ("paid",)
 ```
 
 ### Factory Method Pattern
 
 The Factory Method Pattern lets a subclass choose which object a base class's workflow creates, through one method
 the subclass overrides. Here `load` is the shared workflow, and each subclass's `parser` method is the factory
-method.
+method. The subclasses exist because `load_file` uses each one only through `ConfigLoader`, and each one states
+both its file suffix and its parser.
 
 ```python
 import json
@@ -119,6 +128,8 @@ def parse_env(text: str) -> dict[str, str]:
 
 
 class ConfigLoader(ABC):
+    suffix: str
+
     def load(self, text: str) -> dict[str, str]:
         data = self.parser()(text)
         return {key.strip().lower(): value.strip() for key, value in data.items()}
@@ -128,17 +139,29 @@ class ConfigLoader(ABC):
 
 
 class EnvLoader(ConfigLoader):
+    suffix = ".env"
+
     def parser(self) -> Parse:
         return parse_env
 
 
 class JsonLoader(ConfigLoader):
+    suffix = ".json"
+
     def parser(self) -> Parse:
         return json.loads
 
 
-assert EnvLoader().load("HOST = db\n") == {"host": "db"}
-assert JsonLoader().load('{"Port": "5432"}') == {"port": "5432"}
+def load_file(name: str, text: str, loaders: list[ConfigLoader]) -> dict[str, str]:
+    for loader in loaders:
+        if name.endswith(loader.suffix):
+            return loader.load(text)
+    raise ValueError(f"no loader for {name}")
+
+
+loaders: list[ConfigLoader] = [EnvLoader(), JsonLoader()]
+assert load_file("app.env", "HOST = db\n", loaders) == {"host": "db"}
+assert load_file("app.json", '{"Port": "5432"}', loaders) == {"port": "5432"}
 ```
 
 ### Prototype Pattern
@@ -247,8 +270,9 @@ assert checkout(AcmePayments(AcmePayClient()), Decimal("12.50")) == "ch_1250"
 ### Bridge Pattern
 
 The Bridge Pattern splits a concept into two sides that vary on their own, such as what a document says and how it
-is rendered. Here two documents and two renderers take four classes, and a third of each makes six classes, not
-nine.
+is rendered. Here a receipt shows one total, while an invoice shows one line per item and a due date; each
+document works with either renderer. Two documents and two renderers take four classes, and a third of each makes
+six classes, not nine.
 
 ```python
 from dataclasses import dataclass
@@ -279,21 +303,26 @@ class HtmlRenderer:
 @dataclass
 class Receipt:  # abstraction: holds any renderer
     renderer: Renderer
+    total: str
 
-    def show(self, total: str) -> str:
-        return "\n".join([self.renderer.title("Receipt"), self.renderer.line(f"Paid {total}")])
+    def show(self) -> str:
+        return "\n".join([self.renderer.title("Receipt"), self.renderer.line(f"Paid {self.total}")])
 
 
 @dataclass
 class Invoice:
     renderer: Renderer
+    items: list[str]
+    due: str
 
-    def show(self, total: str) -> str:
-        return "\n".join([self.renderer.title("Invoice"), self.renderer.line(f"Due {total}")])
+    def show(self) -> str:
+        items = [self.renderer.line(item) for item in self.items]
+        return "\n".join([self.renderer.title("Invoice"), *items, self.renderer.line(f"Due {self.due}")])
 
 
-assert Receipt(TextRenderer()).show("9.00") == "RECEIPT\n- Paid 9.00"
-assert Invoice(HtmlRenderer()).show("9.00") == "<h1>Invoice</h1>\n<p>Due 9.00</p>"
+assert Receipt(TextRenderer(), "9.00").show() == "RECEIPT\n- Paid 9.00"
+invoice = Invoice(HtmlRenderer(), ["pen 1.50", "pad 3.00"], "2026-04-01")
+assert invoice.show() == "<h1>Invoice</h1>\n<p>pen 1.50</p>\n<p>pad 3.00</p>\n<p>Due 2026-04-01</p>"
 ```
 
 ### Composite Pattern
@@ -361,7 +390,7 @@ class FlakyFetcher:  # concrete component: fails on the first call
 
 
 class Retrying:  # decorator
-    def __init__(self, inner: Fetcher, attempts: int = 3) -> None:
+    def __init__(self, inner: Fetcher, attempts: int) -> None:
         self._inner = inner
         self._attempts = attempts
 
@@ -374,7 +403,7 @@ class Retrying:  # decorator
         return self._inner.fetch(url)
 
 
-assert Retrying(FlakyFetcher()).fetch("/a") == "body of /a"
+assert Retrying(FlakyFetcher(), attempts=3).fetch("/a") == "body of /a"
 ```
 
 ### Facade Pattern
@@ -699,8 +728,8 @@ assert isinstance(doc.state, Published)
 ### Strategy Pattern
 
 The Strategy Pattern puts interchangeable algorithms behind one operation and lets the caller choose which one to
-use. Here `total` calls the chosen `TaxRule`, and `RateTax` is a class, not a bare function, because it holds its
-rate.
+use. Here `total` calls the chosen `Discount`, and the two discounts compute their amounts by different rules,
+so no single parameter could replace them.
 
 ```python
 from dataclasses import dataclass
@@ -708,29 +737,33 @@ from decimal import Decimal
 from typing import Protocol
 
 
-class TaxRule(Protocol):
-    def amount(self, subtotal: Decimal) -> Decimal: ...
+class Discount(Protocol):
+    def amount(self, prices: list[Decimal]) -> Decimal: ...
 
 
 @dataclass(frozen=True)
-class RateTax:
+class PercentOff:
     rate: Decimal
 
-    def amount(self, subtotal: Decimal) -> Decimal:
-        return subtotal * self.rate
+    def amount(self, prices: list[Decimal]) -> Decimal:
+        return sum(prices, Decimal(0)) * self.rate
 
 
-class ExportTax:
-    def amount(self, subtotal: Decimal) -> Decimal:
-        return Decimal(0)
+@dataclass(frozen=True)
+class CheapestFree:
+    min_items: int  # the cheapest item is free when the cart has at least this many items
+
+    def amount(self, prices: list[Decimal]) -> Decimal:
+        return min(prices) if prices and len(prices) >= self.min_items else Decimal(0)
 
 
-def total(subtotal: Decimal, tax: TaxRule) -> Decimal:
-    return subtotal + tax.amount(subtotal)
+def total(prices: list[Decimal], discount: Discount) -> Decimal:
+    return sum(prices, Decimal(0)) - discount.amount(prices)
 
 
-assert total(Decimal(100), RateTax(Decimal("0.05"))) == Decimal(105)
-assert total(Decimal(100), ExportTax()) == Decimal(100)
+prices = [Decimal(30), Decimal(10), Decimal(20)]
+assert total(prices, PercentOff(Decimal("0.10"))) == Decimal(54)
+assert total(prices, CheapestFree(min_items=3)) == Decimal(50)
 ```
 
 ### Template Method Pattern

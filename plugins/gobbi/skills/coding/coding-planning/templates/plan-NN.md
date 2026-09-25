@@ -1,7 +1,7 @@
 # {Work Name} — Plan Part {NN}
 
 > **Index:** [Plan](plan-index.md)<br>
-> **Source:** [Task Hierarchy](tasks/tasks-index.md)<br>
+> **Source:** [Task Hierarchy](tasks-index.md)<br>
 > **Covers:** {One coherent ordered set of complete task groups.}
 
 {Keep only the applicable complete content groups below. Do not split one task group or table row across
@@ -17,7 +17,7 @@ parts.}
 | Purpose | {Why the work is needed.} |
 | Scope | {The included boundary and material exclusions.} |
 | Output | {What must exist or be observable after all task groups execute.} |
-| Design | {The accepted code design and decisions that shape execution.} |
+| Design | {Link to the accepted design: the Ideation result, or the caller's topic contract when there was no Ideation. Do not restate it.} |
 | Grouping | {Why these are the fewest dependency-valid, independently verifiable, reviewable, and safe task groups.} |
 
 ## Shared Context
@@ -61,7 +61,7 @@ result inconsistent.}
 - **Group outcome:** {The owned observable outcome this task group must produce.}
 - **Stop:** {Where this task group's responsibility ends and what it must leave unspecified.}
 - **Constraints and authority:** {The accepted constraints and authority limits that govern this task group.}
-- **Accepted design:** {The accepted code design and decisions that shape execution.}
+- **Accepted design:** {Link to the accepted design: the Ideation result, or the caller's topic contract when there was no Ideation. Do not restate it.}
 - **Writer frontier:** {The code files, tests, and run/build config this task group may change.}
 - **Handoffs:** {Outputs received from prerequisite groups and outputs passed to dependent groups.}
 - **Verification:** {That the observable group outcome exists, not a test implementation, command list, or method.}

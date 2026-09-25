@@ -11,11 +11,13 @@ that keep the data valid live in one place. When any code can write a field, eve
 rule, and one missed writer breaks it. Callers also depend on the field layout, so the class cannot change how
 it stores data. A plain record with no rule to protect may keep public fields.
 
-**Good example.** The balance can change only through `withdraw`, which checks the rule.
+**Good example.** Only the constructor and `withdraw` write the balance, and both keep it at zero or more.
 
 ```python
 class Account:
     def __init__(self, balance: int = 0) -> None:
+        if balance < 0:
+            raise ValueError(f"cannot open with {balance}")
         self._balance = balance
 
     @property
@@ -59,8 +61,8 @@ assert account.balance == -430
 
 **Description.** A type exposes what an operation does and hides how it does it. The caller uses a name and a
 promise, not the steps behind them. Callers then stay unchanged when the steps change, and a reader thinks at
-one level at a time. An abstraction that hides nothing, such as an interface with one implementation, only
-adds a name to learn.
+one level at a time. An abstraction that hides nothing only adds a name to learn, which is why an interface
+with one implementation is usually not worth its cost.
 
 **Good example.** Callers ask one question, `allow()`, and never see the time window.
 
@@ -179,8 +181,8 @@ assert stack.top() == 1  # the most recent push was 2
 
 **Description.** Different types answer the same call in their own way. The caller makes the call and does not
 check which type it holds, so a new type needs a new class, not an edit to every function that tests types.
-When the set of types is closed and new operations keep arriving, one `match` per operation is the better form
-(see [Visitor Pattern](design-pattern.md#visitor-pattern)).
+When the set of types is closed and new operations keep arriving, one `match` per operation is the better form;
+the [Visitor Pattern](design-pattern.md#visitor-pattern) is the class form of the same choice.
 
 **Good example.** `total_area` works for any shape, including shapes added later.
 

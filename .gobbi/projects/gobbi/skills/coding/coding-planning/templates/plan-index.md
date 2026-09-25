@@ -9,7 +9,7 @@
 
 | View | Description |
 |---|---|
-| [Tasks](tasks/tasks-index.md) | Required top-down work decomposition and leaf-task boundaries. |
+| [Tasks](tasks-index.md) | Required top-down work decomposition and leaf-task boundaries. |
 
 ## Plan Parts
 

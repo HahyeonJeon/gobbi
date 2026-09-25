@@ -10,10 +10,6 @@ skill-type: operation
 Coding Review binds and freezes one code subject, reviews it without a checklist, prepares and runs a
 review-owned working checklist, reconciles, and writes `report.md` plus working `checklist.md`.
 Use it after one exact stable code subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh matching-specialist agent and does not reuse the producer. It does not modify
-the target, source checklists, or decision state.
-
-This skill is a draft adapted from Evaluation.
 
 ## Principles
 
@@ -72,9 +68,17 @@ limit causes and verdicts to what the evidence supports.
   iteration.
 - Bind the exact artifact, state, version, or content hash; scope; intended results;
   caller-supplied decision criteria; both review-owned paths: `report.md` and working
-  `checklist.md`; and any caller-supplied `review-depth`. Confirm that neither path
-  overlaps the target or a source-owned input, and that the reviewing agent does not write
+  `checklist.md`; and any caller-supplied `review-depth` from this table. Confirm that neither
+  path overlaps the target or a source-owned input, and that the reviewing agent does not write
   `gate.md`.
+
+  | `review-depth` | In-contract bar | Baseline checklist |
+  |---|---|---|
+  | `ideation-design` | Goal, decisions, boundaries, constraints, work strategy, indexed integrity, and required discussion and user decisions. Not implementation completeness or document polish. | [Coding Ideation checklist](../coding-ideation/checklist.md) |
+  | `planning-decomposition` | Hierarchy coverage, grouping coherence, dependency-valid order, assignment contract, and indexed integrity. Not implementation recipes. | [Coding Planning checklist](../coding-planning/checklist.md) |
+  | `execution-implementation` | Implementation and task verification. | [Coding Review checklist](checklist.md) |
+  | `by-owning-stage` | A mixed subject: each artifact takes the row of the stage that owns it. | The baseline of each artifact's row |
+
 - Stop when identity, access, independence, or preservation cannot support a responsible
   review. Absent decision criteria allow a report and forbid a contract-gate verdict.
 
@@ -94,7 +98,9 @@ limit causes and verdicts to what the evidence supports.
 
 - Load, in this order, whichever exist: current design memory under the project's
   `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
-  accepted session design.
+  accepted session design. Then load [Coding Principles](../principles.md), and load
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the
+  target defines or changes classes, interfaces, or inheritance.
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
   gate criteria unless the caller listed them.
 - Freeze the exact artifact, state, version, or content hash only when that state is stable;
@@ -111,40 +117,39 @@ limit causes and verdicts to what the evidence supports.
   | Prompt | Ask about |
   |---|---|
   | **Project design and vision** | The frozen target contradicts or drifts from current design, vision, philosophy, architecture, or accepted session design. What those sources omit. |
-  | **Best version and gap** | The distance between this target and the best version a competent owner would produce for the same purpose and constraints. |
+  | **Best version and gap** | The distance between this target and the best version a competent owner would produce for the same purpose and constraints, measured against the Step 1.3 bar. |
   | **Failure, gaming, and cosmetic compliance** | The target fails, is exploited at a boundary, or satisfies the form of a requirement while missing the result. |
   | **Absences across the target's life** | What is missing rather than wrong: an unowned consequence, an unhandled state, or a later stage no one covers. |
 
 - Challenge the frozen target with the scenario spectrum in [Checklist](../../checklist/SKILL.md)
-  Step 2.3 by link, not as a working-checklist walk. Do this after prompts 3 and 4.
+  Step 2.3 by link, not as a working-checklist walk. Do this after the Failure and Absences prompts.
 - Do not load or traverse reusable checklist sources, caller-supplied checklists, prior
   review item lists, or the working checklist.
 
 #### 2.2 Record the critical-review results
 
-- Record labeled Problems, Improvements, Strengths, gaps, and coverage leads using the
+- Record Problems, Improvements, Strengths, gaps, and coverage leads using the
   [report template](report.md) field meanings. Coverage leads are study candidates
   for Phase 3, not working items.
-- Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
-  result, or `out-of-contract`, citing the governing source; when `review-depth` is bound,
-  in-contract labeling follows the supplied token and the target skill's purpose and boundary.
-  Missing implementation detail at `ideation-design` or `planning-decomposition` is not an
-  in-contract Problem, and Phase 2 may still record out-of-contract Improvements for polish;
-  a Problem that maps to a supplied criterion must be `in-contract`, and an out-of-contract
-  result with no cited governing source is not a Problem and must be demoted to an Improvement
-  or dropped.
 - Return to Phase 1 if this review changes the bound target or review boundary.
+
+#### 2.3 Label each result by contract
+
+- Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
+  result, or `out-of-contract`, citing the governing source. A Problem that maps to a supplied
+  criterion is `in-contract`.
+- When `review-depth` is bound, label `in-contract` only what its Step 1.1 bar and the target
+  skill's purpose and boundary cover. A result outside that bar, such as missing implementation
+  detail at `ideation-design`, may still be an out-of-contract Improvement.
+- Demote an out-of-contract result with no cited governing source to an Improvement, or drop it.
 
 ### Phase 3 — Prepare, freeze, run, and reconcile
 
 #### 3.1 Gather sources
 
-- Collect applicable project and caller-supplied checklists, including the
-  [Coding Review checklist](checklist.md) for code work.
-  When `review-depth` is bound, gather baselines only at that depth: a current indexed
-  Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its own
-  checklist, not this domain checklist, and mixed work under `by-owning-stage` applies
-  each matching baseline to the artifact class it owns.
+- Collect applicable project and caller-supplied checklists and one baseline: the
+  [Coding Review checklist](checklist.md) for code work or, when `review-depth` is bound, the
+  baseline checklist that the Step 1.1 table names for that token.
 - Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
   or rewrite a source during review.
 - Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its
@@ -152,21 +157,19 @@ limit causes and verdicts to what the evidence supports.
 
 #### 3.2 Re-challenge coverage and author study-backed items
 
-- Copy each source coverage account into the working checklist as a source claim. When a
-  reused source has no account, challenge the frozen target with the Checklist spectrum and
-  stage tables in [Checklist](../../checklist/SKILL.md) Steps 2.1–2.3, record the missing account
-  as a Limit, and do not invent a source account.
+- Copy each source coverage account into the working checklist as a source claim.
+- When a reused source has no account, challenge the frozen target with the Checklist spectrum
+  and stage tables in [Checklist](../../checklist/SKILL.md) Steps 2.1–2.3, and do not invent a
+  source account. Record the missing account as a Limit, except for the Coding Review, Coding
+  Ideation, and Coding Planning checklists, which omit it by design.
 - Treat Phase 2 coverage leads as study candidates, and study internal evidence and current
   primary external sources when they settle an uncovered expectation or risk. Load
-  [Checklist](../../checklist/SKILL.md) only before authoring a new working item, and add a
-  working item only from that study evidence.
-- Do not add items to fill a category, count, or account row.
+  [Checklist](../../checklist/SKILL.md) only before authoring a new working item, and add one
+  only from that study evidence, never to fill a category, count, or account row.
 
 #### 3.3 Freeze the working checklist
 
 - Confirm membership, wording, source identity, exclusions, copied accounts, and additions.
-  An item-free working checklist still has the required header, Sources, Coverage, Additions,
-  Limits, and an explicit no-applicable-items reason.
 - Confirm that no item has been answered and that items do not trace only to Phase 2 notes,
   then freeze membership, wording, and source identity. A working copy that traces only to
   Phase 2 notes has failed the checklist pass.
@@ -213,9 +216,9 @@ limit causes and verdicts to what the evidence supports.
 - Recheck the frozen target identity and both review-owned output paths. Return to Phase 1
   when the target changed or a path overlaps the target or a source-owned input.
 - Write `checklist.md` at the bound path with the required header, Sources, Coverage, Additions,
-  Limits, and item results. Do not copy it into a skill.
-- Confirm the file is a regular non-empty file. An item-free file still carries the required
-  header, Sources, Coverage, Additions, Limits, and no-applicable-items reason.
+  Limits, and item results, or an explicit no-applicable-items reason when it has no items. Do
+  not copy it into a skill.
+- Confirm the file is a regular non-empty file.
 
 #### 4.2 Write the report and return
 
@@ -227,8 +230,7 @@ limit causes and verdicts to what the evidence supports.
   Optional Improvement a concise evidence-backed suggestion. Cite internal paths and external
   sources beside the claims they support.
 - Return a short summary with the contract-gate verdict or reason none was issued, Problems,
-  Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence. Do
-  not read another reviewing agent's `report.md` or `checklist.md` from the same iteration.
+  Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence.
 
 ## References
 
@@ -236,7 +238,9 @@ limit causes and verdicts to what the evidence supports.
 |---|---|
 | [Checklist](../../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum this review challenges by link. |
 | [Coding Review checklist](checklist.md) | Coding Review-owned baseline source for reviewing general code-work quality. |
-| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Source for the Design Pattern and Abstraction items in the Coding Review checklist: OOP principles, SOLID, and design pattern entries. |
-| [Coding Principles](../principles.md) | Source for the Public API, Modularization, Reusability, Unintended Overengineering, Readability, Vocabulary, and Naming Convention items in the Coding Review checklist: simplicity, modularization, reusability, readability, naming, and intuitive public API entries. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP principles, SOLID, and design patterns that Step 1.3 loads for object-oriented code, and the source for the checklist's object-oriented Design Pattern and Abstraction items. |
+| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API that Step 1.3 loads, and the source for the checklist's Project Structure, Public API, Modularization, Reusability, Overengineering, Readability, Vocabulary, and Naming Convention items. |
+| [Coding Ideation checklist](../coding-ideation/checklist.md) | Baseline for an Ideation result at `ideation-design`. |
+| [Coding Planning checklist](../coding-planning/checklist.md) | Baseline for a Planning result at `planning-decomposition`. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
 | [Coding Execution](../coding-execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

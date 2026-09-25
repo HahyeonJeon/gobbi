@@ -8,8 +8,8 @@ skill-type: operation
 # Coding Ideation
 
 Coding Ideation develops one evidence-backed code design from a problem and its requirements. Use it when a
-bounded topic has an unresolved material code-design choice. It writes one indexed result and stops before
-realization.
+bounded topic has an unresolved material code-design choice. It shows the design to the user, writes one
+indexed result after the user confirms it, and stops before realization.
 
 ## Principles
 
@@ -18,35 +18,35 @@ realization.
 An incomplete idea is a set of open topics, not permission to assume. Return evidence-backed questions until
 every material gap is answered, deferred, or removed from scope.
 
-### Study before discussion and design
+### Study, then discuss with independent subagents
 
-Agents study the codebase, project docs, and
-[`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) before they discuss or
-design. Official docs, references, knowledge, or trends are used when that evidence can change an in-scope choice.
+One agent misses alternatives. Study the evidence first, then compare separate suggestions and critique from
+independent subagents before you recommend a design.
 
-### Agents design before the user confirms
+### Keep the design simple and every unit defined
 
-Agents discuss and close the three design levels in Phase 2. Phase 3 shows that design for confirmation and
-records it only after the user confirms.
+The best design meets the requirements with the fewest units, and no pattern is the default. Define each new
+or changed directory, file, public class, and public function by the four terms of
+[Modularization](../principles.md#modularization): Conceptual definition, Responsibility, Boundary, and
+Relationship.
 
 ### Design one dependent level at a time
 
-In Phase 2, close conceptual definition before class and method design, and class and method design before
-codebase structure. Classify each level as `inherited/current`, `not applicable`, or `material change`.
+Conceptual Definition gives the vocabulary for Class and Function Design, and that design gives the units that
+Codebase Structure places. Close each level before the next, and reopen the earliest level that a later finding
+breaks.
 
 ## Rules
 
 - **MUST preserve caller and user authority.** The user decides each required in-scope success, direction,
   risk, destructive implication, external dependency, and load-bearing assumption.
 - **MUST write one closed indexed result at the caller-supplied output root, located by `ideation-index.md`.**
-  Authoritative parts define the work and the idea; Discussion records topics keyed to the Design headings,
-  study, and decisions.
-- **MUST finish agent study, discussion, and design before the user sees the design.** Record the result only
-  after the user confirms it, and return feedback to the earliest affected level without recording that version.
-- **MUST stop at the design boundary.** Implementation details, recipes, file-level edits, code, and other
-  realized output are out of scope.
-- **MUST resolve Phase 2 design in this exact order without merging, swapping, or extending levels:**
-  conceptual-definition → class/method design from `coding-object-oriented-programming` → codebase structure.
+  Write every result file directly in that root, and list each one from `ideation-index.md` or
+  `discussion-index.md`.
+- **MUST keep unconfirmed requirements, study, discussion, and design in the caller-named draft location.**
+  Write the result to the output root only after the user confirms the design shown in Step 4.1.
+- **MUST stop at the design boundary.** Private helpers, implementation details, recipes, file-level edits,
+  code, and other realized output are out of scope.
 - **NEVER change an accepted contract silently.** Reopen the earliest affected decision and obtain any
   required user choice.
 
@@ -56,68 +56,88 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
 
 #### 1.1 Establish the contract
 
-- Read the request, governing materials, problem, outcome, requirements, and caller-supplied design and
-  decision scope, output root, and user-decision route.
-- Stop and return missing, contradictory, or unclear input. Revise an existing target only with caller
+- Read the request, governing materials, problem, outcome, and requirements. Read the caller-supplied design
+  scope, output root, draft location, participant policy, and user-decision route.
+- Stop and return missing, contradictory, or unclear input. Revise an existing result only with caller
   authority.
+- When the caller supplies the user's recorded answer to a draft, read the draft and resume there. Go to
+  Step 4.2 when the user confirmed the design, or to the earliest affected Step when the answer changes it.
 
 #### 1.2 Define the problem, outcome, and scope
 
 - State the current situation, desired outcome, actors, unchanged behavior, and Included, Excluded, Deferred,
   or Rejected scope. Distinguish facts from hypotheses.
-- Write Requirements in the authoritative part. When requested, also write the
-  [requirements snapshot](templates/ideation/requirements/requirements-index.md).
+- Write them under Requirements in a draft part made from the [part template](templates/ideation-NN.md).
 - Return each unresolved in-scope choice through the caller's user-decision route.
 
-### Phase 2 — Study, Discuss, and Design
+### Phase 2 — Study and Discuss
 
-#### 2.1 Study internal and external materials
+#### 2.1 Study the evidence
 
-- Study the codebase and project docs first. Before any class or method choice, read
-  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md), then open only the
-  supporting docs that the choice needs. Use official docs, references, knowledge, or trends when that evidence
-  can change an in-scope choice.
-- Keep the study for the Phase 3 record. Do not select a pattern in this step, and do not ask the user in
-  this phase.
+- Study the codebase and project docs, then
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) and
+  [Coding Principles](../principles.md). Open supporting docs, official docs, references, or trends only when
+  that evidence can change an in-scope choice.
+- Record each study once as an `S{N}` entry in a draft part made from the
+  [discussion part template](templates/discussion-NN.md).
+- When study finds a missing requirement or a user-owned choice, return the question through the caller's
+  user-decision route. Resume from the recorded answer at the earliest affected Step.
 
-#### 2.2 Discuss and design in level order
+#### 2.2 Discuss the design with independent subagents
 
-- Agents discuss and close one level before the next: conceptual definition, class and method design from
-  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md), then codebase structure.
-- In conceptual definition, state what will be implemented and define the vocabulary and terms. Do not name
-  classes, methods, files, or directories.
-- In class and method design, apply the needed [coding principles](../principles.md),
-  [OOP principles](../coding-object-oriented-programming/oop-principles.md), and
-  [SOLID](../coding-object-oriented-programming/solid.md) entries to the responsibilities, boundaries, and
-  relationships. Record the selected patterns, classes, methods, responsibilities, boundaries, relationships,
-  participant roles, operations, inputs, outputs, errors, and failure behavior. When no pattern applies,
-  record why. Do not place files or directories.
-- In codebase structure, record the project directories and files that hold the accepted classes and methods.
-  Choose them with [Modularization](../principles.md#modularization) and [Naming](../principles.md#naming). Reopen
-  class and method design when a file placement shows that level cannot stand.
+- Through the caller's participant policy, get separate design suggestions and critique from independent
+  subagents. Give each one the draft requirements, the study, and the two sources from Step 2.1.
+- When you cannot launch subagents, send the prompts to the caller and continue from the answers it returns.
+- Compare the reasoning and form two or three options, with a recommendation, for each material choice. Record
+  each choice as a draft Discussion topic, and do not ask the user yet.
 
-### Phase 3 — Decision and Records
+### Phase 3 — Design by Level
 
-#### 3.1 Confirm the design or return feedback
+#### 3.1 Define the concept
 
-- Show the finished design and stop. Use a tree for the three levels in order, a schema for the classes,
-  methods, responsibilities, boundaries, and relationships, and a diagram for the directories and files.
-- The user confirms that design or gives feedback. Feedback returns to the earliest affected level in Phase 2
-  and is shown again. Do not record an unconfirmed design.
+- Label each level `Inherited`, `Not applicable`, or `Material change` under its Design heading in the draft.
+  Design only the `Material change` levels.
+- Under Conceptual Definition, state what will be implemented and define its vocabulary. Name no directory,
+  file, class, or function.
 
-#### 3.2 Write the confirmed result
+#### 3.2 Design the public classes and functions
 
-- Create `ideation-index.md`, the required Discussion view, and at least one authoritative part from the
-  [ideation](templates/ideation/ideation-index.md) and
-  [discussion](templates/ideation/discussion/discussion-index.md) templates.
-- Record each study as one `S{N}` block under `## Study`. Write each topic through `### Discussion`,
-  `#### Options`, and `### Decision`. Do not add a suggestions or critique section.
-- Copy each confirmed Decision only into the Design heading named on that topic. Keep actor need and
-  outcome in Requirements Result. List every file from the root index. Add no unlisted file.
+- Under Class and Function Design, give each new or changed public class and public function its four terms
+  and the inputs, outputs, and errors its callers rely on. Use the Step 3.1 vocabulary, and place no file or
+  directory.
+- Add a pattern, interface, or base class only for a present force. Record that force and the simpler form it
+  replaces, as [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) requires.
+- Remove each unit that fails the [Simplicity](../principles.md#simplicity) tests, and each parameter or
+  option with no current caller.
 
-#### 3.3 Review and freeze
+#### 3.3 Place the directories and files
 
-- Read the result once in index order and fix in-scope defects at the earliest step.
+- Under Codebase Structure, draw the new or changed directories and files with their one-way relationships,
+  and give each one its four terms. Choose them with [Modularization](../principles.md#modularization) and
+  [Naming](../principles.md#naming).
+- Return to Step 3.2 when a placement shows that the class and function design cannot stand.
+
+### Phase 4 — Confirm and Record
+
+#### 4.1 Show the design and stop
+
+- Show the draft design as a tree of the three levels, a schema of the public classes and functions with their
+  four terms, and a diagram of the directories, files, and relationships. Beside it, list each user-owned
+  choice with its options and recommendation.
+- Return this decision package and the draft location through the caller's user-decision route, then stop.
+  The user confirms the design or gives feedback, and the recorded answer resumes the work at Step 1.1.
+
+#### 4.2 Write the confirmed result
+
+- Write the confirmed draft parts to the output root, then create `ideation-index.md` and
+  `discussion-index.md` from the [ideation index](templates/ideation-index.md) and
+  [discussion index](templates/discussion-index.md) templates. List every file, and add no unlisted file.
+- Write each confirmed decision in the Design heading its topic links to: the chosen option, why it won, its
+  trade-offs, and the reopen condition. The Discussion topic keeps its options and that link, not a copy.
+
+#### 4.3 Review and freeze
+
+- Read the result once in index order and fix in-scope defects at the earliest affected Step.
 - Freeze the listed membership and bytes. Independent review belongs to the caller.
 - Return the `ideation-index.md` locator and a short outcome summary through the caller's handoff.
 
@@ -126,10 +146,10 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
 | Name | Description |
 |---|---|
 | [Coding Ideation checklist](checklist.md) | Evaluation source for Coding Ideation work and indexed results. |
-| [Coding Ideation index](templates/ideation/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
-| [Coding Ideation part](templates/ideation/ideation-NN.md) | Template for the work definition and the idea. |
-| [Discussion index](templates/ideation/discussion/discussion-index.md) | Template for topics keyed to Design headings, study, and decisions. |
-| [Discussion part](templates/ideation/discussion/discussion-NN.md) | Repeatable discussion group and study template. |
-| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP preferences and selection index, read in Phase 2 before class and method design. Its supporting docs are opened only when a choice needs them. |
-| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API entries for procedural and object-oriented code, applied in class and method design and in codebase structure. |
+| [Coding Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
+| [Coding Ideation part](templates/ideation-NN.md) | Template for the requirements and the three-level design. |
+| [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
+| [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP defaults and entry index, studied in Step 2.1. Open its supporting docs only when a choice needs them. |
+| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, studied in Step 2.1 and applied in Steps 3.2 and 3.3. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

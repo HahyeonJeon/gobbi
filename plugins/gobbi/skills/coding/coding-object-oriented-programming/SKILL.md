@@ -40,9 +40,9 @@ or a `match`. Use that form when it states the same design with less code.
 
 ## Rules
 
-- **MUST state, for every added interface, base class, or pattern, the present force it answers and the
-  simpler form it replaces.** A guessed future need is not a force, and neither is an interface with one
-  implementation and no test double.
+- **MUST state the present force that each added interface, base class, or pattern answers, and the simpler
+  form it replaces, in the design record, not in source comments.** The design record is the Ideation design,
+  or the Execution handoff when there was no Ideation; a guessed future need is not a force.
 - **MUST keep the learning depth of every public API at 2 or less.** Learning depth is the longest chain of
   project types a first-time caller must learn for the first successful call; count it as
   [Intuitive Public API](../principles.md#intuitive-public-api) defines.
@@ -66,12 +66,15 @@ or a `match`. Use that form when it states the same design with less code.
   variation.
 - Use a class when data and the rules that keep it valid belong together, as
   [Encapsulation](oop-principles.md#encapsulation) shows.
+- An interface with one implementation is usually not worth its cost. Pass the concrete object or a function
+  instead, unless a present force needs the interface.
 
 #### Declare an interface where it is used
 
 - Declare an interface next to the code that calls it, with only the methods that code calls. In Python, use
   `typing.Protocol`, and use `abc.ABC` only when implementations share base code.
-- Use a `Callable` type instead of a one-method interface when the operation holds no state.
+- For one operation, a `Callable` type is usually simpler than a one-method interface. A one-method `Protocol`
+  also fits, for example when callers pass objects that already have that method.
 
 #### Keep inheritance shallow
 
@@ -102,7 +105,7 @@ or a `match`. Use that form when it states the same design with less code.
   | Callers change fields directly and repeat the same validity check. | Is it plain data with no rule to protect? Then public fields are fine. | [Encapsulation](oop-principles.md#encapsulation) |
   | Callers must call several low-level methods in the right order to do one task. | Is there only one caller? Then a local function may be enough. | [Abstraction](oop-principles.md#abstraction) |
   | A subclass exists only to reuse the base's code, or the tree is deeper than one level. | Can a shared function or a field hold the reused code? | [Inheritance](oop-principles.md#inheritance) |
-  | New types keep arriving, and each one edits the same type tests in many functions. | Is the set of types closed? Then one `match` per operation is fine. | [Polymorphism](oop-principles.md#polymorphism) |
+  | New types or variants keep arriving, and each one edits the same type tests or `if` chains in several functions. | Is the set closed? Then one `match` per operation is fine. | [Polymorphism](oop-principles.md#polymorphism), [Open-Closed Principle](solid.md#open-closed-principle) |
   | A function or class only forwards calls to one other unit, or an option has no current caller. | Would inlining it make any caller longer or expose a secret? | [Simplicity](../principles.md#simplicity) |
   | One module mixes unrelated jobs, or every name in it is public. | Do the jobs always change together? Then keep them together. | [Modularization](../principles.md#modularization) |
   | The same code appears for the third time, or a shared function grows one flag per caller. | Are there only two copies? Then keep the duplication. | [Reusability](../principles.md#reusability) |
@@ -110,7 +113,6 @@ or a `match`. Use that form when it states the same design with less code.
   | Deep `if` nesting, or a flag argument that picks a behavior. | Can one condition or an early return state the same rule? | [Readability](../principles.md#readability) |
   | A first-time caller must build nested project types before the first call. | Can keyword arguments with defaults replace the nested types? | [Intuitive Public API](../principles.md#intuitive-public-api) |
   | One class changes for requests from different people or teams. | Do its parts always change together? Then keep one class. | [Single Responsibility Principle](solid.md#single-responsibility-principle) |
-  | Each new variant edits the same `if` chains in several functions. | Is the set of variants closed? Then keep the `match`. | [Open-Closed Principle](solid.md#open-closed-principle) |
   | A subclass raises on, ignores, or narrows a base method, or callers check `isinstance` first. | Can the base promise less, so that every subtype keeps the promise? | [Liskov Substitution Principle](solid.md#liskov-substitution-principle) |
   | Implementers or test fakes stub methods they never use. | Does every caller use the whole interface? Then keep it whole. | [Interface Segregation Principle](solid.md#interface-segregation-principle) |
   | Business logic creates its own database, network, or clock object, so a test cannot replace it. | Can the object or a function be passed in as an argument, with no new interface? | [Dependency Inversion Principle](solid.md#dependency-inversion-principle) |
@@ -124,7 +126,7 @@ or a `match`. Use that form when it states the same design with less code.
   |---|---|---|
   | Several related objects must come from the same family, such as all test or all live services. | Does only one family exist? Then create the objects directly. | [Abstract Factory Pattern](design-pattern.md#abstract-factory-pattern) |
   | A constructor has many parts, some repeated or order-dependent, and a half-built object must not escape. | Do keyword arguments with defaults or a `dataclass` cover it? | [Builder Pattern](design-pattern.md#builder-pattern) |
-  | The same "which class do I create" branch appears in several places. | Does one function that returns the object cover it? | [Factory Method Pattern](design-pattern.md#factory-method-pattern) |
+  | A base-class workflow must create an object whose class each subclass picks. | Can the workflow take the object, or a function that makes it, as an argument? | [Factory Method Pattern](design-pattern.md#factory-method-pattern) |
   | New objects start as copies of a configured instance. | Does `dataclasses.replace` or a function with defaults cover it? | [Prototype Pattern](design-pattern.md#prototype-pattern) |
   | Exactly one instance of a resource must exist per process. | Can you create it once at startup and pass it in? | [Singleton Pattern](design-pattern.md#singleton-pattern) |
   | An existing class does the job, but its interface does not fit your code. | Is there one call site? Then convert with one function. | [Adapter Pattern](design-pattern.md#adapter-pattern) |
@@ -150,6 +152,6 @@ or a `match`. Use that form when it states the same design with less code.
 | Name | Description |
 |---|---|
 | [OOP Principles](oop-principles.md) | Encapsulation, abstraction, inheritance, and polymorphism, each with a description of the principle and its reason, a good example, and an anti-pattern. |
-| [SOLID](solid.md) | The five SOLID principles, each with its rule, violation sign, usual fix, over-application sign, and a violation and fix example. |
+| [SOLID](solid.md) | The five SOLID principles, each with a description of the principle and its reason, a good example that shows the fix, and an anti-pattern that shows the violation. |
 | [Design Patterns](design-pattern.md) | 20 creational, structural, and behavioral patterns, each with a short description of what it is and one example. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API for procedural and object-oriented code, including how to count learning depth. |

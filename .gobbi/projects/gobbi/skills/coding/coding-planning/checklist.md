@@ -58,6 +58,7 @@
 
 - [ ] An accepted work item has no hierarchy path.
 - [ ] A hierarchy path traces to no accepted work item.
+- [ ] A leaf or writer frontier is not supported by the accepted design, or by the caller's topic contract when there was no Ideation.
 - [ ] A hierarchy group's work, boundary, or output conflicts with its descendants.
 - [ ] A leaf contains outcomes that can complete independently.
 - [ ] A leaf requires materially different accountable roles or writer frontiers.

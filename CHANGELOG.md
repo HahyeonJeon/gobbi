@@ -16,6 +16,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   simplicity, modularization, reusability, readability, naming, and intuitive public API. Coding Ideation, Coding
   Execution, and Coding Review link it directly.
 
+### Changed
+
+- Coding Ideation studies with the OOP child and Coding Principles, discusses the design with independent
+  subagents, and defines each new or changed directory, file, public class, and public function by its
+  conceptual definition, responsibility, boundary, and relationship. It shows a tree, schema, and diagram,
+  stops for user confirmation with a draft and a resume entry, and records each decision once. Its second
+  level is now "Class and Function Design", and Coding Ideation and Coding Planning use flat templates and
+  flat results.
+- Coding Execution applies the coding principles while writing code, records the design in its handoff when
+  no Ideation ran, and runs a checklist pass on the Coding Review categories the change touches. The Coding
+  Review checklist adds 26 items from Coding Principles and the OOP docs (9 apply only to object-oriented
+  code) and renames "Unintended Overengineering" to "Overengineering". Coding Review loads the principles and
+  defines each `review-depth` token. The OOP docs keep one-implementation and one-method interface guidance
+  soft, and `solid.md` entries use a description, a good example, and an anti-pattern.
+
+### Removed
+
+- Removed `coding-execution/handoff.md`. Coding Execution returns the Delegation Handoff with its own
+  fields.
+- Removed the optional Requirements snapshot templates from Coding Ideation.
+
 ## 1.3.1 - 2026-09-21
 
 This patch includes the breaking removal of the Startup family.
