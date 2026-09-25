@@ -7,29 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.3.2 - 2026-09-25
+
+This patch adds the `coding-object-oriented-programming` preference skill and Coding Principles.
+
 ### Added
 
 - Added the `coding-object-oriented-programming` preference skill to the `coding` domain. It sets defaults for
   class, interface, and public API design and holds entries for the four OOP principles, the five SOLID
-  principles, and 20 design patterns. Coding Ideation and Coding Execution load it, and Coding Review links it.
-- Added `coding/principles.md` with six design principles for procedural and object-oriented code:
-  simplicity, modularization, reusability, readability, naming, and intuitive public API. Coding Ideation, Coding
-  Execution, and Coding Review link it directly.
+  principles, and 20 design patterns. Coding Ideation loads it, and Coding Execution and Coding Review load it
+  for class work. Its guidance against one-implementation and one-method interfaces is a soft default, not a
+  ban, and each `solid.md` entry has a description, a good example, and an anti-pattern.
+- Added Coding Principles (`coding/principles.md`) with six design principles for procedural and
+  object-oriented code: simplicity, modularization, reusability, readability, naming, and intuitive public
+  API. Coding Ideation, Coding Execution, and Coding Review link it directly.
 
 ### Changed
 
-- Coding Ideation studies with the OOP child and Coding Principles, discusses the design with independent
-  subagents, and defines each new or changed directory, file, public class, and public function by its
-  conceptual definition, responsibility, boundary, and relationship. It shows a tree, schema, and diagram,
-  stops for user confirmation with a draft and a resume entry, and records each decision once. Its second
-  level is now "Class and Function Design", and Coding Ideation and Coding Planning use flat templates and
-  flat results.
-- Coding Execution applies the coding principles while writing code, records the design in its handoff when
-  no Ideation ran, and runs a checklist pass on the Coding Review categories the change touches. The Coding
-  Review checklist adds 26 items from Coding Principles and the OOP docs (9 apply only to object-oriented
-  code) and renames "Unintended Overengineering" to "Overengineering". Coding Review loads the principles and
-  defines each `review-depth` token. The OOP docs keep one-implementation and one-method interface guidance
-  soft, and `solid.md` entries use a description, a good example, and an anti-pattern.
+- Coding Ideation studies with the `coding-object-oriented-programming` skill and Coding Principles, discusses
+  the design with independent subagents, and defines each new or changed directory, file, public class, and
+  public function by its conceptual definition, responsibility, boundary, and relationship. Callers now supply
+  a draft location for unconfirmed work, and Workflow passes one under `{session-root}/tmp/`. Coding Ideation
+  shows a tree, schema, and diagram, stops for user confirmation, resumes from the recorded answer, and
+  records each decision once. It replaces the four design levels (Architecture and Structure, Strategy and
+  Policy, Pattern and Class Diagram, and Public Contract) with three: Conceptual Definition, Class and
+  Function Design, and Codebase Structure. Each level starts with `Inherited`, `Not applicable`, or
+  `Material change` and is never empty. Coding Ideation uses flat templates and flat results.
+- The Coding Ideation checklist adds an Overengineering category with six items: units or options with no
+  present need, patterns with no recorded force, forwarding units and one-function classes, excess units,
+  one-file directories, and learning depth. It also flags an unconfirmed design, options from one agent,
+  private helpers in the design, a decision written in both Discussion and Design, and a result file outside
+  the output root's top level or missing from its index. Its design items now check each unit's four
+  Modularization terms and each level's label.
+- Coding Planning derives leaves and writer frontiers from the accepted design, and uses the caller's topic
+  contract as the design when no Ideation ran. The Design fields in its plan and task templates link the
+  design instead of restating it. Its checklist adds an item for a leaf or writer frontier that the design
+  does not support. Coding Planning uses flat templates and flat results and is no longer marked as a draft.
+- Coding Execution applies Coding Principles while writing code and records the design in its handoff when no
+  Ideation ran. Its checklist pass now covers only the Coding Review categories the change touches, and its
+  handoff records the result.
+- Coding Review loads Coding Principles and defines each `review-depth` token. Its checklist adds 26 items
+  from Coding Principles and the OOP docs (9 apply only to object-oriented code) and renames "Unintended
+  Overengineering" to "Overengineering". Coding Review is no longer marked as a draft.
+- Claude role contracts use `claude-opus-5-5` at `high`, and the assistant contract now sets `effort: high`.
 
 ### Removed
 
