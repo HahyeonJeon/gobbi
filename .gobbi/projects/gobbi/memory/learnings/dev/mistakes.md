@@ -65,3 +65,23 @@ resolved. The rendered caller-bound artifact could still point to the wrong path
 
 **Correction:** Parameterize location-dependent links and validate each rendered artifact from its actual
 location. A source-template link check is not enough.
+
+## A word that starts with `=` fails in zsh
+
+**Context:** Separator or marker words in shell commands that run under zsh, such as `echo =====`.
+
+**Mistake:** zsh expands a word that starts with `=` to the path of the command named after it. `echo =====`
+fails with `===== not found`, and an `&&` chain stops there.
+
+**Correction:** Quote separator words (`echo '-- X --'`) or start them with another character.
+
+## A single-line grep does not prove a multi-word rename
+
+**Context:** Checking that a multi-word phrase, such as "clear units", is gone after a rename in hard-wrapped
+Markdown.
+
+**Mistake:** `git grep -i 'clear unit'` passed, but a design memory file still had "clear" at the end of one
+line and "units" at the start of the next. A later review found it.
+
+**Correction:** For a multi-word phrase, also search with a whitespace-spanning pattern, such as
+`grep -Pzo -i 'clear\s+units?'` or `rg -U -i 'clear\s+units?'`.

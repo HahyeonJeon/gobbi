@@ -164,6 +164,19 @@ source for the object-oriented Design Pattern and Abstraction items. It cites Co
 for the Project Structure, Public API, Modularization, Reusability, Overengineering, Readability, Vocabulary,
 and Naming Convention items. The checklist items stay in that checklist.
 
+## Writing preferences
+
+The user set these preferences for later edits to Coding Principles and the OOP child docs:
+
+- Keep new entries in the short forms above. A principle has a description, a good example, and an
+  anti-pattern. A pattern has one or two sentences on what it is, then one example. Add fields only when the
+  user asks.
+- Prefer soft guidance, such as a short default or an example, over a new strict (MUST) rule. Add a binding
+  rule only for a failure the user names. Remove conflicting strict wording instead of adding stricter wording.
+- Use the user's own design terms: conceptual definition, responsibility, boundary, and relationship. Name a
+  principle with an established term that the Coding Review checklist already uses, such as Modularization,
+  instead of coining a new heading.
+
 ## Public ownership and migration
 
 The canonical public home is `skills/coding/`. Runtime discovery exposes one recursive `coding` root and no

@@ -31,3 +31,14 @@ noticing it names no concrete mechanism. Grammatically it reads as a step; opera
 
 **Correction:** For every procedure step, confirm it names a concrete operation — a tool call, a check, a
 comparison — not just a verb phrase shaped like one.
+
+## Participant wording and preferences replaced the user's design
+
+**Context:** Synthesizing a design from several participants' proposals after the user named the terms.
+
+**Mistake:** The synthesis renamed the user's terms (conceptual definition, responsibility, boundary) to
+participant terms (Concept, Owns, Must not know). It also turned one participant's preference, domain grouping
+over layer grouping, into a rule the user did not ask for. The user reversed both in the next topic.
+
+**Correction:** Keep the user's exact terms. Offer a participant preference to the user as an option, not as a
+rule. Add a rule only when the user asks for it or names the failure it prevents.

@@ -126,3 +126,23 @@ reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8
 
 **Application:** Present sequential 1.x, the named skip, and 2.0.0 as distinct options. Recommend from
 SemVer plus project exception history. Keep the user's recorded number after they choose.
+
+## Overlapping Cowork topics need one combined commit
+
+**Context:** A Cowork user revises uncommitted work across several topics.
+
+**Tip:** When a later topic rewrites an earlier topic's uncommitted files, separate per-topic commits are no
+longer possible. In one session, topics 02–05 rewrote topic 01's files, so topics 01–05 shipped as one commit.
+
+**Application:** Suggest `commit` at each topic PASS. If the user continues without it, plan one combined
+commit and say so early.
+
+## Authoring Execution has no procedure yet
+
+**Context:** Planning author tasks whose compatible skill is Authoring Execution.
+
+**Tip:** [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md) says "This file is a
+placeholder. The procedure is not written yet."
+
+**Application:** Give each author execution brief its own method and verification. For skill files, load Gobbi
+Skill and the matching type-writing skill. Reread the file before relying on this tip.

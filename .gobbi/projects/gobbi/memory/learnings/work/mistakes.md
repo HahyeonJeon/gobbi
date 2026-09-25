@@ -165,3 +165,47 @@ surface under a different wording ("General discovers applicable operations").
 **Correction:** Walk every Changed bullet and ask what it discloses, not whether it contains the
 locked name string. Prefix each bullet whose primary disclosure is a locked surface. Keep the
 sentence. Do not recategorize it into Removed.
+
+## Narrowing a consumer's load to named entries drops its Rules
+
+**Context:** A topic contract or brief narrows what a consumer skill loads, to save tokens.
+
+**Mistake:** A contract told Coding Execution to read "only the entries named by the accepted design". That
+skipped the child `SKILL.md` Rules, such as the learning-depth limit and the stated-force rule, which bind
+every change.
+
+**Correction:** When narrowing a load, always keep the skill's entry file with its Principles and Rules.
+Narrow only the supporting docs.
+
+## A correction brief that lists only the file being fixed
+
+**Context:** Sending a correction brief after a review finds a wrong fact in one skill file.
+
+**Mistake:** The brief allowed only the skill file. The coding family design memory restated the same fact, so
+it stayed stale. This happened twice in one session.
+
+**Correction:** Before sending a correction, grep every file that restates the corrected fact and put all of
+them in the writer frontier (Principle 7). For coding skill wiring, include
+`memory/design/feature/coding-skill-family.md` by default. When several author groups run in series, have each
+group append the sentences that other files restate to one session file, and give that file to the final
+consistency group.
+
+## An unchecked claim in a brief
+
+**Context:** A manager writes a commit or task brief from earlier notes.
+
+**Mistake:** A brief called the old guides "unlinked". The committing author found that Ideation, Execution,
+and a template linked them at the base; only the root did not.
+
+**Correction:** Check each claim before it goes into a brief, or state it with its exact scope ("the root did
+not link them").
+
+## Grouping review findings by theme drops findings
+
+**Context:** Turning many review findings into a contract or a disposition list.
+
+**Mistake:** A contract summarized 36 findings by theme. Two findings fit no theme and got no disposition; the
+planner caught them.
+
+**Correction:** Build the disposition table from the finding IDs. Give every ID one row: applied, decided, or
+backlogged.

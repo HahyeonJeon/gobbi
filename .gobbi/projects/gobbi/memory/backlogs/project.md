@@ -197,3 +197,18 @@ kept Authoring and Design out of scope.
 skills. The Review prompt table has named rows, not numbers. See [Authoring
 Review](../../skills/authoring/authoring-review/SKILL.md) and [Design
 Review](../../skills/design/design-review/SKILL.md).
+
+## Review depth wording drift in process memory
+
+**Backlogged at:** 2026-09-25T15:24:58Z
+
+**What:** Align the Review depth section of the [Review](../design/process/evaluation.md#review-depth) process
+design with the live Coding Review table. Add "indexed integrity" to the `planning-decomposition` row. Replace
+"Execution documentation checklist", which no skill defines. Name the Coding Ideation and Coding Planning
+checklists where the text says "its own checklist".
+
+**Why backlogged:** The 2026-09-25 coding review found the drift. The topic contract kept process memory out of
+scope.
+
+**Context:** The live bar and baseline checklist for each `review-depth` token are in the [Coding
+Review](../../skills/coding/coding-review/SKILL.md) review-depth table.
