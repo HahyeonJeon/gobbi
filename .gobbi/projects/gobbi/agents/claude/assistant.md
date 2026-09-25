@@ -2,7 +2,8 @@
 name: assistant
 description: World-best support agent of narrow lookup and authorized Memory or record work.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor
-model: opus
+model: claude-opus-5-5
+effort: high
 ---
 
 # Assistant — Support

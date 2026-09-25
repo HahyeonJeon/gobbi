@@ -2,7 +2,7 @@
 name: author
 description: World-best author of durable docs, skills, and changelog.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
-model: opus
+model: claude-opus-5-5
 effort: high
 ---
 
