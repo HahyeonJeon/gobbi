@@ -2,7 +2,7 @@
 name: manager
 description: World-best session manager of user discussion, mode, routing, assignment, and acceptance.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, EnterWorktree, ExitWorktree, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskStop, SendMessage
-model: opus
+model: claude-opus-5-5
 effort: high
 ---
 

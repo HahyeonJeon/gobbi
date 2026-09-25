@@ -8,6 +8,13 @@ each group. Order implies no priority, readiness, or sequence.
 - `Automatic pager management` → `cli-skill-family.md#automatic-pager-management`
 - `Full-screen TUI support` → `cli-skill-family.md#full-screen-tui-support`
 
+## Coding skill family
+
+- `Coding example and wording fixes from the principles review` → `coding-skill-family.md#coding-example-and-wording-fixes-from-the-principles-review`
+- `Coding Planning repeats leaf text and invariant checks` → `coding-skill-family.md#coding-planning-repeats-leaf-text-and-invariant-checks`
+- `Coding Review report records the review depth` → `coding-skill-family.md#coding-review-report-records-the-review-depth`
+- `OOP child repeats public API and no-pattern policy` → `coding-skill-family.md#oop-child-repeats-public-api-and-no-pattern-policy`
+
 ## Evaluation
 
 - `Checklist References leftover prepare-then-evaluate order` → `evaluation.md#checklist-references-leftover-prepare-then-evaluate-order`
@@ -21,15 +28,20 @@ each group. Order implies no priority, readiness, or sequence.
 
 ## Project
 
-- `check-markdown-links.sh never inspects the plugin mirror` → `project.md#check-markdown-linkssh-never-inspects-the-plugin-mirror`
+- `Authoring and Design Execution handoff placeholders` → `project.md#authoring-and-design-execution-handoff-placeholders`
+- `Authoring and Design Ideation and Planning templates` → `project.md#authoring-and-design-ideation-and-planning-templates`
 - `.codex/config.toml is inert` → `project.md#codexconfigtoml-is-inert`
 - `Project .grok/config.toml` → `project.md#project-grokconfigtoml`
 - `Consumer-project README setup section` → `project.md#consumer-project-readme-setup-section`
 - `Flat consumer-project layout` → `project.md#flat-consumer-project-layout`
+- `Future Markdown link checking must inspect the plugin mirror` → `project.md#future-markdown-link-checking-must-inspect-the-plugin-mirror`
 - `Guardrail gaps in two .toml role wrappers` → `project.md#guardrail-gaps-in-two-toml-role-wrappers`
 - `Locator no-brief fallback unverified for a spawned specialist` → `project.md#locator-no-brief-fallback-unverified-for-a-spawned-specialist`
 - `Reconsider plugin-only distribution` → `project.md#reconsider-plugin-only-distribution`
+- `Review depth wording drift in process memory` → `project.md#review-depth-wording-drift-in-process-memory`
+- `Review gating wording outside Coding` → `project.md#review-gating-wording-outside-coding`
 - `Revive a bootstrap CLI` → `project.md#revive-a-bootstrap-cli`
+- `Stale draft lines in Authoring and Design skills` → `project.md#stale-draft-lines-in-authoring-and-design-skills`
 
 ## Stop reminder
 

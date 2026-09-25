@@ -13,8 +13,6 @@ Use it when scope and direction are defined for code work but that work still ne
 It records both views as one indexed result and stops before implementation recipes,
 repository study dumps, file-level edit recipes, and verification methods.
 
-This skill is a draft adapted from Planning.
-
 ## Principles
 
 ### Separate task hierarchy from execution order
@@ -24,42 +22,28 @@ order explains how combined task groups build on one another through `Requires` 
 may run in parallel. Keeping these views separate prevents parent-child structure from being mistaken for
 dependency order and exposes safe parallel work.
 
-### Plan only the code writer frontier
+### Size each task group for one agent
 
-Default each code-work task group to the Developer role, a writer frontier that includes code, and
-Coding Execution among its compatible skills. A leaf whose writer frontier is not code is
-out-of-frontier work for this operation.
-
-### Bound each task group by the assignment contract
-
-Each combined task group is complete when it records the assignment contract for one accountable agent:
-`task-NN-slug` IDs, `Requires`, role, writer frontier, leaf work, boundary, and output, handoffs, group
-outcome, why the leaves combine, the group's stop, constraints and authority, a pointer to accepted design,
-and compatible skills. If that contract is missing or completion needs hidden coordination, the group is too
-broad or the recorded contract is incomplete.
+A task group is the right size when one accountable agent can complete it from its recorded assignment
+contract alone. If completion needs hidden coordination, the group is too broad or its contract is incomplete.
 
 ## Rules
 
 - **MUST preserve exact scope and leaf-to-group coverage.** Every accepted work item traces into the hierarchy;
   every leaf maps to exactly one task group, every task group combines at least one leaf, and a leaf that
   needs several task groups is split in the task hierarchy first.
-- **MUST combine only context-coherent decomposed tasks.** Combined tasks share one accountable agent role and
-  compatible skills, compatible inputs, one coherent outcome, one writer frontier, and one dependency
-  frontier; fixed-size batches and one-group-per-leaf defaults are invalid.
-- **NEVER combine incompatible work.** Keep separate any leaves divided by roles, unresolved material
-  decisions, destructive or external authority, conflicting dependencies, or incoherent writer frontiers or
-  commit boundaries.
+- **MUST combine only context-coherent leaves into one task group.** Combined leaves share one accountable
+  role, compatible skills and inputs, one outcome, one writer frontier, one dependency frontier, and one
+  commit boundary; leaves that differ in unresolved material decisions or destructive or external authority
+  stay in separate groups.
 - **MUST make execution order dependency-valid.** Stable IDs use `task-NN-slug`; explicit `Requires` edges
   are acyclic and authoritative, while shared order numbers only mark safe parallelism.
-- **MUST record the assignment contract for each task group.** Include its `task-NN-slug` ID and title, exact
-  combined leaf paths, `Requires`, one accountable role, writer frontier, each combined leaf's work, boundary,
-  and output, handoffs, group outcome, why the leaves combine, the group's stop, constraints and authority, a
-  pointer to accepted design, and compatible skills; repository study dumps, implementation strategy,
-  file-level edit recipes presented as the work, and verification methods, commands, or test lists are out of
-  scope.
+- **MUST record every field of the plan-part task-group schema for each task group.** Leave out repository
+  study dumps, implementation strategy, file-level edit recipes presented as the work, and verification
+  methods, commands, or test lists.
 - **MUST plan only code-work leaves into Developer-owned groups whose compatible skills include
   Coding Execution and whose writer frontier includes code.** Return a leaf whose writer frontier is
-  not code to the caller as out-of-frontier work; do not combine it into a code-work group.
+  not code to the caller as out-of-frontier work.
 - **MUST keep one closed indexed result and freeze it only after complete validation passes.** Use one
   caller-supplied absolute output root and its `plan-index.md` as the exact result locator; list the required
   task index and every plan part in the root index, and every task part in the task index.
@@ -70,10 +54,9 @@ broad or the recorded contract is incomplete.
 
 #### 1.1 Establish the planning inputs
 
-- Read the code work, purpose, scope, output, accepted code design, evidence, required skills,
-  authority boundaries, and repository and execution metadata. Bind the caller-supplied absolute
-  output root, its absolute
-  `plan-index.md` locator, and the allowed write boundary.
+- Read the code work, purpose, scope, output, accepted design, evidence, required skills, authority
+  boundaries, and repository and execution metadata. Bind the caller-supplied absolute output root, its
+  absolute `plan-index.md` locator, and the allowed write boundary.
 - Separate supported facts and routine planning choices from missing required input, user-owned decisions, and
   evidence that challenges the accepted direction. Return the exact evidence and question to the caller rather
   than inventing an answer.
@@ -83,19 +66,20 @@ broad or the recorded contract is incomplete.
 
 #### 2.1 Decompose the task hierarchy
 
-- Choose top-level groups by coherent decomposition boundaries, not one group per work item. Preserve each
-  accepted work item's traceability to its hierarchy paths.
-- Recursively decompose every group until each leaf states one bounded outcome, boundary, and output. Split
-  distinct responsibilities, capabilities, writer frontiers, dependencies, or outputs.
-- Keep the hierarchy independently readable. Do not assign agents or encode execution order in it.
+- Derive the leaves and writer frontiers from the accepted design. With no Ideation result, the caller's topic
+  contract is the design.
+- Choose top-level groups by coherent decomposition boundaries, not one group per work item, and keep each
+  accepted work item traceable to its hierarchy paths. Do not assign agents or encode execution order in the
+  hierarchy.
+- Decompose every group until each leaf states one bounded outcome, boundary, and output. Split distinct
+  responsibilities, capabilities, writer frontiers, dependencies, or outputs into separate leaves.
 
 #### 2.2 Write the indexed task view
 
-- Within the bound output root, create `plan-index.md` from the
-  [plan index template](templates/planning/plan-index.md), then create
-  `tasks/tasks-index.md` from the [task index template](templates/planning/tasks/tasks-index.md) and at least one
-  numbered task file from the [task part template](templates/planning/tasks/tasks-NN.md). Keep every file inside
-  the write boundary, the root index as the result locator, and the task index as its required source view.
+- Create `plan-index.md` from the [plan index template](templates/plan-index.md), `tasks-index.md` from the
+  [task index template](templates/tasks-index.md), and at least one task part from the
+  [task part template](templates/tasks-NN.md). Write every result file directly in the output root, because
+  the template links assume each file sits beside `plan-index.md`.
 - Name task parts `tasks-01.md`, `tasks-02.md`, and so on; assign the next unused number, never rename or reuse a
   part, and let the task index define reading order. Record the work summary once and the complete hierarchy in
   depth-first order.
@@ -115,13 +99,12 @@ broad or the recorded contract is incomplete.
 
 #### 3.2 Write the indexed plan
 
-- Within the bound output root, complete `plan-index.md` and create at least one numbered file from the
-  [plan part template](templates/planning/plan-NN.md). Name parts `plan-01.md`,
+- Complete `plan-index.md` and create at least one plan part from the
+  [plan part template](templates/plan-NN.md) directly in the output root. Name parts `plan-01.md`,
   `plan-02.md`, and so on; assign the next unused number, never rename or reuse a part, and let the index define
   reading order.
-- Copy or restate every combined leaf's title, work, boundary, and output into the group. Record the group's
-  assignment contract from the plan-part template; do not add repository study dumps, implementation
-  strategy, file-level edit recipes, or verification methods.
+- Copy or restate every combined leaf's title, work, boundary, and output into the group. Record the rest of
+  the group's assignment contract from the plan-part template.
 - Keep the plan flat and every group understandable from its assignment contract without private discussion
   or reconstructing it from task paths. Record shared assignment-local pointers once, and split parts only
   between complete task groups or table rows.
@@ -142,8 +125,8 @@ broad or the recorded contract is incomplete.
 #### 3.4 Validate and freeze the result
 
 - Read the absolute `plan-index.md` locator, the task index, every task part, and every plan part in declared
-  order. Confirm that each listed path resolves inside the output root and that every file below the root is
-  reached exactly once through the two indexes.
+  order. Confirm that each listed path resolves directly in the output root and that every file below the root
+  is reached exactly once through the two indexes.
 - Repeat the six invariant checks against the final bytes. If any check fails, return to Step 3.3 and repair
   the owning step before validating again.
 - Freeze only the validated result. Return the absolute `plan-index.md` locator and every indexed member in
@@ -154,10 +137,10 @@ broad or the recorded contract is incomplete.
 | Name | Description |
 |---|---|
 | [Coding Planning checklist](checklist.md) | Reusable unchecked source for evaluating Coding Planning work and complete current indexed results. |
-| [Task index](templates/planning/tasks/tasks-index.md) | Index template for the numbered task-hierarchy output. |
-| [Task part](templates/planning/tasks/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
-| [Plan index](templates/planning/plan-index.md) | Root template for result authority, task source, and plan-part order. |
-| [Plan part](templates/planning/plan-NN.md) | Repeatable template for ordered task groups and their assignment contracts. |
+| [Task index](templates/tasks-index.md) | Index template for the numbered task-hierarchy output. |
+| [Task part](templates/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
+| [Plan index](templates/plan-index.md) | Root template for result authority, task source, and plan-part order. |
+| [Plan part](templates/plan-NN.md) | Repeatable template for ordered task groups and their assignment contracts. |
 | [Coding](../SKILL.md) | Routes defined code work that still needs decomposition to this operation. |
 | [Coding Ideation](../coding-ideation/SKILL.md) | Prior owner that settled material code-design choices this plan must follow. |
 | [Coding Execution](../coding-execution/SKILL.md) | Later owner of each dependency-ready code-work task group. |

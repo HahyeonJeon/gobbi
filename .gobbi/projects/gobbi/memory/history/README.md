@@ -2,6 +2,9 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-09-25 — Coding OOP child and shared principles](2026-09-25-coding-oop-child-and-principles.md)
+- [2026-09-25 — Coding skill design guides](2026-09-25-coding-skill-design-guides.md)
+- [2026-09-22 — Skill redesign and v1.3.1](2026-09-22-skill-redesign.md)
 - [2026-09-21 — Gobbi v1.3.0 published](2026-09-21-gobbi-v1-3-0.md)
 - [2026-09-14 — Skills reorg completed](2026-09-14-skills-reorg.md)
 - [2026-09-06 — Domain skill families completed](2026-09-06-domain-skill-families.md)

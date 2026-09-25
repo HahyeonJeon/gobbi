@@ -19,7 +19,7 @@ Each role has one full copy per runtime, and all four runtimes live together in 
 
 | Runtime | Directory | Model field | Effort field |
 |---|---|---|---|
-| Claude Code | [`claude/`](claude/) | `model` (opus / sonnet / haiku) | `effort` |
+| Claude Code | [`claude/`](claude/) | `model` (claude-opus-5-5) | `effort` |
 | Grok | [`grok/`](grok/) | `model` (grok-4.7) | `effort` |
 | Codex | [`codex/`](codex/) | `model` (gpt-6-astra) and `model_reasoning_effort` in `.toml` | same `.toml` |
 | Cursor | [`cursor/`](cursor/) | `model` (`id[effort=...]`) | same `model` bracket |
