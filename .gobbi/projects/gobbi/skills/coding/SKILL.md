@@ -15,7 +15,7 @@ load every direct child whose applicability sentence matches the current work.
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`coding-execution`](coding-execution/SKILL.md) | operation | Use it when the task leaves no material code-design choice open and its writer frontier includes code, whether or not Coding Ideation ran. |
+| [`coding-execution`](coding-execution/SKILL.md) | operation | Use it when the task leaves no material code-design choice open and its writer frontier includes code, whether or not `coding-ideation` ran. |
 | [`coding-ideation`](coding-ideation/SKILL.md) | operation | Use it when a bounded topic has an unresolved material code-design choice. |
 | [`coding-object-oriented-programming`](coding-object-oriented-programming/SKILL.md) | preference | Use it when code design, implementation, or review creates, changes, or judges classes, objects, interfaces, and their responsibilities and relationships. |
 | [`coding-planning`](coding-planning/SKILL.md) | operation | Use it when scope and direction are defined for code work but that work still needs decomposition, grouping, order, and dispatch. |

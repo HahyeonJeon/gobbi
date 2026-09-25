@@ -147,9 +147,10 @@ limit causes and verdicts to what the evidence supports.
 
 #### 3.1 Gather sources
 
-- Collect applicable project and caller-supplied checklists and one baseline: the
+- Collect applicable project and caller-supplied checklists and each baseline: the
   [Coding Review checklist](checklist.md) for code work or, when `review-depth` is bound, the
-  baseline checklist that the Step 1.1 table names for that token.
+  baseline checklist that the Step 1.1 table names for that token, or for each artifact's row at
+  `by-owning-stage`.
 - Preserve every source's wording, hierarchy, identifiers, and unchecked state. Do not repair
   or rewrite a source during review.
 - Record each excluded, ambiguous, stale, conflicting, or unavailable source item with its

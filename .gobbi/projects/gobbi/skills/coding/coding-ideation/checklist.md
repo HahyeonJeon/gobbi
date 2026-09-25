@@ -54,10 +54,10 @@
 
 - [ ] A unit, layer, parameter, option, or variant serves no present requirement or current caller.
 - [ ] A pattern, interface, or base class has no recorded present force or no recorded simpler form it replaces.
-- [ ] A designed unit only forwards calls, wraps one use, or is a class that holds one stateless function.
+- [ ] A designed unit only forwards calls, wraps one use, or is a class that holds one stateless function when no caller or framework needs it to be a class.
 - [ ] The design has more units, layers, or files than its requirements need.
-- [ ] A new directory holds one file or has no single conceptual definition.
-- [ ] A first-time caller must learn more than two project types before the first successful call.
+- [ ] A new directory has no single conceptual definition, or holds one file and no project or framework layout requires it.
+- [ ] A designed public entry point has a [learning depth](../principles.md#intuitive-public-api) greater than 2.
 
 ### Result Integrity
 

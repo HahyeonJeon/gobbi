@@ -9,7 +9,7 @@ skill-type: operation
 
 Coding Execution implements, verifies, and hands off one accepted code task.
 Use it when the task leaves no material code-design choice open and its writer frontier includes code, whether or
-not Coding Ideation ran. It grants no Review authority.
+not `coding-ideation` ran. It grants no Review authority.
 
 ## Principles
 
@@ -104,11 +104,12 @@ affected set. Repository type or file extension alone does not.
   and supporting surfaces. As you write each unit, apply the [Simplicity](../principles.md#simplicity) inline test
   and current-caller test first, then the other [Coding Principles](../principles.md).
 - With an Ideation design, build each class and function to its Class and Function Design and caller contract.
-  Read only the OOP child entries that design names, and add no pattern it does not name.
-- When there was no Ideation, design each unit you create with the Coding Principles, and with the OOP child when
-  Step 1.3 loaded it. Before you create a directory, file, public class, or public function, write its four
-  [Modularization](../principles.md#modularization) terms and any added abstraction’s force for the handoff, not
-  in source comments.
+  Read only the `coding-object-oriented-programming` entries that design names, and add no pattern it does
+  not name.
+- When there was no Ideation, design each unit you create with the Coding Principles, and with
+  `coding-object-oriented-programming` when Step 1.3 loaded it. Before you create a directory, file, public class,
+  or public function, write its four [Modularization](../principles.md#modularization) terms and any added
+  abstraction’s force for the handoff, not in source comments.
 
 #### 3.2 Prove each slice
 
@@ -164,8 +165,8 @@ affected set. Repository type or file extension alone does not.
   or commit, and retain the exact verified tree under the caller’s retained-state policy.
 - Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with these Execution fields: commit or
   retained-tree identity and caller policy, verification record, reach account, checklist-pass result, principles
-  and OOP entries applied, and, when there was no Ideation, the design record. Put the Step 3.3 and Step 4.2
-  concerns in its concerns.
+  and `coding-object-oriented-programming` entries applied, and, when there was no Ideation, the design record.
+  Put the Step 3.3 and Step 4.2 concerns in its concerns.
 - On any stop, preserve the exact worktree identity and return the earliest owner, first failed obligation and
   its evidence, safe retained state, prohibited next action, and resume condition.
 
