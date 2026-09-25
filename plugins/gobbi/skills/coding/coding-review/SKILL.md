@@ -236,5 +236,7 @@ limit causes and verdicts to what the evidence supports.
 |---|---|
 | [Checklist](../../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum this review challenges by link. |
 | [Coding Review checklist](checklist.md) | Coding Review-owned baseline source for reviewing general code-work quality. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Source for the Design Pattern and Abstraction items in the Coding Review checklist: OOP principles, SOLID, and design pattern entries. |
+| [Coding Principles](../principles.md) | Source for the Public API, Modularization, Reusability, Unintended Overengineering, Readability, Vocabulary, and Naming Convention items in the Coding Review checklist: simplicity, modularization, reusability, readability, naming, and intuitive public API entries. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
 | [Coding Execution](../coding-execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

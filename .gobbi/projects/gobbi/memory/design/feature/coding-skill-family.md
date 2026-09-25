@@ -3,14 +3,15 @@
 ## Intent
 
 The [Coding root](../../../skills/coding/SKILL.md) is a navigation-only domain skill for code design,
-planning, implementation, and non-gating review. It routes every applicable direct child and owns no
-lifecycle procedure, sequence, state, gate, recovery policy, or child judgment.
+planning, implementation, non-gating review, and object-oriented design preferences. It routes every
+applicable direct child and owns no lifecycle procedure, sequence, state, gate, recovery policy, or child
+judgment.
 
-The family has exactly four direct operation children: `coding-ideation`, `coding-planning`,
-`coding-execution`, and `coding-review`. The canonical skills own their live procedures. Top-level
-Ideation, Planning, Study, Execution, and Evaluation skills are gone without an alias. This design
-records the current family shape, ownership, routing, and Review meaning without copying skill
-procedures.
+The family has five direct children. The four operations are `coding-ideation`, `coding-planning`,
+`coding-execution`, and `coding-review`. The one preference is `coding-object-oriented-programming`. The
+canonical skills own their live procedures and preferences. Top-level Ideation, Planning, Study, Execution,
+and Evaluation skills are gone without an alias. This design records the current family shape, ownership,
+routing, and Review meaning without copying skill procedures.
 
 ## Family and ownership
 
@@ -21,6 +22,7 @@ procedures.
 | [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Owns decomposition, grouping, order, and dispatch for defined code work. | Stops before implementation recipes. Coding Execution may order work only inside one accepted task. |
 | [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, the applicable checklist pass, and handoff for one settled code task, with code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
 | [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Operation | Reviews one exact stable code subject and returns one caller-bound feedback report. | Non-gating. No target-mutation right, verdict, gate, correction, or acceptance authority. |
+| [Coding Object-Oriented Programming](../../../skills/coding/coding-object-oriented-programming/SKILL.md) | Preference | Owns the defaults for class, interface, and public API design, and the OOP principle, SOLID, and design pattern entries. | Owns no procedure, stage, or design decision. Accepted designs and project conventions come before its defaults. |
 
 Language, framework, platform, tool, and product-domain skills retain their specialist judgments
 without becoming lifecycle drivers.
@@ -72,15 +74,55 @@ The source has these consumers with separate authority:
 - Coding Execution applies it to final code during its one final-identity checklist pass instead of running
   another review or writing a Review report.
 
-## Design guides
+## Shared coding principles
 
-[Design patterns](../../../skills/coding/design-pattern.md) and [SOLID](../../../skills/coding/SOLID.md) live in `skills/coding/`. They are shared references, not child skills. The coding root does not link them.
+[Coding Principles](../../../skills/coding/principles.md) holds six entries in this order: simplicity, clear
+units, reusability, readability, naming, and intuitive public API. Each has a description of the principle and
+its reason, a good example, and an anti-pattern. Each rule is a check an agent applies while writing:
 
-Design patterns names the 23 Gang of Four patterns. Each heading ends with "Pattern" and has a description and one example. SOLID names the five principles. Each has a description and one example.
+- Simplicity holds the inline test and the current-caller test, so it decides whether a unit exists.
+- Modularization asks four one-line answers (conceptual definition, responsibility, boundary, relationship) before
+  a new directory, file, public class, or public function. Its directory and file limits are defaults; an
+  existing project or framework layout wins. A directory exists only when its files share one conceptual
+  definition, responsibility, and boundary; that may be a domain concept or a layer.
+- Naming owns vocabulary, names in context, and file and directory names. Name length is set by checks and a
+  one-word file default, not by a hard word limit. Readability keeps types and flat control flow and points to
+  Naming.
+- Intuitive Public API defines learning depth.
 
-Coding Ideation reads both while designing classes and methods. The design order is conceptual definition, then class and method design, then codebase structure. Conceptual definition states what will be implemented and the terms. Class and method design holds responsibilities, boundaries, relationships, and patterns. Codebase structure holds project directories and files. After the user confirms, each decision is recorded only in the heading named on that topic.
+These principles apply to procedural and object-oriented code alike, so the doc sits at the Coding root, not in
+the OOP child. A domain root normally holds only its children; this doc is an explicit user exception. The root
+`SKILL.md` stays navigation-only and does not link it. Coding Ideation, Coding Execution, Coding Review, and the
+OOP child link it directly. Learning curve has no separate entry, because Intuitive Public API covers it.
 
-Coding Execution reads both while implementing. It does not replace the accepted class and method design or select a new pattern.
+## Object-oriented design
+
+[Coding Object-Oriented Programming](../../../skills/coding/coding-object-oriented-programming/SKILL.md) is the
+direct `preference` child that owns object-oriented design guidance for the family. The root routes to it like
+any other child. Its `SKILL.md` holds the defaults and a selection index that maps what the code shows to a
+check and an entry. The defaults start from no pattern and keep the learning depth of every public API at 2 or
+less. Three supporting docs hold the entries:
+
+| File | Entries |
+|---|---|
+| `oop-principles.md` | Encapsulation, abstraction, inheritance, and polymorphism. Each has a description, a good example, and an anti-pattern. |
+| `solid.md` | The five SOLID principles. Each has a violation sign, usual fix, over-application sign, and example. |
+| `design-pattern.md` | Creational: Abstract Factory, Builder, Factory Method, Prototype, and Singleton. Structural: Adapter, Bridge, Composite, Decorator, Facade, and Proxy. Behavioral: Chain of Responsibility, Command, Iterator, Mediator, Observer, State, Strategy, Template Method, and Visitor. |
+
+The docs hold 20 Gang of Four patterns and omit Interpreter, Flyweight, and Memento. Each pattern heading ends
+with "Pattern". A pattern entry is one or two sentences on what the pattern is, then one example. When to use a
+pattern lives in the problem-sign table of the child `SKILL.md`, whose "Check first" column names the simpler
+form. Composition over inheritance, cohesion and coupling, Tell-Don't-Ask, the Law of Demeter, and
+Value Object have no separate entry. Examples are short, typed Python 3.12.
+
+Coding Ideation reads the child `SKILL.md` while designing classes and methods, then opens only the supporting docs and coding principles it needs. The design order is conceptual definition, then class and method design, then codebase structure. Conceptual definition states what will be implemented and the terms. Class and method design holds responsibilities, boundaries, relationships, and patterns. Codebase structure holds project directories and files, chosen with Modularization and Naming. After the user confirms, each decision is recorded only in the heading named on that topic.
+
+Coding Execution reads the child `SKILL.md` and applies its Rules, then reads only the entries that the accepted class and method design names and the coding and OOP principles it applies. It does not replace the accepted class and method design or select a new pattern.
+
+Coding Review links the child as the source for the Design Pattern and Abstraction items in the Coding Review
+checklist. It links Coding Principles as the source for the Public API, Modularization, Reusability,
+Unintended Overengineering, Readability, Vocabulary, and Naming Convention items. The checklist items stay in
+that checklist.
 
 ## Public ownership and migration
 
@@ -95,7 +137,7 @@ released changelog entries retain their point-in-time names and facts.
 ## Related designs
 
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
-  use the same four-child navigation-only shape.
+  use the same navigation-only shape with four direct operation children. Coding adds one preference child.
 - [Review](../process/evaluation.md) records live Review facts and that Generic Evaluation is gone.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
   discovery and matching-child loads.

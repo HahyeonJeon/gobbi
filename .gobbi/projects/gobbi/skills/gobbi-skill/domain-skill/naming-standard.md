@@ -38,8 +38,8 @@ and the word duplicates no reserved meaning.
 Current free words are `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
 `architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
 `interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`,
-`app-lifecycle`, `operations`, `project-structure`, `debugging`, `performance`, and `compiler` for the proper
-noun React Compiler.
+`app-lifecycle`, `operations`, `project-structure`, `debugging`, `performance`, `object-oriented-programming`,
+and `compiler` for the proper noun React Compiler.
 
 Add or change a word in this register in the same change that introduces its meaning.
 

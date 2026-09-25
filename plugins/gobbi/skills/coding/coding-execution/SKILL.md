@@ -65,9 +65,11 @@ affected set. Repository type or file extension alone does not.
 
 - Bind the complete task contract, accepted design, exact
   worktree, scope, writer frontier, authority, acceptance evidence, verification requirements, and handoff.
-- Read [design-pattern.md](../design-pattern.md) for each pattern named by the accepted class and method
-  design before choosing implementation details. Do not select a different pattern.
-- Read [SOLID.md](../SOLID.md) before choosing implementation details. Keep the accepted class and method design.
+- Before choosing implementation details, read
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) and apply its Rules. Then
+  read only the entries that the accepted class and method design names, and the
+  [coding principles](../principles.md) and [OOP principles](../coding-object-oriented-programming/oop-principles.md)
+  that the code applies. Keep the accepted class and method design, and do not select a different pattern.
 - When commit authority is granted, keep this operation’s commit step. When it is none, bind the caller’s
   retained-state policy and forbid staging and committing.
 - Stop and return to the caller when the accepted task or design cannot determine the implementation, or when
@@ -164,7 +166,7 @@ affected set. Repository type or file extension alone does not.
 | Name | Description |
 |---|---|
 | [Coding Execution handoff](handoff.md) | Response format for the task result, changes, verification, local delivery, concerns, and limits. |
-| [Design patterns](../design-pattern.md) | Pattern identities for the patterns named by the accepted class and method design. Read before implementation details. Do not use it to select a new pattern. |
-| [SOLID](../SOLID.md) | Five SOLID principles read before implementation details. Do not use them to replace the accepted class and method design. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Rules read before implementation details, then only the entries named by the accepted class and method design and the OOP principles the code applies. Do not use it to select a new pattern or replace the accepted design. |
+| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API entries, read only for the principles the code applies. |
 | [Coding Ideation](../coding-ideation/SKILL.md) | Prior owner that settled material code-design choices before this operation; Coding Execution does not load or follow it. |
 | [Coding Planning](../coding-planning/SKILL.md) | Prior owner that settled multi-task code-work decomposition and writer frontiers before this operation; Coding Execution does not load or follow it. |

@@ -60,7 +60,7 @@
 
 ### Class and Method Design
 
-{Patterns selected from design-pattern.md, the classes, the methods, responsibilities, boundaries, relationships, and each participant's role. Include the operations, inputs, outputs, errors, and failure behavior a caller must rely on. When no pattern applies, record why. Do not place files or directories here.}
+{Patterns selected from `coding-object-oriented-programming`, the classes, the methods, responsibilities, boundaries, relationships, and each participant's role. Include the operations, inputs, outputs, errors, and failure behavior a caller must rely on. When no pattern applies, record why. Do not place files or directories here.}
 
 ### Codebase Structure
 

@@ -20,8 +20,9 @@ every material gap is answered, deferred, or removed from scope.
 
 ### Study before discussion and design
 
-Agents study the codebase, project docs, [design-pattern.md](../design-pattern.md), and [SOLID.md](../SOLID.md)
-before they discuss or design. Official docs, references, knowledge, or trends are used when that evidence can change an in-scope choice.
+Agents study the codebase, project docs, and
+[`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) before they discuss or
+design. Official docs, references, knowledge, or trends are used when that evidence can change an in-scope choice.
 
 ### Agents design before the user confirms
 
@@ -45,7 +46,7 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
 - **MUST stop at the design boundary.** Implementation details, recipes, file-level edits, code, and other
   realized output are out of scope.
 - **MUST resolve Phase 2 design in this exact order without merging, swapping, or extending levels:**
-  conceptual-definition → class/method design from design-pattern → codebase structure.
+  conceptual-definition → class/method design from `coding-object-oriented-programming` → codebase structure.
 - **NEVER change an accepted contract silently.** Reopen the earliest affected decision and obtain any
   required user choice.
 
@@ -72,24 +73,28 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
 
 #### 2.1 Study internal and external materials
 
-- Study the codebase and project docs first. Read [design-pattern.md](../design-pattern.md) and
-  [SOLID.md](../SOLID.md) before any class or method choice. Use official docs, references, knowledge, or
-  trends when that evidence can change an in-scope choice.
+- Study the codebase and project docs first. Before any class or method choice, read
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md), then open only the
+  supporting docs that the choice needs. Use official docs, references, knowledge, or trends when that evidence
+  can change an in-scope choice.
 - Keep the study for the Phase 3 record. Do not select a pattern in this step, and do not ask the user in
   this phase.
 
 #### 2.2 Discuss and design in level order
 
 - Agents discuss and close one level before the next: conceptual definition, class and method design from
-  [design-pattern.md](../design-pattern.md), then codebase structure.
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md), then codebase structure.
 - In conceptual definition, state what will be implemented and define the vocabulary and terms. Do not name
   classes, methods, files, or directories.
-- In class and method design, apply [SOLID.md](../SOLID.md) to the responsibilities, boundaries, and
+- In class and method design, apply the needed [coding principles](../principles.md),
+  [OOP principles](../coding-object-oriented-programming/oop-principles.md), and
+  [SOLID](../coding-object-oriented-programming/solid.md) entries to the responsibilities, boundaries, and
   relationships. Record the selected patterns, classes, methods, responsibilities, boundaries, relationships,
   participant roles, operations, inputs, outputs, errors, and failure behavior. When no pattern applies,
   record why. Do not place files or directories.
 - In codebase structure, record the project directories and files that hold the accepted classes and methods.
-  Reopen class and method design when a file placement shows that level cannot stand.
+  Choose them with [Modularization](../principles.md#modularization) and [Naming](../principles.md#naming). Reopen
+  class and method design when a file placement shows that level cannot stand.
 
 ### Phase 3 — Decision and Records
 
@@ -125,6 +130,6 @@ codebase structure. Classify each level as `inherited/current`, `not applicable`
 | [Coding Ideation part](templates/ideation/ideation-NN.md) | Template for the work definition and the idea. |
 | [Discussion index](templates/ideation/discussion/discussion-index.md) | Template for topics keyed to Design headings, study, and decisions. |
 | [Discussion part](templates/ideation/discussion/discussion-NN.md) | Repeatable discussion group and study template. |
-| [Design patterns](../design-pattern.md) | Complete OOP pattern set read in Phase 2 before class and method design. |
-| [SOLID](../SOLID.md) | Five SOLID principles read in Phase 2 while designing class and method responsibilities, boundaries, and relationships. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP preferences and selection index, read in Phase 2 before class and method design. Its supporting docs are opened only when a choice needs them. |
+| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API entries for procedural and object-oriented code, applied in class and method design and in codebase structure. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

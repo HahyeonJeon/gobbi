@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added the `coding-object-oriented-programming` preference skill to the `coding` domain. It sets defaults for
+  class, interface, and public API design and holds entries for the four OOP principles, the five SOLID
+  principles, and 20 design patterns. Coding Ideation and Coding Execution load it, and Coding Review links it.
+- Added `coding/principles.md` with six design principles for procedural and object-oriented code:
+  simplicity, modularization, reusability, readability, naming, and intuitive public API. Coding Ideation, Coding
+  Execution, and Coding Review link it directly.
+
 ## 1.3.1 - 2026-09-21
 
 This patch includes the breaking removal of the Startup family.
