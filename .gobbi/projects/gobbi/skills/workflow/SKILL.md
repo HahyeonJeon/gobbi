@@ -158,8 +158,9 @@ P3 · Note
   through Delegation with that skill's complete caller contract plus Workflow's project/work scope,
   recorded participant discussion records,
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
-  `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, and recovery boundary. Route a returned
-  decision package to Step 1.4, then resume the matching specialist only from the recorded answer.
+  `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, caller-named draft location under
+  `{session-root}/tmp/`, and recovery boundary. Route a returned decision package to Step 1.4, then resume the
+  matching specialist only from the recorded answer.
 - **RECORD:** Reread the indexed result, reproduce membership, order, path, hash, and tracked-tree checks, and
   write the receipt without reports, checklists, or `gate.md`. Return to Step 1.4 only for missing or
   contradictory project/work design, required participant discussion, or a required user decision, and return
