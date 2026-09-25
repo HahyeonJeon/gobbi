@@ -1,5 +1,13 @@
 # Design Mistakes
 
+## A phase order was applied outside that phase
+
+**Context:** A user named an order for one phase of a procedure.
+
+**Mistake:** The order was written into earlier phases, a checklist, and a later skill. Those surfaces then described a different job from the phase the user named.
+
+**Correction:** Change only the named phase. Confirm that boundary before editing another phase, a checklist, or another skill.
+
 ## Writing a guard as the negation of one case, not the full state space
 
 **Context:** Writing a condition that gates behavior on a specific input state, such as "when the brief
