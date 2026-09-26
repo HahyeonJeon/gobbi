@@ -64,3 +64,25 @@ and `turn_id` is absent. See [stop reminder](../../design/feature/stop-reminder.
 **Tip:** `~/.claude/plugins/marketplaces/<name>/` is a full git clone of the marketplace source repository,
 created automatically by `/plugin marketplace add`. Every consumer of that marketplace gets one, and it
 satisfies the same sentinel checks a genuine plugin install does.
+
+## Claude Code refuses a subagent's report-file write
+
+**Context:** A review brief tells a Claude Code subagent, such as the `author` role, to write its own
+`report.md` and `checklist.md`.
+
+**Tip:** The harness refuses the `report.md` write with "Subagents should return findings as text, not write
+report files". The `checklist.md` write is allowed.
+
+**Application:** In Claude Code review briefs, have the reviewer return the full report in its Handoff. The
+manager saves `report.md` verbatim and records that it did so in the report header.
+
+## A full model id works in Claude agent frontmatter
+
+**Context:** Pinning a Claude role contract to one exact model instead of an alias such as `opus`.
+
+**Tip:** Claude Code accepts a full model id such as `model: claude-opus-5-5` in agent frontmatter.
+`claude -p --agent assistant --output-format json` reports `modelUsage` keyed by that id, which proves the
+pin took effect.
+
+**Application:** Use that `modelUsage` key to verify a pin after changing a Claude role contract. The
+current pins are in [Role model pins](../../design/process/role-model-pins.md).

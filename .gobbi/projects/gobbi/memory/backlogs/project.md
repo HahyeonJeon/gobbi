@@ -212,3 +212,32 @@ scope.
 
 **Context:** The live bar and baseline checklist for each `review-depth` token are in the [Coding
 Review](../../skills/coding/coding-review/SKILL.md) review-depth table.
+
+## Manifest descriptions omit Cursor plugin agents
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Correct the marketplace and Claude plugin descriptions, which say plugin agents cover only Claude
+Code and Grok. The Cursor plugin manifest also declares agents.
+
+**Why backlogged:** The v1.3.2 release review found it (review-03 Problem 3). The text predates that release
+(since `69850fba`) and was outside the release contract.
+
+**Context:** `.claude-plugin/marketplace.json` (`:7`, `:11`) and `plugins/gobbi/.claude-plugin/plugin.json`
+(`:4`). The Grok and Cursor manifests declare `./runtimes/grok` and `./runtimes/cursor`; see
+`.gobbi/projects/gobbi/agents/README.md`.
+
+## Naming-standard scope for sibling references and preference words
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Clarify two points in the [naming standard](../../skills/gobbi-skill/domain-skill/naming-standard.md).
+Say whether the "refer to a sibling child by its backticked slug" rule covers prose mentions. About 37
+title-case names, such as "Coding Ideation", remain in the Coding skills. Also say that the free word
+`object-oriented-programming` names a preference child, not a `design` operation.
+
+**Why backlogged:** The v1.3.2 release reviews raised both as out-of-contract improvements (review-02 I4,
+review-01 I8). The user deferred them.
+
+**Context:** The sibling-reference row and the free-word list are in the naming standard. The Coding family
+names are in the [Coding skill family design](../design/feature/coding-skill-family.md).

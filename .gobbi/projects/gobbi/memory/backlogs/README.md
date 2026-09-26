@@ -10,9 +10,13 @@ each group. Order implies no priority, readiness, or sequence.
 
 ## Coding skill family
 
+- `Coding consistency notes from the v1.3.2 release review` → `coding-skill-family.md#coding-consistency-notes-from-the-v132-release-review`
 - `Coding example and wording fixes from the principles review` → `coding-skill-family.md#coding-example-and-wording-fixes-from-the-principles-review`
+- `Coding Ideation home for cross-cutting design policy` → `coding-skill-family.md#coding-ideation-home-for-cross-cutting-design-policy`
 - `Coding Planning repeats leaf text and invariant checks` → `coding-skill-family.md#coding-planning-repeats-leaf-text-and-invariant-checks`
+- `Coding Principles placement in the domain-skill standard` → `coding-skill-family.md#coding-principles-placement-in-the-domain-skill-standard`
 - `Coding Review report records the review depth` → `coding-skill-family.md#coding-review-report-records-the-review-depth`
+- `Fixed Workflow draft path for Coding Ideation` → `coding-skill-family.md#fixed-workflow-draft-path-for-coding-ideation`
 - `OOP child repeats public API and no-pattern policy` → `coding-skill-family.md#oop-child-repeats-public-api-and-no-pattern-policy`
 
 ## Evaluation
@@ -37,6 +41,8 @@ each group. Order implies no priority, readiness, or sequence.
 - `Future Markdown link checking must inspect the plugin mirror` → `project.md#future-markdown-link-checking-must-inspect-the-plugin-mirror`
 - `Guardrail gaps in two .toml role wrappers` → `project.md#guardrail-gaps-in-two-toml-role-wrappers`
 - `Locator no-brief fallback unverified for a spawned specialist` → `project.md#locator-no-brief-fallback-unverified-for-a-spawned-specialist`
+- `Manifest descriptions omit Cursor plugin agents` → `project.md#manifest-descriptions-omit-cursor-plugin-agents`
+- `Naming-standard scope for sibling references and preference words` → `project.md#naming-standard-scope-for-sibling-references-and-preference-words`
 - `Reconsider plugin-only distribution` → `project.md#reconsider-plugin-only-distribution`
 - `Review depth wording drift in process memory` → `project.md#review-depth-wording-drift-in-process-memory`
 - `Review gating wording outside Coding` → `project.md#review-gating-wording-outside-coding`

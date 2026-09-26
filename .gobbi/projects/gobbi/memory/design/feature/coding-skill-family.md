@@ -146,9 +146,10 @@ its callers rely on. Codebase Structure places each new or changed directory and
 chosen with Modularization and Naming. No pattern is the default; an added pattern records its force and the
 simpler form it replaces. The user sees a tree of the three levels, a schema of the public classes and
 functions, and a diagram of the directories and files. Unconfirmed work stays in the caller-named draft
-location, and the user's recorded answer resumes the work at Step 1.1. After confirmation, each decision lives
-only in its Design heading, and the Discussion topic links to that heading. The templates and the result are
-flat, with every file directly in the output root, and there is no Requirements snapshot.
+location, and Coding Ideation stops if the caller names none. Cowork and Workflow each name one under
+`{session-root}/tmp/`. The user's recorded answer resumes the work at Step 1.1. After confirmation, each
+decision lives only in its Design heading, and the Discussion topic links to that heading. The templates and
+the result are flat, with every file directly in the output root, and there is no Requirements snapshot.
 
 Coding Execution applies Simplicity first, then the other Coding Principles, while it writes and simplifies
 code. It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance.

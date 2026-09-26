@@ -104,9 +104,12 @@ file back, it must say so to the delegate first, not just start editing.
 
 **Mistake:** Moving the Unreleased list as a block without re-reading each bullet against the shipped tree
 leaves superseded facts as current. A four-runtime tree kept three-runtime helper and question-tool sentences.
+A bullet can also be true only against an intermediate commit. The v1.3.2 Unreleased text called the Coding
+Ideation change a rename of one level, but v1.3.1 had shipped a different four-level ladder.
 
 **Correction:** Re-read each carried bullet against the shipped tree before accepting the version section.
-Drop or rewrite any sentence that is no longer true.
+Drop or rewrite any sentence that is no longer true. Check each changed skill with a diff against the previous
+release tag, not against the last commit.
 
 ## Running a Partner session write beside another session writer
 
@@ -195,10 +198,13 @@ consistency group.
 **Context:** A manager writes a commit or task brief from earlier notes.
 
 **Mistake:** A brief called the old guides "unlinked". The committing author found that Ideation, Execution,
-and a template linked them at the base; only the root did not.
+and a template linked them at the base; only the root did not. Another brief said "run
+`bash scripts/sync-plugin-package.sh`" to regenerate `plugins/gobbi/`. With no argument that script only
+prints usage.
 
 **Correction:** Check each claim before it goes into a brief, or state it with its exact scope ("the root did
-not link them").
+not link them"). Give each command with the arguments it needs, for example
+`sync-plugin-package.sh --materialize` to write the package, then `--check` to verify it.
 
 ## Grouping review findings by theme drops findings
 

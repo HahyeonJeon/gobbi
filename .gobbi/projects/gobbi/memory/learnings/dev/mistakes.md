@@ -75,6 +75,18 @@ fails with `===== not found`, and an `&&` chain stops there.
 
 **Correction:** Quote separator words (`echo '-- X --'`) or start them with another character.
 
+## zsh does not word-split an unquoted variable
+
+**Context:** List-driven commands such as `git branch -d $LIST` or `git push origin $(...)` in the Claude Code
+Bash tool, whose shell is zsh.
+
+**Mistake:** zsh passes an unquoted variable as one word. Each space-separated list reached Git as one
+argument. Every branch delete failed with "branch '<a b c>' not found", and the push stopped on an unmatched
+refspec before it connected. No ref changed, but the work did not happen.
+
+**Correction:** Run list-driven Git changes under `bash <<'EOF'` with arrays (`"${A[@]}"`). Record every
+branch tip SHA before deleting.
+
 ## A single-line grep does not prove a multi-word rename
 
 **Context:** Checking that a multi-word phrase, such as "clear units", is gone after a rename in hard-wrapped
