@@ -5,7 +5,9 @@ set -uo pipefail
 set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
-roles=(manager developer designer author assistant)
+# Existing roles first, in their existing order, then reviewers. Appending keeps every existing ledger and
+# check row in place.
+roles=(manager developer designer author assistant code-reviewer docs-reviewer design-reviewer)
 permission_skills=(gobbi principles discussion delegation)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
@@ -16,12 +18,14 @@ projects/*/worktrees/
 '
 
 # The minimum .claude/settings.json, created only when the file is absent. Namespaced, because a plugin
-# consumer's entries read Agent(gobbi:<role>) and Skill(gobbi:<name>).
+# consumer's entries read Agent(gobbi:<role>) and Skill(gobbi:<name>). It holds one Agent entry per roles
+# element and one Skill entry per permission_skills element; scripts/prove-gobbi-setup.sh proves both.
 minimum_claude_settings='{
   "permissions": {
     "allow": [
       "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
       "Agent(gobbi:author)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:code-reviewer)", "Agent(gobbi:docs-reviewer)", "Agent(gobbi:design-reviewer)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)"
     ]
@@ -454,6 +458,7 @@ report_settings_gaps() {
   local missing=()
   local role
   local skill
+  local expected=$((${#roles[@]} + ${#permission_skills[@]}))
 
   for role in "${roles[@]}"; do
     if ! has_claude_permission "Agent($role)" "Agent(gobbi:$role)" "$settings"; then
@@ -467,9 +472,10 @@ report_settings_gaps() {
   done
 
   if ((${#missing[@]} == 0)); then
-    printf 'left untouched; all 12 expected entries present'
+    printf 'left untouched; all %d expected entries present' "$expected"
   else
-    printf 'left untouched; %d of 12 expected entries missing: %s' "${#missing[@]}" "${missing[*]}"
+    printf 'left untouched; %d of %d expected entries missing: %s' \
+      "${#missing[@]}" "$expected" "${missing[*]}"
   fi
 }
 
@@ -497,7 +503,8 @@ write_claude_settings() {
     return 1
   fi
   if jq -e 'type == "object"' "$absolute" >/dev/null 2>&1; then
-    record "$relative" created "minimum object; 5 Agent + 6 Skill entries"
+    record "$relative" created \
+      "minimum object; ${#roles[@]} Agent + ${#permission_skills[@]} Skill entries"
     return 0
   fi
   record "$relative" stopped "the written file is not a JSON object"
@@ -970,7 +977,7 @@ check_claude() {
           fail "Claude Agent permission is missing: $role"
         fi
       done
-      for skill in gobbi principles discussion delegation; do
+      for skill in "${permission_skills[@]}"; do
         if has_claude_permission "Skill($skill)" "Skill(gobbi:$skill)" "$settings"; then
           pass "Claude Skill permission: $skill"
         else

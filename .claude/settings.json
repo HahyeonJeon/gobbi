@@ -27,6 +27,9 @@
       "Agent(designer)",
       "Agent(author)",
       "Agent(assistant)",
+      "Agent(code-reviewer)",
+      "Agent(docs-reviewer)",
+      "Agent(design-reviewer)",
       "WebSearch"
     ],
     "defaultMode": "auto"

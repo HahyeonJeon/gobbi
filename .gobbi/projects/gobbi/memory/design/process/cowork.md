@@ -30,10 +30,14 @@ their IDE. The manager does not render the diff. The call is the confirmation.
 ## Review layout
 
 Cowork review uses one unique caller-named directory below `tmp/` as the aggregation parent.
-Per-runtime children are `<runtime>/report.md` and `<runtime>/checklist.md`. Runtime tokens are
-`claude-code`, `codex`, `cursor`, and `grok`. There is no `gate.md`. Remaining-runtime briefs name
-write set `runtime-directory`. A directory that holds only one of the two files is incomplete
-evidence and never PASS input. Wrapper capture stays outside the session.
+Children are `<class>/<runtime>/report.md` and `<class>/<runtime>/checklist.md`, one class directory
+per artifact class the subject contains. Class tokens are `code`, `docs`, and `design`. Runtime tokens
+are `claude-code`, `codex`, `cursor`, and `grok`. Each class gets one fresh matching reviewer and one
+Partner wrapper per remaining runtime. There is no `gate.md`. Remaining-runtime briefs name write set
+`runtime-directory`, bound to that class directory. A directory that holds only one of the two files
+is incomplete evidence and never PASS input. The aggregate passes only when every class passes. A class
+passes only when every complete pair in its directory passes. A class with no complete pair does not
+pass. Wrapper capture stays outside the session.
 
 The review SOP, dual record, depth tokens, and Workflow layout live in [Review](evaluation.md).
 This file keeps the Cowork commit gate, `review-depth` routing, and the Cowork-specific review

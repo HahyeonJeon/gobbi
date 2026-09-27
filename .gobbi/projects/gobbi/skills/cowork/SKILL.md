@@ -56,10 +56,10 @@ route.
   and Planning results and implementation writes, and, only after `commit` authority, implementation commits;
   assistants own direct-Memory closure commits.
 - **MUST run review, implementation commit, and Cowork closure only after the matching explicit user
-  `review`, `commit`, or `wrap up` call.** One `review` authorizes one fresh matching-specialist agent and
-  one Partner wrapper per remaining runtime; one `commit` authorizes focused implementation commits; one
-  `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow TODOs, gates, RECORD receipts,
-  or a Workflow Note.
+  `review`, `commit`, or `wrap up` call.** One `review` authorizes, for each artifact class in the subject,
+  one fresh matching reviewer and one Partner wrapper per remaining runtime; one `commit` authorizes focused
+  implementation commits; one `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow
+  TODOs, gates, RECORD receipts, or a Workflow Note.
 
 ## Procedure
 
@@ -237,24 +237,28 @@ CW · Wrap-up
   not name a subset, stop and ask for `commit` or a named subject.
 - Activate only `CW · Review`, name one locked `review-depth` token, define the decision criteria and
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
-  parent with per-runtime children `<runtime>/report.md` and `<runtime>/checklist.md`, write each of those
-  paths as an ignored session record under Memory preferences, and keep runtime tokens `claude-code`,
-  `codex`, `cursor`, and `grok`; do not use `claude` or alias historical names such as `codex.md`. Use
+  parent with children `<class>/<runtime>/report.md` and `<class>/<runtime>/checklist.md`, one class
+  directory per artifact class the subject contains, so a single-class subject has one. Write each of those
+  paths as an ignored session record under Memory preferences. Keep class tokens `code`, `docs`, and
+  `design`, and runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias
+  historical names such as `codex.md`. Use
   `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
   integrity, required discussion, and user decisions, not implementation completeness or document polish),
   `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
-- Apply the matching domain review skill through one fresh matching-specialist agent and one
-  Partner wrapper subagent per remaining runtime over the same frozen subject and named `review-depth`:
-  [Coding Review](../coding/coding-review/SKILL.md) for code,
-  [Authoring Review](../authoring/authoring-review/SKILL.md) for writing, or
-  [Design Review](../design/design-review/SKILL.md) for visual work.
-  Under `by-owning-stage`, apply each matching review baseline only to the artifact class it owns. Keep
-  remaining-runtime briefs naming write set `runtime-directory`, the caller-named aggregation parent, a
-  Delegation prompt, `expected-partner`, and `review-depth`; a missing write set still means
+- In the same `review` call, for each artifact class the subject contains, apply the matching domain review
+  skill through one fresh matching reviewer and one Partner wrapper subagent per remaining runtime over that
+  class's slice of the same frozen subject and the named `review-depth`:
+  [Coding Review](../coding/coding-review/SKILL.md) with `code-reviewer` for software, including
+  architecture designs (`code`),
+  [Authoring Review](../authoring/authoring-review/SKILL.md) with `docs-reviewer` for writing (`docs`), or
+  [Design Review](../design/design-review/SKILL.md) with `design-reviewer` for visual work (`design`).
+  Apply each review baseline only to the artifact class it owns. Keep
+  remaining-runtime briefs naming write set `runtime-directory`, that class's directory below the aggregation
+  parent, a Delegation prompt, `expected-partner`, and `review-depth`; a missing write set still means
   `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
-  session and is not the review parent; a launchable runtime produces both files, an Unavailable
+  session and is not the aggregation parent; a launchable runtime produces both files, an Unavailable
   attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
   complete pairs after the assigned review skill has applied the token rather than writing a RECORD.
 
@@ -263,9 +267,11 @@ CW · Wrap-up
 - Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction returns
   to its owning writer and waits for `commit` when it changes tracked files; it does not auto-commit, and it
   makes prior coverage stale.
-- Treat a runtime directory that holds only one of `report.md` and `checklist.md` as incomplete evidence, never
-  a report to disposition, and never PASS input. Assemble and disposition only complete pairs, using
-  contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the aggregation result.
+- Treat a `<class>/<runtime>/` directory that holds only one of `report.md` and `checklist.md` as incomplete
+  evidence, never a report to disposition, and never PASS input. Assemble and disposition only complete pairs,
+  using contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the aggregation
+  result. The aggregate passes only when every class passes; a class passes only when every complete pair in
+  its directory passes, and a class with no complete pair does not pass.
 - Complete Review only when every finding has a disposition and no correction remains unreviewed. Another
   corrected subject requires another explicit `review` call.
 

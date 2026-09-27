@@ -47,7 +47,8 @@ the worktree and session root recorded by Configuration and the latest handoff.
   dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
   self-reviews; independent local and remaining Partner inputs stay separate until synthesis; REVIEW, when
-  the unit includes it, uses a fresh matching-specialist agent and one attempted invocation per remaining runtime.
+  the unit includes it, uses, for each artifact class the unit contains, one fresh matching reviewer
+  (`code-reviewer`, `docs-reviewer`, or `design-reviewer`) and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
@@ -118,16 +119,18 @@ P3 · Note
 ```text
 <record-directory>/review/iteration-N/
   gate.md
-  <runtime>/
-    report.md
-    checklist.md
+  <class>/
+    <runtime>/
+      report.md
+      checklist.md
 ```
 
-- Use that review layout only for Execution tasks and Wrap-up, with runtime tokens `claude-code`,
-  `codex`, `cursor`, and `grok`, and place the receipt at `<record-directory>/record/iteration-N.md` for every
-  productive unit, including Ideation and Planning. Do not use `claude` or alias historical names such as
-  `codex.md`; accepted results remain at their owner-defined paths, and later directories are created only
-  when their first result needs them.
+- Use that review layout only for Execution tasks and Wrap-up, with one class directory per artifact class
+  the unit contains, so a single-class unit has one. Use class tokens `code`, `docs`, and `design`, and
+  runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias historical names
+  such as `codex.md`. Place the receipt at `<record-directory>/record/iteration-N.md` for every productive
+  unit, including Ideation and Planning. Accepted results remain at their owner-defined paths, and later
+  directories are created only when their first result needs them.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
   `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and write each of those paths as an ignored
   session record under Memory preferences. Do not update `configuration.md` after the Configuration write except when
@@ -219,19 +222,21 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
   focused local commit. An in-stage self-review cannot replace stage REVIEW.
-- **REVIEW:** Freeze the commit and result, name `review-depth` `execution-implementation`,
-  apply the matching domain review skill, and launch remaining runtimes from the recorded set minus the active
-  runtime with write set `runtime-directory`; if that set is empty, launch nothing, and a missing write set is
-  `writing-path-only` and cannot complete REVIEW. A runtime directory that holds only one of `report.md` and
-  `checklist.md` is incomplete and never PASS input.
-- **RECORD:** Write `gate.md` from contract-gate verdicts only. PASS means criteria are met with no correction
-  pending. REVISE means an authorized correction remains; return to this task's WORK with a new `iteration-N`.
-  FAIL means a safe correction is unavailable; stop and do not start the next task. Write and verify the
-  receipt at `<record-directory>/record/iteration-N.md`. Quality `does-not-meet` with contract-gate PASS is
-  not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design. Any
-  tracked correction makes prior coverage stale and repeats WORK and REVIEW. After PASS, reread the commit,
-  diff, checks, reports, findings, and dispositions before the next task and amend only pending plan work
-  when an in-contract plan defect appears.
+- **REVIEW:** Freeze the commit and result and name `review-depth` `execution-implementation`. For each
+  artifact class the task contains, apply the matching domain review skill through one fresh matching reviewer,
+  and launch remaining runtimes from the recorded set minus the active runtime with write set
+  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, and a missing write
+  set is `writing-path-only` and cannot complete REVIEW. A `<class>/<runtime>/` directory that holds only one
+  of `report.md` and `checklist.md` is incomplete and never PASS input.
+- **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
+  class meets its criteria with no correction pending; a class passes only when every complete pair in its
+  directory passes, and a class with no complete pair does not pass. REVISE means an authorized correction
+  remains; return to this task's WORK with a new `iteration-N`. FAIL means a safe correction is unavailable;
+  stop and do not start the next task. Write and verify the receipt at `<record-directory>/record/iteration-N.md`.
+  Quality `does-not-meet` with contract-gate PASS is not REVISE, and after completed `P1 · User Review`
+  out-of-contract opinions do not reopen design. Any tracked correction makes prior coverage stale and repeats
+  WORK and REVIEW. After PASS, reread the commit, diff, checks, reports, findings, and dispositions before the
+  next task and amend only pending plan work when an in-contract plan defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
@@ -263,7 +268,7 @@ Note after Continue.
   risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
   stops without a design question when authority, safety, or the locked contract cannot support one route.
 - Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
-  final paths, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths,
+  final paths, per-class, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths,
   checks, merge authority, and protected state.
 
 #### 3.2 Run closure WORK
@@ -282,13 +287,17 @@ Note after Continue.
 
 - Freeze the actual closure tree, name `review-depth` `by-owning-stage`, and review it with the Memory
   diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
-  risks, and recovery paths. Use one fresh matching-specialist agent and one Partner wrapper per remaining
-  runtime at `wrap-up/review/iteration-N/<runtime>/{report.md,checklist.md}` with write set
-  `runtime-directory`; if that set is empty, launch nothing, a missing write set is `writing-path-only` and
-  cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
-- Apply the Workflow gate from contract-gate verdicts only: PASS when criteria are met with no correction
-  pending, REVISE when an authorized correction remains and then return to Phase 3 DISCUSSION and repeat the
-  changed WORK, and FAIL when a safe correction is unavailable. A runtime directory that holds only one of
+  risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer and
+  one Partner wrapper per remaining runtime, each at
+  `wrap-up/review/iteration-N/<class>/<runtime>/{report.md,checklist.md}`, with write set
+  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, a missing write set is
+  `writing-path-only` and cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence,
+  not a Partner Handoff.
+- Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
+  class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
+  return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
+  class passes only when every complete pair in its directory passes, and a class with no complete pair does
+  not pass. A `<class>/<runtime>/` directory that holds only one of
   `report.md` and `checklist.md` is incomplete and never PASS input; quality `does-not-meet` with contract-gate
   PASS is not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design.
 - Any tracked correction makes prior coverage stale and repeats WORK and REVIEW. Retry a bounded agent or

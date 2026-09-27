@@ -7,8 +7,9 @@ keep who the role is, how it behaves, what it loads, what it never does, and whi
 
 ## File set
 
-- Canonical source: 20 contracts under `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
-- Plugin projection: five Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
+- Canonical source: 32 contracts, eight roles in each of four runtimes, under
+  `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
+- Plugin projection: eight Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
   `agents/claude/`, plus the other runtimes at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`. The
   package cannot nest them under `agents/`, because a plugin's `agents/` directory is scanned recursively and
   each subfolder becomes part of the agent's scoped identifier. Grok and Cursor declare their own paths in
@@ -34,20 +35,22 @@ roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. A reviewer ad
 
 ## Conditional domain load map
 
-Domain families change conditional loads, not the five-role set or role procedures. Leader, Executor, and
-Reviewer below name the load map, not a requirement to restore those pipeline files. The same semantic map
-appears in all four canonical runtime variants.
+Domain families change conditional loads, not the eight-role set or role procedures. Leader and Executor
+below name load maps for pipeline work, not roles or a requirement to restore those pipeline files. Reviewer
+names the three reviewer roles: `code-reviewer`, `docs-reviewer`, and `design-reviewer`. The same semantic
+map appears in all four canonical runtime variants.
 
 | Role | Conditional load | Boundary |
 |---|---|---|
 | Manager | Load the matching domain root — [Coding](../../../skills/coding/SKILL.md), [Authoring](../../../skills/authoring/SKILL.md), or [Design](../../../skills/design/SKILL.md) — when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. Each mode retains its paths, gates, policies, and handoff. |
 | Leader | Load the matching domain ideation skill for an unresolved material design choice: [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md), [Authoring Ideation](../../../skills/authoring/authoring-ideation/SKILL.md), or [Design Ideation](../../../skills/design/design-ideation/SKILL.md). Load the matching domain planning skill when decomposition is needed: [Coding Planning](../../../skills/coding/coding-planning/SKILL.md), [Authoring Planning](../../../skills/authoring/authoring-planning/SKILL.md), or [Design Planning](../../../skills/design/design-planning/SKILL.md). | Generic Ideation and Generic Planning are gone. The leader does not implement or review. |
-| Executor | Load the matching domain execution skill when the settled writer frontier matches that domain: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). In explicit review-only mode, load the matching domain review skill instead. | Generic Execution is gone. Implementation and review-only modes are mutually exclusive. Review-only writes only the caller-bound report, changes no subject, never stages or commits, and issues no verdict. |
-| Reviewer | Load the matching domain review skill for independent review: [Coding Review](../../../skills/coding/coding-review/SKILL.md), [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), or [Design Review](../../../skills/design/design-review/SKILL.md). | Generic Evaluation is gone. Domain Review writes `report.md` and working `checklist.md`. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
+| Executor | Load the matching domain execution skill when the settled writer frontier matches that domain: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). | Generic Execution is gone. The executor implements and never runs Review; in-stage self-review stays. |
+| Reviewer | Load the domain review skill for the reviewer's subject: `code-reviewer` loads [Coding Review](../../../skills/coding/coding-review/SKILL.md), `docs-reviewer` loads [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), and `design-reviewer` loads [Design Review](../../../skills/design/design-review/SKILL.md). | Generic Evaluation is gone. Domain Review writes `report.md` and working `checklist.md`. A reviewer may create or run anything a check needs, and never edits the target or its source inputs. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
 | Assistant | No domain-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation or review. |
 
-An executor in review-only mode may provide independent review when not the author. An author may provide only
-caller-permitted disclosed self-review. The report remains non-gating in either case. See the
+The reviewer roles own independent review. Every Review goes to the reviewer for its subject, and no reviewer
+reviews work it produced. Developer, designer, and author never deliver a review as the primary result. A
+reviewer never accepts or rejects the target; the manager accepts. See the
 [Coding skill family](../feature/coding-skill-family.md), [Authoring skill family](../feature/authoring-skill-family.md),
 and [Design skill family](../feature/design-skill-family.md).
 

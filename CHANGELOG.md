@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added three reviewer roles in all four runtimes: `code-reviewer` for developer software, `docs-reviewer` for
+  author writing, and `design-reviewer` for designer visual work. Each uses its producer's model and effort. A
+  reviewer may create or run anything a check needs, but it never edits the target or its source inputs.
+- Added a setup proof that the settings `claude.sh` creates allow every role and every permission skill, that
+  setup messages report the true entry counts, and that `codex.sh` writes every role's TOML.
+
+### Changed
+
+- Review now goes to the reviewer for its subject. Developer, designer, and author no longer review, and each
+  never delivers a review as the primary result. Manager, Delegation, Cowork, Workflow, and the Coding,
+  Authoring, and Design Review skills route Review this way. Each artifact class in a subject (`code`, `docs`,
+  or `design`) gets its own reviewer. Review reports live at `<class>/<runtime>/` below the review directory,
+  and the review passes only when every class passes.
+- Setup installs and allows eight roles. The minimum Claude settings add `Agent(gobbi:code-reviewer)`,
+  `Agent(gobbi:docs-reviewer)`, and `Agent(gobbi:design-reviewer)`, and setup messages compute their counts
+  from the role and skill lists. Setup does not edit an existing `.claude/settings.json`; add the three entries
+  by hand.
+- Re-synced the eight `.cursor/agents/` copies with the canonical Cursor contracts.
+
+### Fixed
+
+- The `designer` description now reads "visual work, including UI, …" in all four runtimes. The old "visual
+  work: UI, …" form failed YAML parsing.
+
 ## 1.3.2 - 2026-09-25
 
 This patch adds the `coding-object-oriented-programming` preference skill and Coding Principles.

@@ -63,7 +63,7 @@ context.
   ## Metadata
   **Required**
 
-  - agent: developer|designer|author
+  - agent: developer|designer|author|code-reviewer|docs-reviewer|design-reviewer
   - assignment: <stable assignment identifier>
 
   **Optional**
@@ -160,17 +160,21 @@ context.
 
 #### Specialist substitution table
 
-- Use this table to write `## Role` for the specialist. Do not paste the table into the brief as extra
-  sections. Metadata `agent` is `developer`, `designer`, or `author`.
+- Use this table to write `## Role` for the specialist or reviewer. Do not paste the table into the brief as
+  extra sections. Metadata `agent` is `developer`, `designer`, `author`, `code-reviewer`, `docs-reviewer`, or
+  `design-reviewer`.
 
-  | Specialist | Role persona | Role stance | Quality contrast |
+  | Specialist or reviewer | Role persona | Role stance | Quality contrast |
   |---|---|---|---|
   | Developer | world-best developer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
   | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
   | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
+  | Code reviewer | world-best code reviewer of `{subject}` | the frozen software, its callers, tests, config, and the supplied criteria | world-best code-review bar, not a generic diff skim |
+  | Docs reviewer | world-best docs reviewer of `{subject}` | the reader, the frozen writing, its sources, and the supplied criteria | world-best docs-review bar, not a generic proofread |
+  | Design reviewer | world-best design reviewer of `{subject}` | the viewer, the frozen visual work, its references, and the supplied criteria | world-best design-review bar, not a generic visual glance |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- Pick the specialist from the primary subject. Software, including software architecture, is Developer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+- Pick the specialist from the primary subject. Software, including software architecture, is Developer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author. For Review, pick the reviewer of that same subject instead: Code reviewer for software, Design reviewer for visual work, and Docs reviewer for durable writing.
 
 #### Phase substitution table
 
@@ -182,10 +186,11 @@ context.
   | Ideate | Coding Ideation, Authoring Ideation, or Design Ideation by subject | One accepted design the next phase can follow. Do not implement. |
   | Plan | Coding Planning, Authoring Planning, or Design Planning by subject | One accepted plan the matching execution skill can follow. Do not implement. |
   | Implement | Coding Execution, Authoring Execution, or Design Execution by writer frontier | One accepted change that meets the bar. Do not add extra files or features. |
-  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` by the matching reviewer, with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
 
 - Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
-- For Review, assign a fresh agent of the matching specialist. Do not reuse the producer of the target.
+- For Review, assign a fresh matching reviewer: `code-reviewer`, `docs-reviewer`, or `design-reviewer`. Do not
+  reuse the producer of the target.
 
 ### Handoff Content
 

@@ -28,9 +28,11 @@ Run these commands in a Claude Code session:
 /reload-plugins
 ```
 
-Allow the five Gobbi roles in your project `.claude/settings.json`.
+Allow the eight Gobbi roles in your project `.claude/settings.json`.
 Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
-Developer, designer, and author are specialists. Pipeline work is a briefed phase, not a role.
+Developer, designer, and author are specialists. Three reviewers own Review: `code-reviewer` for developer
+work, `docs-reviewer` for author work, and `design-reviewer` for designer work. Pipeline work is a briefed
+phase, not a role.
 
 ```json
 {
@@ -42,7 +44,10 @@ Developer, designer, and author are specialists. Pipeline work is a briefed phas
       "Agent(gobbi:developer)",
       "Agent(gobbi:designer)",
       "Agent(gobbi:author)",
-      "Agent(gobbi:assistant)"
+      "Agent(gobbi:assistant)",
+      "Agent(gobbi:code-reviewer)",
+      "Agent(gobbi:docs-reviewer)",
+      "Agent(gobbi:design-reviewer)"
     ]
   }
 }

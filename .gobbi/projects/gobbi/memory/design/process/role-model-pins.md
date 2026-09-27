@@ -8,11 +8,11 @@ Each runtime role contract names one current model and effort `high`.
 
 | Runtime | Roles | Model | Effort |
 |---|---|---|---|
-| Grok | manager, assistant, developer, designer, author | `grok-4.7` | `effort: high` |
+| Grok | manager, assistant, developer, designer, author, code-reviewer, docs-reviewer, design-reviewer | `grok-4.7` | `effort: high` |
 | Cursor | manager, assistant | `grok-4.7` | `[effort=high]` |
-| Cursor | developer, designer, author | `gpt-5.6-sol` | `[effort=high]` |
-| Codex | manager, assistant, developer, designer, author | `gpt-6-astra` | `model_reasoning_effort = "high"` |
-| Claude | manager, assistant, developer, designer, author | `claude-opus-5-5` | `effort: high` |
+| Cursor | developer, designer, author, code-reviewer, docs-reviewer, design-reviewer | `gpt-5.6-sol` | `[effort=high]` |
+| Codex | manager, assistant, developer, designer, author, code-reviewer, docs-reviewer, design-reviewer | `gpt-6-astra` | `model_reasoning_effort = "high"` |
+| Claude | manager, assistant, developer, designer, author, code-reviewer, docs-reviewer, design-reviewer | `claude-opus-5-5` | `effort: high` |
 
 `gpt-6-astra` is the Codex id for Astra. The Cursor parent session starts as `grok-4.7[effort=high]`.
 
