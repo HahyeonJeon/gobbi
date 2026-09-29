@@ -10,7 +10,7 @@ This document gives the [Ontology](../../ontology/SKILL.md) facets and kinds the
   each named term under Visual Language. A variant or state is a Properties value of its component, not a new
   component.
 - A user-facing object is a domain unit, so its facets live in the session area file. That file holds the
-  session's working model of one area in [Ontology record](../../ontology/record.md) format, at the location
+  session's working model of one area in [Ontology Record](../../ontology/SKILL.md#record) format, at the location
   the caller names. Use the preferred name the file gives. Read the area's Memory copy when the session file
   does not exist yet.
 - Write a new user-facing object to the session area file as an Object type, and give any other new domain
@@ -43,7 +43,7 @@ control triggers one Action type.
 
 | Kind | Design form | What the design shows | Flight example |
 |---|---|---|---|
-| Object type | A view, card, or list item | One object, told apart by its key, with only the properties the viewer needs | `FlightCard` presents one Flight and shows its number and departure date, the Flight key. |
+| Object type | A view, card, or list item | One object, named by its title Property, with only the properties the viewer needs | `FlightCard` presents one Flight, titled by its number, the Flight title Property, and shows its departure date. |
 | Property | A field, label, or badge | Its allowed values, whether it can change while on screen, and a derived value marked as derived | `StateBadge` shows `Flight.state`. `Flight.bookedSeatCount` appears as "Booked seats", read-only, with a note that it is counted from bookings. |
 | Link type | A reference link or a nested list between two views | Both ends, each named from the view the viewer is on, and how many of each | `FlightCard` shows the flight's "aircraft" by its registration, and links to the aircraft view only for a role that reads Aircraft. The aircraft view lists that aircraft's "flights". |
 | Interface | One base component shared by the views of the Object types that implement it | The shared fields, designed once | None: the Flight model has no Interface, so no base card. |

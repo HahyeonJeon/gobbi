@@ -1,20 +1,26 @@
-# Template for one Security policy unit. The format and checks are in the ontology skill's record.md.
-# For the first unit, replace securityPolicies: {} in the area file with this block; later, copy only the unit.
-# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
-securityPolicies:
-  securityPolicyId:
-    displayName: "{optional: preferred name, only when it differs from the id in words}"
-    status: "{experimental, active, or deprecated}"
-    description: "{one sentence that tells a member from a non-member}"
-    aliases:
-      - "{optional: non-preferred term that maps to the preferred name}"
-    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
-    boundary: "{what is outside the unit, and which unit owns it}"
-    neverTouches:
-      - "{optional: reference to a unit this unit never touches}"
-    grants:
-      - role: "{person role, agent role, or an automation's runsAs role}"
-        permission: "{read, run, or propose}"
-        targets:
-          - "{reference to a unit the role may read, run, or propose; propose targets only action types}"
-        condition: "{optional: condition under which the grant applies}"
+# Security policy: who may read, run, or propose what, under which condition.
+# Kind block securityPolicy, in the group securityPolicies. Add: python3 <ontology skill>/scripts/ontology.py
+#   add <file> securityPolicy <id>
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - Each permission allows one thing, and anything no grant allows is denied. READ: see the target's members.
+#   RUN: run the target Action type, or call the target Function. PROPOSE: submit a run of the target Action type
+#   that applies only after a person with RUN on it accepts it.
+# - A grant filters reads only. A Function result, a notification, or an export keeps the guard only when the
+#   unit that makes it says so in its boundary.
+#
+# Relationship: each grant names its targets. relationship is null unless an edge has no field here.
+#
+# Review checklist (validate does not check these):
+# - A PROPOSE grant targets only Action types, and a RUN grant only Action types and Functions.
+# - No agent or automation role holds a grant that the person or owner it acts for lacks.
+#
+# Palantir: no Ontology API schema. grants, role, permission, targets, and condition are ours.
+securityPolicy:
+  grants:
+    - role: "{person role, agent role, or an Automation's runsAs role}"
+      permission: "{one of: READ | RUN | PROPOSE}"
+      targets:
+        - "{reference to a unit the role may read, run, or propose}"
+      condition: "{optional: condition under which the grant applies}"

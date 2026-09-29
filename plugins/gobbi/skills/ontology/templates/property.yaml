@@ -1,16 +1,38 @@
-# Template for one Property entry, or one parameter of an Action type or Function. The format is in record.md.
-# Paste the entry below at the entry indent under properties or parameters, once per entry, without these comments.
-# Rename propertyId, replace every {...}, and delete each key that does not apply.
-# Under parameters, also delete changes, origin, and status.
+# Property: one fact about one Object type, in its objectType.properties, keyed by a lowerCamelCase id.
+# Add: python3 <ontology skill>/scripts/ontology.py add <file> property <objectTypeId>.<propertyId>
+#
+# Rules:
+# - constraints holds only single-value rules: enum, regex, range, and length. A rule between two Properties, such
+#   as an arrival after a departure, is a submissionCriteria entry of each Action type that writes them.
+# - origin names the one writer of the value. ENTERED: Action types in the model write it; when an outside system
+#   creates a member and Action types change the value later, it is ENTERED. CAPTURED: an outside system writes
+#   it. DERIVED: it is computed from other facts; the description says how when the name does not.
+# - A duration is an integer, with its unit in the description. A Property never points to another unit; use a
+#   Link type.
+# - status is left out when it equals the unit's status.
+#
+# Review checklist (validate does not check these):
+# - Each enum option is in id form, such as inService.
+# - A Property is not more mature than its unit: an EXPERIMENTAL unit has no ACTIVE Property.
+# - Each ENTERED and CHANGING Property is set by a propertyArguments entry of at least one Action type.
+#
+# Palantir: PropertyV2. dataType is its union map. constraints takes the ValueTypeConstraint shapes (Palantir holds
+# them on a value type). dataConstraints.nullability is Palantir's field. changes and origin are ours.
 propertyId:
   description: "{one sentence}"
-  dataType: "{string, integer, decimal, boolean, date, or timestamp; object only for a parameter}"
-  objectTypeApiName: "{only when dataType is object: object type reference}"
-  enum:
-    - "{only for a string with a closed value set: allowed value in id form}"
+  dataType:
+    type: "{one of: string | integer | decimal | boolean | date | timestamp}"
   constraints:
-    - "{optional: rule on the value, such as a pattern, a range, or a rule against another Property of the unit}"
-  required: "{true or false}"
-  changes: "{stable or changing}"
-  origin: "{entered, captured, or derived}"
-  status: "{optional: status, when it differs from the unit's}"
+    - type: "{constraints optional: one of: enum | regex | range | length}"
+      options:
+        - "{only when type is enum: allowed value in id form}"
+      pattern: "{only when type is regex: regular expression that the whole value matches}"
+      minimumValue: "{only when type is range: optional: smallest allowed value}"
+      maximumValue: "{only when type is range: optional: largest allowed value}"
+      minimumLength: "{only when type is length: optional: fewest characters}"
+      maximumLength: "{only when type is length: optional: most characters}"
+  dataConstraints:
+    nullability: "{one of: NULLABLE | NOT_NULLABLE}"
+  changes: "{one of: STABLE | CHANGING}"
+  origin: "{one of: ENTERED | CAPTURED | DERIVED}"
+  status: "{optional: one of: EXPERIMENTAL | ACTIVE | DEPRECATED}"

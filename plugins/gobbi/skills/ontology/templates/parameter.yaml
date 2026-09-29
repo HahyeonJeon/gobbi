@@ -1,0 +1,26 @@
+# Parameter: one input of a Function or an Action type, in its parameters, keyed by a lowerCamelCase id.
+# Add: python3 <ontology skill>/scripts/ontology.py add <file> parameter <unitId>.<parameterId>
+#
+# Rules:
+# - An object parameter names its Object type in dataType.objectTypeApiName.
+# - Only an Action type parameter has allowedValues.
+#
+# Review checklist (validate does not check these):
+# - A Function parameter has no allowedValues.
+#
+# Palantir: ActionParameterV2 and QueryParameterV2. allowedValues is maker's key for the read API's
+# validation.defaultValidation.allowedValues, with oneOf, range, and text only. displayName and objectApiName are
+# left out; objectTypeApiName names the same Object type.
+parameterId:
+  description: "{one sentence}"
+  dataType:
+    type: "{one of: string | integer | decimal | boolean | date | timestamp | object}"
+    objectTypeApiName: "{only when type is object: Object type reference}"
+  allowedValues:
+    type: "{allowedValues optional: one of: oneOf | range | text}"
+    options:
+      - value: "{options only when type is oneOf: allowed value}"
+    gte: "{only when type is range: optional: smallest allowed value}"
+    lte: "{only when type is range: optional: largest allowed value}"
+    regex: "{only when type is text: regular expression that the value matches}"
+  required: "{one of: true | false}"

@@ -9,7 +9,7 @@ This document gives the [Ontology](../../ontology/SKILL.md) facets and kinds the
   section under Structure and Claims, and of each defined term that is not a domain concept under Naming and
   Vocabulary.
 - A defined term that names a domain concept is a domain unit, so its facets live in the session area file.
-  That file holds the session's working model of one area in [Ontology record](../../ontology/record.md)
+  That file holds the session's working model of one area in [Ontology Record](../../ontology/SKILL.md#record)
   format, at the location the caller names. Use the preferred name the file gives. Read the area's Memory copy
   when the session file does not exist yet.
 - Give a new domain concept one kind and write it to the session area file as

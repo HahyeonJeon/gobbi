@@ -114,10 +114,11 @@ logs, trivia, and operational exhaust.
 #### Extract accepted session knowledge at wrap-up
 
 - Callers Wrap-up and Cowork wrap-up extract accepted design, decisions, intended behaviors, and standing
-  preferences into the existing homes in the table above, and promote each session area file at
-  `{session-root}/ontology/<area>.yaml` that passes the Ontology record checklist into `ontology/`
-  ([Ontology](#ontology)). Place decisions in the design they shape, and standing user project preferences in
-  `design/process/` unless they constrain a named feature or architecture file.
+  preferences into the existing homes in the table above. They promote into `ontology/` each session area file
+  at `{session-root}/ontology/<area>.yaml` that passes the [Ontology Record](../ontology/SKILL.md#record)
+  checks: `ontology.py validate` and each kind's review checklist ([Ontology](#ontology)). Place decisions in
+  the design they shape, and standing user project preferences in `design/process/` unless they constrain a
+  named feature or architecture file.
 - Write one `reports/note/` file as the durable work account. Write one `history/` file only when the session
   made a durable project change.
 - Exclude talk, transcripts, rejected options, one-session instructions, Git action states, recovery commands,
@@ -147,8 +148,8 @@ logs, trivia, and operational exhaust.
 #### Keep one YAML file per bounded area
 
 - Name each file `ontology/<area>.yaml` with a kebab-case `<area>`. Split an area when the
-  [Ontology record](../ontology/record.md) split rule applies.
-- Write each file in the Ontology record format. A `design/` file links to a unit instead of restating it.
+  [Ontology Record](../ontology/SKILL.md#write-one-area-file-per-bounded-scope) split rule applies.
+- Write each file in the Ontology Record format. A `design/` file links to a unit instead of restating it.
 - Keep `ontology/README.md` as a link list of the area files, each with its scope.
 
 #### Promote the session copy at closure
@@ -158,15 +159,15 @@ logs, trivia, and operational exhaust.
 - Compare each session area file with its Memory copy, and require every added, changed, or removed unit id to
   be named in an accepted Ideation or Execution handoff. Then replace the Memory file and update
   `ontology/README.md`.
-- Stop and report a unit change that no accepted handoff names, or a file that fails the Ontology record
-  checklist. Never drop or promote a unit silently.
+- Stop and report a unit change that no accepted handoff names, or a file that fails the Ontology Record
+  checks, or whose handoff says validate did not run. Never drop or promote a unit silently.
 
 #### Subdirectories
 
 | Path | Description | Example |
 |---|---|---|
 | `ontology/README.md` | Link list of every area file, each with its scope. | `ontology/README.md` — one link and scope line per area file |
-| `ontology/<area>.yaml` | One bounded area of the domain model, in the Ontology record format. | `ontology/flight-operations.yaml` — scheduled flights, aircraft, airports, and booked passengers |
+| `ontology/<area>.yaml` | One bounded area of the domain model, in the Ontology Record format. | `ontology/flight-operations.yaml` — scheduled flights, aircraft, airports, and booked passengers |
 
 ### Learnings
 

@@ -1,7 +1,7 @@
 ---
 name: ontology
 description: "Ontology defines the kinds, facets, and rules for modeling a domain's data, logic, actions, and security as one model."
-allowed-tools: Read
+allowed-tools: Read, Bash
 skill-type: preference
 ---
 
@@ -50,7 +50,7 @@ Formal logic adds cost and reads a missing fact as unknown
   link goes through one Action type that checks it, applies it, and states its effects
   ([Palantir, Ontology edits](https://www.palantir.com/docs/foundry/functions/edits-overview/)).
 - **NEVER give an agent or automation a grant that the person or owner it acts for lacks.** Give each agent or
-  automation its own role, and give it `propose` instead of `run` when a person must accept each change
+  automation its own role, and give it `PROPOSE` instead of `RUN` when a person must accept each change
   ([Palantir, AI FDE security](https://www.palantir.com/docs/foundry/ai-fde/security-and-governance/);
   [Palantir, Action effects](https://www.palantir.com/docs/foundry/automate/effect-actions/)).
 - **MUST state each fact once, give it one writer, and store as data each rule or decision that people must
@@ -77,13 +77,13 @@ Formal logic adds cost and reads a missing fact as unknown
 
   | Kind | Group | What it is | Owns | Relates to | Flight example |
   |---|---|---|---|---|---|
-  | [Object type](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | data | A real-world thing or event with its own identity | A primary key and its Properties | Link types; Interfaces it implements | Flight: one scheduled trip of one aircraft between two airports on one date |
-  | [Property](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | data | One fact about one Object type, stored or derived | Data type, allowed values or constraints, whether it is required, stable or changing, and origin | Its one owner | `Flight.estimatedDeparture` (changing); `Flight.bookedSeatCount` (derived from linked Bookings); `Airport.minimumConnectionTime` (a rule kept as data) |
+  | [Object type](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | data | A real-world thing or event with its own identity | One primary key Property, a title Property, and its Properties | Link types; Interfaces it implements | Flight: one scheduled trip of one aircraft between two airports on one date |
+  | [Property](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | data | One fact about one Object type, stored or derived | Data type, allowed values or constraints, whether it may be null, stable or changing, and origin | Its one owner | `Flight.estimatedDeparture` (changing); `Flight.bookedSeatCount` (derived from linked Bookings); `Airport.minimumConnectionTime` (a rule kept as data) |
   | [Link type](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | data | A named connection between two Object types | Two sides, each with a name, a far end, and one or many | Two Object types | Flight aircraft: the side "aircraft" (one) from Flight, and the side "flights" (many) from Aircraft |
   | [Interface](https://www.palantir.com/docs/foundry/interfaces/interface-overview/) | data | A shape that several Object types share | Shared Properties | The Object types that implement it | None; see [Interfaces](#interfaces) |
   | [Function](https://www.palantir.com/docs/foundry/ontology/core-concepts/) | logic | A computation that reads and returns but changes nothing | Parameters, output, method (rule, formula, model, or language model) | The units it reads | `meetsMinimumConnectionTime(inbound, outbound)`: the outbound Booking is the same passenger's next booked flight, from the inbound flight's arrival airport; true when it departs at least that airport's minimum connection time after the inbound flight arrives |
-  | [Action type](https://www.palantir.com/docs/foundry/action-types/overview/) | action | One named change that runs as one unit | Parameters, submission criteria, operations, and side effects | The Object types and Link types its operations change | Delay flight: takes a flight, a new time, and a reason; allowed only while the flight is scheduled; moves the estimated times; notifies booked passengers |
-  | [Automation](https://www.palantir.com/docs/foundry/automate/overview/) | action | A condition that starts work without a person | Watched data, effects, the role it runs as, notifications, and fallback | The units it watches; the Action types or Functions it runs | When a flight's estimated arrival changes, run `meetsMinimumConnectionTime` for its connecting Bookings and alert the operations controller at the connecting airport of each failure |
+  | [Action type](https://www.palantir.com/docs/foundry/action-types/overview/) | action | One named change that runs as one unit | Parameters, submission criteria, operations, and side effects | The Object types and Link types its operations change | Delay flight: takes a flight, new estimated departure and arrival times, and a reason; allowed only while the flight is scheduled; moves the estimated times; notifies booked passengers |
+  | [Automation](https://www.palantir.com/docs/foundry/automate/overview/) | action | A condition that starts work without a person | A condition, effects, the role it runs as, retries, and a fallback effect | The units it watches; the Action types or Functions it runs | When a flight's estimated arrival changes, run `meetsMinimumConnectionTime` for its connecting Bookings and alert the operations controller at the connecting airport of each failure |
   | [Process](https://www.palantir.com/docs/foundry/machinery/core-concepts/) | action | The states of one Object type and the Action types that move it between them | An initial state and transitions; a final state has no transition out | The state Property of its Object type; Action types | Flight lifecycle: scheduled → departed → arrived, or scheduled → cancelled; Delay flight changes no state |
   | [Security policy](https://www.palantir.com/docs/foundry/security/overview/) | security | Who may read, run, or propose what, under which condition | Grants: role, permission, targets, condition | The units it guards | Ops-control policy: only operations controllers run Delay flight and Cancel flight, and only for flights that depart from their assigned airport; an operations assistant agent may only propose Delay flight |
 
@@ -130,12 +130,13 @@ Formal logic adds cost and reads a missing fact as unknown
   |---|---|---|---|---|
   | Definition | One preferred name, one sentence of meaning in domain words, and the synonyms that map to it | Can a reader tell a member from a non-member from this sentence alone? | In this scope, does the unit have one name, and does that name mean one thing? | One scheduled trip of one aircraft between two airports on one date. "Leg" maps to Flight. "Flight number" names a repeating route, so it is a different term. |
   | Responsibility | What only this unit owns: one decision, or the facts about one concept | Can a reader name what only this unit owns, so that a change to it goes to this unit alone? | Does any other unit own the same decision or the same facts? | A flight owns its schedule and its lifecycle state. |
-  | Boundary | What is inside and outside the unit, and the neighbours it never touches | Can a reader tell, for any given data, part, or content, whether it is inside or outside the unit? | Is each neighbour the unit never touches named, and does nothing inside the unit touch it, as the [Ontology record](record.md#unit-keys) defines touch? | Seats and fare classes are outside (Booking). Personal data is outside (Passenger). A flight never reads a Passenger. |
+  | Boundary | What is inside and outside the unit, and the neighbours it never touches | Can a reader tell, for any given data, part, or content, whether it is inside or outside the unit? | Is each neighbour the unit never touches named, and does nothing inside the unit touch it, as [Record](#give-every-unit-the-same-keys) defines touch? | Seats and fare classes are outside (Booking). Personal data is outside (Passenger). A flight never reads a Passenger. |
   | Relationship | Each connection and its direction; each Link type also named from both ends | Is each connection stated with its direction, and does each Link type have a name from each end? | Can a reader draw the map of units from the record alone? | Flight links to Aircraft ("aircraft" / "flights"). Flight links to Airport twice, as departure and arrival. Booking links to Flight ("flight" / "bookings"). |
   | Properties | The facts the unit carries, each with a data type or allowed values, whether it is required, whether it is stable or changing, and its origin | Does each property have a data type or allowed values, a required flag, and an origin, and is it marked stable or changing? | Is each distinction a property value rather than a new unit? | `number`: string, required, stable, captured. `state`: scheduled, departed, arrived, or cancelled; required, changing, entered. A cancelled flight is a `state` value, not a new Object type. |
 
-- Write each facet's required key, and leave out an optional key that has no value. The
-  [Ontology record](record.md) names the facets a kind never has, such as Properties for a Link type.
+- Write each facet in its unit key, as [Record](#record) says, and write `null` for a key that has no value. The
+  Properties facet is in the kind block; each template names the facets its kind never has, such as Properties
+  for a Link type.
 - A reviewer answers the test questions, and two or three real questions from the task, from the record alone.
   The reviewer records each unanswerable question as a problem.
 
@@ -159,15 +160,15 @@ Formal logic adds cost and reads a missing fact as unknown
 
 #### Give shared terms a status
 
-- Record a status where each shared term is defined: `experimental` when new, then `active` or `deprecated`
-  ([Palantir, Statuses](https://www.palantir.com/docs/foundry/object-link-types/metadata-statuses)). A shared
-  term is a name that other work, users, or agents depend on; a new Flight Property `gate` starts as
-  `experimental`.
-- The term's owner moves it to `active`; rename or remove an `active` term only after you deprecate it with a
-  reason, a replacement, and a removal point. Treat these as a rename of an `active` term: a change to an Object
-  type's `primaryKey`, to a Property's `dataType` or `origin`, removing an allowed value, or changing an id.
-- Do not use a `deprecated` unit in new work; follow its `replacedBy`. Prefer the project's own status
-  mechanism, such as a changelog `Deprecated` entry or a language deprecation marker.
+- Record a status where each shared term is defined: `"EXPERIMENTAL"` when new, then `"ACTIVE"` or
+  `"DEPRECATED"` ([Palantir, Statuses](https://www.palantir.com/docs/foundry/object-link-types/metadata-statuses)).
+  A shared term is a name that other work, users, or agents depend on; a new Flight Property `gate` starts as
+  `"EXPERIMENTAL"`.
+- The term's owner moves it to `"ACTIVE"`; rename or remove an `"ACTIVE"` term only after you deprecate it with
+  a reason, a replacement, and a removal point. Treat these as a rename of an `"ACTIVE"` term: a change to an
+  Object type's `primaryKey`, to a Property's `dataType` or `origin`, removing an allowed value, or changing an id.
+- Do not use a `"DEPRECATED"` unit in new work; follow its `deprecation.replacedBy`. Prefer the project's own
+  status mechanism, such as a changelog `Deprecated` entry or a language deprecation marker.
 
 ### Interfaces
 
@@ -190,14 +191,121 @@ Formal logic adds cost and reads a missing fact as unknown
 #### Record the model in the session, then promote it at closure
 
 - Keep the session's working model at `{session-root}/ontology/<area>.yaml`, where `{session-root}` is the
-  current session's directory, in the [Ontology record](record.md) format. Before the first write to an area,
-  seed the file from Memory `ontology/<area>.yaml` when it exists, otherwise from the templates, as the
-  [Ontology record](record.md#templates-and-examples) assembles them, and reuse its names and ids.
+  current session's directory, in the [Record](#record) format. Before the first write to an area, copy Memory
+  `ontology/<area>.yaml` when it exists, otherwise run `new`, and reuse its names and ids.
 - Ideation writes the domain units it designs, Execution updates a unit when a built artifact changes it, and
   Review only reads the file. When a design is rejected or revised, its writer updates the file in the same step,
   and each handoff names the unit ids it added, changed, or removed.
 - At closure, the end of the session, the Memory writer promotes each session area file into Memory `ontology/`
-  after the file passes the record's validation checklist ([Memory](../memory/SKILL.md) Closure).
+  after `validate --memory <Memory ontology/>` passes and each kind's review checklist holds
+  ([Memory](../memory/SKILL.md) Closure).
+
+### Record
+
+#### Write one area file per bounded scope
+
+- Keep one area, a scope in which each name has one meaning, in one file `ontology/<area>.yaml`, where `<area>`
+  is kebab-case, such as `flight-operations`. Split it when a name needs a second meaning, or when it passes about
+  40 units; Properties do not count. The 40 is a heuristic, not a measured limit.
+- Write nine top-level keys, in this order: `ontology`, with `apiName` (the file name without `.yaml`) and a
+  one-sentence `description` of the scope; then the groups `objectTypes`, `linkTypes`, `interfaceTypes`,
+  `functions`, `actionTypes`, `automations`, `processes`, and `securityPolicies`. Each group maps unit ids to
+  units, or is `null`.
+- Write a reference as a quoted string in one of these forms. `<area>/...` resolves in `<area>.yaml` in the same
+  directory; a session copy also resolves it in Memory `ontology/`.
+
+  | Form | Points to | Example |
+  |---|---|---|
+  | `"<id>"` | A unit in this file | `"flight"` |
+  | `"<id>.<property>"` | A Property of a unit in this file | `"flight.state"` |
+  | `"<area>/<id>"` | A unit in another area file | `"flight-operations/flight"` |
+  | `"<area>/<id>.<property>"` | A Property in another area file | `"flight-operations/flight.state"` |
+
+#### Give every unit the same keys
+
+- Write these keys in every unit, in this order, then one kind block named after its kind: `objectType`,
+  `linkType`, `interfaceType`, `function`, `actionType`, `automation`, `process`, or `securityPolicy`. The kind
+  block holds the Properties facet and the kind's Palantir fields.
+
+  | Key | Facet | Value | `null` when |
+  |---|---|---|---|
+  | `status` | — | `"EXPERIMENTAL"`, `"ACTIVE"`, or `"DEPRECATED"`; a new unit is `"EXPERIMENTAL"` | Never |
+  | `deprecation` | — | `message`, optional `replacedBy` (a reference), and `deadline` (a date or release) | Unless `status` is `"DEPRECATED"` |
+  | `definition` | Definition | `displayName` (`null` when it is the id in words), `description` (one sentence that tells a member from a non-member), and `aliases` (synonyms, or `null`) | Never |
+  | `responsibility` | Responsibility | What only this unit owns: one decision, or the facts about one concept | Never |
+  | `boundary` | Boundary | `outside` (what is outside, and which unit owns it) and `neverTouches` (units it never touches, or `null`). Reading a Link type to a unit, which shows only its `primaryKey`, does not touch it. | Never |
+  | `relationship` | Relationship | The edges that no kind-block field holds, as the next subtitle says | The unit has none |
+
+- A unit id is its key in its group. An Action type id is kebab-case, such as `delay-flight`, as Palantir
+  requires; every other id is lowerCamelCase. No id is a YAML 1.1 word (`y`, `n`, `yes`, `no`, `on`, `off`,
+  `true`, `false`, `null`) or a Palantir reserved name (`ontology`, `object`, `property`, `link`, `relation`,
+  `rid`, `primaryKey`, `typeId`, `ontologyObject`), in any case. Keep an id once a reference points to it.
+- Double-quote every value; the only unquoted value is `null`, written as a key's whole value. A closed value is
+  UPPER_SNAKE, such as `"ACTIVE"`, except the value of a key named `type`, which is lowerCamel, such as
+  `"modifyObject"`. Inside an entry, such as a Property, an operation, or a grant, leave out a key that does not
+  apply. Keep each string on one line, indent with two spaces, put comments on their own lines, and use no flow
+  style, block strings, anchors, or tags.
+
+#### Put each edge in one place
+
+- Write an edge that a Palantir field holds in that field of the kind block, such as `implementsInterfaces` or a
+  side's `objectTypeApiName`, and fill it whenever the edge exists. An edge that is one field of a condition, an
+  effect, a transition, or a grant stays in that entry.
+- Write every other edge once, in `relationship`, on the unit whose definition needs it, as a `type` and a
+  `target` reference. Store only `parent` and `link`. `child` is the reverse of `parent`: the `show` command
+  prints it, with the rest of the reverse view, and no file stores it.
+
+  | `type` | Meaning | Flight example |
+  |---|---|---|
+  | `parent` | This unit exists only for the target, and goes when the target goes. A unit has at most one `parent`. | `flightLifecycle` → `"flight.state"` |
+  | `link` | This unit reads or uses the target, such as a Property that a Function reads or that an Action type's `submissionCriteria` read | `meetsMinimumConnectionTime` → `"airport.minimumConnectionTime"`; `delay-flight` → `"flight.state"` |
+
+#### Read only the templates you need
+
+- Each template holds its kind's rules and review checklist, then the YAML that `add` copies. Read only the rows
+  your work needs.
+
+  | Template | Description |
+  |---|---|
+  | [area.yaml](templates/area.yaml) | The nine top-level keys of an area file; `new` writes it. |
+  | [unit.yaml](templates/unit.yaml) | The six common keys of every unit; `add` writes them. |
+  | [object-type.yaml](templates/object-type.yaml) | Object type: a thing or event with its own identity, with one `primaryKey`, a `titleProperty`, and its Properties. |
+  | [property.yaml](templates/property.yaml) | Property entry: `dataType`, `constraints`, `dataConstraints`, `changes`, and `origin`, and who writes the value. |
+  | [link-type.yaml](templates/link-type.yaml) | Link type: two `sides` between Object types, each named from its near end. |
+  | [interface.yaml](templates/interface.yaml) | Interface: a shape two or more Object types share, with its Properties and link constraints. |
+  | [function.yaml](templates/function.yaml) | Function: a computation that changes nothing, with `parameters`, `output`, and `method`. |
+  | [action-type.yaml](templates/action-type.yaml) | Action type: one named change, with `parameters`, `submissionCriteria`, `operations`, `sideEffects`, and the failure result. |
+  | [parameter.yaml](templates/parameter.yaml) | Parameter entry of a Function or an Action type. |
+  | [automation.yaml](templates/automation.yaml) | Automation: work that starts without a person, with `condition`, `effects`, `runsAs`, and fallback. |
+  | [process.yaml](templates/process.yaml) | Process: the states of one Object type and the Action types that move it. |
+  | [security-policy.yaml](templates/security-policy.yaml) | Security policy: `READ`, `RUN`, and `PROPOSE` grants under default deny. |
+
+- A placeholder says how to fill its key. `null or:` means you may write `null`. `null unless <key> is <value>:`
+  means write `null` unless that holds. `optional:` means leave the key out when it does not apply.
+  `only when <key> is <value>:` means write the key only then. `one of: A | B` means write one of those values. A
+  marker that starts with a key name, such as `relationship null or:`, applies to that key. Replace every
+  placeholder and every template id, such as `propertyId`.
+- Read a Flight example in [examples/](examples/) only when a template leaves a question open. Each example has
+  its template's file name; Properties and parameters are in the Object type, Function, and Action type examples.
+
+#### Add and check units with the CLI
+
+- Run `python3 <ontology skill>/scripts/ontology.py <command>`, where `<ontology skill>` is this skill's
+  directory. It needs Python 3.9 or later and nothing else.
+
+  | Command | Does |
+  |---|---|
+  | `new <dir>/<area>.yaml [--description "<sentence>"]` | Creates an empty area file |
+  | `add <file> <kind> <id>` | Adds a unit of a kind, such as `objectType`, from its templates |
+  | `add <file> property <unitId>.<id>`, `add <file> parameter <unitId>.<id>` | Adds a Property or a parameter entry |
+  | `validate <file or dir>... [--memory <dir>]` | Checks key shapes, values, `null`, ids, references, and at most one `parent`; `--memory` adds a directory for other areas |
+  | `list <file or dir>... [--kind <kind>]` | Prints one line per unit: reference, kind, status, and name |
+  | `show <file or dir> <reference> [--memory <dir>]` | Prints one unit or Property, then each edge out of it and into it. Each edge is labeled `parent`, `child`, `link`, or the name of the field that holds it. With a directory, give the reference as `<area>/<id>`. |
+
+- A file is valid when `validate` exits 0 and each review checklist of its kinds holds. `validate` does not check
+  rules across units; the writer and the reviewer check those.
+- Without `python3`, follow the templates by hand and write "validate not run: no python3" in the handoff.
+  Closure does not promote the file until `validate` passes.
 
 ---
 
@@ -205,7 +313,7 @@ Formal logic adds cost and reads a missing fact as unknown
 
 | Name | Description |
 |---|---|
-| [Ontology record](record.md) | YAML format, safety rules, and validation for Memory `ontology/` files, with one template and one Flight example file per kind. |
+| [ontology.py](scripts/ontology.py) | Command-line tool that creates, extends, lists, shows, and validates area files. |
 | [Memory](../memory/SKILL.md) | Placement, naming, index, and closure rules for `ontology/`. |
 | [Coding Principles](../coding/principles.md) | Modularization: the code form of the facets and kinds. |
 | [Authoring Ideation ontology](../authoring/authoring-ideation/ontology.md) | The writing form of the facets and kinds. |

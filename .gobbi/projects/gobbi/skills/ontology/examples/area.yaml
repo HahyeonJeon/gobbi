@@ -1,7 +1,7 @@
-# Flight sample area in the format that the ontology skill's record.md defines.
-# It is illustrative only. It states no real airline's rules and no real minimum connection time.
-# The sample is split by kind. To read it as one area file, join this file, then object-type.yaml,
-# link-type.yaml, interface.yaml, function.yaml, action-type.yaml, automation.yaml, process.yaml, and security-policy.yaml.
+# Flight sample area in the ontology skill's format. It is illustrative only: it states no real airline's rules
+# and no real minimum connection time. The sample is split by kind. To check it, join this file, then
+# object-type.yaml, link-type.yaml, interface.yaml, function.yaml, action-type.yaml, automation.yaml, process.yaml,
+# and security-policy.yaml, into flight-operations.yaml, and run the ontology.py validate command on that file.
 ontology:
   apiName: "flight-operations"
   description: "Scheduled flights, the aircraft and airports they use, and the passengers booked on them, as operations control sees them."

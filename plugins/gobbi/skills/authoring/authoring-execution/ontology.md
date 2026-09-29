@@ -35,7 +35,7 @@ and kinds are in [Authoring Ideation ontology](../authoring-ideation/ontology.md
   not coin it. If a source names a `diverted` state, which the Flight lifecycle lacks, return it, naming
   `flightLifecycle` and `flight.state`, and keep "Flight states" at four states.
 - For any other change that a document you build makes to a domain unit, update the session area file in the
-  same step. If controllers call a delay a "retime", add `retime` to the `aliases` of `delayFlight`.
+  same step. If controllers call a delay a "retime", add `retime` to the `definition.aliases` of `delay-flight`.
 - List in the handoff each unit id you added, changed, or removed, or write that none changed. At closure, the
   file reaches Memory only when an accepted handoff names each changed id. Never write Memory `ontology/`
   yourself.

@@ -1,103 +1,175 @@
 # Flight sample: the Action types of the flight-operations area. See area.yaml.
 actionTypes:
-  delayFlight:
-    status: "active"
-    description: "The operation that moves both estimated times of a scheduled flight later by the same amount, with a reason."
+  delay-flight:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The operation that moves a scheduled flight's estimated departure and arrival later, with a reason."
+      aliases: null
     responsibility: "It owns the decision to move a scheduled flight's estimated times later."
-    boundary: "The flight's state, which only the Flight lifecycle Action types change, and the connection checks that follow, which Check connections after change runs."
-    neverTouches:
-      - "aircraft"
-    parameters:
-      flight:
-        description: "The flight to delay."
-        dataType: "object"
-        objectTypeApiName: "flight"
-        required: "true"
-      newEstimatedDeparture:
-        description: "The new estimated departure time."
-        dataType: "timestamp"
-        required: "true"
-      reason:
-        description: "Why the flight is delayed."
-        dataType: "string"
-        required: "true"
-    submissionCriteria:
-      - "The flight's state is scheduled."
-      - "The new estimated departure is later than the current estimated departure."
-    operations:
-      - type: "modifyObject"
-        objectTypeApiName: "flight"
-        propertyApiNames:
-          - "estimatedDeparture"
-          - "estimatedArrival"
-          - "delayReason"
-    sideEffects:
-      - "Notify each passenger booked on the flight."
-  cancelFlight:
-    status: "active"
-    description: "The operation that ends a scheduled flight before it departs."
+    boundary:
+      outside: "The flight's state, which only the Flight lifecycle Action types change, and the connection checks that follow, which Check connections after change runs."
+      neverTouches:
+        - "aircraft"
+    relationship:
+      - type: "link"
+        target: "flight.state"
+      - type: "link"
+        target: "flight.estimatedDeparture"
+    actionType:
+      parameters:
+        flight:
+          description: "The flight to delay."
+          dataType:
+            type: "object"
+            objectTypeApiName: "flight"
+          required: "true"
+        newEstimatedDeparture:
+          description: "The new estimated departure time."
+          dataType:
+            type: "timestamp"
+          required: "true"
+        newEstimatedArrival:
+          description: "The new estimated arrival time."
+          dataType:
+            type: "timestamp"
+          required: "true"
+        reason:
+          description: "Why the flight is delayed."
+          dataType:
+            type: "string"
+          required: "true"
+      submissionCriteria:
+        - condition: "The flight's state is scheduled."
+          configuredFailureMessage: "Only a scheduled flight can change this way."
+        - condition: "The new estimated departure is later than the current estimated departure."
+        - condition: "The new estimated arrival is later than the new estimated departure."
+      operations:
+        - type: "modifyObject"
+          objectTypeApiName: "flight"
+          objectToModify: "flight"
+          propertyArguments:
+            estimatedDeparture:
+              type: "parameterId"
+              parameterId: "newEstimatedDeparture"
+            estimatedArrival:
+              type: "parameterId"
+              parameterId: "newEstimatedArrival"
+            delayReason:
+              type: "parameterId"
+              parameterId: "reason"
+      sideEffects:
+        - "Notify each passenger booked on the flight."
+  cancel-flight:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The operation that ends a scheduled flight before it departs."
+      aliases: null
     responsibility: "It owns the decision to cancel a flight that has not departed."
-    boundary: "Rebooking the flight's passengers onto other flights, which is outside this area."
-    neverTouches:
-      - "aircraft"
-    parameters:
-      flight:
-        description: "The flight to cancel."
-        dataType: "object"
-        objectTypeApiName: "flight"
-        required: "true"
-      reason:
-        description: "Why the flight is cancelled."
-        dataType: "string"
-        required: "true"
-    submissionCriteria:
-      - "The flight's state is scheduled."
-    operations:
-      - type: "modifyObject"
-        objectTypeApiName: "flight"
-        propertyApiNames:
-          - "state"
-    sideEffects:
-      - "Notify each passenger booked on the flight, with the reason."
-  departFlight:
-    status: "active"
-    description: "The operation that records that a scheduled flight has left its departure airport."
+    boundary:
+      outside: "Rebooking the flight's passengers onto other flights, which is outside this area."
+      neverTouches:
+        - "aircraft"
+    relationship:
+      - type: "link"
+        target: "flight.state"
+    actionType:
+      parameters:
+        flight:
+          description: "The flight to cancel."
+          dataType:
+            type: "object"
+            objectTypeApiName: "flight"
+          required: "true"
+        reason:
+          description: "Why the flight is cancelled."
+          dataType:
+            type: "string"
+          required: "true"
+      submissionCriteria:
+        - condition: "The flight's state is scheduled."
+          configuredFailureMessage: "Only a scheduled flight can change this way."
+      operations:
+        - type: "modifyObject"
+          objectTypeApiName: "flight"
+          objectToModify: "flight"
+          propertyArguments:
+            state:
+              type: "staticValue"
+              value: "cancelled"
+      sideEffects:
+        - "Notify each passenger booked on the flight, with the reason."
+  depart-flight:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The operation that records that a scheduled flight has left its departure airport."
+      aliases: null
     responsibility: "It owns the record that a flight has departed."
-    boundary: "The estimated times, which Delay flight moves."
-    neverTouches:
-      - "passenger"
-      - "booking"
-    parameters:
-      flight:
-        description: "The flight to record as departed."
-        dataType: "object"
-        objectTypeApiName: "flight"
-        required: "true"
-    submissionCriteria:
-      - "The flight's state is scheduled."
-    operations:
-      - type: "modifyObject"
-        objectTypeApiName: "flight"
-        propertyApiNames:
-          - "state"
-  arriveFlight:
-    status: "active"
-    description: "The operation that records that a departed flight has reached its arrival airport."
+    boundary:
+      outside: "The estimated times, which Delay flight moves."
+      neverTouches:
+        - "passenger"
+        - "booking"
+    relationship:
+      - type: "link"
+        target: "flight.state"
+    actionType:
+      parameters:
+        flight:
+          description: "The flight to record as departed."
+          dataType:
+            type: "object"
+            objectTypeApiName: "flight"
+          required: "true"
+      submissionCriteria:
+        - condition: "The flight's state is scheduled."
+          configuredFailureMessage: "Only a scheduled flight can change this way."
+      operations:
+        - type: "modifyObject"
+          objectTypeApiName: "flight"
+          objectToModify: "flight"
+          propertyArguments:
+            state:
+              type: "staticValue"
+              value: "departed"
+      sideEffects: null
+  arrive-flight:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The operation that records that a departed flight has reached its arrival airport."
+      aliases: null
     responsibility: "It owns the record that a flight has arrived."
-    boundary: "The estimated times, which Delay flight moves."
-    neverTouches:
-      - "passenger"
-      - "booking"
-    parameters:
-      flight:
-        description: "The flight to record as arrived."
-        dataType: "object"
-        objectTypeApiName: "flight"
-        required: "true"
-    submissionCriteria:
-      - "The flight's state is departed."
-    operations:
-      - type: "modifyObject"
-        objectTypeApiName: "flight"
-        propertyApiNames:
-          - "state"
+    boundary:
+      outside: "The estimated times, which Delay flight moves."
+      neverTouches:
+        - "passenger"
+        - "booking"
+    relationship:
+      - type: "link"
+        target: "flight.state"
+    actionType:
+      parameters:
+        flight:
+          description: "The flight to record as arrived."
+          dataType:
+            type: "object"
+            objectTypeApiName: "flight"
+          required: "true"
+      submissionCriteria:
+        - condition: "The flight's state is departed."
+      operations:
+        - type: "modifyObject"
+          objectTypeApiName: "flight"
+          objectToModify: "flight"
+          propertyArguments:
+            state:
+              type: "staticValue"
+              value: "arrived"
+      sideEffects: null

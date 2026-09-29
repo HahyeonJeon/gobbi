@@ -22,12 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   two test questions that a reviewer answers from the record alone. Its rules include that Functions return
   results and only Action types commit changes, that each fact has one writer, that a rule or decision people
   must review is stored as data, and that an agent or automation never holds a grant that the person or owner it
-  acts for lacks. Record keys use Palantir's field names or name patterns in lowerCamelCase where Palantir has
-  one, such as `primaryKey`, `dataType`, and `operations`. `record.md` lists where they depart from Palantir,
-  such as `functions` for `queryTypes` and a `primaryKey` list for one Property. Other keys take Palantir's
-  concept terms, except 12 keys with no Palantir term, such as `responsibility` and `runsAs`, which are ours.
-  `record.md` sets the YAML format and validation checklist for an area file, with an optional PyYAML parse
-  check. The skill ships one YAML template and one Flight example file per kind.
+  acts for lacks. Each unit has the same keys, `null` when empty: `status`, `deprecation`, and the facets
+  `definition`, `responsibility`, `boundary`, and `relationship`, then one kind block of Palantir field names,
+  such as `primaryKey`, `dataType`, and `operations`. Closed values are UPPER_SNAKE, as in Palantir's API, and
+  Action type ids are kebab-case. Each template states its kind's rules and review checklist, and SKILL.md indexes
+  the templates. `scripts/ontology.py`, which needs only Python 3.9, creates, extends, lists, shows, and validates
+  area files. The skill ships one Flight example file per kind.
 - Added a seventh Memory category, `memory/ontology/`, with one YAML file per bounded area of the domain model.
   Setup now creates and checks `memory/ontology/README.md`, and the setup proof expects eight README stubs. In
   an existing project, run setup again to create them; it leaves existing files untouched. Until then, setup

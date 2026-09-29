@@ -1,23 +1,23 @@
-# Template for one Function unit. The format and checks are in the ontology skill's record.md.
-# For the first unit, replace functions: {} in the area file with this block; later, copy only the unit.
-# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
-functions:
-  functionId:
-    displayName: "{optional: preferred name, only when it differs from the id in words}"
-    status: "{experimental, active, or deprecated}"
-    description: "{one sentence that tells a member from a non-member}"
-    aliases:
-      - "{optional: non-preferred term that maps to the preferred name}"
-    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
-    boundary: "{what is outside the unit, and which unit owns it}"
-    neverTouches:
-      - "{optional: reference to a unit this unit never touches}"
-    parameters:
-      # Paste templates/property.yaml here once per parameter, then delete this comment.
-    output:
-      description: "{one sentence: what the result means, and whether it is exact or an estimate, and of what}"
-      dataType: "{a dataType, or object}"
-      objectTypeApiName: "{only when dataType is object: object type reference}"
-    method: "{rule, formula, model, or languageModel}"
-    reads:
-      - "{reference to a unit or Property it reads}"
+# Function: a computation that reads and returns, and changes nothing.
+# Kind block function, in the group functions. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   function <id>, then add each parameter with add <file> parameter <id>.<parameterId> (parameter.yaml).
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - The definition.description says what the result means, and whether it is exact or an estimate, and of what.
+# - A model, or an LLM agent that returns a result, is a Function.
+#
+# Relationship: parameters and output name the Object types they take or return. Each unit or Property the
+# Function reads is a link in relationship.
+#
+# Review checklist (validate does not check these):
+# - relationship has a link to each unit or Property that the Function reads, and to nothing it does not read.
+#
+# Palantir: QueryTypeV2; the group functions is Palantir's queryTypes. output is the QueryDataType union map.
+# method is ours.
+function:
+  parameters: "{null or: entries: parameter.yaml}"
+  output:
+    type: "{one of: string | integer | decimal | boolean | date | timestamp | object}"
+    objectTypeApiName: "{only when type is object: Object type reference}"
+  method: "{one of: RULE | FORMULA | MODEL | LANGUAGE_MODEL}"

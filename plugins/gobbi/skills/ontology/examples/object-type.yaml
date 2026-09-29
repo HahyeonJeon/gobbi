@@ -1,218 +1,312 @@
 # Flight sample: the Object types of the flight-operations area. See area.yaml.
 objectTypes:
   flight:
-    status: "active"
-    description: "One scheduled trip of one aircraft between two airports on one date."
-    aliases:
-      - "leg"
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "One scheduled trip of one aircraft between two airports on one date."
+      aliases:
+        - "leg"
     responsibility: "A flight owns its schedule and its lifecycle state."
-    boundary: "Seats and fare classes, which Booking owns, and personal data, which Passenger owns."
-    neverTouches:
-      - "passenger"
-    primaryKey:
-      - "number"
-      - "departureDate"
-    properties:
-      number:
-        description: "The flight number of the route that this flight operates."
-        dataType: "string"
-        constraints:
-          - "A carrier code, then 1 to 4 digits."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      departureDate:
-        description: "The date on which the flight is scheduled to depart."
-        dataType: "date"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      scheduledDeparture:
-        description: "The time at which the flight is scheduled to leave its departure airport."
-        dataType: "timestamp"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      scheduledArrival:
-        description: "The time at which the flight is scheduled to reach its arrival airport."
-        dataType: "timestamp"
-        constraints:
-          - "Later than the scheduled departure."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      estimatedDeparture:
-        description: "The time at which the flight is now expected to leave its departure airport."
-        dataType: "timestamp"
-        required: "true"
-        changes: "changing"
-        origin: "entered"
-      estimatedArrival:
-        description: "The time at which the flight is now expected to reach its arrival airport."
-        dataType: "timestamp"
-        constraints:
-          - "Later than the estimated departure."
-        required: "true"
-        changes: "changing"
-        origin: "entered"
-      state:
-        description: "The flight's current point in its lifecycle."
-        dataType: "string"
-        enum:
-          - "scheduled"
-          - "departed"
-          - "arrived"
-          - "cancelled"
-        required: "true"
-        changes: "changing"
-        origin: "entered"
-      delayReason:
-        description: "The reason given when the flight was last delayed."
-        dataType: "string"
-        required: "false"
-        changes: "changing"
-        origin: "entered"
-      bookedSeatCount:
-        description: "The number of seats booked on the flight, counted from the flight's bookings."
-        dataType: "integer"
-        required: "true"
-        changes: "changing"
-        origin: "derived"
+    boundary:
+      outside: "Seats and fare classes, which Booking owns, and personal data, which Passenger owns."
+      neverTouches:
+        - "passenger"
+    relationship: null
+    objectType:
+      pluralDisplayName: "Flights"
+      primaryKey: "flightId"
+      titleProperty: "number"
+      properties:
+        flightId:
+          description: "The identifier that the scheduling system gives the flight."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        number:
+          description: "The flight number of the route that this flight operates."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "regex"
+              pattern: "^[A-Z0-9]{2}[0-9]{1,4}$"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        departureDate:
+          description: "The date on which the flight is scheduled to depart."
+          dataType:
+            type: "date"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        scheduledDeparture:
+          description: "The time at which the flight is scheduled to leave its departure airport."
+          dataType:
+            type: "timestamp"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        scheduledArrival:
+          description: "The time at which the flight is scheduled to reach its arrival airport, later than its scheduled departure."
+          dataType:
+            type: "timestamp"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        estimatedDeparture:
+          description: "The time at which the flight is now expected to leave its departure airport."
+          dataType:
+            type: "timestamp"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "ENTERED"
+        estimatedArrival:
+          description: "The time at which the flight is now expected to reach its arrival airport."
+          dataType:
+            type: "timestamp"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "ENTERED"
+        state:
+          description: "The flight's current point in its lifecycle."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "enum"
+              options:
+                - "scheduled"
+                - "departed"
+                - "arrived"
+                - "cancelled"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "ENTERED"
+        delayReason:
+          description: "The reason given when the flight was last delayed."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NULLABLE"
+          changes: "CHANGING"
+          origin: "ENTERED"
+        bookedSeatCount:
+          description: "The number of seats booked on the flight, counted from the flight's bookings."
+          dataType:
+            type: "integer"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "DERIVED"
+      implementsInterfaces: null
   aircraft:
-    status: "active"
-    description: "One physical airplane that can operate flights, identified by its registration."
-    aliases:
-      - "tail"
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "One physical airplane that can operate flights, identified by its registration."
+      aliases:
+        - "tail"
     responsibility: "An aircraft owns its seat capacity and its service state."
-    boundary: "The flights it operates, which Flight owns through its aircraft link, and the maintenance work that sets its service state, which is outside this area."
-    neverTouches:
-      - "booking"
-      - "passenger"
-    primaryKey:
-      - "registration"
-    properties:
-      registration:
-        description: "The registration mark that identifies the aircraft."
-        dataType: "string"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      seatCapacity:
-        description: "The number of passenger seats the aircraft has."
-        dataType: "integer"
-        constraints:
-          - "Greater than zero."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      serviceState:
-        description: "Whether the aircraft may operate flights now."
-        dataType: "string"
-        enum:
-          - "inService"
-          - "outOfService"
-        required: "true"
-        changes: "changing"
-        origin: "captured"
+    boundary:
+      outside: "The flights it operates, which Flight owns through its aircraft link, and the maintenance work that sets its service state, which is outside this area."
+      neverTouches:
+        - "booking"
+        - "passenger"
+    relationship: null
+    objectType:
+      pluralDisplayName: "Aircraft"
+      primaryKey: "registration"
+      titleProperty: "registration"
+      properties:
+        registration:
+          description: "The registration mark that identifies the aircraft."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        seatCapacity:
+          description: "The number of passenger seats the aircraft has."
+          dataType:
+            type: "integer"
+          constraints:
+            - type: "range"
+              minimumValue: "1"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        serviceState:
+          description: "Whether the aircraft may operate flights now."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "enum"
+              options:
+                - "inService"
+                - "outOfService"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "CAPTURED"
+      implementsInterfaces: null
   airport:
-    status: "active"
-    description: "One airport where flights depart or arrive, identified by its IATA code."
-    aliases:
-      - "station"
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "One airport where flights depart or arrive, identified by its IATA code."
+      aliases:
+        - "station"
     responsibility: "An airport owns its time zone and its minimum connection time, a rule kept as data so that people can review it."
-    boundary: "The flights that depart from it or arrive at it, which Flight owns through its airport links."
-    neverTouches:
-      - "passenger"
-      - "booking"
-    primaryKey:
-      - "code"
-    properties:
-      code:
-        description: "The code that identifies the airport."
-        dataType: "string"
-        constraints:
-          - "Three uppercase letters (IATA code)."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      name:
-        description: "The airport's public name."
-        dataType: "string"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      timeZone:
-        description: "The time zone in which the airport keeps local time."
-        dataType: "string"
-        constraints:
-          - "IANA time zone name."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      minimumConnectionTime:
-        description: "The shortest allowed gap, in minutes, between one passenger's arriving and departing flights at this airport."
-        dataType: "integer"
-        required: "true"
-        changes: "changing"
-        origin: "captured"
+    boundary:
+      outside: "The flights that depart from it or arrive at it, which Flight owns through its airport links."
+      neverTouches:
+        - "passenger"
+        - "booking"
+    relationship: null
+    objectType:
+      pluralDisplayName: "Airports"
+      primaryKey: "code"
+      titleProperty: "name"
+      properties:
+        code:
+          description: "The IATA code that identifies the airport."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "regex"
+              pattern: "^[A-Z]{3}$"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        name:
+          description: "The airport's public name."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        timeZone:
+          description: "The IANA name of the time zone in which the airport keeps local time."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        minimumConnectionTime:
+          description: "The shortest allowed gap, in minutes, between one passenger's arriving and departing flights at this airport."
+          dataType:
+            type: "integer"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "CAPTURED"
+      implementsInterfaces: null
   passenger:
-    status: "active"
-    description: "One person who holds a booking on at least one flight."
-    aliases:
-      - "pax"
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "One person who holds a booking on at least one flight."
+      aliases:
+        - "pax"
     responsibility: "A passenger owns the personal data that identifies the person."
-    boundary: "Seats and fare classes, which Booking owns, and flight schedules, which Flight owns."
-    neverTouches:
-      - "flight"
-    primaryKey:
-      - "passengerId"
-    properties:
-      passengerId:
-        description: "The identifier that the airline gives the person."
-        dataType: "string"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      fullName:
-        description: "The person's full name as written on the travel document."
-        dataType: "string"
-        required: "true"
-        changes: "changing"
-        origin: "captured"
+    boundary:
+      outside: "Seats and fare classes, which Booking owns, and flight schedules, which Flight owns."
+      neverTouches:
+        - "flight"
+    relationship: null
+    objectType:
+      pluralDisplayName: "Passengers"
+      primaryKey: "passengerId"
+      titleProperty: "fullName"
+      properties:
+        passengerId:
+          description: "The identifier that the airline gives the person."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        fullName:
+          description: "The person's full name as written on the travel document."
+          dataType:
+            type: "string"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "CHANGING"
+          origin: "CAPTURED"
+      implementsInterfaces: null
   booking:
-    status: "active"
-    description: "One passenger's confirmed place on one flight, an Object type rather than a Link type because it carries its own data."
-    aliases:
-      - "reservation"
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "One passenger's confirmed place on one flight, an Object type rather than a Link type because it carries its own data."
+      aliases:
+        - "reservation"
     responsibility: "A booking owns one passenger's seat and fare class on one flight."
-    boundary: "The flight's schedule and state, which Flight owns, and personal data, which Passenger owns."
-    neverTouches:
-      - "aircraft"
-    primaryKey:
-      - "recordLocator"
-    properties:
-      recordLocator:
-        description: "The code that identifies the booking."
-        dataType: "string"
-        constraints:
-          - "Six letters or digits."
-        required: "true"
-        changes: "stable"
-        origin: "captured"
-      seat:
-        description: "The seat assigned to the passenger on the flight."
-        dataType: "string"
-        constraints:
-          - "A row number, then a seat letter, such as \"12A\"."
-        required: "false"
-        changes: "changing"
-        origin: "captured"
-      fareClass:
-        description: "The cabin class that the passenger paid for."
-        dataType: "string"
-        enum:
-          - "economy"
-          - "business"
-        required: "true"
-        changes: "stable"
-        origin: "captured"
+    boundary:
+      outside: "The flight's schedule and state, which Flight owns, and personal data, which Passenger owns."
+      neverTouches:
+        - "aircraft"
+    relationship: null
+    objectType:
+      pluralDisplayName: "Bookings"
+      primaryKey: "recordLocator"
+      titleProperty: "recordLocator"
+      properties:
+        recordLocator:
+          description: "The code that identifies the booking."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "regex"
+              pattern: "^[A-Z0-9]{6}$"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+        seat:
+          description: "The seat assigned to the passenger on the flight."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "regex"
+              pattern: "^[0-9]{1,2}[A-K]$"
+          dataConstraints:
+            nullability: "NULLABLE"
+          changes: "CHANGING"
+          origin: "CAPTURED"
+        fareClass:
+          description: "The cabin class that the passenger paid for."
+          dataType:
+            type: "string"
+          constraints:
+            - type: "enum"
+              options:
+                - "economy"
+                - "business"
+          dataConstraints:
+            nullability: "NOT_NULLABLE"
+          changes: "STABLE"
+          origin: "CAPTURED"
+      implementsInterfaces: null

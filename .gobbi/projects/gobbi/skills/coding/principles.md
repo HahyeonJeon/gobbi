@@ -88,8 +88,8 @@ need only a good name.
   its allowed callers. A public class or function that realizes neither states inputs, output, and errors, as
   for a Function.
 
-"Caller contract" is coding's name for the fields that the [Ontology record](../ontology/record.md) keeps under
-Palantir names. Each part maps to one field:
+"Caller contract" is coding's name for the fields that each kind block of the
+[Ontology Record](../ontology/SKILL.md#record) keeps under Palantir names. Each part maps to one field:
 
 | Caller contract part | Record field |
 |---|---|
@@ -101,12 +101,13 @@ Palantir names. Each part maps to one field:
 | The error result | None; the record gives every Action type one failure result: nothing changes, and the failed criterion is named |
 | The data it changes | Action type `operations` |
 | Side effects | Action type `sideEffects` |
-| Allowed callers | The `run` grants of each Security policy that targets the Action type; a `propose` grant adds a proposer, not a caller |
+| Allowed callers | The `RUN` grants of each Security policy that targets the Action type; a `PROPOSE` grant adds a proposer, not a caller |
 
-A Function's `reads` belongs in the Relationship line. Directories and files state only the five facet lines.
+A Function's `relationship` links, the units it reads, belong in the Relationship line. Directories and files
+state only the five facet lines.
 
-Record ids are lowerCamelCase; code uses its language's case, so the Action type `delayFlight` is the Python
-function `delay_flight`.
+Record ids are lowerCamelCase, and Action type ids are kebab-case; code uses its language's case, so the Action
+type `delay-flight` is the Python function `delay_flight`.
 
 Keep computing and changing apart, because Functions return results and only Action types commit changes
 ([Ontology Rules](../ontology/SKILL.md#rules)). A function that realizes a Function returns a value and changes
@@ -141,22 +142,23 @@ The design record gives these lines for `flight.py`. The code keeps only the Pro
 - **Boundary:** hides `_DELAYABLE`; shares `Flight`, `FlightState`, `InvalidDelay`, and `delay_flight`; never
   imports `booking`.
 - **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`; realizes the Object type
-  Flight (`flight`) and the Action type Delay flight (`delayFlight`).
-- **Properties:** `number: str` and `departure_date: date`, stable; `state: FlightState`,
+  Flight (`flight`) and the Action type Delay flight (`delay-flight`).
+- **Properties:** `flight_id: str`, `number: str`, and `departure_date: date`, stable; `state: FlightState`,
   `estimated_departure: datetime`, `estimated_arrival: datetime`, and `delay_reason: str`, changing. Both
   estimated times are in UTC, with `tzinfo=UTC`. The estimated arrival is later than the estimated departure;
   `Flight` raises `ValueError` otherwise.
 
 The public function `delay_flight` also gets its caller contract, from the Delay flight fields:
 
-- **Caller contract:** `delay_flight(flight, new_estimated_departure, reason, *, notify) -> Flight`, where
-  `new_estimated_departure` is a UTC `datetime`. Checks: it raises `InvalidDelay` unless the flight's state is
-  `scheduled` and the new time is later than the current estimated departure. Error result: the flight is
-  unchanged, no one is notified, and the error names the failed check. Changes: both estimated times move by the
-  same amount, and the reason is set. Side effects: notifies each booked passenger, by calling `notify` once with
-  the delayed flight after the change. `notify` is the sender that the caller passes in, not a Delay flight
-  parameter. Allowed callers: operations-control code, as the Ops-control policy grant to run `delayFlight`
-  states.
+- **Caller contract:**
+  `delay_flight(flight, new_estimated_departure, new_estimated_arrival, reason, *, notify) -> Flight`, where
+  both new times are UTC `datetime` values. Checks: it raises `InvalidDelay` unless the flight's state is
+  `scheduled`, the new estimated departure is later than the current one, and the new estimated arrival is
+  later than the new estimated departure. Error result: the flight is unchanged, no one is notified, and the
+  error names the failed check. Changes: both estimated times and the reason are set. Side effects: notifies
+  each booked passenger, by calling `notify` once with the delayed flight after the change. `notify` is the
+  sender that the caller passes in, not a Delay flight parameter. Allowed callers: operations-control code, as
+  the Ops-control policy grant to run `delay-flight` states.
 
 ```python
 # airline/flight.py
@@ -184,6 +186,7 @@ class InvalidDelay(ValueError):
 
 @dataclass(frozen=True)
 class Flight:
+    flight_id: str
     number: str
     departure_date: date
     state: FlightState
@@ -199,6 +202,7 @@ class Flight:
 def delay_flight(
     flight: Flight,
     new_estimated_departure: datetime,
+    new_estimated_arrival: datetime,
     reason: str,
     *,
     notify: Callable[[Flight], None],
@@ -207,11 +211,12 @@ def delay_flight(
         raise InvalidDelay(f"state is {flight.state}, not scheduled")
     if new_estimated_departure <= flight.estimated_departure:
         raise InvalidDelay("new estimated departure is not later")
-    shift = new_estimated_departure - flight.estimated_departure
+    if new_estimated_arrival <= new_estimated_departure:
+        raise InvalidDelay("new estimated arrival is not later than the new estimated departure")
     delayed = replace(
         flight,
         estimated_departure=new_estimated_departure,
-        estimated_arrival=flight.estimated_arrival + shift,
+        estimated_arrival=new_estimated_arrival,
         delay_reason=reason,
     )
     notify(delayed)
@@ -219,6 +224,7 @@ def delay_flight(
 
 
 on_time = Flight(
+    flight_id="ZZ101-2026-03-01",
     number="ZZ101",
     departure_date=date(2026, 3, 1),
     state=FlightState.SCHEDULED,
@@ -227,8 +233,9 @@ on_time = Flight(
 )
 sent: list[Flight] = []
 new_departure = datetime(2026, 3, 1, 9, 30, tzinfo=UTC)
-late = delay_flight(on_time, new_departure, "crew rest", notify=sent.append)
-assert late.estimated_arrival == datetime(2026, 3, 1, 11, 30, tzinfo=UTC)
+new_arrival = datetime(2026, 3, 1, 11, 30, tzinfo=UTC)
+late = delay_flight(on_time, new_departure, new_arrival, "crew rest", notify=sent.append)
+assert late.estimated_arrival == new_arrival
 assert sent == [late]
 ```
 

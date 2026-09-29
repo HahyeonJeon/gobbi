@@ -1,20 +1,25 @@
-# Template for one Object type unit. The format and checks are in the ontology skill's record.md.
-# For the first unit, replace objectTypes: {} in the area file with this block; later, copy only the unit.
-# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
-objectTypes:
-  objectTypeId:
-    displayName: "{optional: preferred name, only when it differs from the id in words}"
-    status: "{experimental, active, or deprecated}"
-    description: "{one sentence that tells a member from a non-member}"
-    aliases:
-      - "{optional: non-preferred term that maps to the preferred name}"
-    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
-    boundary: "{what is outside the unit, and which unit owns it}"
-    neverTouches:
-      - "{optional: reference to a unit this unit never touches}"
-    primaryKey:
-      - "{property id that identifies one member; the Property is required, stable, and not derived}"
-    properties:
-      # Paste templates/property.yaml here once per Property, then delete this comment.
-    implementsInterfaces:
-      - "{optional: interface reference}"
+# Object type: a real-world thing or event with its own identity, such as one scheduled flight.
+# Kind block objectType, in the group objectTypes. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   objectType <id>, then add each Property with add <file> property <id>.<propertyId> (property.yaml).
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - primaryKey names one Property that is NOT_NULLABLE, STABLE, and not DERIVED. When no captured value
+#   identifies a member alone, add one captured id Property, such as flightId.
+# - titleProperty names the Property that people see as a member's name.
+# - A connection that carries its own data is an Object type, not a Link type.
+#
+# Relationship: implementsInterfaces holds each Interface it implements. Its Link types hold its links. Other
+# edges go in relationship.
+#
+# Review checklist (validate does not check these):
+# - Split the unit when a Property's meaning depends on another Property's value, or most members leave it empty.
+#
+# Palantir: ObjectTypeV2, with implementsInterfaces from ObjectTypeFullMetadata.
+objectType:
+  pluralDisplayName: "{plural preferred name, such as Flights}"
+  primaryKey: "{id of the Property that identifies one member}"
+  titleProperty: "{id of the Property that names a member for people}"
+  properties: "{entries: property.yaml}"
+  implementsInterfaces:
+    - "{null or: Interface reference}"

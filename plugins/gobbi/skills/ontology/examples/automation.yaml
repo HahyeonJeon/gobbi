@@ -1,17 +1,31 @@
 # Flight sample: the Automations of the flight-operations area. See area.yaml.
 automations:
   checkConnectionsAfterChange:
-    status: "active"
-    description: "A reaction that checks each affected connection when a flight's estimated arrival changes."
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "A reaction that checks each affected connection when a flight's estimated arrival changes."
+      aliases: null
     responsibility: "It owns when connection checks run after a flight's times change."
-    boundary: "The connection rule, which Meets minimum connection time owns, and rebooking, which is outside this area."
-    neverTouches:
-      - "aircraft"
-    watches:
-      - "flight.estimatedArrival"
-    effects:
-      - "meetsMinimumConnectionTime"
-    runsAs: "connection-check service"
-    notifications:
-      - "Alert the operations controller assigned to the connecting airport of each outbound booking whose connection fails, and name the inbound flight and its new estimated arrival."
-    fallback: "Retry twice, then alert the operations controller assigned to the flight's departure airport that the check did not run."
+    boundary:
+      outside: "The connection rule, which Meets minimum connection time owns, and rebooking, which is outside this area."
+      neverTouches:
+        - "aircraft"
+    relationship: null
+    automation:
+      condition:
+        type: "objectsModified"
+        objectTypeApiName: "flight"
+        propertyApiNames:
+          - "estimatedArrival"
+      effects:
+        - type: "function"
+          functionApiName: "meetsMinimumConnectionTime"
+        - type: "notification"
+          description: "Alert the operations controller assigned to the connecting airport of each outbound booking whose connection fails, and name the inbound flight and its new estimated arrival."
+      runsAs: "connection-check service"
+      retries: "Retry twice."
+      fallbackEffect:
+        type: "notification"
+        description: "Alert the operations controller assigned to the flight's departure airport that the check did not run."

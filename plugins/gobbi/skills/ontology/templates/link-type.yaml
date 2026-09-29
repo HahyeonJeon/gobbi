@@ -1,21 +1,31 @@
-# Template for one Link type unit. The format and checks are in the ontology skill's record.md.
-# For the first unit, replace linkTypes: {} in the area file with this block; later, copy only the unit.
-# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
-linkTypes:
-  linkTypeId:
-    displayName: "{optional: preferred name, only when it differs from the id in words}"
-    status: "{experimental, active, or deprecated}"
-    description: "{one sentence that tells a member from a non-member}"
-    aliases:
-      - "{optional: non-preferred term that maps to the preferred name}"
-    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
-    boundary: "{what is outside the unit, and which unit owns it}"
-    neverTouches:
-      - "{optional: reference to a unit this unit never touches}"
-    sides:
-      - apiName: "{first side, which starts from the owning end: name of the far end; plural when many}"
-        objectTypeApiName: "{object type reference: the far end of this side}"
-        cardinality: "{one or many: how many far-end members one near-end member links to}"
-      - apiName: "{second side: name of the owning end, seen from the far end; plural when many}"
-        objectTypeApiName: "{object type reference: the owning end}"
-        cardinality: "{one or many}"
+# Link type: a named connection between two Object types, named from both ends.
+# Kind block linkType, in the group linkTypes. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   linkType <id>
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - sides has exactly two sides. A side's near end is the other side's objectTypeApiName.
+# - The first side starts from the owning end: for a many-to-one link, the MANY end.
+# - A READ grant on an Object type also covers each Link type whose first side starts from it. Reading a link
+#   shows the far end's primaryKey and none of its other Properties.
+#
+# Relationship: sides[].objectTypeApiName holds both ends. relationship is null.
+#
+# Review checklist (validate does not check these):
+# - When the two cardinalities differ, the first side's cardinality is ONE.
+# - A side's apiName is unique among the sides that start from one Object type, is not one of that Object
+#   type's Property ids, and is plural when its cardinality is MANY.
+# - The Link type is not ACTIVE when either end is EXPERIMENTAL, and is DEPRECATED when either end is.
+# - An is-a relation is implementsInterfaces, not a Link type.
+#
+# Palantir: LinkTypeSideV2 for each side. The whole-link unit follows @osdk/maker's LinkType; the read API lists
+# each side under its near-end Object type.
+linkType:
+  sides:
+    - apiName: "{first side, from the owning end: name of the far end}"
+      displayName: "{optional: side name for people, only when it differs from apiName in words}"
+      objectTypeApiName: "{Object type reference: the far end of this side}"
+      cardinality: "{one of: ONE | MANY}"
+    - apiName: "{second side: name of the owning end, seen from the far end}"
+      objectTypeApiName: "{Object type reference: the owning end}"
+      cardinality: "{one of: ONE | MANY}"

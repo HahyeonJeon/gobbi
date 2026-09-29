@@ -1,65 +1,71 @@
 # Flight sample: the Security policies of the flight-operations area. See area.yaml.
 securityPolicies:
   opsControl:
-    displayName: "Ops-control policy"
-    status: "active"
-    description: "The grants that decide who may read the flight-operations Object types, with the Link types that start from them, run or propose their Action types, or run their Functions."
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: "Ops-control policy"
+      description: "The grants that decide who may read the flight-operations Object types, with the Link types that start from them, run or propose their Action types, or run their Functions."
+      aliases: null
     responsibility: "It owns who may read each flight-operations Object type, with the Link types that start from it, run or propose each Action type, and run each Function."
-    boundary: "Passenger data, which Passenger owns and no grant here allows."
-    neverTouches:
-      - "passenger"
-    grants:
-      - role: "operations controller"
-        permission: "run"
-        targets:
-          - "delayFlight"
-          - "cancelFlight"
-          - "departFlight"
-          - "arriveFlight"
-        condition: "The flight departs from the controller's assigned airport."
-      - role: "operations controller"
-        permission: "read"
-        targets:
-          - "flight"
-        condition: "The flight departs from the controller's assigned airport."
-      - role: "operations controller"
-        permission: "read"
-        targets:
-          - "booking"
-        condition: "The booking's flight departs from the controller's assigned airport."
-      - role: "planner"
-        permission: "read"
-        targets:
-          - "flight"
-          - "aircraft"
-          - "airport"
-      - role: "operations duty manager"
-        permission: "read"
-        targets:
-          - "flight"
-          - "booking"
-          - "airport"
-      - role: "operations duty manager"
-        permission: "run"
-        targets:
-          - "meetsMinimumConnectionTime"
-      - role: "connection-check service"
-        permission: "read"
-        targets:
-          - "flight"
-          - "booking"
-          - "airport"
-      - role: "connection-check service"
-        permission: "run"
-        targets:
-          - "meetsMinimumConnectionTime"
-      - role: "operations assistant agent"
-        permission: "propose"
-        targets:
-          - "delayFlight"
-        condition: "The flight departs from the airport the agent is assigned to."
-      - role: "operations assistant agent"
-        permission: "read"
-        targets:
-          - "flight"
-        condition: "The flight departs from the airport the agent is assigned to."
+    boundary:
+      outside: "Passenger data, which Passenger owns and no grant here allows."
+      neverTouches:
+        - "passenger"
+    relationship: null
+    securityPolicy:
+      grants:
+        - role: "operations controller"
+          permission: "RUN"
+          targets:
+            - "delay-flight"
+            - "cancel-flight"
+            - "depart-flight"
+            - "arrive-flight"
+          condition: "The flight departs from the controller's assigned airport."
+        - role: "operations controller"
+          permission: "READ"
+          targets:
+            - "flight"
+          condition: "The flight departs from the controller's assigned airport."
+        - role: "operations controller"
+          permission: "READ"
+          targets:
+            - "booking"
+          condition: "The booking's flight departs from the controller's assigned airport."
+        - role: "planner"
+          permission: "READ"
+          targets:
+            - "flight"
+            - "aircraft"
+            - "airport"
+        - role: "operations duty manager"
+          permission: "READ"
+          targets:
+            - "flight"
+            - "booking"
+            - "airport"
+        - role: "operations duty manager"
+          permission: "RUN"
+          targets:
+            - "meetsMinimumConnectionTime"
+        - role: "connection-check service"
+          permission: "READ"
+          targets:
+            - "flight"
+            - "booking"
+            - "airport"
+        - role: "connection-check service"
+          permission: "RUN"
+          targets:
+            - "meetsMinimumConnectionTime"
+        - role: "operations assistant agent"
+          permission: "PROPOSE"
+          targets:
+            - "delay-flight"
+          condition: "The flight departs from the airport the agent is assigned to."
+        - role: "operations assistant agent"
+          permission: "READ"
+          targets:
+            - "flight"
+          condition: "The flight departs from the airport the agent is assigned to."
