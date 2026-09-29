@@ -29,8 +29,18 @@ Design Ideation runs two unmerged image passes. The user decides structure from 
 then direction from styled example PNGs on the accepted structure. Discussion topics follow that decision
 order. Listed illustration PNGs are subordinate evidence. Written Design headings stay authoritative.
 
+## Ontology
+
+Ideation, Execution, and Review each have an `ontology.md` child. Each applies the
+[Ontology](../../../skills/ontology/SKILL.md) facets and kinds to components, user-facing objects, and named
+visual-language terms. The Ideation child gives them their design terms. The Execution child applies them to
+what the task creates or changes. The Review child lists the questions a reviewer asks. Design Execution is
+still a placeholder; it carries one line that applies Ontology. The caller assigns a fresh `design-reviewer` for
+Review.
+
 ## Related designs
 
 - [Coding skill family](coding-skill-family.md)
 - [Authoring skill family](authoring-skill-family.md)
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md)
+- [Ontology skill](ontology-skill.md)

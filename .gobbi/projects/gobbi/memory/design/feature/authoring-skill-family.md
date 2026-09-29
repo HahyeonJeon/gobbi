@@ -22,8 +22,17 @@ Evaluation skills are gone without an alias. Canonical skills own live procedure
 Composition matches the [Coding skill family](coding-skill-family.md): callers select matching children
 directly; the root never stores lifecycle state.
 
+## Ontology
+
+Ideation, Execution, and Review each have an `ontology.md` child. Each applies the
+[Ontology](../../../skills/ontology/SKILL.md) facets and kinds to documents, sections, and defined terms. The
+Ideation child gives them their writing terms. The Execution child applies them to what the task creates or
+changes. The Review child lists the questions a reviewer asks. Authoring Execution is still a placeholder; it
+carries one line that applies Ontology. The caller assigns a fresh `docs-reviewer` for Review.
+
 ## Related designs
 
 - [Coding skill family](coding-skill-family.md)
 - [Design skill family](design-skill-family.md)
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md)
+- [Ontology skill](ontology-skill.md)

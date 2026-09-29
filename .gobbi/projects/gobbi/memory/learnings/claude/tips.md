@@ -70,11 +70,15 @@ satisfies the same sentinel checks a genuine plugin install does.
 **Context:** A review brief tells a Claude Code subagent, such as the `author` role, to write its own
 `report.md` and `checklist.md`.
 
-**Tip:** The harness refuses the `report.md` write with "Subagents should return findings as text, not write
-report files". The `checklist.md` write is allowed.
+**Tip:** The harness often refuses the `report.md` write with "Subagents should return findings as text, not
+write report files". The refusal is not uniform. The `checklist.md` write is usually allowed, and in one review
+a reviewer's report write succeeded while a second reviewer's was refused.
 
-**Application:** In Claude Code review briefs, have the reviewer return the full report in its Handoff. The
-manager saves `report.md` verbatim and records that it did so in the report header.
+**Application:** Run Review through the registered reviewer role types; new role types register only after a
+session restart. Ask every Claude Code reviewer to return its full report in its Handoff, capped at about 40 KB.
+The [Review](../../design/process/evaluation.md#ownership) design treats a write denial as `BLOCKED` and forbids
+a manager scribe. Save a report verbatim, marked manager-saved, only when the user allows it. See
+[Review report persistence](../../backlogs/evaluation.md#review-report-persistence-when-claude-code-refuses-the-report-write).
 
 ## A full model id works in Claude agent frontmatter
 

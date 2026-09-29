@@ -13,6 +13,7 @@ Recursive navigation across design memory, grouped by category.
 - [CLI skill family](feature/cli-skill-family.md)
 - [Coding skill family](feature/coding-skill-family.md)
 - [Design skill family](feature/design-skill-family.md)
+- [Ontology skill](feature/ontology-skill.md)
 - [Partner](feature/partner.md)
 - [Python skill family](feature/python-skill-family.md)
 - [Stop reminder](feature/stop-reminder.md)

@@ -13,12 +13,17 @@ Cowork wrap-up uses the same Memory extraction. It does not load the Wrap-up ski
 | Design changes and intended behaviors | `design/` |
 | Decisions | The design file they shape |
 | Standing project preferences | `design/process/`, or the named feature or architecture file they constrain |
+| Session ontology area files at `{session-root}/ontology/<area>.yaml` that pass `validate` and each kind's review checklist | `ontology/<area>.yaml`, listed in `ontology/README.md` |
 | Repeatable tips and mistakes | `learnings/` |
 | Deferred leftovers | `backlogs/` |
 | Work account | `reports/note/YYYY-MM-DD-<title>.md` |
 | Net session change | `history/`, only when the project changed |
 
 Update or merge an existing home first. Create a file only when that content is missing.
+
+Only closure promotion changes `ontology/`. Each added, changed, or removed unit id must be named in an accepted
+Ideation or Execution handoff. A unit change that no handoff names, or a file that fails the checks, stops the
+promotion. The Memory skill owns these rules.
 
 ## What stays out
 
@@ -31,3 +36,4 @@ The response note cites the `reports/note/` path. When Phase 1 stops before memo
 - [Wrap-up](../../../skills/wrap-up/SKILL.md)
 - [Memory](../../../skills/memory/SKILL.md)
 - [Cowork implementation commits](cowork.md)
+- [Ontology skill](../feature/ontology-skill.md)

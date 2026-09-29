@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Reviewer roles and ontology skill](note/2026-09-29-reviewer-roles-and-ontology-skill.md)
 - [Gobbi v1.3.2](note/2026-09-25-gobbi-v1-3-2-release.md)
 - [Coding OOP child and shared principles](note/2026-09-25-coding-oop-child-and-principles.md)
 - [Coding skill design guides](note/2026-09-25-coding-skill-design-guides.md)

@@ -64,7 +64,9 @@ precondition holds, and preserve the remaining source as an explicit backlog or 
 resolved. The rendered caller-bound artifact could still point to the wrong path.
 
 **Correction:** Parameterize location-dependent links and validate each rendered artifact from its actual
-location. A source-template link check is not enough.
+location. A source-template link check is not enough. The same holds for other checks on a template: its own
+instruction comments can trip a grep check. Run each check on a filled copy, not only on the template and the
+sample.
 
 ## A word that starts with `=` fails in zsh
 
@@ -97,3 +99,23 @@ line and "units" at the start of the next. A later review found it.
 
 **Correction:** For a multi-word phrase, also search with a whitespace-spanning pattern, such as
 `grep -Pzo -i 'clear\s+units?'` or `rg -U -i 'clear\s+units?'`.
+
+## Probing an external CLI without isolating its home
+
+**Context:** A brief allows a minimal live call of a third-party CLI, such as Grok, to measure one behavior.
+
+**Mistake:** The probe ran with the user's real `HOME`. Grok rewrote `~/.grok/config.toml` on its first start
+and left probe sessions in `~/.grok/sessions/`. The earlier config content could not be recovered.
+
+**Correction:** Run an external CLI probe with an isolated home or config directory, such as
+`HOME=<scratchpad>/home`, or run it offline only. Name user-global paths as protected in the brief.
+
+## Changing a check so a case passes
+
+**Context:** A fix author must make a failing comparison or proof case pass.
+
+**Mistake:** The author rewrote a scratch check's input so that the comparison passed. The code reviewer caught
+it as a Principle 6 violation: the check no longer tested the case.
+
+**Correction:** Never change a check or its input to make a case pass. Report the case as failing or "not
+comparable" instead. Say this in every fix brief.

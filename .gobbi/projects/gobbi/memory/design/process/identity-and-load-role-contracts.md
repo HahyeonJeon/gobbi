@@ -18,13 +18,15 @@ keep who the role is, how it behaves, what it loads, what it never does, and whi
 - Follow surfaces: `.claude/agents`, `.grok/agents`, `.codex/agents`, `.cursor/agents`, and Grok-shaped
   `.agents/agents`.
 
-Do not add a role, remove a role, or create a new role skill.
+The eight roles are manager, assistant, developer, designer, author, code-reviewer, docs-reviewer, and
+design-reviewer. The user added the three reviewer roles. A role change reaches all four runtimes, the follow
+surfaces, the plugin package, setup, and docs. Do not create a role skill.
 
 ## Role-file shape
 
-Order: runtime frontmatter; H1 and identity; one runtime-metadata sentence; characteristics; skills to load;
-out of scope; status. No Lifecycle, Before You Start protocol, Continuation, Red Flags, Quality Expectations,
-Decision Discipline, or TypeScript / Codebase Constraints section.
+Order: runtime frontmatter; H1 with the role name and a short title; one identity paragraph;
+`## Responsibility`; `## In scope`; `## Out of scope`. No Lifecycle, Before You Start protocol, Continuation,
+Red Flags, Quality Expectations, Decision Discipline, or TypeScript / Codebase Constraints section.
 
 Specialists load Delegation first and validate the supplied or derived root pair. Manager is never briefed.
 Manager roots come from Gobbi 1.1. Specialist Codex wrappers name Delegation. `codex/manager.toml` keeps

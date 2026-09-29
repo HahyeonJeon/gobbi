@@ -241,3 +241,87 @@ review-01 I8). The user deferred them.
 
 **Context:** The sibling-reference row and the free-word list are in the naming standard. The Coding family
 names are in the [Coding skill family design](../design/feature/coding-skill-family.md).
+
+## Setup Skill allow list differs between docs and script
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Align the minimum Claude settings. `README.md` (`:41-42`) and `skills/gobbi/setup/claude.md`
+(`:25-26`) list two Skill entries, `Skill(gobbi:gobbi)` and `Skill(gobbi:principles)`. The minimum settings in
+`skills/gobbi/setup/scripts/common.sh` allow four; they add `Skill(gobbi:discussion)` and
+`Skill(gobbi:delegation)`.
+
+**Why backlogged:** The 2026-09-26 reviewer-roles topic found it. It predates that topic and was outside its
+contract.
+
+**Context:** `scripts/prove-gobbi-setup.sh` proves that the settings `claude.sh` creates allow every permission
+skill in `common.sh`. It does not compare the README or the setup guide.
+
+## Identity-and-load role contracts beyond the four-part role files
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Re-check the [Identity-and-load role contracts](../design/process/identity-and-load-role-contracts.md)
+design against the role files. Its Intent and Role-file shape still say role files hold skill loads, status
+tokens, Delegation-first loading, and root-pair text. The four-part role files under
+`.gobbi/projects/gobbi/agents/` hold none of these. Move each fact to its current owner, or remove it. Also
+review the Executor boundary sentence "The executor implements and never runs Review; in-stage self-review
+stays."
+
+**Why backlogged:** The reviewer-roles topic kept the section out of scope. The Executor sentence came from its
+last correction and had no review after it.
+
+**Context:** The section order and the role list in that design were updated on 2026-09-29. The other lines
+were not checked against their possible new owners.
+
+## Grok probe side effects in the user's home
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Check that `~/.grok/config.toml` still holds the user's settings, and remove the probe sessions from
+`~/.grok/sessions/`.
+
+**Why backlogged:** The 2026-09-26 Grok agent-name probe did not isolate `HOME`. Grok rewrote
+`~/.grok/config.toml` on its first `grok agent stdio` start and left 13 sessions in two probe-repo folders. The
+prior config content is unknown.
+
+**Context:** The rewritten file parses. See
+[Probing an external CLI without isolating its home](../learnings/dev/mistakes.md#probing-an-external-cli-without-isolating-its-home).
+
+## Grok ignores the `.agents/agents` follow surface
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Decide whether to keep `.agents/agents` as a Grok-shaped follow surface. Grok 1.0.41 discovers roles
+only from `.grok/agents/`.
+
+**Why backlogged:** The 2026-09-26 probe found it outside the reviewer-roles topic.
+
+**Context:** [Identity-and-load role contracts](../design/process/identity-and-load-role-contracts.md) lists the
+follow surfaces. See [Grok agent discovery](../learnings/grok/tips.md#grok-discovers-agents-only-in-grokagents).
+
+## Grok silent fallback for an unknown agent name
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Make a Grok launch fail, or report, when Grok does not resolve the named role. An unknown `--agent`
+name falls back to `grok-build-plan` with no error.
+
+**Why backlogged:** The 2026-09-26 probe found it outside the reviewer-roles topic.
+
+**Context:** A saved session's `summary.json` field `agent_name` shows the role that Grok resolved. The same
+probe's saved sessions showed model `grok-4.6` at `xhigh`, not the pinned `grok-4.7` at `high`; the probe ran
+offline, so this is unconfirmed.
+
+## Plugin package sync can copy `__pycache__`
+
+**Backlogged at:** 2026-09-29T08:19:28Z
+
+**What:** Keep Python bytecode out of `plugins/gobbi/`. Exclude `__pycache__` in
+`scripts/sync-plugin-package.sh`, or ignore it in `.gitignore`.
+
+**Why backlogged:** The ontology v2 execution found it. The fix was outside that design.
+
+**Context:** The sync copies every canonical skill file and excludes only exact paths. `.gitignore` has no
+`__pycache__` rule. An import of `ontology.py` from the canonical skill put `.pyc` files into the package once;
+they were removed. `scripts/prove-ontology-cli.py` sets `sys.dont_write_bytecode` to avoid it.

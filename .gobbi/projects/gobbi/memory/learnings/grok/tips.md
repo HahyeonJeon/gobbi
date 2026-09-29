@@ -24,3 +24,14 @@ fires once per session and cannot re-inject on a later user turn.
 
 **Application:** Do not add a SessionStart hook to inject text on Grok. Use Stop and a per-turn lock. See
 [stop reminder](../../design/feature/stop-reminder.md).
+
+## Grok discovers agents only in `.grok/agents`
+
+**Context:** Launching a Gobbi role on Grok with `--agent <role>`.
+
+**Tip:** Grok 1.0.41 discovers agent files only in `.grok/agents/`, including symlinked files. It does not read
+`.agents/agents/`. Hyphenated names such as `code-reviewer` work. An unknown `--agent` name falls back to
+`grok-build-plan` with no error.
+
+**Application:** After a launch, read `agent_name` in the saved session's `summary.json` to confirm the role
+that ran. See [Grok silent fallback](../../backlogs/project.md#grok-silent-fallback-for-an-unknown-agent-name).

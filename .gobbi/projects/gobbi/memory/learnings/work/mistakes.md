@@ -185,10 +185,14 @@ Narrow only the supporting docs.
 **Context:** Sending a correction brief after a review finds a wrong fact in one skill file.
 
 **Mistake:** The brief allowed only the skill file. The coding family design memory restated the same fact, so
-it stayed stale. This happened twice in one session.
+it stayed stale. This happened twice in one session. In a later session, a correction added a per-class reviewer
+rule to one procedure step only. The Rule count, the review layout, and the process design memory that restates
+that layout stayed stale, and two reviews found them.
 
-**Correction:** Before sending a correction, grep every file that restates the corrected fact and put all of
-them in the writer frontier (Principle 7). For coding skill wiring, include
+**Correction:** Before sending a correction, grep the whole canonical tree (skills, agents, `memory/design/`,
+and READMEs) for the old literal, and put every file that restates the fact in the writer frontier
+(Principle 7). When the correction changes a count or cardinality, also sweep every Rule, layout, and
+aggregation surface that assumes the old count. For coding skill wiring, include
 `memory/design/feature/coding-skill-family.md` by default. When several author groups run in series, have each
 group append the sentences that other files restate to one session file, and give that file to the final
 consistency group.
@@ -200,10 +204,14 @@ consistency group.
 **Mistake:** A brief called the old guides "unlinked". The committing author found that Ideation, Execution,
 and a template linked them at the base; only the root did not. Another brief said "run
 `bash scripts/sync-plugin-package.sh`" to regenerate `plugins/gobbi/`. With no argument that script only
-prints usage.
+prints usage. Later briefs repeated the pattern. One told an author to fix three files that "likely" had the
+same rule. One cited design rows in an index file that were in a member file. One copied a fact list from a
+reviewer's summary; the design listed more items, and the next review blocked on the author's copy.
 
 **Correction:** Check each claim before it goes into a brief, or state it with its exact scope ("the root did
-not link them"). Give each command with the arguments it needs, for example
+not link them"). Grep the claimed text before a multi-file fix, and brief only the files that have it. Take a
+fact list from its owner, such as the design, not from a summary of it. Name the member file that holds cited
+rows, not its index. Give each command with the arguments it needs, for example
 `sync-plugin-package.sh --materialize` to write the package, then `--check` to verify it.
 
 ## Grouping review findings by theme drops findings
@@ -215,3 +223,57 @@ planner caught them.
 
 **Correction:** Build the disposition table from the finding IDs. Give every ID one row: applied, decided, or
 backlogged.
+
+## Dispatching a brief before its Materials exist
+
+**Context:** A manager writes a brief whose Materials list names session files.
+
+**Mistake:** A planning brief listed `tmp/file-map.md`, and the manager wrote that file seconds after dispatch.
+The same mistake had happened in earlier sessions.
+
+**Correction:** Write every Materials file first. Then check that each listed path is readable, for example with
+`test -r`, and only then dispatch.
+
+## Checking a claim about a set against a sample
+
+**Context:** Writing or briefing a sentence that classifies a set, such as "keys X are A, keys Y are B", or a
+stated reason for merging two rules.
+
+**Mistake:** The manager checked a classification sentence against a reviewer's suggestion, not against the
+design's key tables. It contradicted five keys and left others unclassified. Three review iterations traced to
+that one sentence. Earlier, the manager merged two rules "because both are about who may change data"; one rule
+also limited read grants, so the stated reason was wrong.
+
+**Correction:** Check every member of the set against its source table before you write the claim. Prefer a
+claim by exception, such as "all are A, except these". Give the reviewer the full member list so it can check
+the claim by script. Check a merge's stated reason against every case each rule covers.
+
+## Offering options before confirming what the user's term means
+
+**Context:** The user names a facet, key, or field and asks for a change to it.
+
+**Mistake:** The manager asked two cards about whether to store `relationship` before confirming what the user
+meant by it. The user meant edges to other units by id, typed like parent, child, or link.
+
+**Correction:** First restate the term's content in one line with an example, and confirm it with the user.
+Offer storage or shape options only after that.
+
+## A skill-design brief without the standard's hard limits
+
+**Context:** Briefing a design that adds Rules or sections to a skill governed by a writing standard.
+
+**Mistake:** A design added a seventh Rule. The skill standard allows six. The brief did not state that limit,
+so the conflict surfaced only during execution.
+
+**Correction:** Put the governing standard's hard limits, such as the Rule count, in every skill-design brief.
+
+## Project-specific examples in a general skill
+
+**Context:** Writing a skill that other projects will also use.
+
+**Mistake:** A new skill's examples used this project's own files and paths. The design and its acceptance did
+not check for them, and the user had to correct it.
+
+**Correction:** The user's standing preference is that skill examples and descriptions are project-agnostic.
+State this in every skill-writing brief. At acceptance, grep the new skill text for the project's own names and
+paths.
