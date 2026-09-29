@@ -2,6 +2,7 @@
 
 > **Subject:** Authoring Ideation work and complete indexed results<br>
 > **Applicability:** General Authoring Ideation evaluation with a current indexed result<br>
+> **Governing sources:** [Authoring Ideation](SKILL.md), [Ontology](../../ontology/SKILL.md), and [Authoring Ideation ontology](ontology.md)<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -38,7 +39,7 @@
 
 - [ ] A required choice is left open, so two competent consumers could build materially different results from the same result.
 - [ ] Only the successful path is designed; alternative-valid, invalid, failure, and recovery behavior cannot be derived.
-- [ ] An ownership or responsibility boundary is undefined.
+- [ ] A new or changed document, section, or defined term lacks one of its Ontology facets, or a domain concept it defines has no kind.
 - [ ] Behavior or surfaces that must stay unchanged are not identified.
 - [ ] An accessibility, localization, or publication constraint has no design treatment.
 - [ ] A writing-design level was decided before the level it depends on, or a level is neither decided nor classified as inherited, not applicable, or a material change.

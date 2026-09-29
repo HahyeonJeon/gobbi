@@ -94,8 +94,10 @@ limit causes and verdicts to what the evidence supports.
 #### 1.3 Study the quality bar and freeze the target
 
 - Load, in this order, whichever exist: current design memory under the project's
-  `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
-  accepted session design.
+  `memory/design/`; project vision, philosophy, architecture, and governing decisions;
+  accepted session design; and the session ontology area files in the session's `ontology/`, with their
+  Memory copies under the project's `memory/ontology/`. Then load
+  [Ontology](../../ontology/SKILL.md) and [Authoring Review ontology](ontology.md).
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
   gate criteria unless the caller listed them.
 - Freeze the exact artifact, state, version, or content hash only when that state is stable;
@@ -238,4 +240,6 @@ limit causes and verdicts to what the evidence supports.
 | [Checklist](../../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum this review challenges by link. |
 | [Authoring Review checklist](checklist.md) | Authoring Review-owned baseline source for reviewing general writing-work quality. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules loaded in Step 1.3. |
+| [Authoring Review ontology](ontology.md) | Domain questions for writing, loaded in Step 1.3. |
 | [Authoring Execution](../authoring-execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

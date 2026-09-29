@@ -76,8 +76,8 @@
 
 ### Visual Language
 
-{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Exclude production files, exact assets, radius, shadow, and realization recipes.}
+{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Give each named visual-language term its Ontology facets. Exclude production files, exact assets, radius, shadow, and realization recipes.}
 
 ### Components
 
-{The inventory revealed by the accepted wireframe, then the variants, states, and composition rules after the accepted direction. Exclude production files, exact assets, and implementation recipes.}
+{The inventory revealed by the accepted wireframe. After the accepted direction, give each component and user-facing object its Ontology facets, with variants and states as properties. For each component, name the Object type it presents and the Action type each of its controls triggers. For a user-facing object, give its session ontology unit id instead of restating the facets kept there. List the session ontology unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}

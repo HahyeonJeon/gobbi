@@ -27,6 +27,7 @@ document for it, to keep the definition in one place:
     │   │   ├── feature/
     │   │   ├── process/
     │   │   └── roadmap/
+    │   ├── ontology/README.md    tracked, 0-byte
     │   ├── learnings/
     │   ├── reports/
     │   │   ├── README.md         tracked, 0-byte
@@ -65,10 +66,10 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   to `.gobbi/`. A slashless pattern such as `sessions/` would match at any depth and swallow durable memory
   under `memory/design/sessions/`.
 - **The project memory root is `.gobbi/projects/<project>/memory/`, tracked, with no marker file.** "Tracked"
-  means "not ignored"; git cannot track an empty directory. Setup scripts create the six Memory category
+  means "not ignored"; git cannot track an empty directory. Setup scripts create the seven Memory category
   directories and the named design, reports, and materials subject directories. It writes a 0-byte
-  `README.md` only at `agents/`, `skills/`, and the five category roots whose Memory conventions define a
-  README: design, reports, history, materials, and backlogs. It does not create `memory/README.md`,
+  `README.md` only at `agents/`, `skills/`, and the six category roots whose Memory conventions define a
+  README: design, ontology, reports, history, materials, and backlogs. It does not create `memory/README.md`,
   `learnings/README.md`, a leaf README, or invented learnings or backlog files. After commit and clone,
   `learnings/` and the leaf subject directories vanish until a later file lands.
 - **`rules/` is not bootstrapped.** Every agent contract already treats an absent-or-empty `rules/` as
@@ -77,10 +78,9 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   `.claude/.env`. `tmp/` was dropped entirely rather than ignored, because `scripts/check-codex-plugin-smoke.sh`
   was found to actively create it — one dual-system proposer called the path dead and the other showed it
   live; the smoke script now uses an OS temp directory instead.
-- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/materials/`
-  (and its README and subject dirs), `.gobbi/projects/gobbi/skills/README.md`, and
-  `memory/design/roadmap` until the user runs setup scripts here. Do not create those
-  paths.
+- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/ontology/` and
+  `memory/ontology/README.md`, `memory/design/roadmap`, and `memory/materials/{references,assets,docs,data}`
+  until the user runs setup scripts here. Do not create those paths.
 
 ## Bootstrap ordering
 

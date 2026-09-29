@@ -1,0 +1,20 @@
+# Template for one Security policy unit. The format and checks are in the ontology skill's record.md.
+# For the first unit, replace securityPolicies: {} in the area file with this block; later, copy only the unit.
+# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
+securityPolicies:
+  securityPolicyId:
+    displayName: "{optional: preferred name, only when it differs from the id in words}"
+    status: "{experimental, active, or deprecated}"
+    description: "{one sentence that tells a member from a non-member}"
+    aliases:
+      - "{optional: non-preferred term that maps to the preferred name}"
+    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
+    boundary: "{what is outside the unit, and which unit owns it}"
+    neverTouches:
+      - "{optional: reference to a unit this unit never touches}"
+    grants:
+      - role: "{person role, agent role, or an automation's runsAs role}"
+        permission: "{read, run, or propose}"
+        targets:
+          - "{reference to a unit the role may read, run, or propose; propose targets only action types}"
+        condition: "{optional: condition under which the grant applies}"

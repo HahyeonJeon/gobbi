@@ -1,0 +1,14 @@
+# Template for the header of one ontology area file. The format and checks are in the ontology skill's record.md.
+# Copy it to ontology/<area>.yaml and replace the two {...} placeholders; it is then a valid empty area file.
+# Add each unit from its kind's template in this directory, as record.md's Templates and Examples says.
+ontology:
+  apiName: "{area name, equal to the file name without .yaml}"
+  description: "{one sentence: the scope in which each name has one meaning}"
+objectTypes: {}
+linkTypes: {}
+interfaceTypes: {}
+functions: {}
+actionTypes: {}
+automations: {}
+processes: {}
+securityPolicies: {}

@@ -14,6 +14,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reviewer may create or run anything a check needs, but it never edits the target or its source inputs.
 - Added a setup proof that the settings `claude.sh` creates allow every role and every permission skill, that
   setup messages report the true entry counts, and that `codex.sh` writes every role's TOML.
+- Added the `ontology` preference skill, based on Palantir Foundry's Ontology. An ontology models a domain's
+  decisions: the data they use, the logic that evaluates them, the actions that carry them out, and the security
+  that governs them. The skill sorts each domain concept into one of nine kinds with Palantir names: Object
+  type, Property, Link type, Interface, Function, Action type, Automation, Process, and Security policy. Every
+  unit states five facets: Definition, Responsibility, Boundary, Relationship, and Properties. Each facet has
+  two test questions that a reviewer answers from the record alone. Its rules include that Functions return
+  results and only Action types commit changes, that each fact has one writer, that a rule or decision people
+  must review is stored as data, and that an agent or automation never holds a grant that the person or owner it
+  acts for lacks. Record keys use Palantir's field names or name patterns in lowerCamelCase where Palantir has
+  one, such as `primaryKey`, `dataType`, and `operations`. `record.md` lists where they depart from Palantir,
+  such as `functions` for `queryTypes` and a `primaryKey` list for one Property. Other keys take Palantir's
+  concept terms, except 12 keys with no Palantir term, such as `responsibility` and `runsAs`, which are ours.
+  `record.md` sets the YAML format and validation checklist for an area file, with an optional PyYAML parse
+  check. The skill ships one YAML template and one Flight example file per kind.
+- Added a seventh Memory category, `memory/ontology/`, with one YAML file per bounded area of the domain model.
+  Setup now creates and checks `memory/ontology/README.md`, and the setup proof expects eight README stubs. In
+  an existing project, run setup again to create them; it leaves existing files untouched. Until then, setup
+  `--check` fails on the missing directory.
+- Added a session ontology at `{session-root}/ontology/<area>.yaml`. Each area file starts from its Memory copy,
+  or from the templates when none exists. Ideation writes the domain units it designs, Execution updates a unit
+  that a built artifact changes, and Review only reads the file. Workflow Wrap-up and Cowork Wrap-up promote
+  each file that passes the record checklist into `memory/ontology/`. They stop on a unit change that no
+  accepted handoff names.
+- Added an `ontology.md` child to Authoring and Design Ideation, Execution, and Review. The Ideation children
+  give the facets and kinds their writing or design terms. The Execution children apply them to what the task
+  builds, and the Review children list the questions a reviewer asks.
 
 ### Changed
 
@@ -27,6 +53,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from the role and skill lists. Setup does not edit an existing `.claude/settings.json`; add the three entries
   by hand.
 - Re-synced the eight `.cursor/agents/` copies with the canonical Cursor contracts.
+- Coding, Authoring, and Design Ideation, Execution, and Review now apply the `ontology` skill. All six
+  Ideation and Review checklists list it as a governing source, and each Ideation checklist flags a unit that
+  lacks a facet. Each Review skill loads the session area files and their copies in `memory/ontology/`.
+  Authoring Execution and Design Execution are still placeholders and now carry one line that applies Ontology.
+  Coding Modularization is now the code form of the facets. Every new or changed directory, file, public class,
+  and public function gets five facet lines: Conceptual definition, Responsibility, Boundary, Relationship, and
+  Properties. A public class or function also gets a caller contract, and Modularization maps its parts to the
+  record's Function and Action type fields. Code that realizes a Function changes nothing, and each Action type
+  has one public entry point; the Coding Review checklist flags a break of either rule. The Modularization
+  examples now use an `airline/flight.py` module from the Flight sample.
 
 ### Fixed
 

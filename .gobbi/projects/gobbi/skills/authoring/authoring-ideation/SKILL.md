@@ -101,8 +101,9 @@ as `inherited/current`, `not applicable`, or `material change`.
 
 #### 3.1 Walk the writing-design ladder
 
-- Resolve reader and job, structure and claims, naming and vocabulary, then voice and evidence, in that
-  order. Classify each level.
+- Resolve and classify each level in order: reader and job, structure and claims, naming and vocabulary, then
+  voice and evidence. Define each new or changed document, section, and defined term as
+  [Authoring Ideation ontology](ontology.md) states.
 - Write Readers and Jobs, Structure and Claims, Naming and Vocabulary, and Voice and Evidence in the
   authoritative part from the matching topic Decision. Cite Requirements Result for reader need and
   outcome.
@@ -133,4 +134,6 @@ as `inherited/current`, `not applicable`, or `material change`.
 | [Authoring Ideation part](templates/ideation/ideation-NN.md) | Template for the work definition and the idea. |
 | [Discussion index](templates/ideation/discussion/discussion-index.md) | Template for topics keyed to Design headings, study, and decisions. |
 | [Discussion part](templates/ideation/discussion/discussion-NN.md) | Repeatable discussion group and study template. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, and rules that Step 3.1 applies. |
+| [Authoring Ideation ontology](ontology.md) | Writing terms for the Ontology facets and kinds, and the session area file rules, loaded in Step 3.1. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |

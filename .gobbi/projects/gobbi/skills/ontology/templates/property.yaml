@@ -1,0 +1,16 @@
+# Template for one Property entry, or one parameter of an Action type or Function. The format is in record.md.
+# Paste the entry below at the entry indent under properties or parameters, once per entry, without these comments.
+# Rename propertyId, replace every {...}, and delete each key that does not apply.
+# Under parameters, also delete changes, origin, and status.
+propertyId:
+  description: "{one sentence}"
+  dataType: "{string, integer, decimal, boolean, date, or timestamp; object only for a parameter}"
+  objectTypeApiName: "{only when dataType is object: object type reference}"
+  enum:
+    - "{only for a string with a closed value set: allowed value in id form}"
+  constraints:
+    - "{optional: rule on the value, such as a pattern, a range, or a rule against another Property of the unit}"
+  required: "{true or false}"
+  changes: "{stable or changing}"
+  origin: "{entered, captured, or derived}"
+  status: "{optional: status, when it differs from the unit's}"

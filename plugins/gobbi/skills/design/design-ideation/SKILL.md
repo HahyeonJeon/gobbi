@@ -103,7 +103,8 @@ from the direction pass. Write component variants only after the visual directio
 - Write Materials, Concept and Idea, Aesthetics, Layout and Hierarchy, Visual Language, and Components in
   that document order from the matching topic Decision. Keep viewer need and outcome in Requirements Result.
 - Link the accepted structure image under Layout and Hierarchy and the accepted direction image under Concept
-  and Idea. Write component variants from the inventory plus the accepted direction.
+  and Idea. From the inventory and the accepted direction, define each component, user-facing object, and
+  named visual-language term as [Design Ideation ontology](ontology.md) states.
 - Assemble the accepted levels into one idea planning and execution can follow without opening an image.
   Reopen the earliest defect; begin no realization.
 
@@ -131,4 +132,6 @@ from the direction pass. Write component variants only after the visual directio
 | [Design Ideation part](templates/ideation/ideation-NN.md) | Template for the work definition and the idea. |
 | [Discussion index](templates/ideation/discussion/discussion-index.md) | Template for topics keyed to Design headings, study, and decisions. |
 | [Discussion part](templates/ideation/discussion/discussion-NN.md) | Repeatable discussion group and study template. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, and rules that Step 3.1 applies. |
+| [Design Ideation ontology](ontology.md) | Design terms for the Ontology facets and kinds, and the session area file rules, loaded in Step 3.1. |
 | [Design](../SKILL.md) | Routes unresolved material visual-design work to this operation. |

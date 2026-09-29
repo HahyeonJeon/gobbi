@@ -1,0 +1,22 @@
+# Flight sample: the Processes of the flight-operations area. See area.yaml.
+processes:
+  flightLifecycle:
+    status: "active"
+    description: "The states a flight passes through, from scheduled to arrived or cancelled."
+    responsibility: "It owns which state changes a flight may make, and which Action type makes each one."
+    boundary: "Each flight's current state, which Flight owns, and the creation of flights in the schedule, which is outside this area."
+    neverTouches:
+      - "passenger"
+      - "booking"
+    stateProperty: "flight.state"
+    initialState: "scheduled"
+    transitions:
+      - actionTypeApiName: "departFlight"
+        inputState: "scheduled"
+        outputState: "departed"
+      - actionTypeApiName: "arriveFlight"
+        inputState: "departed"
+        outputState: "arrived"
+      - actionTypeApiName: "cancelFlight"
+        inputState: "scheduled"
+        outputState: "cancelled"

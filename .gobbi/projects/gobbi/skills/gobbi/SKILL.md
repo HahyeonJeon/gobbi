@@ -105,6 +105,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
       │   │   ├── feature/
       │   │   ├── process/
       │   │   └── roadmap/
+      │   ├── ontology/README.md    tracked, 0-byte
       │   ├── learnings/
       │   ├── reports/
       │   │   ├── README.md         tracked, 0-byte

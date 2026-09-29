@@ -1,0 +1,3 @@
+# Flight sample: Properties have no group. Each Property sits inside its Object type, so this file holds no key.
+# The Flight Properties are under properties in object-type.yaml, and the parameters are under parameters in
+# action-type.yaml and function.yaml. This file is not joined with the other example files.

@@ -13,8 +13,8 @@ for later. Each adds a name to learn and a place to change, and none adds behavi
 no state is usually better as a function. Apply two tests:
 
 - **Inline test.** Ask of each unit: "If I inline it into its callers, do they get longer, repeat a rule, or
-  expose a secret?" A secret is the one decision or fact that only this unit changes. If all three answers are
-  no, inline the unit.
+  expose a secret?" A secret is what only this unit changes: one decision, or the facts about one concept. If
+  all three answers are no, inline the unit.
 - **Current caller test.** Every parameter, option, hook, and variant has a caller today. Delete each one that
   has none.
 
@@ -64,18 +64,55 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 ## Modularization
 
-**Description.** Modularization gives each unit one conceptual definition, one responsibility, one boundary,
-and one-way relationships. A reader then finds where a change goes from the definition alone, and the unit
-can change its private parts without breaking callers. Before you create a directory, file, public class,
-or public function, write one line for each term in the design record: the Ideation design, or the Execution
-handoff when there was no Ideation. Source code does not carry these lines as comments. If a line fails,
-split, merge, or move the unit. Private helpers need only a good name.
+**Description.** Modularization applies the [Ontology](../ontology/SKILL.md) facets and kinds to code. It gives
+each unit one conceptual definition, one secret, one boundary, one-way relationships, and the data it owns. A
+reader then finds where a change goes from the definition alone, and the unit can change its private parts
+without breaking callers. Before you create a directory, file, public class, or public function, write its five
+facet lines in the design record: the Ideation design, or the Execution handoff when there was no Ideation. A
+public class or function also gets a caller contract. Together these are the unit's Modularization lines.
+Source code does not carry them as comments. If a line fails, split, merge, or move the unit. Private helpers
+need only a good name.
 
-- **Conceptual definition:** one sentence in domain words, with no "and".
-- **Responsibility:** its secret, the one decision or fact that only this unit changes.
+- **Conceptual definition** (the Definition facet): one sentence in domain words, with no "and".
+- **Responsibility:** its secret, which is what only this unit changes: one decision, or the facts about one
+  concept.
 - **Boundary:** what it hides, and the named neighbours it never imports. Keep the public surface small: other
   code imports only the names the unit chooses to share.
-- **Relationship:** what it uses and what uses it. Dependencies point one way, with no cycles.
+- **Relationship:** what it uses, what uses it, and the Ontology units it realizes. Dependencies point one way,
+  with no cycles.
+- **Properties:** the data it owns, with types, invariants, and whether each value is stable or changing; `None`
+  when it owns none.
+- **Caller contract** (public classes and functions only): the code form of the Function or Action type that the
+  unit realizes. For a Function, state its inputs, its output, and the errors it raises; it changes nothing. For
+  an Action type, state its parameters, the checks that raise errors, the data it changes, its side effects, and
+  its allowed callers. A public class or function that realizes neither states inputs, output, and errors, as
+  for a Function.
+
+"Caller contract" is coding's name for the fields that the [Ontology record](../ontology/record.md) keeps under
+Palantir names. Each part maps to one field:
+
+| Caller contract part | Record field |
+|---|---|
+| Function inputs | Function `parameters` |
+| Function output (the return value) | Function `output` |
+| Function errors | None; only the caller contract states them |
+| Action type parameters | Action type `parameters` |
+| Checks that raise errors | Action type `submissionCriteria` |
+| The error result | None; the record gives every Action type one failure result: nothing changes, and the failed criterion is named |
+| The data it changes | Action type `operations` |
+| Side effects | Action type `sideEffects` |
+| Allowed callers | The `run` grants of each Security policy that targets the Action type; a `propose` grant adds a proposer, not a caller |
+
+A Function's `reads` belongs in the Relationship line. Directories and files state only the five facet lines.
+
+Record ids are lowerCamelCase; code uses its language's case, so the Action type `delayFlight` is the Python
+function `delay_flight`.
+
+Keep computing and changing apart, because Functions return results and only Action types commit changes
+([Ontology Rules](../ontology/SKILL.md#rules)). A function that realizes a Function returns a value and changes
+nothing: it sets no field, writes no record, and sends no message. Each Action type has one public entry point.
+It checks the submission criteria, applies its operations, sends the side effects, and returns the result or
+raises the error. No second public function makes the same change.
 
 The same terms set the defaults for directories and files. An existing project or framework layout wins.
 
@@ -86,58 +123,138 @@ The same terms set the defaults for directories and files. An existing project o
 - A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
   long.
 
-**Good example.** A flat package, and a module that passes all four lines and shares one public name. The
-design record gives these lines for `pricing.py`:
-
-- **Conceptual definition:** the price of one line.
-- **Responsibility:** how a line's tax is computed.
-- **Boundary:** hides `_TAX_RATE` and shares only `quote`; never imports `cart` or `checkout`.
-- **Relationship:** uses nothing in `shop`; `checkout` uses `quote`.
+**Good example.** A flat package for the [Flight sample](../ontology/examples/area.yaml). Each file
+realizes one Object type, with its Action types, or one Function.
 
 ```text
-shop/
-  cart.py       # the items a shopper will buy
-  pricing.py    # the price of one line; uses nothing in shop
-  checkout.py   # charging for a cart; uses cart and pricing
+airline/
+  flight.py       # one scheduled flight; uses nothing in airline
+  airport.py      # one airport where flights depart or arrive; uses nothing in airline
+  booking.py      # one passenger's seat on one flight; uses flight
+  connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
+The design record gives these lines for `flight.py`. The code keeps only the Properties that Delay flight needs.
+
+- **Conceptual definition:** one scheduled trip of one aircraft between two airports on one date.
+- **Responsibility:** which schedule changes a flight may take.
+- **Boundary:** hides `_DELAYABLE`; shares `Flight`, `FlightState`, `InvalidDelay`, and `delay_flight`; never
+  imports `booking`.
+- **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`; realizes the Object type
+  Flight (`flight`) and the Action type Delay flight (`delayFlight`).
+- **Properties:** `number: str` and `departure_date: date`, stable; `state: FlightState`,
+  `estimated_departure: datetime`, `estimated_arrival: datetime`, and `delay_reason: str`, changing. Both
+  estimated times are in UTC, with `tzinfo=UTC`. The estimated arrival is later than the estimated departure;
+  `Flight` raises `ValueError` otherwise.
+
+The public function `delay_flight` also gets its caller contract, from the Delay flight fields:
+
+- **Caller contract:** `delay_flight(flight, new_estimated_departure, reason, *, notify) -> Flight`, where
+  `new_estimated_departure` is a UTC `datetime`. Checks: it raises `InvalidDelay` unless the flight's state is
+  `scheduled` and the new time is later than the current estimated departure. Error result: the flight is
+  unchanged, no one is notified, and the error names the failed check. Changes: both estimated times move by the
+  same amount, and the reason is set. Side effects: notifies each booked passenger, by calling `notify` once with
+  the delayed flight after the change. `notify` is the sender that the caller passes in, not a Delay flight
+  parameter. Allowed callers: operations-control code, as the Ops-control policy grant to run `delayFlight`
+  states.
+
 ```python
-# pricing.py
-from decimal import Decimal
+# airline/flight.py
+from collections.abc import Callable
+from dataclasses import dataclass, replace
+from datetime import UTC, date, datetime
+from enum import StrEnum
 
-__all__ = ["quote"]
-
-_TAX_RATE = Decimal("0.10")
-
-
-def quote(unit_price: Decimal, quantity: int) -> Decimal:
-    subtotal = unit_price * quantity
-    return subtotal + (subtotal * _TAX_RATE).quantize(Decimal("0.01"))
+__all__ = ["Flight", "FlightState", "InvalidDelay", "delay_flight"]
 
 
-assert quote(Decimal("2.50"), 4) == Decimal("11.00")
+class FlightState(StrEnum):
+    SCHEDULED = "scheduled"
+    DEPARTED = "departed"
+    ARRIVED = "arrived"
+    CANCELLED = "cancelled"
+
+
+_DELAYABLE = frozenset({FlightState.SCHEDULED})
+
+
+class InvalidDelay(ValueError):
+    pass
+
+
+@dataclass(frozen=True)
+class Flight:
+    number: str
+    departure_date: date
+    state: FlightState
+    estimated_departure: datetime
+    estimated_arrival: datetime
+    delay_reason: str = ""
+
+    def __post_init__(self) -> None:
+        if self.estimated_arrival <= self.estimated_departure:
+            raise ValueError("estimated arrival is not later than estimated departure")
+
+
+def delay_flight(
+    flight: Flight,
+    new_estimated_departure: datetime,
+    reason: str,
+    *,
+    notify: Callable[[Flight], None],
+) -> Flight:
+    if flight.state not in _DELAYABLE:
+        raise InvalidDelay(f"state is {flight.state}, not scheduled")
+    if new_estimated_departure <= flight.estimated_departure:
+        raise InvalidDelay("new estimated departure is not later")
+    shift = new_estimated_departure - flight.estimated_departure
+    delayed = replace(
+        flight,
+        estimated_departure=new_estimated_departure,
+        estimated_arrival=flight.estimated_arrival + shift,
+        delay_reason=reason,
+    )
+    notify(delayed)
+    return delayed
+
+
+on_time = Flight(
+    number="ZZ101",
+    departure_date=date(2026, 3, 1),
+    state=FlightState.SCHEDULED,
+    estimated_departure=datetime(2026, 3, 1, 9, 0, tzinfo=UTC),
+    estimated_arrival=datetime(2026, 3, 1, 11, 0, tzinfo=UTC),
+)
+sent: list[Flight] = []
+new_departure = datetime(2026, 3, 1, 9, 30, tzinfo=UTC)
+late = delay_flight(on_time, new_departure, "crew rest", notify=sent.append)
+assert late.estimated_arrival == datetime(2026, 3, 1, 11, 30, tzinfo=UTC)
+assert sent == [late]
 ```
 
-**Anti-pattern: a one-file dump directory with no one conceptual definition, responsibility, or boundary.**
+**Anti-pattern: a one-file dump directory, and a rule hard-coded in code.** Its definition needs "and" (dates
+and connection times), so both kinds of change edit it. `MIN_CONNECTION` hard-codes a rule that belongs to Airport
+data: each airport sets its own minimum connection time, and people must be able to review it
+([Ontology Rules](../ontology/SKILL.md#rules)). `connection_ok` also drops the name
+`meets_minimum_connection_time`, the Python form of `meetsMinimumConnectionTime`.
 
 ```python
-# shop/utils/helpers.py, the only file in utils/.
-# Its definition needs "and" (dates and tax), and both kinds of change edit it.
-from datetime import date
-from decimal import Decimal
+# airline/utils/helpers.py, the only file in utils/.
+from datetime import UTC, date, datetime, timedelta
 
-TAX_RATE = Decimal("0.10")  # public, so any module may import and depend on it
+MIN_CONNECTION = timedelta(minutes=45)  # hard-coded value; public, so any module may depend on it
 
 
 def parse_day(text: str) -> date:
     return date.fromisoformat(text)
 
 
-def tax(amount: Decimal) -> Decimal:
-    return amount * TAX_RATE
+def connection_ok(arrival: datetime, departure: datetime) -> bool:
+    return departure - arrival >= MIN_CONNECTION
 
 
-assert parse_day("2026-01-02").day == 2
+arrival = datetime(2026, 3, 1, 11, 30, tzinfo=UTC)
+assert not connection_ok(arrival, datetime(2026, 3, 1, 12, 0, tzinfo=UTC))
 ```
 
 ## Reusability

@@ -1,0 +1,22 @@
+# Template for one Automation unit. The format and checks are in the ontology skill's record.md.
+# For the first unit, replace automations: {} in the area file with this block; later, copy only the unit.
+# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
+automations:
+  automationId:
+    displayName: "{optional: preferred name, only when it differs from the id in words}"
+    status: "{experimental, active, or deprecated}"
+    description: "{one sentence that tells a member from a non-member}"
+    aliases:
+      - "{optional: non-preferred term that maps to the preferred name}"
+    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
+    boundary: "{what is outside the unit, and which unit owns it}"
+    neverTouches:
+      - "{optional: reference to a unit this unit never touches}"
+    watches:
+      - "{optional: reference to a unit or Property whose change starts the work}"
+    effects:
+      - "{optional: action type or function reference it runs; effects or notifications is present}"
+    runsAs: "{role that Security policy grants name; it has read on each watched unit and run on each effect}"
+    notifications:
+      - "{optional: alert it sends; effects or notifications is present}"
+    fallback: "{fallback and retries when the work fails}"

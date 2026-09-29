@@ -60,11 +60,11 @@
 
 ### Structure and Claims
 
-{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing.}
+{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing. Add each new or changed document's and section's Ontology facets.}
 
 ### Naming and Vocabulary
 
-{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits.}
+{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. Add the Ontology facets of each defined term that is not a domain concept, including its non-preferred names and, for a shared term, its status. For a term that names a domain concept, give its preferred name, Ontology kind, and session ontology unit id instead of restating the facets kept there. List the session ontology unit ids this design adds, changes, or removes.}
 
 ### Voice and Evidence
 

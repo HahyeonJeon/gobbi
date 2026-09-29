@@ -1,0 +1,64 @@
+# Flight sample: the Link types of the flight-operations area. See area.yaml.
+linkTypes:
+  flightAircraft:
+    status: "active"
+    description: "The connection from one flight to the aircraft that operates it."
+    aliases:
+      - "tail assignment"
+    responsibility: "This link owns which aircraft operates each flight."
+    boundary: "The aircraft's seat capacity and service state, which Aircraft owns, and the choice of aircraft, which the schedule outside this area makes."
+    sides:
+      - apiName: "aircraft"
+        objectTypeApiName: "aircraft"
+        cardinality: "one"
+      - apiName: "flights"
+        objectTypeApiName: "flight"
+        cardinality: "many"
+  flightDepartureAirport:
+    status: "active"
+    description: "The connection from one flight to the airport it departs from."
+    responsibility: "This link owns which airport each flight departs from."
+    boundary: "The departure times, which Flight owns."
+    sides:
+      - apiName: "departureAirport"
+        objectTypeApiName: "airport"
+        cardinality: "one"
+      - apiName: "departures"
+        objectTypeApiName: "flight"
+        cardinality: "many"
+  flightArrivalAirport:
+    status: "active"
+    description: "The connection from one flight to the airport it arrives at."
+    responsibility: "This link owns which airport each flight arrives at."
+    boundary: "The arrival times, which Flight owns."
+    sides:
+      - apiName: "arrivalAirport"
+        objectTypeApiName: "airport"
+        cardinality: "one"
+      - apiName: "arrivals"
+        objectTypeApiName: "flight"
+        cardinality: "many"
+  bookingFlight:
+    status: "active"
+    description: "The connection from one booking to the flight it is for."
+    responsibility: "This link owns which flight each booking is for."
+    boundary: "The seat and fare class, which Booking owns."
+    sides:
+      - apiName: "flight"
+        objectTypeApiName: "flight"
+        cardinality: "one"
+      - apiName: "bookings"
+        objectTypeApiName: "booking"
+        cardinality: "many"
+  bookingPassenger:
+    status: "active"
+    description: "The connection from one booking to the passenger who holds it."
+    responsibility: "This link owns which passenger holds each booking."
+    boundary: "The passenger's personal data, which Passenger owns."
+    sides:
+      - apiName: "passenger"
+        objectTypeApiName: "passenger"
+        cardinality: "one"
+      - apiName: "bookings"
+        objectTypeApiName: "booking"
+        cardinality: "many"

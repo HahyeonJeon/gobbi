@@ -113,6 +113,7 @@ P3 · Note
 | Ideation | `1-ideation/` |
 | Planning | `2-planning/` |
 | Execution | `3-execution/task-NN-slug/` |
+| Session ontology | `ontology/` |
 | Wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
@@ -131,6 +132,9 @@ P3 · Note
   such as `codex.md`. Place the receipt at `<record-directory>/record/iteration-N.md` for every productive
   unit, including Ideation and Planning. Accepted results remain at their owner-defined paths, and later
   directories are created only when their first result needs them.
+- Name the session ontology directory, `{session-root}/ontology/`, in every Ideation, Execution, and Review
+  assignment. Wrap-up Step 2.1 promotes each session area file at `{session-root}/ontology/<area>.yaml` into
+  Memory `ontology/` under Memory Closure.
 - Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
   `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and write each of those paths as an ignored
   session record under Memory preferences. Do not update `configuration.md` after the Configuration write except when

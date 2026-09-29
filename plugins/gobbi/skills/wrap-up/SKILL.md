@@ -103,6 +103,8 @@ altered completion claim.
   actions, expected result, and verification contract.
 - Require the writer to apply [Memory](../memory/SKILL.md) preferences, including Closure, to extract accepted
   design, decisions, intended behaviors, and standing preferences into `design/`, `learnings/`, and `backlogs/`.
+  The writer also promotes each session area file at `{session-root}/ontology/<area>.yaml` into Memory
+  `ontology/` under Memory Closure.
 - Update or merge existing homes first; create only missing content. Reject session-shaped dumps and talk.
 
 #### 2.2 Write the durable work Note

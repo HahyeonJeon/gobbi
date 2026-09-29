@@ -1,0 +1,26 @@
+# Template for one Action type unit. The format and checks are in the ontology skill's record.md.
+# For the first unit, replace actionTypes: {} in the area file with this block; later, copy only the unit.
+# Rename ids, replace every {...} placeholder, and delete each optional key that has no value.
+actionTypes:
+  actionTypeId:
+    displayName: "{optional: preferred name, only when it differs from the id in words}"
+    status: "{experimental, active, or deprecated}"
+    description: "{one sentence that tells a member from a non-member}"
+    aliases:
+      - "{optional: non-preferred term that maps to the preferred name}"
+    responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
+    boundary: "{what is outside the unit, and which unit owns it}"
+    neverTouches:
+      - "{optional: reference to a unit this unit never touches}"
+    parameters:
+      # Paste templates/property.yaml here once per parameter, then delete this comment.
+    submissionCriteria:
+      - "{optional: condition that must hold before the change runs, other than one that a grant already holds}"
+    operations:
+      - type: "{createObject, modifyObject, deleteObject, createLink, or deleteLink}"
+        objectTypeApiName: "{only for an object operation: object type reference}"
+        linkTypeApiName: "{only for a link operation: link type reference}"
+        propertyApiNames:
+          - "{only for createObject or modifyObject: property id of the object type that the operation sets}"
+    sideEffects:
+      - "{optional: effect beyond the operations, such as a notification}"

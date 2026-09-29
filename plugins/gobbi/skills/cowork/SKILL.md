@@ -110,9 +110,12 @@ route.
 | Topic Ideation | `topic-NN-slug/1-ideation/` |
 | Topic Planning | `topic-NN-slug/2-planning/` |
 | Topic Execution records | `topic-NN-slug/3-execution/` |
+| Session ontology | `ontology/` |
 | Session wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
+- Name the session ontology directory, `{session-root}/ontology/`, in every Ideation, Execution, and Review
+  assignment.
 - Keep these TODO titles fixed. Topic, task, assignment, stage, round, subject, and closure identifiers belong
   in contracts, paths, and evidence rather than TODO titles:
 
@@ -284,8 +287,9 @@ CW · Wrap-up
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
 - Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md) preferences, including Closure,
-  to the full session root and closure input: extract accepted knowledge into existing homes, write one
-  `reports/note/` durable work account, and write `history/` only on durable change. Supply the exact absolute
+  to the full session root and closure input: extract accepted knowledge into existing homes, promote each
+  session area file at `{session-root}/ontology/<area>.yaml` into Memory `ontology/` under Memory Closure, write
+  one `reports/note/` durable work account, and write `history/` only on durable change. Supply the exact absolute
   current-project Memory root, update only that boundary, verify it, and create one focused Memory commit or a
   verified no-change result.
 - Stop on invalid paths, unresolved decisions, failed checks, wrong-worktree evidence, or unrelated work.

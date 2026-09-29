@@ -842,6 +842,8 @@ append_shared_targets() {
     ".gobbi/projects/$project_key/memory/design/feature"
     ".gobbi/projects/$project_key/memory/design/process"
     ".gobbi/projects/$project_key/memory/design/roadmap"
+    ".gobbi/projects/$project_key/memory/ontology"
+    ".gobbi/projects/$project_key/memory/ontology/README.md"
     ".gobbi/projects/$project_key/memory/learnings"
     ".gobbi/projects/$project_key/memory/reports"
     ".gobbi/projects/$project_key/memory/reports/README.md"
@@ -890,6 +892,8 @@ write_shared_layout() {
   ensure_directory ".gobbi/projects/$project_key/memory/design/feature" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/design/process" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/design/roadmap" "real directory"
+  ensure_directory ".gobbi/projects/$project_key/memory/ontology" "real directory"
+  create_empty_file ".gobbi/projects/$project_key/memory/ontology/README.md"
   ensure_directory ".gobbi/projects/$project_key/memory/learnings" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/reports" "real directory"
   create_empty_file ".gobbi/projects/$project_key/memory/reports/README.md"
@@ -939,7 +943,7 @@ check_shared_layout() {
   check_real_directory ".gobbi/projects/$project_key/agents directory" "$gobbi_project/agents"
   check_real_directory ".gobbi/projects/$project_key/skills directory" "$gobbi_project/skills"
   check_real_directory ".gobbi/projects/$project_key/memory directory" "$gobbi_project/memory"
-  for category in design learnings reports history materials backlogs; do
+  for category in design ontology learnings reports history materials backlogs; do
     check_real_directory ".gobbi/projects/$project_key/memory/$category directory" \
       "$gobbi_project/memory/$category"
   done
@@ -950,8 +954,8 @@ check_shared_layout() {
       "$gobbi_project/memory/$subject"
   done
   for stub in agents/README.md skills/README.md memory/design/README.md \
-    memory/reports/README.md memory/history/README.md memory/materials/README.md \
-    memory/backlogs/README.md; do
+    memory/ontology/README.md memory/reports/README.md memory/history/README.md \
+    memory/materials/README.md memory/backlogs/README.md; do
     check_readable_file ".gobbi/projects/$project_key/$stub" "$gobbi_project/$stub"
   done
 }

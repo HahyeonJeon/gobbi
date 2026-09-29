@@ -48,7 +48,8 @@ logs, trivia, and operational exhaust.
 #### Separate session records from durable memory
 
 - Keep ignored recovery files under `sessions/<YYYY-MM-DD>-<slug>-<uuid>/`. Callers name exact paths: `tmp/`
-  for drafts, a phase directory for accepted session records, or `configuration.md` at the session root.
+  for drafts, a phase directory for accepted session records, `ontology/` for the session's area files, or
+  `configuration.md` at the session root.
 - Keep durable knowledge under `memory/` and tracked in Git.
 
 ```text
@@ -60,6 +61,9 @@ logs, trivia, and operational exhaust.
 │   │   ├── feature/
 │   │   ├── process/
 │   │   └── roadmap/
+│   ├── ontology/
+│   │   ├── README.md
+│   │   └── <area>.yaml
 │   ├── learnings/
 │   │   ├── design/{tips.md,mistakes.md}
 │   │   ├── authoring/{tips.md,mistakes.md}
@@ -94,21 +98,26 @@ logs, trivia, and operational exhaust.
 | Directory | Holds |
 |---|---|
 | `design/` | Current architecture, feature, process, and roadmap intent |
+| `ontology/` | The current domain model: units of the nine Ontology kinds, with their facets, as YAML |
 | `learnings/` | Reusable tips and repeatable mistakes |
 | `reports/` | Final accounts of completed work |
 | `history/` | One compact record per completed session that changed the project |
 | `materials/` | Permitted source inputs and evidence |
 | `backlogs/` | Deferred outcomes and why they wait |
 
-- Do not add a seventh durable category unless the same distinct purpose recurs.
+- `ontology/` is the seventh category by user decision, which overrides the earlier limit of six, because the
+  domain model must stay a parsable model. Do not add an eighth durable category unless the same distinct
+  purpose recurs.
 
 ### Closure
 
 #### Extract accepted session knowledge at wrap-up
 
 - Callers Wrap-up and Cowork wrap-up extract accepted design, decisions, intended behaviors, and standing
-  preferences into the existing homes in the table above. Place decisions in the design they shape, and standing
-  user project preferences in `design/process/` unless they constrain a named feature or architecture file.
+  preferences into the existing homes in the table above, and promote each session area file at
+  `{session-root}/ontology/<area>.yaml` that passes the Ontology record checklist into `ontology/`
+  ([Ontology](#ontology)). Place decisions in the design they shape, and standing user project preferences in
+  `design/process/` unless they constrain a named feature or architecture file.
 - Write one `reports/note/` file as the durable work account. Write one `history/` file only when the session
   made a durable project change.
 - Exclude talk, transcripts, rejected options, one-session instructions, Git action states, recovery commands,
@@ -132,6 +141,32 @@ logs, trivia, and operational exhaust.
 | `design/feature/` | Named project features: structure, behavior, data, interfaces, flows, states, and failure handling. | `design/feature/login.md` — auth flows; `design/feature/payment.md` — checkout states |
 | `design/process/` | Project processes, workflows, and pipelines: development, documentation, design, testing, review, release, migration, maintenance, and collaboration. | `design/process/release-workflow.md` — ship path; `design/process/review-pipeline.md` — independent review |
 | `design/roadmap/` | Past direction, current focus, future horizons, sequencing, and rationale. | `design/roadmap/memory-system.md` — memory horizons; `design/roadmap/project.md` — project horizons |
+
+### Ontology
+
+#### Keep one YAML file per bounded area
+
+- Name each file `ontology/<area>.yaml` with a kebab-case `<area>`. Split an area when the
+  [Ontology record](../ontology/record.md) split rule applies.
+- Write each file in the Ontology record format. A `design/` file links to a unit instead of restating it.
+- Keep `ontology/README.md` as a link list of the area files, each with its scope.
+
+#### Promote the session copy at closure
+
+- Change `ontology/` only by closure promotion from `{session-root}/ontology/`. The Memory copy therefore cannot
+  change during a session, and Git resolves concurrent sessions at merge.
+- Compare each session area file with its Memory copy, and require every added, changed, or removed unit id to
+  be named in an accepted Ideation or Execution handoff. Then replace the Memory file and update
+  `ontology/README.md`.
+- Stop and report a unit change that no accepted handoff names, or a file that fails the Ontology record
+  checklist. Never drop or promote a unit silently.
+
+#### Subdirectories
+
+| Path | Description | Example |
+|---|---|---|
+| `ontology/README.md` | Link list of every area file, each with its scope. | `ontology/README.md` — one link and scope line per area file |
+| `ontology/<area>.yaml` | One bounded area of the domain model, in the Ontology record format. | `ontology/flight-operations.yaml` — scheduled flights, aircraft, airports, and booked passengers |
 
 ### Learnings
 
@@ -235,4 +270,5 @@ logs, trivia, and operational exhaust.
 |---|---|
 | [Preference Skill](../gobbi-skill/preference-skill/SKILL.md) | Shape for rules, conventions, and defaults without an SOP. |
 | [Wrap-up](../wrap-up/SKILL.md) | Caller that applies these preferences at closure, including the durable `reports/note/`. |
+| [Ontology](../ontology/SKILL.md) | Kinds, facets, and session record rules for the domain model that `ontology/` stores. |
 | [Git](../git/SKILL.md) | Conventions for focused Memory commits. |

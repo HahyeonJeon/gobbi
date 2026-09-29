@@ -99,8 +99,10 @@ limit causes and verdicts to what the evidence supports.
 #### 1.3 Study the quality bar and freeze the target
 
 - Load, in this order, whichever exist: current design memory under the project's
-  `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
-  accepted session design. Then load [Coding Principles](../principles.md), and load
+  `memory/design/`; project vision, philosophy, architecture, and governing decisions;
+  accepted session design; and the session ontology area files in the session's `ontology/`, with their
+  Memory copies under the project's `memory/ontology/`. Then load
+  [Coding Principles](../principles.md) with [Ontology](../../ontology/SKILL.md), and load
   [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the
   target defines or changes classes, interfaces, or inheritance.
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
@@ -243,6 +245,7 @@ limit causes and verdicts to what the evidence supports.
 | [Coding Review checklist](checklist.md) | Coding Review-owned baseline source for reviewing general code-work quality. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP principles, SOLID, and design patterns that Step 1.3 loads for object-oriented code, and the source for the checklist's object-oriented Design Pattern and Abstraction items. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API that Step 1.3 loads, and the source for the checklist's Project Structure, Public API, Modularization, Reusability, Overengineering, Readability, Vocabulary, and Naming Convention items. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules that Step 1.3 loads with Coding Principles. |
 | [Coding Ideation checklist](../coding-ideation/checklist.md) | Baseline for an Ideation result at `ideation-design`. |
 | [Coding Planning checklist](../coding-planning/checklist.md) | Baseline for a Planning result at `planning-decomposition`. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
