@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+The role split names fourteen roles, and model pins follow that split.
+
+### Added
+
+- Added twelve phase roles. The fourteen roles, in order, are manager, assistant, coding-leader,
+  coding-planner, coding-executor, coding-reviewer, authoring-leader, authoring-planner,
+  authoring-executor, authoring-reviewer, design-leader, design-planner, design-executor, and
+  design-reviewer. The twelve names after assistant are phase roles. Leader is ideation.
+  Planner is planning. Executor is execution. Reviewer is review. Coding is software.
+  Authoring is durable writing. Design is visual work.
+
+### Changed
+
+- Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`.
+  Cursor uses the form `model: <id>[effort=<effort>]` and no separate effort key.
+- Claude files for the manager and assistant roles use `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+  Their Cursor pins are `grok-4.7[effort=xhigh]`.
+- Claude files for the coding-leader and design-leader roles use `claude-opus-5-5` at `high`.
+  Codex files for those roles use `gpt-6-astra` at `high`.
+- Claude files for the authoring-leader role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the coding-planner, authoring-planner, and design-planner roles use
+  `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+- Claude files for the coding-executor role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the design-executor role use `claude-opus-5-5` at `high`.
+  Codex files for that role use `gpt-6-astra` at `high`.
+- Claude files for the authoring-executor role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the coding-reviewer, authoring-reviewer, and design-reviewer roles use
+  `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+- Every Grok role, including manager and assistant, uses `grok-4.7` at `xhigh`.
+- Every Cursor role except manager and assistant uses that role's Claude model and effort in the bracket form.
+- The Cursor parent session pin stays `grok-4.7[effort=high]`.
+
+### Removed
+
+- Removed the developer, designer, and author role files.
+
 ## 1.3.2 - 2026-09-25
 
 This patch adds the `coding-object-oriented-programming` preference skill and Coding Principles.

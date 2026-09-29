@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/claude/coding-executor.md

@@ -5,7 +5,12 @@ set -uo pipefail
 set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
-roles=(manager developer designer author assistant)
+roles=(
+  manager assistant
+  coding-leader coding-planner coding-executor coding-reviewer
+  authoring-leader authoring-planner authoring-executor authoring-reviewer
+  design-leader design-planner design-executor design-reviewer
+)
 permission_skills=(gobbi principles discussion delegation)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
@@ -20,8 +25,13 @@ projects/*/worktrees/
 minimum_claude_settings='{
   "permissions": {
     "allow": [
-      "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
-      "Agent(gobbi:author)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:manager)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:coding-leader)", "Agent(gobbi:coding-planner)",
+      "Agent(gobbi:coding-executor)", "Agent(gobbi:coding-reviewer)",
+      "Agent(gobbi:authoring-leader)", "Agent(gobbi:authoring-planner)",
+      "Agent(gobbi:authoring-executor)", "Agent(gobbi:authoring-reviewer)",
+      "Agent(gobbi:design-leader)", "Agent(gobbi:design-planner)",
+      "Agent(gobbi:design-executor)", "Agent(gobbi:design-reviewer)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)"
     ]
@@ -467,9 +477,11 @@ report_settings_gaps() {
   done
 
   if ((${#missing[@]} == 0)); then
-    printf 'left untouched; all 12 expected entries present'
+    printf 'left untouched; all %d expected entries present' \
+      "$((${#roles[@]} + ${#permission_skills[@]}))"
   else
-    printf 'left untouched; %d of 12 expected entries missing: %s' "${#missing[@]}" "${missing[*]}"
+    printf 'left untouched; %d of %d expected entries missing: %s' \
+      "${#missing[@]}" "$((${#roles[@]} + ${#permission_skills[@]}))" "${missing[*]}"
   fi
 }
 
@@ -497,7 +509,7 @@ write_claude_settings() {
     return 1
   fi
   if jq -e 'type == "object"' "$absolute" >/dev/null 2>&1; then
-    record "$relative" created "minimum object; 5 Agent + 6 Skill entries"
+    record "$relative" created "minimum object; ${#roles[@]} Agent + ${#permission_skills[@]} Skill entries"
     return 0
   fi
   record "$relative" stopped "the written file is not a JSON object"

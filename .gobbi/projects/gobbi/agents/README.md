@@ -1,32 +1,61 @@
 # Gobbi role contracts
 
-The session roles are manager and assistant. The specialists are developer, designer, and author.
-Pipeline work (ideate, plan, implement, review) is not a role. The Delegation prompt and loaded skills
-define that job.
+Gobbi has fourteen roles. Manager and assistant are session roles. The other twelve are phase roles.
+Phase is a role. Manager is session authority. Assistant is support. Neither is a phase role.
+
+Coding is software. That includes software architecture, source, tests, and run/build config. Authoring is
+durable writing: docs, skills, and changelog. Design is visual work: UI, images, video, presentations,
+reports, and other visual artifacts.
+
+The named phase role matches both the domain and the assignment phase. Ideate is leader. Plan is
+planner. Implement is executor. Review is reviewer.
+
+Leader owns ideation. Leader writes the ideation result and does not change the product. Planner owns
+planning. Planner writes the plan result and does not change the product. Executor owns execution and
+changes the product. Reviewer owns review. Reviewer reads another agent's work in that domain and does
+not change it.
 
 Each role file is intro, Responsibility, In scope, and Out of scope. Responsibility is the quality bar
-the role owns. In scope is CRUD and specialist subjects. Out of scope is Never.
+the role owns. In scope is CRUD and domain subjects. Out of scope is Never.
 
-| Role | Kind | Subject |
+| Role | Phase | Subject |
 |---|---|---|
-| Manager | Authority | User, mode, routing, acceptance |
-| Assistant | Support | Lookup and authorized Memory or record work |
-| Developer | Specialist | Software source, tests, and run/build config |
-| Designer | Specialist | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
-| Author | Specialist | Durable writing: docs, skills, and changelog |
+| manager | session authority | User, mode, routing, acceptance |
+| assistant | support | Lookup and authorized Memory or record work |
+| coding-leader | ideation | Software: architecture, source, tests, and run/build config |
+| coding-planner | planning | Software: architecture, source, tests, and run/build config |
+| coding-executor | execution | Software: architecture, source, tests, and run/build config |
+| coding-reviewer | review | Software: architecture, source, tests, and run/build config |
+| authoring-leader | ideation | Durable writing: docs, skills, and changelog |
+| authoring-planner | planning | Durable writing: docs, skills, and changelog |
+| authoring-executor | execution | Durable writing: docs, skills, and changelog |
+| authoring-reviewer | review | Durable writing: docs, skills, and changelog |
+| design-leader | ideation | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
+| design-planner | planning | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
+| design-executor | execution | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
+| design-reviewer | review | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
 
 Each role has one full copy per runtime, and all four runtimes live together in this directory.
 
 | Runtime | Directory | Model field | Effort field |
 |---|---|---|---|
-| Claude Code | [`claude/`](claude/) | `model` (claude-opus-5-5) | `effort` |
-| Grok | [`grok/`](grok/) | `model` (grok-4.7) | `effort` |
-| Codex | [`codex/`](codex/) | `model` (gpt-6-astra) and `model_reasoning_effort` in `.toml` | same `.toml` |
-| Cursor | [`cursor/`](cursor/) | `model` (`id[effort=...]`) | same `model` bracket |
+| Claude Code | [`claude/`](claude/) | `model` | `effort` |
+| Grok | [`grok/`](grok/) | `model` | `effort` |
+| Codex | [`codex/`](codex/) | `model` and `model_reasoning_effort` in `.toml` | same `.toml` |
+| Cursor | [`cursor/`](cursor/) | `model: <id>[effort=<effort>]` | no separate effort key |
+
+Claude and Grok use `model` and `effort`. Codex uses `model` and `model_reasoning_effort` in the `.toml`.
+Cursor uses `model: <id>[effort=<effort>]` and no separate effort key.
+
+Claude and Codex pins differ by role. Read that role's file for the id and effort. Do not treat one
+Claude id, or one Codex id, as the pin for every role. Grok is `grok-4.7` at `xhigh` for every role,
+including manager and assistant.
 
 Codex uses only `{role}.toml`. The role body lives in that file's `developer_instructions`.
 
-Cursor uses official bracket syntax on `model`. It has no separate `effort` key. The Cursor parent starts as Grok 4.7 high.
+Cursor role pins differ by role. Read that role's file. On Cursor, manager and assistant are
+`grok-4.7[effort=xhigh]`. Every other Cursor role uses that role's Claude model and effort in the same
+bracket. The Cursor parent starts as `grok-4.7[effort=high]`.
 
 Runtime mirrors (repository-local, not plugin components):
 
@@ -47,7 +76,7 @@ unlimited depth, and a subfolder becomes part of the agent's scoped identifier â
 `agents/review/security.md` in plugin `p` registers as `p:review:security`. Documented for Claude Code at
 `docs/en/sub-agents`, and measured: same-basename files in different subdirectories do **not** collide, so
 shipping `agents/claude/manager.md` would register `gobbi:claude:manager` instead of `gobbi:manager`, and the
-cursor and grok copies would add ten more live agents with identical leaf names. `claude plugin validate
+cursor and grok copies would add twenty-eight more live agents with identical leaf names. `claude plugin validate
 --strict` reports no warning about any of it.
 
 So the package flattens Claude's contracts into `agents/` and ships the other three in a `runtimes/` sibling,

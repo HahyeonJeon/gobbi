@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/claude/design-planner.md

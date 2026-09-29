@@ -10,7 +10,7 @@
 # cursor,grok}/. The published package cannot: Claude Code scans a plugin's agents/
 # directory RECURSIVELY and a subfolder becomes part of the agent's scoped identifier,
 # so agents/claude/manager.md would register as gobbi:claude:manager instead of
-# gobbi:manager, and the cursor and grok copies would register ten further live agents
+# gobbi:manager, and the cursor and grok copies would register twenty-eight further live agents
 # with colliding leaf names. So the package flattens Claude's contracts into agents/
 # and ships the other runtimes in a runtimes/ sibling, which that scan never reads.
 #
