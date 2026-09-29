@@ -10,7 +10,7 @@ skill-type: operation
 Authoring Review binds and freezes one writing subject, reviews it without a checklist, prepares and runs a
 review-owned working checklist, reconciles, and writes `report.md` plus working `checklist.md`.
 Use it after one exact stable writing subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh `docs-reviewer` and does not reuse the producer. It does not modify the target,
+The caller assigns a fresh `authoring-reviewer` and does not reuse the producer. It does not modify the target,
 source checklists, or decision state.
 
 This skill is a draft adapted from Evaluation.

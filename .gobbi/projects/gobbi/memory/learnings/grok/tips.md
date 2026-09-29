@@ -30,7 +30,7 @@ fires once per session and cannot re-inject on a later user turn.
 **Context:** Launching a Gobbi role on Grok with `--agent <role>`.
 
 **Tip:** Grok 1.0.41 discovers agent files only in `.grok/agents/`, including symlinked files. It does not read
-`.agents/agents/`. Hyphenated names such as `code-reviewer` work. An unknown `--agent` name falls back to
+`.agents/agents/`. Hyphenated names such as `coding-reviewer` work. An unknown `--agent` name falls back to
 `grok-build-plan` with no error.
 
 **Application:** After a launch, read `agent_name` in the saved session's `summary.json` to confirm the role

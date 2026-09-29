@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/claude/design-executor.md

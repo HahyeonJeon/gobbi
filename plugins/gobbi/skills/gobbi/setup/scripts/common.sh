@@ -5,9 +5,12 @@ set -uo pipefail
 set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
-# Existing roles first, in their existing order, then reviewers. Appending keeps every existing ledger and
-# check row in place.
-roles=(manager developer designer author assistant code-reviewer docs-reviewer design-reviewer)
+roles=(
+  manager assistant
+  coding-leader coding-planner coding-executor coding-reviewer
+  authoring-leader authoring-planner authoring-executor authoring-reviewer
+  design-leader design-planner design-executor design-reviewer
+)
 permission_skills=(gobbi principles discussion delegation)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
@@ -23,9 +26,13 @@ projects/*/worktrees/
 minimum_claude_settings='{
   "permissions": {
     "allow": [
-      "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
-      "Agent(gobbi:author)", "Agent(gobbi:assistant)",
-      "Agent(gobbi:code-reviewer)", "Agent(gobbi:docs-reviewer)", "Agent(gobbi:design-reviewer)",
+      "Agent(gobbi:manager)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:coding-leader)", "Agent(gobbi:coding-planner)",
+      "Agent(gobbi:coding-executor)", "Agent(gobbi:coding-reviewer)",
+      "Agent(gobbi:authoring-leader)", "Agent(gobbi:authoring-planner)",
+      "Agent(gobbi:authoring-executor)", "Agent(gobbi:authoring-reviewer)",
+      "Agent(gobbi:design-leader)", "Agent(gobbi:design-planner)",
+      "Agent(gobbi:design-executor)", "Agent(gobbi:design-reviewer)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)"
     ]

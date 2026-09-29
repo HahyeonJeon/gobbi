@@ -10,7 +10,7 @@ skill-type: operation
 Coding Review binds and freezes one code subject, reviews it without a checklist, prepares and runs a
 review-owned working checklist, reconciles, and writes `report.md` plus working `checklist.md`.
 Use it after one exact stable code subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh `code-reviewer` and does not reuse the producer.
+The caller assigns a fresh `coding-reviewer` and does not reuse the producer.
 
 ## Principles
 

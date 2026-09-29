@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/grok/design-executor.md

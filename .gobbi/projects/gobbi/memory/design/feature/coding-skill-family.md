@@ -54,7 +54,7 @@ becomes a prerequisite for direct child use.
 
 ## Review
 
-Coding Review is independent: the caller assigns a fresh `code-reviewer` that did not design, author, or
+Coding Review is independent: the caller assigns a fresh `coding-reviewer` that did not design, author, or
 implement the target. It keeps the target, source checklists, criteria, acceptance state, and workflow state
 read-only. It writes only files the review creates, such as `report.md`, a working `checklist.md`, and check
 output.

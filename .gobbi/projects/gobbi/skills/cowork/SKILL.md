@@ -52,12 +52,15 @@ route.
   subagents or teammates and each launchable remaining Partner, routes any needed focused follow-up to an
   addressable subagent or teammate, and owns user decisions and the reported route; Fast skips Ideation and
   Planning, while Light runs bounded canonical Ideation and Planning before Execution.
-- **MUST keep one ordered writer chain with role-bound acceptance.** The matching specialist owns ignored Ideation
-  and Planning results and implementation writes, and, only after `commit` authority, implementation commits;
-  assistants own direct-Memory closure commits.
+- **MUST keep one ordered writer chain with role-bound acceptance.** The matching domain leader (coding-leader,
+  authoring-leader, or design-leader) owns ignored Ideation results. The matching domain planner (coding-planner,
+  authoring-planner, or design-planner) owns ignored Planning results. The matching domain executor
+  (coding-executor, authoring-executor, or design-executor) owns implementation writes and, only after `commit`
+  authority, implementation commits. Assistants own direct-Memory closure commits.
 - **MUST run review, implementation commit, and Cowork closure only after the matching explicit user
   `review`, `commit`, or `wrap up` call.** One `review` authorizes, for each artifact class in the subject,
-  one fresh matching reviewer and one Partner wrapper per remaining runtime; one `commit` authorizes focused
+  one fresh matching reviewer (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
+  and one Partner wrapper per remaining runtime; one `commit` authorizes focused
   implementation commits; one `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow
   TODOs, gates, RECORD receipts, or a Workflow Note.
 
@@ -202,7 +205,8 @@ CW · Wrap-up
 
 #### 2.4 Execute and accept the topic
 
-- Assign each dependency-ready task through the matching domain execution skill:
+- Assign each dependency-ready task to the matching domain executor (coding-executor, authoring-executor, or
+  design-executor) through the matching domain execution skill:
   [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
   [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
@@ -223,8 +227,9 @@ CW · Wrap-up
 
 - Enter only for an explicit `commit` and activate only `CW · Commit`. Do not render the diff; the call is the
   confirmation.
-- Assign the matching specialist through [Delegation](../delegation/SKILL.md) to create focused commit(s) of
-  accepted uncommitted tracked implementation changes. Use one commit in the normal case, or one commit per
+- Assign the matching domain executor (coding-executor, authoring-executor, or design-executor) through
+  [Delegation](../delegation/SKILL.md) to create focused commit(s) of accepted uncommitted tracked
+  implementation changes. Use one commit in the normal case, or one commit per
   accepted topic when the dirty set spans more than one topic.
 - Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
   Complete `CW · Commit` and wait with no active item.
@@ -251,11 +256,11 @@ CW · Wrap-up
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
 - In the same `review` call, for each artifact class the subject contains, apply the matching domain review
-  skill through one fresh matching reviewer and one Partner wrapper subagent per remaining runtime over that
-  class's slice of the same frozen subject and the named `review-depth`:
-  [Coding Review](../coding/coding-review/SKILL.md) with `code-reviewer` for software, including
+  skill through one fresh matching reviewer, not the producer, and one Partner wrapper subagent per remaining
+  runtime over that class's slice of the same frozen subject and the named `review-depth`:
+  [Coding Review](../coding/coding-review/SKILL.md) with `coding-reviewer` for software, including
   architecture designs (`code`),
-  [Authoring Review](../authoring/authoring-review/SKILL.md) with `docs-reviewer` for writing (`docs`), or
+  [Authoring Review](../authoring/authoring-review/SKILL.md) with `authoring-reviewer` for writing (`docs`), or
   [Design Review](../design/design-review/SKILL.md) with `design-reviewer` for visual work (`design`).
   Apply each review baseline only to the artifact class it owns. Keep
   remaining-runtime briefs naming write set `runtime-directory`, that class's directory below the aggregation

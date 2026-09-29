@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+The role split names fourteen roles, and model pins follow that split. The ontology skill stays.
+
 ### Added
 
-- Added three reviewer roles in all four runtimes: `code-reviewer` for developer software, `docs-reviewer` for
-  author writing, and `design-reviewer` for designer visual work. Each uses its producer's model and effort. A
-  reviewer may create or run anything a check needs, but it never edits the target or its source inputs.
+- Added twelve phase roles. The fourteen roles, in order, are manager, assistant, coding-leader,
+  coding-planner, coding-executor, coding-reviewer, authoring-leader, authoring-planner,
+  authoring-executor, authoring-reviewer, design-leader, design-planner, design-executor, and
+  design-reviewer. The twelve names after assistant are phase roles. Leader is ideation.
+  Planner is planning. Executor is execution. Reviewer is review. Coding is software.
+  Authoring is durable writing. Design is visual work.
 - Added a setup proof that the settings `claude.sh` creates allow every role and every permission skill, that
   setup messages report the true entry counts, and that `codex.sh` writes every role's TOML.
 - Added the `ontology` preference skill, based on Palantir Foundry's Ontology. An ontology models a domain's
@@ -43,16 +48,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Review now goes to the reviewer for its subject. Developer, designer, and author no longer review, and each
-  never delivers a review as the primary result. Manager, Delegation, Cowork, Workflow, and the Coding,
-  Authoring, and Design Review skills route Review this way. Each artifact class in a subject (`code`, `docs`,
-  or `design`) gets its own reviewer. Review reports live at `<class>/<runtime>/` below the review directory,
-  and the review passes only when every class passes.
-- Setup installs and allows eight roles. The minimum Claude settings add `Agent(gobbi:code-reviewer)`,
-  `Agent(gobbi:docs-reviewer)`, and `Agent(gobbi:design-reviewer)`, and setup messages compute their counts
-  from the role and skill lists. Setup does not edit an existing `.claude/settings.json`; add the three entries
-  by hand.
-- Re-synced the eight `.cursor/agents/` copies with the canonical Cursor contracts.
+- Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`.
+  Cursor uses the form `model: <id>[effort=<effort>]` and no separate effort key.
+- Claude files for the manager and assistant roles use `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+  Their Cursor pins are `grok-4.7[effort=xhigh]`.
+- Claude files for the coding-leader and design-leader roles use `claude-opus-5-5` at `high`.
+  Codex files for those roles use `gpt-6-astra` at `high`.
+- Claude files for the authoring-leader role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the coding-planner, authoring-planner, and design-planner roles use
+  `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+- Claude files for the coding-executor role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the design-executor role use `claude-opus-5-5` at `high`.
+  Codex files for that role use `gpt-6-astra` at `high`.
+- Claude files for the authoring-executor role use `claude-sonnet-5-5` at `high`.
+  Codex files for that role use `gpt-6-sol` at `high`.
+- Claude files for the coding-reviewer, authoring-reviewer, and design-reviewer roles use
+  `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6-sol` at `high`.
+- Every Grok role, including manager and assistant, uses `grok-4.7` at `xhigh`.
+- Every Cursor role except manager and assistant uses that role's Claude model and effort in the bracket form.
+- The Cursor parent session pin stays `grok-4.7[effort=high]`.
+- Review goes to the phase reviewer for its subject. `coding-reviewer` reviews software, `authoring-reviewer`
+  reviews durable writing, and `design-reviewer` reviews visual work. A reviewer may create or run anything a
+  check needs, and it never edits the target or its source inputs. Manager, Delegation, Cowork, Workflow, and
+  the Coding, Authoring, and Design Review skills route Review this way. Each artifact class in a subject
+  (`code`, `docs`, or `design`) gets its own reviewer. Review reports live at `<class>/<runtime>/` below the
+  review directory, and the review passes only when every class passes.
+- Setup installs and allows fourteen roles. Setup messages compute their counts from the role and skill lists.
+  Setup does not edit an existing `.claude/settings.json`, and it does not delete old role files from a project
+  that already has them.
+- Re-synced the fourteen `.cursor/agents/` copies with the canonical Cursor contracts.
 - Coding, Authoring, and Design Ideation, Execution, and Review now apply the `ontology` skill. All six
   Ideation and Review checklists list it as a governing source, and each Ideation checklist flags a unit that
   lacks a facet. Each Review skill loads the session area files and their copies in `memory/ontology/`.
@@ -64,10 +93,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has one public entry point; the Coding Review checklist flags a break of either rule. The Modularization
   examples now use an `airline/flight.py` module from the Flight sample.
 
-### Fixed
+### Removed
 
-- The `designer` description now reads "visual work, including UI, …" in all four runtimes. The old "visual
-  work: UI, …" form failed YAML parsing.
+- Removed the developer, designer, and author role files.
+
 
 ## 1.3.2 - 2026-09-25
 
