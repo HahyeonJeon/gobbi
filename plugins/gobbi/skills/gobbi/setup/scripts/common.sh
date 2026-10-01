@@ -973,11 +973,6 @@ check_claude() {
   check_real_directory ".claude directory" "$project_root/.claude"
   check_readable_file ".claude/CLAUDE.md" "$project_root/.claude/CLAUDE.md"
   check_readable_file ".claude/settings.json" "$settings"
-  check_readable_file ".claude/skills/gobbi/SKILL.md" "$project_root/.claude/skills/gobbi/SKILL.md"
-  check_readable_file ".claude/skills/principles/SKILL.md" "$project_root/.claude/skills/principles/SKILL.md"
-  for role in "${roles[@]}"; do
-    check_readable_file ".claude/agents/$role.md" "$project_root/.claude/agents/$role.md"
-  done
   if command -v jq >/dev/null 2>&1 && [[ -f "$settings" && -r "$settings" ]] \
     && jq -e 'type == "object"' "$settings" >/dev/null 2>&1; then
     if jq -e '(.permissions.allow | type) == "array"' "$settings" >/dev/null 2>&1; then
@@ -1008,8 +1003,22 @@ check_codex() {
   local role agent_path
   check_real_directory ".codex directory" "$project_root/.codex"
   check_readable_file ".codex/AGENTS.md" "$project_root/.codex/AGENTS.md"
-  check_readable_file ".codex/config.toml" "$project_root/.codex/config.toml"
   check_real_directory ".codex/agents directory" "$project_root/.codex/agents"
+  if [[ -e "$project_root/.codex/hooks.json" || -L "$project_root/.codex/hooks.json" ]]; then
+    fail ".codex/hooks.json is a second hook"
+  else
+    pass ".codex/hooks.json is absent"
+  fi
+  if [[ -e "$project_root/.agents/agents" || -L "$project_root/.agents/agents" ]]; then
+    fail ".agents/agents is a second role tree"
+  else
+    pass ".agents/agents is absent"
+  fi
+  if [[ -e "$project_root/.agents/skills" || -L "$project_root/.agents/skills" ]]; then
+    fail ".agents/skills is a second skill tree"
+  else
+    pass ".agents/skills is absent"
+  fi
   for role in "${roles[@]}"; do
     agent_path="$project_root/.codex/agents/$role.toml"
     check_readable_file ".codex/agents/$role.toml" "$agent_path"
@@ -1018,15 +1027,13 @@ check_codex() {
 }
 
 check_grok() {
-  local role
+  local plugin="$project_root/.grok/plugins/gobbi"
   check_real_directory ".grok directory" "$project_root/.grok"
-  check_real_directory ".grok/skills directory" "$project_root/.grok/skills"
-  check_readable_file ".grok/skills/gobbi/SKILL.md" "$project_root/.grok/skills/gobbi/SKILL.md"
-  check_readable_file ".grok/skills/principles/SKILL.md" "$project_root/.grok/skills/principles/SKILL.md"
-  check_real_directory ".grok/agents directory" "$project_root/.grok/agents"
-  for role in "${roles[@]}"; do
-    check_readable_file ".grok/agents/$role.md" "$project_root/.grok/agents/$role.md"
-  done
+  if [[ -d "$plugin" && -r "$plugin/.grok-plugin/plugin.json" ]]; then
+    pass ".grok/plugins/gobbi"
+  else
+    fail ".grok/plugins/gobbi is missing or unreadable"
+  fi
   check_cli grok
 }
 
@@ -1037,8 +1044,11 @@ check_cursor() {
     agent_path="$project_root/.cursor/agents/$role.md"
     check_readable_file ".cursor/agents/$role.md" "$agent_path"
   done
-  check_readable_file ".cursor/skills/gobbi/SKILL.md" "$project_root/.cursor/skills/gobbi/SKILL.md"
-  check_readable_file ".cursor/skills/principles/SKILL.md" "$project_root/.cursor/skills/principles/SKILL.md"
+  if [[ -e "$project_root/.cursor/skills/gobbi" || -L "$project_root/.cursor/skills/gobbi" ]]; then
+    fail ".cursor/skills/gobbi is a second skill tree"
+  else
+    pass ".cursor/skills/gobbi is absent"
+  fi
   warn "Cursor parent session must start as grok-4.7[effort=high]"
   check_cli cursor-agent
 }

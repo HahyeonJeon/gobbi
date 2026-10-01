@@ -28,6 +28,10 @@ Run these commands in a Claude Code session:
 /reload-plugins
 ```
 
+This checkout enables `gobbi@gobbi` in `.claude/settings.json`. It does not keep `.claude/agents`,
+`.claude/skills`, or a settings `hooks` object. Claude loads agents, skills, and `hooks/hooks.json` from
+`plugins/gobbi`.
+
 Allow the fourteen Gobbi roles in your project `.claude/settings.json`.
 The roles are manager, assistant, coding-leader, coding-planner, coding-executor, coding-reviewer,
 authoring-leader, authoring-planner, authoring-executor, authoring-reviewer, design-leader,
@@ -41,6 +45,8 @@ The twelve names after assistant are phase roles. The named role must match the 
     "allow": [
       "Skill(gobbi:gobbi)",
       "Skill(gobbi:principles)",
+      "Skill(gobbi:discussion)",
+      "Skill(gobbi:delegation)",
       "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:coding-leader)",
@@ -70,8 +76,9 @@ codex plugin marketplace add HahyeonJeon/gobbi
 codex plugin add gobbi@gobbi-workspace
 ```
 
-Codex needs no Claude Code permission configuration. A repository checkout also includes local
-entrypoints, so contributors working in the clone do not need to install the plugin.
+Codex needs no Claude Code permission configuration. This checkout loads Codex skills and the reminder
+hook from `plugins/gobbi` through `.agents/plugins/marketplace.json`. Role files stay in `.codex/agents`,
+because Codex does not load plugin agents. Do not add `.codex/hooks.json`. That file would register a second hook.
 
 ### Grok
 
@@ -108,16 +115,19 @@ A repository checkout already exposes the package through `.grok/plugins/gobbi` 
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
 `enabled` true, and `path` ending in `.grok/plugins/gobbi`.
 
-Grok participants are the project `.grok/agents` roles plus official Grok subagents.
+Grok participants come from the plugin `runtimes/grok` roles plus official Grok subagents. This checkout
+does not keep `.grok/agents`, `.grok/skills`, or `.grok/hooks`.
 
 ### Cursor
 
-A repository checkout already exposes Cursor participants through `.cursor/agents` and `.cursor/skills`. Start
-the parent session as `grok-4.7[effort=high]`, then load Gobbi from `.cursor/skills`. The required binary is
-`cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
+This checkout keeps `.cursor/agents` because a Cursor plugin load is not proven. Those files are symlinks
+to the canonical Cursor contracts. It does not keep `.cursor/skills`, because Grok scans that directory and
+would load the same skills beside `plugins/gobbi`. The package contains a Cursor manifest and
+`hooks/cursor-hooks.json` for an installed plugin. This checkout does not load that plugin. Start the parent
+session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare `agent`. Official help
+uses `agent`; that name is not Gobbi Partner.
 
-Gobbi does not ship a Cursor marketplace plugin. Cursor participants are the project `.cursor/agents` roles
-plus official Cursor subagents.
+Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
 After install, create missing layout with the matching runtime guide and script under `skills/gobbi/setup/`:
 [claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md),
@@ -132,13 +142,12 @@ Give Gobbi a concrete objective:
 ```text
 Claude Code: /gobbi prepare the next release
 Codex:       $gobbi prepare the next release
-Grok:        /local:gobbi prepare the next release
-             After a marketplace or `.grok/plugins` install, use /gobbi:gobbi
+Grok:        /gobbi:gobbi prepare the next release
 ```
 
-After `.grok/skills/gobbi` exists, checkout-local Grok invokes Gobbi as `/local:gobbi`. A marketplace or
-project-plugin load invokes it as `/gobbi:gobbi`. The two forms differ; do not invent a `$gobbi` alias for
-Grok.
+This checkout's Grok load is `.grok/plugins/gobbi`, so the entry is `/gobbi:gobbi`. Do not use `/local:gobbi`.
+That name belonged to `.grok/skills/gobbi`, which this checkout does not register. Do not invent a `$gobbi`
+alias for Grok.
 
 Gobbi presents Cowork and Workflow and waits for your selection. It next asks for a privacy-safe session
 slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of `claude-code`, `codex`,

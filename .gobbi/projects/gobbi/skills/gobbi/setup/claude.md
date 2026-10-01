@@ -26,6 +26,8 @@ The twelve names after assistant are phase roles. The named role must match the 
     "allow": [
       "Skill(gobbi:gobbi)",
       "Skill(gobbi:principles)",
+      "Skill(gobbi:discussion)",
+      "Skill(gobbi:delegation)",
       "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:coding-leader)",
@@ -67,7 +69,10 @@ overwrites an existing settings file, `CLAUDE.md`, or role contract. It never cr
 
 ## After setup
 
-- The Claude Code hook is `hooks/hooks.json` on `UserPromptSubmit`, found by default discovery.
+- This checkout enables `gobbi@gobbi` and does not keep a settings `hooks` object, `.claude/agents`, or
+  `.claude/skills`. Claude loads agents, skills, and the hook from `plugins/gobbi`.
+- The Claude Code hook is `hooks/hooks.json` on `UserPromptSubmit`, found by default discovery. Do not add a
+  `hooks` key to `.claude-plugin/plugin.json`.
 - Role contracts come from the plugin's flat `agents/`.
 - If the existing `.claude/settings.json` is missing a permission, add the exact `Agent(gobbi:...)` or
   `Skill(gobbi:...)` entry. Setup does not edit a present settings file.

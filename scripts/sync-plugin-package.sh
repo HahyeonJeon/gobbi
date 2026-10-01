@@ -18,10 +18,6 @@
 # copied verbatim, except for the declared link rewrites (see LINK_REWRITE_PATHS).
 #
 # PACKAGE-OWNED, never read, written, deleted or reported:
-#   - plugins/gobbi/hooks/ is deliberately NOT a mirror. Canonical hooks/ is frozen at
-#     an older shape by an explicit user decision and serves this repository's own three
-#     hook registrations; the package hooks/ is the consumer-facing per-runtime design.
-#     They differ on purpose, so treating them as a mirror pair would break both.
 #   - plugins/gobbi/.claude-plugin/, .codex-plugin/, .cursor-plugin/, .grok-plugin/ are
 #     hand-maintained manifests with no canonical counterpart.
 #
@@ -45,10 +41,11 @@ DIRECTORY_MAP=(
   "agents/codex:runtimes/codex"
   "agents/cursor:runtimes/cursor"
   "agents/grok:runtimes/grok"
+  "hooks:hooks"
 )
 
 # Package subtrees this script owns. An unmapped file found here is reported and removed.
-GENERATED_SUBTREES=(skills agents runtimes)
+GENERATED_SUBTREES=(skills agents runtimes hooks)
 
 # Canonical paths inside a mapped prefix that must still not ship.
 #   skills/gobbi-skill/scripts/link-project-skills.sh — repository-local dev script.

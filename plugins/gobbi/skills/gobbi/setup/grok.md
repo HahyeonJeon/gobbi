@@ -24,6 +24,8 @@ Do not copy that hook into `~/.grok/hooks/`.
 
 A repository checkout already exposes `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove load with
 `grok inspect --json`: `plugins` contains `name` `gobbi`, `scope` `project`, `enabled` true.
+This checkout invokes Gobbi as `/gobbi:gobbi`. It does not keep `.grok/agents`, `.grok/skills`, or
+`.grok/hooks`.
 
 ## Create missing project layout
 
@@ -51,7 +53,8 @@ when those paths are absent. It never creates `.grok/skills`, `.grok/agents`, or
   rm -f ~/.grok/hooks/hooks.json
   ```
 
-- Grok participants are the plugin `.grok/agents` roles plus official Grok subagents.
+- Grok participants come from the plugin `runtimes/grok` roles plus official Grok subagents.
+  The checkout entry is `/gobbi:gobbi`.
 - The `Stop` hook fires at turn end and costs one extra model round.
 
 ## Scripts

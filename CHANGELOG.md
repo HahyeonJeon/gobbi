@@ -47,6 +47,10 @@ The role split names fourteen roles, and model pins follow that split. The ontol
 
 ### Changed
 
+- This checkout loads Claude, Codex, and Grok from `plugins/gobbi`. Cursor agents stay in `.cursor/agents`
+  until a Cursor plugin load is proven. `.cursor/skills` is not a second skill tree, because Grok scans it.
+  Grok in this checkout is `/gobbi:gobbi`. The minimum Claude allow list includes `discussion` and
+  `delegation`. The Codex checker does not require `.codex/config.toml`.
 - Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`.
   Cursor uses the form `model: <id>[effort=<effort>]` and no separate effort key.
 - Claude executors (coding-executor, authoring-executor, and design-executor) use `claude-opus-5-5` at `high`.

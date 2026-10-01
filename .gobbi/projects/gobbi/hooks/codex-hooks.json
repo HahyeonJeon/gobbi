@@ -1,11 +1,11 @@
 {
   "hooks": {
-    "Stop": [
+    "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "../../.gobbi/projects/gobbi/hooks/stop-remind.sh",
+            "command": "bash \"${PLUGIN_ROOT}/hooks/remind.sh\" codex",
             "timeout": 10
           }
         ]

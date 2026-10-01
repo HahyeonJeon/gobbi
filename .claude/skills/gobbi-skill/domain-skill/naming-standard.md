@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/gobbi-skill/domain-skill/naming-standard.md

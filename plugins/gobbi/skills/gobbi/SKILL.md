@@ -144,8 +144,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - Stop before routing when those probes show a partial, contradictory, unreadable, or unsafe layout, and
   point the user at the matching setup guide: [claude.md](setup/claude.md), [codex.md](setup/codex.md),
   [cursor.md](setup/cursor.md), or [grok.md](setup/grok.md).
-- For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:coding-executor)` and
-  `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
+- For Claude, recommend namespaced permissions such as `Agent(gobbi:coding-executor)` and
+  `Skill(gobbi:principles)`. This checkout loads Claude from the plugin and does not register
+  repository-local Claude skills. Partner availability belongs to
   the [Partner Manual](partner/SKILL.md#availability).
 
 #### 1.4 Load the entry foundation

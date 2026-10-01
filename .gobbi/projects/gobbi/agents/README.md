@@ -57,17 +57,20 @@ Cursor role pins differ by role. Read that role's file. On Cursor, manager and a
 `grok-4.7[effort=xhigh]`. Every other Cursor role uses that role's Claude model and effort in the same
 bracket. The Cursor parent starts as `grok-4.7[effort=high]`.
 
-Runtime mirrors (repository-local, not plugin components):
+Checkout load paths. Each runtime reads the package, or the one local adapter this product still requires.
+It does not read both.
 
-- `.claude/agents/{role}.md` → `claude/{role}.md`
-- `.grok/agents/{role}.md` → `grok/{role}.md`
-- `.agents/agents/{role}.md` → `grok/{role}.md`
-- `.codex/agents/{role}.toml` → `codex/{role}.toml`
-- `.cursor/agents/{role}.md` → **real files, not symlinks**, byte-identical to `cursor/{role}.md`
+- Claude Code reads `plugins/gobbi`. This checkout enables `gobbi@gobbi` and does not register
+  `.claude/agents`, `.claude/skills`, or a settings hook.
+- Grok reads `plugins/gobbi` through `.grok/plugins/gobbi`. This checkout does not register `.grok/agents`,
+  `.grok/skills`, or `.grok/hooks`. The entry is `/gobbi:gobbi`.
+- Codex skills and hooks read `plugins/gobbi`. Codex roles stay at `.codex/agents/{role}.toml` →
+  `codex/{role}.toml`, because Codex does not load plugin agents. This checkout does not register
+  `.codex/hooks.json`.
+- Cursor stays a project adapter until a Cursor plugin load is proven. `.cursor/agents/{role}.md` →
+  `cursor/{role}.md`. `.cursor/skills/` links canonical skills. This checkout has no Cursor marketplace.
 
-The first four are symlinks into this tree. `.cursor/agents/` is a hand-maintained copy and therefore the one
-mirror that can drift silently; converting it is deferred because Cursor's symlink handling has no offline
-observable to verify against.
+`.codex/agents/` and `.cursor/agents/` are symlinks into this tree.
 
 ## The published package has a different shape, and must
 

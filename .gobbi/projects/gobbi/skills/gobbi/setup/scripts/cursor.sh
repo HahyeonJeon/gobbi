@@ -16,5 +16,5 @@ append_shared_targets
 guard_all_targets
 print_setup_header cursor
 write_shared_layout
-record ".cursor/" not-mine "plugin supplies Cursor agents via its declared agents key"
+record ".cursor/" not-mine "project adapter is .cursor/agents and .cursor/skills; setup writes neither"
 print_setup_summary
