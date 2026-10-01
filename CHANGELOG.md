@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-The role split names fourteen roles, and model pins follow that split. The ontology skill stays.
+## 1.3.3 - 2026-10-01
+
+This patch adds phase roles, ontology support, and session-start settings checks. By project decision,
+1.3.3 continues the patch sequence despite feature additions and breaking role-name changes; it is an
+exception to Semantic Versioning.
+
+**Upgrade:** Replace `developer`, `author`, and `designer` calls with the corresponding `coding-*`,
+`authoring-*`, and `design-*` roles. Choose `leader` for ideation, `planner` for planning, `executor` for
+execution, and `reviewer` for review. Update Claude `Agent(...)` permissions and rerun the matching runtime
+setup script to create `memory/ontology/`. Codex setup also adds the new role files; Claude Code and Grok load
+them from the updated plugin. Update Cursor project adapters from the new Cursor role contracts. Setup leaves
+existing Claude settings and old project role files untouched; update permissions and remove obsolete role
+files after migrating callers.
 
 ### Added
 
@@ -93,7 +105,7 @@ The role split names fourteen roles, and model pins follow that split. The ontol
 
 ### Removed
 
-- Removed the developer, designer, and author role files.
+- **Breaking:** Removed the developer, designer, and author role files; use the domain's phase roles instead.
 
 ### Fixed
 

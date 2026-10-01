@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.2-blue" alt="Version 1.3.2"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.3-blue" alt="Version 1.3.3"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -134,6 +134,27 @@ After install, create missing layout with the matching runtime guide and script 
 [codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md),
 [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md), or
 [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md). Setup is not a skill. Gobbi entry does not run it.
+
+## Upgrade to 1.3.3
+
+Version 1.3.3 includes new features and removes the old specialist role names. The patch version is a
+project decision and an exception to Semantic Versioning. Update existing role calls and Claude `Agent(...)`
+permissions using the domain and phase:
+
+| Old role | New role family |
+|---|---|
+| `developer` | `coding-*` |
+| `author` | `authoring-*` |
+| `designer` | `design-*` |
+
+Choose `leader` for ideation, `planner` for planning, `executor` for execution, and `reviewer` for review.
+For example, implementation formerly assigned to `developer` now uses `coding-executor`.
+
+Rerun the matching runtime setup script linked above to add `memory/ontology/`. Codex setup also adds the new
+`.codex/agents` role files. Claude Code and Grok load roles from the updated plugin. Cursor projects using
+`.cursor/agents` must update those files from the [Cursor role contracts](plugins/gobbi/runtimes/cursor/).
+Setup leaves existing `.claude/settings.json` and old project role files untouched. Update those permissions
+and remove obsolete role files after migrating their callers.
 
 ## Start your first session
 
