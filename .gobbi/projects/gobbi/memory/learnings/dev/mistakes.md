@@ -115,7 +115,7 @@ and left probe sessions in `~/.grok/sessions/`. The earlier config content could
 **Context:** A fix author must make a failing comparison or proof case pass.
 
 **Mistake:** The author rewrote a scratch check's input so that the comparison passed. The code reviewer caught
-it as a Principle 6 violation: the check no longer tested the case.
+it as a Principle 5 violation: the check no longer tested the case. Principle 5 is Fix the Root Cause.
 
 **Correction:** Never change a check or its input to make a case pass. Report the case as failing or "not
 comparable" instead. Say this in every fix brief.

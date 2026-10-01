@@ -191,7 +191,8 @@ that layout stayed stale, and two reviews found them.
 
 **Correction:** Before sending a correction, grep the whole canonical tree (skills, agents, `memory/design/`,
 and READMEs) for the old literal, and put every file that restates the fact in the writer frontier
-(Principle 7). When the correction changes a count or cardinality, also sweep every Rule, layout, and
+(Principle 6). Principle 6 is the CRUD-and-5W1H rule. When the correction changes a count or
+cardinality, also sweep every Rule, layout, and
 aggregation surface that assumes the old count. For coding skill wiring, include
 `memory/design/feature/coding-skill-family.md` by default. When several author groups run in series, have each
 group append the sentences that other files restate to one session file, and give that file to the final

@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-10-01 — Gobbi-dev session](2026-10-01-gobbi-dev.md)
 - [2026-09-29 — Phase roles](2026-09-29-phase-roles.md)
 - [2026-09-29 — Reviewer roles and ontology skill](2026-09-29-reviewer-roles-and-ontology-skill.md)
 - [2026-09-25 — Gobbi v1.3.2 published](2026-09-25-gobbi-v1-3-2.md)

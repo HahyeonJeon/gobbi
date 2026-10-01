@@ -14,7 +14,8 @@ user decisions that shape it. It does not copy the skill's rules.
 
 - The skill describes ontology itself. It has no Coding, Authoring, or Design section.
 - Each domain keeps its own form. Coding keeps it in [Coding Principles](../../../skills/coding/principles.md)
-  Modularization. Authoring and Design each have an `ontology.md` child under Ideation, Execution, and Review.
+  Modularization. Authoring and Design Ideation have no `ontology.md`; they use this skill as the facet
+  source. Authoring and Design Execution and Review each still have an `ontology.md` child.
 - The record and the skill use Palantir kind and field names. A domain doc may give a field its own name. For
   example, coding calls the Function and Action type fields its "caller contract".
 - The skill, its children, and the coding example use one Flight example throughout.

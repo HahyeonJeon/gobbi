@@ -42,13 +42,12 @@ each group. Order implies no priority, readiness, or sequence.
 ## Project
 
 - `Authoring and Design Execution handoff placeholders` → `project.md#authoring-and-design-execution-handoff-placeholders`
-- `Authoring and Design Ideation and Planning templates` → `project.md#authoring-and-design-ideation-and-planning-templates`
+- `Authoring and Design Planning templates` → `project.md#authoring-and-design-planning-templates`
 - `.codex/config.toml is inert` → `project.md#codexconfigtoml-is-inert`
 - `Project .grok/config.toml` → `project.md#project-grokconfigtoml`
 - `Consumer-project README setup section` → `project.md#consumer-project-readme-setup-section`
 - `Flat consumer-project layout` → `project.md#flat-consumer-project-layout`
 - `Future Markdown link checking must inspect the plugin mirror` → `project.md#future-markdown-link-checking-must-inspect-the-plugin-mirror`
-- `Grok ignores the .agents/agents follow surface` → `project.md#grok-ignores-the-agentsagents-follow-surface`
 - `Grok probe side effects in the user's home` → `project.md#grok-probe-side-effects-in-the-users-home`
 - `Grok silent fallback for an unknown agent name` → `project.md#grok-silent-fallback-for-an-unknown-agent-name`
 - `Guardrail gaps in two .toml role wrappers` → `project.md#guardrail-gaps-in-two-toml-role-wrappers`
@@ -64,7 +63,3 @@ each group. Order implies no priority, readiness, or sequence.
 - `Setup Skill allow list differs between docs and script` → `project.md#setup-skill-allow-list-differs-between-docs-and-script`
 - `Stale draft lines in Authoring and Design skills` → `project.md#stale-draft-lines-in-authoring-and-design-skills`
 
-## Stop reminder
-
-- `Live Grok two-prompt reinjection` → `stop-reminder.md#live-grok-two-prompt-reinjection`
-- `Silence expected duplicate-lock stderr` → `stop-reminder.md#silence-expected-duplicate-lock-stderr`

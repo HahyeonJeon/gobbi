@@ -16,7 +16,7 @@ Recursive navigation across design memory, grouped by category.
 - [Ontology skill](feature/ontology-skill.md)
 - [Partner](feature/partner.md)
 - [Python skill family](feature/python-skill-family.md)
-- [Stop reminder](feature/stop-reminder.md)
+- [Session hooks](feature/stop-reminder.md)
 
 ## Process
 

@@ -9,19 +9,23 @@ keep who the role is, how it behaves, what it loads, what it never does, and whi
 
 - Canonical source: 56 contracts, fourteen roles in each of four runtimes, under
   `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
-- Plugin projection: fourteen Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
+- Plugin package: fourteen Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
   `agents/claude/`, plus the other runtimes at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`. The
-  package cannot nest them under `agents/`, because a plugin's `agents/` directory is scanned recursively and
-  each subfolder becomes part of the agent's scoped identifier. Grok and Cursor declare their own paths in
-  their manifests; Codex custom agents are still not a plugin component and are written into a consumer's
-  `.codex/agents/` by setup scripts.
-- Follow surfaces: `.claude/agents`, `.grok/agents`, `.codex/agents`, `.cursor/agents`, and Grok-shaped
-  `.agents/agents`.
+  package cannot nest Claude agents under subfolders of `agents/`, because a plugin's `agents/` directory is
+  scanned recursively and each subfolder becomes part of the agent's scoped identifier.
+- This checkout loads Claude, Codex, and Grok from `plugins/gobbi`. Cursor agents stay as symlinks in
+  `.cursor/agents` until a Cursor plugin load is proven. `.cursor/skills` is not a second skill tree, and this
+  checkout does not keep it.
+- Claude has no `.claude/agents` or `.claude/skills`. Codex skills and hooks come from the plugin. Codex role
+  files stay in `.codex/agents`, because Codex does not load plugin agents. The Codex checker does not require
+  `.codex/config.toml`. Grok uses `.grok/plugins/gobbi` and does not keep `.grok/agents`, `.grok/skills`, or
+  `.grok/hooks`. There is no `.agents/agents` follow surface.
 
 The fourteen roles are manager, assistant, and, for coding, authoring, and design, a leader, a planner, an
 executor, and a reviewer. Developer, designer, author, code-reviewer, and docs-reviewer are not live roles.
-`design-reviewer` is the design-domain review role. A role change reaches all four runtimes, the follow
-surfaces, the plugin package, setup, and docs. Do not create a role skill.
+`design-reviewer` is the design-domain review role. A role change reaches all four runtime contracts, the
+plugin package, the Cursor and Codex role copies this checkout still keeps, setup, and docs. Do not create a
+role skill.
 
 ## Role-file shape
 

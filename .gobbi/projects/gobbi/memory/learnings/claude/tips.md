@@ -47,15 +47,16 @@ a stable public mechanism — it could disappear without notice.
 
 **Application:** Use this only as a fallback signal, never as the primary acquisition step.
 
-## Claude Stop injects through additionalContext only
+## Claude hook text uses additionalContext
 
-**Context:** Writing a Claude Code Stop hook that should continue the model with extra text.
+**Context:** Writing the Claude Gobbi hook payload.
 
-**Tip:** Claude Code continues from `hookSpecificOutput.additionalContext` only. Codex
-`{decision: "block", reason}` is the wrong payload on Claude.
+**Tip:** Claude SessionStart and UserPromptSubmit use `hookSpecificOutput.additionalContext`, with
+`hookEventName` `SessionStart` or `UserPromptSubmit`. The hook file names the runtime. The script does not
+probe stdin for a host.
 
-**Application:** Share the additionalContext payload with Grok. Detect Claude when `GROK_HOOK_EVENT` is unset
-and `turn_id` is absent. See [stop reminder](../../design/feature/stop-reminder.md).
+**Application:** Do not register a repository `.claude` Stop hook beside the plugin, and do not detect Claude
+by the absence of `GROK_HOOK_EVENT`. See [Session hooks](../../design/feature/stop-reminder.md).
 
 ## `/plugin marketplace add` creates a full git clone
 

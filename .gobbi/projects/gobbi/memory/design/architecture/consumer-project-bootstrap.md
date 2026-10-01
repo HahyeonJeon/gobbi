@@ -95,15 +95,15 @@ exception, while Git supplies repository-state, commit, and recovery preferences
 only tracked write Gobbi makes outside a session worktree, and it covers only the required layout and its
 ignore file — nothing else.
 
-## Stop conditions
+## Settings check and layout stops
 
-Gobbi Step 1.3 and the selected Cowork or Workflow configuration preflight verify the layout before capturing
-the base. They stop when an ancestor ignores `.gobbi/`; a file is already tracked where the layout requires
-ignored state; the existing `.gobbi/.gitignore` has conflicting or partial bytes; or a required path component
-is a file or symbolic link instead of a directory. Use `git check-ignore --no-index -v` for ignore behavior,
-`git ls-files` for tracked state, exact-byte comparison for the ignore file, and `test -e`, `test -d`, and
-`test -L` for existing path components. See [`learnings/git/tips.md`](../../learnings/git/tips.md) for the
-verification mechanics behind these checks.
+Gobbi Step 1.3 does not probe layout, stop on layout, or run setup `--check`. The SessionStart hook runs that
+runtime's setup `--check` and reports the result. A passing `--check` exits before the setup writer. See
+[Session hooks](../feature/stop-reminder.md).
+
+Layout stops belong to setup, not to the entry skill. The writer stops when an ancestor ignores `.gobbi/` or
+when session or worktree state is tracked. The checker reports ignore, path, and file-versus-link failures.
+See [`learnings/git/tips.md`](../../learnings/git/tips.md) for the ignore-check mechanics.
 
 ## References
 

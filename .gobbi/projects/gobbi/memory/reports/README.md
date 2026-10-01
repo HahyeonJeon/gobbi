@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Gobbi-dev session](note/2026-10-01-gobbi-dev.md)
 - [Phase roles](note/2026-09-29-phase-roles.md)
 - [Reviewer roles and ontology skill](note/2026-09-29-reviewer-roles-and-ontology-skill.md)
 - [Gobbi v1.3.2](note/2026-09-25-gobbi-v1-3-2-release.md)

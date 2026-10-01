@@ -148,21 +148,20 @@ contract kept Authoring and Design out of scope.
 Execution](../../skills/design/design-execution/SKILL.md), and [Coding
 Execution](../../skills/coding/coding-execution/SKILL.md) Step 5.1 for the Coding form.
 
-## Authoring and Design Ideation and Planning templates
+## Authoring and Design Planning templates
 
 **Backlogged at:** 2026-09-25T15:10:31Z
 
-**What:** Decide whether Authoring and Design Ideation and Planning should match Coding: flat templates and
-flat results, no optional Requirements snapshot, and one level-label vocabulary.
+**What:** Decide whether Authoring and Design Planning should match Coding Planning's flat templates.
 
-**Why backlogged:** Coding Ideation and Coding Planning made these changes on 2026-09-25. The topic contract
-kept the sibling families out of scope.
+**Why backlogged:** Authoring and Design Ideation now use Coding Ideation's four flat templates. Planning was
+not part of that change, so the Planning deferral remains.
 
-**Context:** Authoring and Design Ideation keep nested `templates/ideation/` with `discussion/` and
-`requirements/` subdirectories and an optional Requirements snapshot. Authoring and Design Planning keep nested
-`templates/planning/` with `tasks/tasks-index.md` and `tasks/tasks-NN.md`. Authoring Ideation labels a level
-`inherited/current`, where Coding Ideation uses `Inherited`. See the [Authoring skill
-family](../design/feature/authoring-skill-family.md) and [Design skill family](../design/feature/design-skill-family.md).
+**Context:** Authoring and Design Planning keep nested `templates/planning/` with `tasks/tasks-index.md` and
+`tasks/tasks-NN.md`. Ideation no longer keeps nested `templates/ideation/` or an Ideation `ontology.md`. The
+shared Ontology skill is the facet source, and the domain headings stay. See the [Authoring skill
+family](../design/feature/authoring-skill-family.md) and [Design skill
+family](../design/feature/design-skill-family.md).
 
 ## Review gating wording outside Coding
 
@@ -287,18 +286,6 @@ prior config content is unknown.
 
 **Context:** The rewritten file parses. See
 [Probing an external CLI without isolating its home](../learnings/dev/mistakes.md#probing-an-external-cli-without-isolating-its-home).
-
-## Grok ignores the `.agents/agents` follow surface
-
-**Backlogged at:** 2026-09-29T08:19:28Z
-
-**What:** Decide whether to keep `.agents/agents` as a Grok-shaped follow surface. Grok 1.0.41 discovers roles
-only from `.grok/agents/`.
-
-**Why backlogged:** The 2026-09-26 probe found it outside the reviewer-roles topic.
-
-**Context:** [Identity-and-load role contracts](../design/process/identity-and-load-role-contracts.md) lists the
-follow surfaces. See [Grok agent discovery](../learnings/grok/tips.md#grok-discovers-agents-only-in-grokagents).
 
 ## Grok silent fallback for an unknown agent name
 
