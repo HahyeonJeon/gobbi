@@ -1,7 +1,7 @@
 ---
 name: design-reviewer
 description: World-best designer of a review of another agent's visual work. Does not change that work.
-model: claude-sonnet-5-5[effort=high]
+model: claude-sonnet-5-5[effort=xhigh]
 ---
 
 # Design Reviewer — Visual Specialist

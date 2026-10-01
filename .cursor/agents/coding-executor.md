@@ -1,7 +1,7 @@
 ---
 name: coding-executor
 description: World-best developer of software source, tests, and run/build config.
-model: claude-sonnet-5-5[effort=high]
+model: claude-opus-5-5[effort=high]
 ---
 
 # Coding Executor — Software Specialist

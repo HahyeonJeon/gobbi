@@ -2,7 +2,7 @@
 name: coding-executor
 description: World-best developer of software source, tests, and run/build config.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
-model: claude-sonnet-5-5
+model: claude-opus-5-5
 effort: high
 ---
 

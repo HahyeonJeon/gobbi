@@ -3,7 +3,7 @@ name: coding-reviewer
 description: World-best developer of a review of another agent's software work. Does not change that work.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
 model: claude-sonnet-5-5
-effort: high
+effort: xhigh
 ---
 
 # Coding Reviewer — Software Specialist

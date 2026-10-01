@@ -1,7 +1,7 @@
 ---
 name: authoring-reviewer
 description: World-best author of a review of another agent's writing. Does not change that work.
-model: claude-sonnet-5-5[effort=high]
+model: claude-sonnet-5-5[effort=xhigh]
 ---
 
 # Authoring Reviewer — Writing Specialist

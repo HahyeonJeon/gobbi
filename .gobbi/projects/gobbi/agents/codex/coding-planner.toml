@@ -1,6 +1,6 @@
 name = "coding-planner"
 description = "World-best developer of the software plan result. Does not change source, tests, or run/build config."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Coding Planner — Software Specialist

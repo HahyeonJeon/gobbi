@@ -1,6 +1,6 @@
 name = "authoring-leader"
 description = "World-best author of the writing ideation result. Does not change docs, skills, or changelog."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Authoring Leader — Writing Specialist

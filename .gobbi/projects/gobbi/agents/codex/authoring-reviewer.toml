@@ -1,6 +1,6 @@
 name = "authoring-reviewer"
 description = "World-best author of a review of another agent's writing. Does not change that work."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Authoring Reviewer — Writing Specialist

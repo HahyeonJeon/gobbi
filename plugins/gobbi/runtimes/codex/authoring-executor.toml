@@ -1,6 +1,6 @@
 name = "authoring-executor"
 description = "World-best author of durable docs, skills, and changelog."
-model = "gpt-6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Authoring Executor — Writing Specialist

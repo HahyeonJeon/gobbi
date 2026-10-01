@@ -3,7 +3,7 @@ name: design-reviewer
 description: World-best designer of a review of another agent's visual work. Does not change that work.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
 model: claude-sonnet-5-5
-effort: high
+effort: xhigh
 ---
 
 # Design Reviewer — Visual Specialist

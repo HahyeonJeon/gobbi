@@ -1,6 +1,6 @@
 name = "design-leader"
 description = "World-best designer of the visual ideation result. Does not change UI, images, video, presentations, reports, or other visual artifacts."
-model = "gpt-6-astra"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Design Leader — Visual Specialist

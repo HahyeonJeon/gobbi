@@ -1,7 +1,7 @@
 ---
 name: coding-leader
 description: World-best developer of the software ideation result. Does not change source, tests, or run/build config.
-model: claude-opus-5-5[effort=high]
+model: claude-sonnet-5-5[effort=high]
 ---
 
 # Coding Leader — Software Specialist

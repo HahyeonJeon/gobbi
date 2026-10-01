@@ -2,7 +2,7 @@
 name: coding-leader
 description: World-best developer of the software ideation result. Does not change source, tests, or run/build config.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: high
 ---
 

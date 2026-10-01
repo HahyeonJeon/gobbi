@@ -1,7 +1,7 @@
 ---
 name: coding-reviewer
 description: World-best developer of a review of another agent's software work. Does not change that work.
-model: claude-sonnet-5-5[effort=high]
+model: claude-sonnet-5-5[effort=xhigh]
 ---
 
 # Coding Reviewer — Software Specialist

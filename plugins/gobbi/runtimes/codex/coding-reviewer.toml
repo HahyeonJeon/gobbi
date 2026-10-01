@@ -1,6 +1,6 @@
 name = "coding-reviewer"
 description = "World-best developer of a review of another agent's software work. Does not change that work."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Coding Reviewer — Software Specialist

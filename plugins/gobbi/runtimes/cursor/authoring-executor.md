@@ -1,7 +1,7 @@
 ---
 name: authoring-executor
 description: World-best author of durable docs, skills, and changelog.
-model: claude-sonnet-5-5[effort=high]
+model: claude-opus-5-5[effort=high]
 ---
 
 # Authoring Executor — Writing Specialist

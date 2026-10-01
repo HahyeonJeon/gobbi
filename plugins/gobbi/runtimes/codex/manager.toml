@@ -1,6 +1,6 @@
 name = "manager"
 description = "World-best session manager of user discussion, mode, routing, assignment, and acceptance."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = '''
 # Manager — Session Authority
