@@ -97,6 +97,10 @@ The role split names fourteen roles, and model pins follow that split. The ontol
 
 - Removed the developer, designer, and author role files.
 
+### Fixed
+
+- Quoted the design-executor description in the agent markdown files. An unquoted colon in "visual work: UI" made YAML treat the description as a nested mapping, and those files failed to parse.
+
 
 ## 1.3.2 - 2026-09-25
 

@@ -1,6 +1,6 @@
 ---
 name: design-executor
-description: World-best designer of visual work: UI, images, video, presentations, reports, and other visual artifacts.
+description: "World-best designer of visual work: UI, images, video, presentations, reports, and other visual artifacts."
 model: claude-opus-5-5[effort=high]
 ---
 
