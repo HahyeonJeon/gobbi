@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Gobbi v1.3.3 publication](note/2026-10-01-gobbi-v1-3-3-publication.md)
 - [Gobbi v1.3.3 release preparation](note/2026-10-01-gobbi-v1-3-3-release.md)
 - [Gobbi-dev session](note/2026-10-01-gobbi-dev.md)
 - [Phase roles](note/2026-09-29-phase-roles.md)
