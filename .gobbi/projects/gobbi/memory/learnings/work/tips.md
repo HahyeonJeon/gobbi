@@ -122,7 +122,9 @@ PASS as a freezeable whole-branch subject while those files remain dirty.
 CHANGELOG claims Semantic Versioning 2.0.0.
 
 **Tip:** The sequential 1.x minor is 1.3.0. A named skip is a user choice, not evidence that 1.3.0 is
-reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8 exception.
+reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8 exception. A prior release's
+patch exception is not a standing version policy; confirm the choice for the new release and document its
+compatibility changes.
 
 **Application:** Present sequential 1.x, the named skip, and 2.0.0 as distinct options. Recommend from
 SemVer plus project exception history. Keep the user's recorded number after they choose.

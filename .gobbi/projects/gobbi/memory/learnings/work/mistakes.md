@@ -243,11 +243,14 @@ stated reason for merging two rules.
 **Mistake:** The manager checked a classification sentence against a reviewer's suggestion, not against the
 design's key tables. It contradicted five keys and left others unclassified. Three review iterations traced to
 that one sentence. Earlier, the manager merged two rules "because both are about who may change data"; one rule
-also limited read grants, so the stated reason was wrong.
+also limited read grants, so the stated reason was wrong. A release upgrade guide said every runtime's setup
+creates replacement role files; only Codex setup does. Claude and Grok get roles from the plugin, while Cursor
+project adapters need a separate update.
 
 **Correction:** Check every member of the set against its source table before you write the claim. Prefer a
 claim by exception, such as "all are A, except these". Give the reviewer the full member list so it can check
-the claim by script. Check a merge's stated reason against every case each rule covers.
+the claim by script. Check a merge's stated reason against every case each rule covers. Check each runtime's
+setup script before promising a shared migration effect.
 
 ## Offering options before confirming what the user's term means
 
