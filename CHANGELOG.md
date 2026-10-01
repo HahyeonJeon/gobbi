@@ -47,6 +47,7 @@ The role split names fourteen roles, and model pins follow that split. The ontol
 
 ### Changed
 
+- Removed Principle 5, Say/Write Plainly, from the principles skill. The remaining principles are numbered 1 through 7. The remind hook no longer says user-facing messages must be structured rather than narrative.
 - This checkout loads Claude, Codex, and Grok from `plugins/gobbi`. Cursor agents stay in `.cursor/agents`
   until a Cursor plugin load is proven. `.cursor/skills` is not a second skill tree, because Grok scans it.
   Grok in this checkout is `/gobbi:gobbi`. The minimum Claude allow list includes `discussion` and
