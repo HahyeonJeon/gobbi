@@ -1,0 +1,38 @@
+# Automation: a condition that starts work without a person.
+# Kind block automation, in the group automations. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   automation <id>
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - Effects run at least once, so each Action type they run must be safe to run twice.
+# - runsAs is the role that the effects run as. Security policy grants name the same role.
+#
+# Relationship: condition names the data it watches, and each effect names what it runs. relationship is null
+# unless an edge has no field here.
+#
+# Review checklist (validate does not check these):
+# - The runsAs role has a READ grant on the watched Object type and a RUN grant on each Action type or Function
+#   in effects and fallbackEffect.
+# - Each Action type in effects has a criterion that makes a repeat run fail or change nothing.
+#
+# Palantir: Automate has no API schema. condition, effects, and fallbackEffect use Automate's terms and type
+# names; runsAs and retries are ours.
+automation:
+  condition:
+    type: "{one of: time | objectsAdded | objectsRemoved | objectsModified | runOnAllObjects | thresholdCrossed}"
+    objectTypeApiName: "{only when type is not time: Object type reference}"
+    propertyApiNames:
+      - "{only when type is objectsModified: optional: id of a Property of that Object type to watch}"
+    schedule: "{only when type is time: when it runs, such as every day at 06:00 UTC}"
+  effects:
+    - type: "{one of: action | function | logic | notification}"
+      actionTypeApiName: "{only when type is action: Action type reference}"
+      functionApiName: "{only when type is function: Function reference}"
+      description: "{only when type is logic or notification: what it does, or whom it alerts and why}"
+  runsAs: "{role that Security policy grants name, such as a service name}"
+  retries: "{null or: how often a failed effect is retried}"
+  fallbackEffect:
+    type: "{fallbackEffect null or: one of: action | function | logic | notification}"
+    actionTypeApiName: "{only when type is action: Action type reference}"
+    functionApiName: "{only when type is function: Function reference}"
+    description: "{only when type is logic or notification: what it does, or whom it alerts and why}"

@@ -7,6 +7,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.3.3 - 2026-10-01
+
+This patch adds phase roles, ontology support, and session-start settings checks. By project decision,
+1.3.3 continues the patch sequence despite feature additions and breaking role-name changes; it is an
+exception to Semantic Versioning.
+
+**Upgrade:** Replace `developer`, `author`, and `designer` calls with the corresponding `coding-*`,
+`authoring-*`, and `design-*` roles. Choose `leader` for ideation, `planner` for planning, `executor` for
+execution, and `reviewer` for review. Update Claude `Agent(...)` permissions and rerun the matching runtime
+setup script to create `memory/ontology/`. Codex setup also adds the new role files; Claude Code and Grok load
+them from the updated plugin. Update Cursor project adapters from the new Cursor role contracts. Setup leaves
+existing Claude settings and old project role files untouched; update permissions and remove obsolete role
+files after migrating callers.
+
+### Added
+
+- Added twelve phase roles. The fourteen roles, in order, are manager, assistant, coding-leader,
+  coding-planner, coding-executor, coding-reviewer, authoring-leader, authoring-planner,
+  authoring-executor, authoring-reviewer, design-leader, design-planner, design-executor, and
+  design-reviewer. The twelve names after assistant are phase roles. Leader is ideation.
+  Planner is planning. Executor is execution. Reviewer is review. Coding is software.
+  Authoring is durable writing. Design is visual work.
+- Added a setup proof that the settings `claude.sh` creates allow every role and every permission skill, that
+  setup messages report the true entry counts, and that `codex.sh` writes every role's TOML.
+- Added the `ontology` preference skill, based on Palantir Foundry's Ontology. An ontology models a domain's
+  decisions: the data they use, the logic that evaluates them, the actions that carry them out, and the security
+  that governs them. The skill sorts each domain concept into one of nine kinds with Palantir names: Object
+  type, Property, Link type, Interface, Function, Action type, Automation, Process, and Security policy. Every
+  unit states five facets: Definition, Responsibility, Boundary, Relationship, and Properties. Each facet has
+  two test questions that a reviewer answers from the record alone. Its rules include that Functions return
+  results and only Action types commit changes, that each fact has one writer, that a rule or decision people
+  must review is stored as data, and that an agent or automation never holds a grant that the person or owner it
+  acts for lacks. Each unit has the same keys, `null` when empty: `status`, `deprecation`, and the facets
+  `definition`, `responsibility`, `boundary`, and `relationship`, then one kind block of Palantir field names,
+  such as `primaryKey`, `dataType`, and `operations`. Closed values are UPPER_SNAKE, as in Palantir's API, and
+  Action type ids are kebab-case. Each template states its kind's rules and review checklist, and SKILL.md indexes
+  the templates. `scripts/ontology.py`, which needs only Python 3.9, creates, extends, lists, shows, and validates
+  area files. The skill ships one Flight example file per kind.
+- Added a seventh Memory category, `memory/ontology/`, with one YAML file per bounded area of the domain model.
+  Setup now creates and checks `memory/ontology/README.md`, and the setup proof expects eight README stubs. In
+  an existing project, run setup again to create them; it leaves existing files untouched. Until then, setup
+  `--check` fails on the missing directory.
+- Added a session ontology at `{session-root}/ontology/<area>.yaml`. Each area file starts from its Memory copy,
+  or from the templates when none exists. Ideation writes the domain units it designs, Execution updates a unit
+  that a built artifact changes, and Review only reads the file. Workflow Wrap-up and Cowork Wrap-up promote
+  each file that passes the record checklist into `memory/ontology/`. They stop on a unit change that no
+  accepted handoff names.
+- Added an `ontology.md` child to Authoring and Design Execution and Review. The Execution children apply
+  Ontology to what the task builds, and the Review children list the questions a reviewer asks.
+
+### Changed
+
+- SessionStart runs the runtime setup check. Grok delivers it once on Stop. The gobbi entry skill no longer probes layout.
+- Removed Principle 5, Say/Write Plainly, from the principles skill. The remaining principles are numbered 1 through 7. The remind hook no longer says user-facing messages must be structured rather than narrative.
+- This checkout loads Claude, Codex, and Grok from `plugins/gobbi`. Cursor agents stay in `.cursor/agents`
+  until a Cursor plugin load is proven. `.cursor/skills` is not a second skill tree, because Grok scans it.
+  Grok in this checkout is `/gobbi:gobbi`. The minimum Claude allow list includes `discussion` and
+  `delegation`. The Codex checker does not require `.codex/config.toml`.
+- Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`.
+  Cursor uses the form `model: <id>[effort=<effort>]` and no separate effort key.
+- Claude executors (coding-executor, authoring-executor, and design-executor) use `claude-opus-5-5` at `high`.
+  Codex files for those roles use `gpt-6-astra` at `high`.
+- Claude reviewers (coding-reviewer, authoring-reviewer, and design-reviewer) use `claude-sonnet-5-5` at `xhigh`.
+  Codex files for those roles use `gpt-6.1-sol` at `high`.
+- Every other Claude role, including manager and assistant, uses `claude-sonnet-5-5` at `high`.
+  Codex files for those roles use `gpt-6.1-sol` at `high`.
+  Cursor manager and assistant stay `grok-4.7[effort=xhigh]`.
+- Every Grok role, including manager and assistant, uses `grok-4.7` at `xhigh`.
+- Every Cursor role except manager and assistant uses that role's Claude model and effort in the bracket form.
+- The Cursor parent session pin stays `grok-4.7[effort=high]`.
+- Review goes to the phase reviewer for its subject. `coding-reviewer` reviews software, `authoring-reviewer`
+  reviews durable writing, and `design-reviewer` reviews visual work. A reviewer may create or run anything a
+  check needs, and it never edits the target or its source inputs. Manager, Delegation, Cowork, Workflow, and
+  the Coding, Authoring, and Design Review skills route Review this way. Each artifact class in a subject
+  (`code`, `docs`, or `design`) gets its own reviewer. Review reports live at `<class>/<runtime>/` below the
+  review directory, and the review passes only when every class passes.
+- Setup installs and allows fourteen roles. Setup messages compute their counts from the role and skill lists.
+  Setup does not edit an existing `.claude/settings.json`, and it does not delete old role files from a project
+  that already has them.
+- Re-synced the fourteen `.cursor/agents/` copies with the canonical Cursor contracts.
+- Coding, Authoring, and Design Ideation, Execution, and Review now apply the `ontology` skill. All six
+  Ideation and Review checklists list it as a governing source, and each Ideation checklist flags a unit that
+  lacks a facet. Each Review skill loads the session area files and their copies in `memory/ontology/`.
+  Authoring Execution and Design Execution are still placeholders and now carry one line that applies Ontology.
+  Coding Modularization is now the code form of the facets. Every new or changed directory, file, public class,
+  and public function gets five facet lines: Conceptual definition, Responsibility, Boundary, Relationship, and
+  Properties. A public class or function also gets a caller contract, and Modularization maps its parts to the
+  record's Function and Action type fields. Code that realizes a Function changes nothing, and each Action type
+  has one public entry point; the Coding Review checklist flags a break of either rule. The Modularization
+  examples now use an `airline/flight.py` module from the Flight sample.
+- Authoring Ideation and Design Ideation now use four flat templates: `ideation-index.md`, `ideation-NN.md`,
+  `discussion-index.md`, and `discussion-NN.md`. This is the same record contract as Coding Ideation. Requirements
+  live only in the ideation part. A Discussion topic links its decision to the Design heading, and that heading
+  holds the chosen option, why it won, the trade-offs, and the reopen condition. Removed the two Ideation
+  `ontology.md` files. Facets, kinds, vocabulary, and storage stay in the Ontology skill.
+
+### Removed
+
+- **Breaking:** Removed the developer, designer, and author role files; use the domain's phase roles instead.
+
+### Fixed
+
+- Quoted the design-executor description in the agent markdown files. An unquoted colon in "visual work: UI" made YAML treat the description as a nested mapping, and those files failed to parse.
+
+
 ## 1.3.2 - 2026-09-25
 
 This patch adds the `coding-object-oriented-programming` preference skill and Coding Principles.

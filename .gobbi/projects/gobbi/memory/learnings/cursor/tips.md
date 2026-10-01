@@ -26,3 +26,12 @@ linker must skip an existing directory and continue. Failing or replacing that d
 Claude discovery.
 
 **Application:** Keep the skip on both validation and create. Do not add a plugin copy of the linker.
+
+## `.cursor/agents` holds copies that drift
+
+**Context:** Adding or changing a role contract.
+
+**Tip:** The `.cursor/agents/` role files are real copies of the canonical Cursor contracts, not symlinks. When
+the reviewer roles were added, all five existing copies had drifted from canonical.
+
+**Application:** After a role change, re-copy every `.cursor/agents/` file from canonical and diff each pair.

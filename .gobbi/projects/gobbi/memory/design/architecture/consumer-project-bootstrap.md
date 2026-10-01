@@ -27,6 +27,7 @@ document for it, to keep the definition in one place:
     │   │   ├── feature/
     │   │   ├── process/
     │   │   └── roadmap/
+    │   ├── ontology/README.md    tracked, 0-byte
     │   ├── learnings/
     │   ├── reports/
     │   │   ├── README.md         tracked, 0-byte
@@ -65,10 +66,10 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   to `.gobbi/`. A slashless pattern such as `sessions/` would match at any depth and swallow durable memory
   under `memory/design/sessions/`.
 - **The project memory root is `.gobbi/projects/<project>/memory/`, tracked, with no marker file.** "Tracked"
-  means "not ignored"; git cannot track an empty directory. Setup scripts create the six Memory category
+  means "not ignored"; git cannot track an empty directory. Setup scripts create the seven Memory category
   directories and the named design, reports, and materials subject directories. It writes a 0-byte
-  `README.md` only at `agents/`, `skills/`, and the five category roots whose Memory conventions define a
-  README: design, reports, history, materials, and backlogs. It does not create `memory/README.md`,
+  `README.md` only at `agents/`, `skills/`, and the six category roots whose Memory conventions define a
+  README: design, ontology, reports, history, materials, and backlogs. It does not create `memory/README.md`,
   `learnings/README.md`, a leaf README, or invented learnings or backlog files. After commit and clone,
   `learnings/` and the leaf subject directories vanish until a later file lands.
 - **`rules/` is not bootstrapped.** Every agent contract already treats an absent-or-empty `rules/` as
@@ -77,10 +78,9 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   `.claude/.env`. `tmp/` was dropped entirely rather than ignored, because `scripts/check-codex-plugin-smoke.sh`
   was found to actively create it — one dual-system proposer called the path dead and the other showed it
   live; the smoke script now uses an OS temp directory instead.
-- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/materials/`
-  (and its README and subject dirs), `.gobbi/projects/gobbi/skills/README.md`, and
-  `memory/design/roadmap` until the user runs setup scripts here. Do not create those
-  paths.
+- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/ontology/` and
+  `memory/ontology/README.md`, `memory/design/roadmap`, and `memory/materials/{references,assets,docs,data}`
+  until the user runs setup scripts here. Do not create those paths.
 
 ## Bootstrap ordering
 
@@ -95,15 +95,15 @@ exception, while Git supplies repository-state, commit, and recovery preferences
 only tracked write Gobbi makes outside a session worktree, and it covers only the required layout and its
 ignore file — nothing else.
 
-## Stop conditions
+## Settings check and layout stops
 
-Gobbi Step 1.3 and the selected Cowork or Workflow configuration preflight verify the layout before capturing
-the base. They stop when an ancestor ignores `.gobbi/`; a file is already tracked where the layout requires
-ignored state; the existing `.gobbi/.gitignore` has conflicting or partial bytes; or a required path component
-is a file or symbolic link instead of a directory. Use `git check-ignore --no-index -v` for ignore behavior,
-`git ls-files` for tracked state, exact-byte comparison for the ignore file, and `test -e`, `test -d`, and
-`test -L` for existing path components. See [`learnings/git/tips.md`](../../learnings/git/tips.md) for the
-verification mechanics behind these checks.
+Gobbi Step 1.3 does not probe layout, stop on layout, or run setup `--check`. The SessionStart hook runs that
+runtime's setup `--check` and reports the result. A passing `--check` exits before the setup writer. See
+[Session hooks](../feature/stop-reminder.md).
+
+Layout stops belong to setup, not to the entry skill. The writer stops when an ancestor ignores `.gobbi/` or
+when session or worktree state is tracked. The checker reports ignore, path, and file-versus-link failures.
+See [`learnings/git/tips.md`](../../learnings/git/tips.md) for the ignore-check mechanics.
 
 ## References
 

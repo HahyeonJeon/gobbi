@@ -68,3 +68,17 @@ To run a negative control without losing in-progress work, stage the current edi
 
 **Application:** Before any negative-control revert, stage first. Restoring from HEAD directly has cost
 in-progress edits mid-verification.
+
+## Publish a release without switching checkouts
+
+**Context:** Publishing from a session worktree while the start checkout has `develop` checked out and no
+checkout has `main`.
+
+**Tip:** Run `git merge --ff-only <prep>` in the clean start checkout. It moves `develop` and that checkout's
+index together, so no stale index is left. Build the `main` merge without a checkout:
+`git merge-tree --write-tree main <prep>` must print the prep tree. Then run
+`git commit-tree <tree> -p main -p <prep>` and `git update-ref refs/heads/main <new> <old>`.
+
+**Application:** Fetch again and confirm that the origin branches did not move right before pushing. Moving
+`develop` with `update-ref` instead leaves the stale index described in
+[Updating a branch that another worktree has checked out](mistakes.md#updating-a-branch-that-another-worktree-has-checked-out).

@@ -6,7 +6,7 @@
 > **Purpose:** Provide one language-independent baseline for category-by-category code review across the project, design and development, and conditional product lifecycles<br>
 > **Scope:** Project Fit, Affected Surfaces, Project Structure, Architecture, Design Pattern, Abstraction, Data Model, Public API, Parameters, Modularization, Reusability, Performance, Optimization, Overengineering, Code Complexity, Readability, Vocabulary, Naming Convention, Docstring, Correctness, Testing, Verification, Delivery, Usability, Operations, and Compatibility<br>
 > **Exclusions:** Language-, framework-, platform-, domain-, and specialist-specific expectations unless the applying operation activates their owning source; Security, Privacy, Concurrency, Accessibility, Localization, Dependencies, Build, Packaging, Release, Deployment, Configuration, Observability, Migration, Deprecation, and Retirement remain overlays<br>
-> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Coding Principles](../principles.md), [OOP Principles](../coding-object-oriented-programming/oop-principles.md), [SOLID](../coding-object-oriented-programming/solid.md), [Design Patterns](../coding-object-oriented-programming/design-pattern.md), [Coding Execution](../coding-execution/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
+> **Governing sources:** [Coding Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Coding Principles](../principles.md), [Ontology](../../ontology/SKILL.md), [OOP Principles](../coding-object-oriented-programming/oop-principles.md), [SOLID](../coding-object-oriented-programming/solid.md), [Design Patterns](../coding-object-oriented-programming/design-pattern.md), [Coding Execution](../coding-execution/SKILL.md), the accepted work contract, and applicable project, language, platform, domain, or specialist sources<br>
 > **Context:** Apply the governing sources and target behavior current at the bound review state. Apply Product Lifecycle items only when the code participates in an operating app, service, library, or comparable product. Apply an item that begins "In object-oriented code" only when the code defines or changes classes, interfaces, or inheritance.<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
@@ -153,6 +153,8 @@
 - [ ] A dependency cycle makes unit ownership or change order unclear.
 - [ ] A unit's one-sentence [conceptual definition](../principles.md#modularization) needs "and".
 - [ ] A catch-all unit, such as a `utils`, `common`, or `helpers` directory, holds functions with no shared conceptual definition.
+- [ ] A function that realizes an Ontology Function changes state.
+- [ ] The same state change can be made through more than one public function.
 
 ### Reusability
 

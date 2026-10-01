@@ -5,11 +5,16 @@ skill.
 
 ## Install
 
-Gobbi does not ship a Cursor marketplace plugin. A repository checkout already exposes Cursor participants
-through `.cursor/agents` and `.cursor/skills`.
+This checkout keeps `.cursor/agents` because a Cursor plugin load is not proven. Those files are symlinks
+to the canonical Cursor contracts. It does not keep `.cursor/skills`. Grok scans that directory, so Gobbi
+skill links there register `local:gobbi` beside the plugin's `gobbi:gobbi`.
 
-Start the parent session as `grok-4.7[effort=high]`, then load Gobbi from `.cursor/skills`. The required
-binary is `cursor-agent`, never bare `agent`. Official help uses `agent`; that name is not Gobbi Partner.
+The package still has `.cursor-plugin/plugin.json`, `runtimes/cursor`, and `hooks/cursor-hooks.json` for an
+installed plugin. This checkout does not load that plugin. There is no repo-root
+`.cursor-plugin/marketplace.json`.
+
+Start the parent session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare
+`agent`. Official help uses `agent`; that name is not Gobbi Partner.
 
 ## Create missing project layout
 
@@ -23,14 +28,15 @@ From the consumer worktree:
 Pass `--project-key` when the derived key fails. Pass `--skills-root` and `--agents-root` together when
 the script is not running from a packaged plugin. Check only with `--check`.
 
-Setup never writes under `.cursor/`. Role contracts come from the plugin's declared `runtimes/cursor`.
-It never creates `.cursor/skills` or `.cursor/agents`.
+Setup never writes under `.cursor/`, and it never creates `.cursor/agents` or `.cursor/skills`. This
+checkout's Cursor agents are the local adapter. Cursor plugin load is not the checkout path.
 
 ## After setup
 
-- The Cursor hook is `hooks/cursor-hooks.json` on `sessionStart`, declared by `.cursor-plugin` `hooks`.
-  It fires once per conversation, not once per turn.
-- Cursor participants are the project `.cursor/agents` roles plus official Cursor subagents.
+- For an installed Cursor plugin, `hooks/cursor-hooks.json` runs `check-settings.sh cursor` on
+  `sessionStart` before `remind.sh`, and the check prints JSON `additional_context`. This checkout does
+  not load that plugin, and there is no `.cursor/hooks.json`, so that hook does not run here.
+- Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
 ## Scripts
 

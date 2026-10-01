@@ -1,0 +1,36 @@
+# Interface: a shape that two or more current Object types share.
+# Kind block interfaceType, in the group interfaceTypes. Add: python3 <ontology skill>/scripts/ontology.py add
+#   <file> interfaceType <id>, then add each Property with add <file> property <id>.<propertyId>.
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - Add an Interface only when two or more current Object types share the same shape.
+# - requireImplementation "true" means each implementer holds the Property with the same id and dataType.
+#
+# Relationship: extendsInterfaces and links[].linkedEntityApiName hold its edges. Implementers name it in their
+# implementsInterfaces. relationship is null.
+#
+# Review checklist (validate does not check these):
+# - At least two Object types list the Interface in implementsInterfaces.
+# - Each implementer holds each Property whose requireImplementation is "true", with the same id and dataType.
+# - For each link whose required is "true", each implementer has a Link type side to linkedEntityApiName.
+#
+# Palantir: InterfaceType. properties is maker's key for the read API's propertiesV2. Interface ids are
+# lowerCamelCase here; Palantir writes Interface API names in UpperCamelCase.
+interfaceType:
+  extendsInterfaces:
+    - "{null or: Interface reference}"
+  properties:
+    propertyId:
+      description: "{one sentence}"
+      dataType:
+        type: "{one of: string | integer | decimal | boolean | date | timestamp}"
+      requireImplementation: "{one of: true | false}"
+  links:
+    linkId:
+      description: "{links null or: optional: one sentence}"
+      linkedEntityApiName:
+        type: "{one of: objectTypeApiName | interfaceTypeApiName}"
+        apiName: "{Object type or Interface reference}"
+      cardinality: "{one of: ONE | MANY}"
+      required: "{one of: true | false}"

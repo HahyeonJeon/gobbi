@@ -22,8 +22,23 @@ Evaluation skills are gone without an alias. Canonical skills own live procedure
 Composition matches the [Coding skill family](coding-skill-family.md): callers select matching children
 directly; the root never stores lifecycle state.
 
+## Ideation templates
+
+Authoring Ideation uses Coding Ideation's four flat templates: `discussion-index.md`, `discussion-NN.md`,
+`ideation-index.md`, and `ideation-NN.md`. The writing-design headings stay. Requirements stay in the ideation
+part, and each decision stays in its Design heading. There is no Ideation `ontology.md`. The shared
+[Ontology](../../../skills/ontology/SKILL.md) skill is the facet source.
+
+## Ontology
+
+Execution and Review each still have an `ontology.md` child. Each applies the Ontology facets and kinds to
+documents, sections, and defined terms. The Execution child applies them to what the task creates or changes.
+The Review child lists the questions a reviewer asks. Authoring Execution is still a placeholder; it carries
+one line that applies Ontology. The caller assigns a fresh `authoring-reviewer` for Review.
+
 ## Related designs
 
 - [Coding skill family](coding-skill-family.md)
 - [Design skill family](design-skill-family.md)
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md)
+- [Ontology skill](ontology-skill.md)

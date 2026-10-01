@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/cursor/authoring-reviewer.md

@@ -2,6 +2,7 @@
 
 > **Subject:** Design Ideation work and complete indexed results<br>
 > **Applicability:** General Design Ideation evaluation with a current indexed result<br>
+> **Governing sources:** [Design Ideation](SKILL.md) and [Ontology](../../ontology/SKILL.md)<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -40,10 +41,10 @@
 
 - [ ] A required choice is left open, so two competent consumers could build materially different results from the same result.
 - [ ] Only the successful path is designed; alternative-valid, invalid, failure, and recovery behavior cannot be derived.
-- [ ] An ownership or responsibility boundary is undefined.
+- [ ] A component under Components, or a named visual-language term under Visual Language, lacks one Ontology facet, or a domain concept has no kind or no session unit id, or a control does not name the one Action type it triggers.
 - [ ] Behavior or surfaces that must stay unchanged are not identified.
 - [ ] A contrast, target-size, motion, or focus-order constraint has no design treatment.
-- [ ] A Design heading is missing, merged, reordered, or has no inherited, not-applicable, or material-change classification.
+- [ ] A Design heading is missing, merged, reordered, or does not start with `Inherited` and a pointer, `Not applicable` and a reason, or `Material change`.
 
 ### Result Integrity
 

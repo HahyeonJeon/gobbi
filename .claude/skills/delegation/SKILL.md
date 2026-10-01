@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/delegation/SKILL.md

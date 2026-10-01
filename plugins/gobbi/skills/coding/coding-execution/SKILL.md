@@ -103,13 +103,14 @@ affected set. Repository type or file extension alone does not.
 - Write each slice from its lowest dependency through its caller-visible result, including consistency-bound tests
   and supporting surfaces. As you write each unit, apply the [Simplicity](../principles.md#simplicity) inline test
   and current-caller test first, then the other [Coding Principles](../principles.md).
-- With an Ideation design, build each class and function to its Class and Function Design and caller contract.
-  Read only the `coding-object-oriented-programming` entries that design names, and add no pattern it does
-  not name.
-- When there was no Ideation, design each unit you create with the Coding Principles, and with
-  `coding-object-oriented-programming` when Step 1.3 loaded it. Before you create a directory, file, public class,
-  or public function, write its four [Modularization](../principles.md#modularization) terms and any added
-  abstraction’s force for the handoff, not in source comments.
+- With an Ideation design, build each class and function to its Class and Function Design and caller contract,
+  read only the `coding-object-oriented-programming` entries it names, and add no other pattern. Without one,
+  apply the entries that Step 1.3 loaded, and record each new directory’s, file’s, public class’s, and public
+  function’s [Modularization](../principles.md#modularization) lines and any added abstraction’s force in the
+  handoff before you create it.
+- When a built unit adds or changes a domain unit, such as a new Property, update the session area file as
+  Ontology [Storage](../../ontology/SKILL.md#storage) states, and name the unit id in the handoff. Stop and
+  return to the caller when that change contradicts the accepted design.
 
 #### 3.2 Prove each slice
 
@@ -176,5 +177,6 @@ affected set. Repository type or file extension alone does not.
 |---|---|
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Rules and entries for code that creates or changes classes, interfaces, or inheritance. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, applied while code is written and simplified. |
+| [Ontology](../../ontology/SKILL.md) | Kinds and facets that Step 3.1 records as Modularization lines when there was no Ideation, and the session storage that Step 3.1 updates. |
 | [Coding Review checklist](../coding-review/checklist.md) | Baseline for the Step 4.2 checklist pass. |
 | [Delegation](../../delegation/SKILL.md) | Handoff Content that Step 5.1 returns with the Execution fields. |

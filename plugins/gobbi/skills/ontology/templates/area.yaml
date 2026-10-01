@@ -1,0 +1,14 @@
+# Area file: the header and the eight groups of one ontology/<area>.yaml file.
+# Create: python3 <ontology skill>/scripts/ontology.py new <dir>/<area>.yaml --description "<sentence>"
+# File, id, reference, and YAML rules: the ontology SKILL.md, Record.
+ontology:
+  apiName: "{area name, equal to the file name without .yaml}"
+  description: "{one sentence: the scope in which each name has one meaning}"
+objectTypes: null
+linkTypes: null
+interfaceTypes: null
+functions: null
+actionTypes: null
+automations: null
+processes: null
+securityPolicies: null

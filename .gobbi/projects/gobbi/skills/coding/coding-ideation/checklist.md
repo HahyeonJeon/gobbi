@@ -2,7 +2,7 @@
 
 > **Subject:** Coding Ideation work and complete indexed results<br>
 > **Applicability:** General Coding Ideation evaluation with a current indexed result<br>
-> **Governing sources:** [Coding Ideation](SKILL.md), [Coding Principles](../principles.md), and [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md)<br>
+> **Governing sources:** [Coding Ideation](SKILL.md), [Coding Principles](../principles.md), [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md), and [Ontology](../../ontology/SKILL.md)<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -40,7 +40,7 @@
 
 - [ ] A required choice is left open, so two competent consumers could build materially different results from the same result.
 - [ ] Only the successful path is designed; alternative-valid, invalid, failure, and recovery behavior cannot be derived.
-- [ ] A new or changed directory, file, public class, or public function lacks its Conceptual definition, Responsibility, Boundary, or Relationship.
+- [ ] A new or changed directory, file, public class, or public function lacks one of its [Modularization lines](../principles.md#modularization).
 - [ ] Behavior or surfaces that must stay unchanged are not identified.
 - [ ] A security, performance, concurrency, compatibility, or observability constraint has no design treatment.
 - [ ] A design level was decided before the level it depends on.

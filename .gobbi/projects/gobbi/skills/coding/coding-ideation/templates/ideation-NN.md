@@ -56,13 +56,13 @@
 
 ### Conceptual Definition
 
-{What will be implemented, and the vocabulary for it. Name no directory, file, class, or function.}
+{What will be implemented, and the vocabulary for it: give each term one preferred name, a one-sentence definition, and, for a domain concept, its Ontology kind. List the session ontology unit ids this design adds, changes, or removes. Name no directory, file, class, or function.}
 
 ### Class and Function Design
 
-| Unit | Conceptual definition | Responsibility | Boundary | Relationship | Caller contract |
-|---|---|---|---|---|---|
-| `{public class or function}` | `{one sentence in domain words, with no "and"}` | `{the one decision or fact only it changes}` | `{what it hides and the neighbours it never imports}` | `{what it uses and what uses it}` | `{inputs, outputs, and errors}` |
+| Unit | Conceptual definition | Responsibility | Boundary | Relationship | Properties | Caller contract |
+|---|---|---|---|---|---|---|
+| `{public class or function}` | `{one sentence in domain words, with no "and"}` | `{what only it changes: one decision, or the facts about one concept}` | `{what it hides and the neighbours it never imports}` | `{what it uses, what uses it, and the Ontology units it realizes}` | `{the data it owns, with types, invariants, and stability; or None}` | `{for a realized Function, or when it realizes neither kind: inputs, output, and errors; for a realized Action type: parameters, checks that raise errors, the data it changes, side effects, and allowed callers}` |
 
 {Add one row per new or changed public class and public function. Private helpers get no row. No pattern is the default: for each added pattern, interface, or base class, name the present force it answers and the simpler form it replaces.}
 
@@ -75,8 +75,8 @@
     {file}
 ```
 
-| Unit | Conceptual definition | Responsibility | Boundary | Relationship |
-|---|---|---|---|---|
-| `{directory or file}` | `{one sentence in domain words, with no "and"}` | `{the one decision or fact only it changes}` | `{what it hides and the neighbours it never imports}` | `{what it uses and what uses it}` |
+| Unit | Conceptual definition | Responsibility | Boundary | Relationship | Properties |
+|---|---|---|---|---|---|
+| `{directory or file}` | `{one sentence in domain words, with no "and"}` | `{what only it changes: one decision, or the facts about one concept}` | `{what it hides and the neighbours it never imports}` | `{what it uses, what uses it, and the Ontology units it realizes}` | `{the module-level data it owns, with types and stability; or None}` |
 
 {Draw the new or changed directories and files with one-way `→ uses` arrows, then add one row for each of them.}

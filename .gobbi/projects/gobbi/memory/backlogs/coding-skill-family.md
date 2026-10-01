@@ -66,3 +66,81 @@ selection-table row. "No pattern without a present force" appears in two OOP Pri
 [Coding skill family design](../design/feature/coding-skill-family.md) records Intuitive Public API as the owner
 of public API design. See
 [`coding-object-oriented-programming`](../../skills/coding/coding-object-oriented-programming/SKILL.md).
+
+## Coding Ideation home for cross-cutting design policy
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Decide where Coding Ideation designs cross-cutting policy: failure and recovery, security,
+performance, concurrency, compatibility, and observability. Then give that policy a home in the three-level
+design and its template, or remove the checklist items that expect it. Reword the `ideation-design` bar,
+which still names "work strategy", to match.
+
+**Why backlogged:** It needs a design decision. The v1.3.2 release review raised it (review-01 P4, with I3 for
+the bar wording), and the user deferred it.
+
+**Context:** The [Coding Ideation checklist](../../skills/coding/coding-ideation/checklist.md) still flags
+missing failure and recovery design (`:42`) and missing security, performance, concurrency, compatibility, or
+observability treatment (`:45`). The v1.3.1 `Strategy and Policy` level held this policy. The current levels
+and the template's caller contract (inputs, outputs, and errors) do not. A result that follows the procedure
+can fail its own baseline, or the choice moves into Coding Execution, which stops on an open design choice.
+The bar text is in [Coding Review](../../skills/coding/coding-review/SKILL.md) Step 1.1 and
+[Cowork](../../skills/cowork/SKILL.md). See the [Coding skill family design](../design/feature/coding-skill-family.md).
+
+## Coding Principles placement in the domain-skill standard
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Make the Gobbi Skill domain-skill standard agree with the accepted placement of
+[Coding Principles](../../skills/coding/principles.md) at the Coding root.
+
+**Why backlogged:** The v1.3.2 release review raised it (review-01 P6). The user accepted the placement
+earlier, and deferred the standard change.
+
+**Context:** The [domain-skill standard](../../skills/gobbi-skill/domain-skill/SKILL.md) and its
+[checklist](../../skills/gobbi-skill/domain-skill/checklist.md) reject a policy doc at a domain root. The
+exception is recorded only in the [Coding skill family
+design](../design/feature/coding-skill-family.md#shared-coding-principles).
+
+## Coding consistency notes from the v1.3.2 release review
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Fix seven small consistency gaps:
+
+- Split the four [Coding Ideation checklist](../../skills/coding/coding-ideation/checklist.md) items that each
+  join two signs (`:47,59,68,70`).
+- Mark the Python-specific "Check first" forms in the
+  [`coding-object-oriented-programming`](../../skills/coding/coding-object-oriented-programming/SKILL.md)
+  pattern table as Python examples.
+- Add a `> **Confirmed:**` line to the Coding Ideation `templates/ideation-index.md`, so the checklist item
+  "The result records a design the user did not confirm" can be answered from the result.
+- Align the OOP child's inline-test question, which omits "repeat a rule", with the Simplicity inline test in
+  [Coding Principles](../../skills/coding/principles.md#simplicity).
+- Say where [Coding Execution](../../skills/coding/coding-execution/SKILL.md) Step 3.1 records an added
+  interface or base class when an Ideation design exists.
+- Add a flat-placement item to the [Coding Planning checklist](../../skills/coding/coding-planning/checklist.md)
+  to match the Step 3.4 check.
+- Split the three baseline cases in the first bullet of [Coding Review](../../skills/coding/coding-review/SKILL.md)
+  Step 3.1.
+
+**Why backlogged:** The v1.3.2 release reviews raised these as non-blocking notes (review-01 P10, I1, I2, I4,
+I6, and I7; review-02 I3). The user limited the release fixes to blocking changelog findings and a few small
+consistency fixes.
+
+**Context:** The release review history is in [Gobbi v1.3.2](../reports/note/2026-09-25-gobbi-v1-3-2-release.md).
+
+## Fixed Workflow draft path for Coding Ideation
+
+**Backlogged at:** 2026-09-25T18:00:36Z
+
+**What:** Decide whether Workflow should name one fixed Coding Ideation draft path, such as
+`{session-root}/tmp/ideation/`, instead of any caller-named location under `{session-root}/tmp/`.
+
+**Why backlogged:** The v1.3.2 fix gave Workflow's Coding Ideation call a draft location, so Ideation no longer
+stops on a first run. Review-02 raised the fixed path as an out-of-contract improvement (I2), and the user
+deferred it.
+
+**Context:** [Workflow](../../skills/workflow/SKILL.md) Step 1.5 passes a "caller-named draft location
+under `{session-root}/tmp/`". [Coding Ideation](../../skills/coding/coding-ideation/SKILL.md) stops when no
+draft location is named. See the [Coding skill family design](../design/feature/coding-skill-family.md).

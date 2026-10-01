@@ -122,7 +122,9 @@ PASS as a freezeable whole-branch subject while those files remain dirty.
 CHANGELOG claims Semantic Versioning 2.0.0.
 
 **Tip:** The sequential 1.x minor is 1.3.0. A named skip is a user choice, not evidence that 1.3.0 is
-reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8 exception.
+reserved. Breaking public removals still want either 2.0.0 or an explicit rule 8 exception. A prior release's
+patch exception is not a standing version policy; confirm the choice for the new release and document its
+compatibility changes.
 
 **Application:** Present sequential 1.x, the named skip, and 2.0.0 as distinct options. Recommend from
 SemVer plus project exception history. Keep the user's recorded number after they choose.
@@ -146,3 +148,31 @@ placeholder. The procedure is not written yet."
 
 **Application:** Give each author execution brief its own method and verification. For skill files, load Gobbi
 Skill and the matching type-writing skill. Reread the file before relying on this tip.
+
+## Give parallel domain edits one line form
+
+**Context:** Several authors apply the same change to sibling domains, such as Coding, Authoring, and Design.
+
+**Tip:** Telling a later task to copy an earlier task's exact line forms, such as a placeholder paragraph or a
+checklist item, kept three domains consistent with no correction round.
+
+**Application:** Name the earlier task's lines as the form to copy in each later sibling brief.
+
+## Brief two proposers with opposite stances
+
+**Context:** Getting design options from independent proposers.
+
+**Tip:** Two proposers briefed with opposite stances, such as lean and faithful, gave a clean option set. Their
+overlap became the core design, and their differences became the choices on the user's card.
+
+## Study Palantir Foundry docs from the full page text
+
+**Context:** Studying Palantir Foundry documentation, for example to follow its Ontology standard.
+
+**Tip:** The docs have no `llms.txt`, and the sitemap stops at 5000 URLs, mostly Japanese and Chinese pages.
+WebFetch summaries of some pages came from the sidebar, not the page body.
+
+**Application:** Build a docs index from the sidebar links of each section's overview page. Fetch a page with
+`curl` and read its full text when a claim matters. When the question is "does this follow Palantir's
+standard", include the Ontology REST API reference, which has the machine-readable field names, not only the
+concept pages.

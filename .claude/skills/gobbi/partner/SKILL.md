@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md

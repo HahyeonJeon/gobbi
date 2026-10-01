@@ -63,7 +63,7 @@ context.
   ## Metadata
   **Required**
 
-  - agent: developer|designer|author
+  - agent: coding-leader|coding-planner|coding-executor|coding-reviewer|authoring-leader|authoring-planner|authoring-executor|authoring-reviewer|design-leader|design-planner|design-executor|design-reviewer
   - assignment: <stable assignment identifier>
 
   **Optional**
@@ -158,34 +158,35 @@ context.
   cannot proceed without that item. Omit a Load-now list unless an item is already known to be absolutely
   necessary.
 
-#### Specialist substitution table
+#### Phase-role substitution table
 
-- Use this table to write `## Role` for the specialist. Do not paste the table into the brief as extra
-  sections. Metadata `agent` is `developer`, `designer`, or `author`.
+- Use this table to write `## Role` for the assigned phase role. Do not paste the table into the brief as extra
+  sections. Metadata `agent` is the phase role in the Agent column. The named role matches both the subject
+  domain and the assignment phase.
 
-  | Specialist | Role persona | Role stance | Quality contrast |
-  |---|---|---|---|
-  | Developer | world-best developer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass |
-  | Designer | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass |
-  | Author | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass |
+  | Domain | Role persona | Role stance | Quality contrast | Agent |
+  |---|---|---|---|---|
+  | coding | world-best developer of `{subject}` | current software, named callers, and the briefed phase | world-best software bar, not a generic code pass | coding-leader for ideate, coding-planner for plan, coding-executor for implement, coding-reviewer for review |
+  | authoring | world-best author of `{subject}` | the reader, the current document, and the briefed phase | world-best writing bar, not a generic documentation pass | authoring-leader for ideate, authoring-planner for plan, authoring-executor for implement, authoring-reviewer for review |
+  | design | world-best designer of `{subject}` | the viewer, the current visual work, and proven patterns | world-best visual-design bar, not a generic layout pass | design-leader for ideate, design-planner for plan, design-executor for implement, design-reviewer for review |
 
 - Role sentence frame for every row: `You are a world-best {persona}. Think and work the way a world-best {persona} would: start from {stance}, then raise the result to that bar.`
-- Pick the specialist from the primary subject. Software, including software architecture, is Developer. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is Designer. Durable writing is Author.
+- Pick the domain from the primary subject. Software, including software architecture, is coding. Durable writing is authoring. Visual work — UI, images, video, presentations, reports, and other visual artifacts — is design. Ideate is leader. Plan is planner. Implement is executor. Review is reviewer.
 
 #### Phase substitution table
 
 - Use this table to write `## Task` and to choose skills for the indexes. Do not paste the table into the brief.
-  Phase is not a role.
+  Ideate is leader, plan is planner, implement is executor, and review is reviewer.
 
   | Phase | Skills to index | Minimum result pattern |
   |---|---|---|
   | Ideate | Coding Ideation, Authoring Ideation, or Design Ideation by subject | One accepted design the next phase can follow. Do not implement. |
   | Plan | Coding Planning, Authoring Planning, or Design Planning by subject | One accepted plan the matching execution skill can follow. Do not implement. |
   | Implement | Coding Execution, Authoring Execution, or Design Execution by writer frontier | One accepted change that meets the bar. Do not add extra files or features. |
-  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` by the matching reviewer, with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
 
 - Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
-- For Review, assign a fresh agent of the matching specialist. Do not reuse the producer of the target.
+- For Review, assign a fresh domain reviewer (coding-reviewer, authoring-reviewer, or design-reviewer) that matches the subject domain. Do not reuse the producer of the target.
 
 ### Handoff Content
 

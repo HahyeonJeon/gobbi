@@ -1,0 +1,52 @@
+# Flight sample: the Functions of the flight-operations area. See area.yaml.
+functions:
+  meetsMinimumConnectionTime:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "A check, exact for the current estimated times, of whether an outbound booking leaves at least the connecting airport's minimum connection time after an inbound booking, where the outbound flight is the same passenger's first booked flight scheduled to depart after the inbound flight's scheduled arrival and departs from the inbound flight's arrival airport."
+      aliases:
+        - "MCT check"
+    responsibility: "It owns the comparison of a connection's gap with the connecting airport's minimum connection time."
+    boundary:
+      outside: "The minimum connection time value, which Airport owns, the passenger's personal data, which Passenger owns, and every change to a booking or a flight, which Action types own."
+      neverTouches:
+        - "passenger"
+        - "aircraft"
+    relationship:
+      - type: "link"
+        target: "bookingFlight"
+      - type: "link"
+        target: "bookingPassenger"
+      - type: "link"
+        target: "flightArrivalAirport"
+      - type: "link"
+        target: "flightDepartureAirport"
+      - type: "link"
+        target: "flight.scheduledArrival"
+      - type: "link"
+        target: "flight.scheduledDeparture"
+      - type: "link"
+        target: "flight.estimatedArrival"
+      - type: "link"
+        target: "flight.estimatedDeparture"
+      - type: "link"
+        target: "airport.minimumConnectionTime"
+    function:
+      parameters:
+        inbound:
+          description: "The booking on the arriving flight."
+          dataType:
+            type: "object"
+            objectTypeApiName: "booking"
+          required: "true"
+        outbound:
+          description: "The booking on the departing flight."
+          dataType:
+            type: "object"
+            objectTypeApiName: "booking"
+          required: "true"
+      output:
+        type: "boolean"
+      method: "RULE"

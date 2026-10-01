@@ -10,8 +10,8 @@ skill-type: operation
 Design Review binds and freezes one visual subject, reviews it without a checklist, prepares and runs a
 review-owned working checklist, reconciles, and writes `report.md` plus working `checklist.md`.
 Use it after one exact stable visual subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh matching-specialist agent and does not reuse the producer. It does not modify
-the target, source checklists, or decision state.
+The caller assigns a fresh `design-reviewer` and does not reuse the producer. It does not modify the target,
+source checklists, or decision state.
 
 This skill is a draft adapted from Evaluation.
 
@@ -30,9 +30,9 @@ Problems and verdicts.
 
 ### Keep the review independent and preserve its inputs
 
-The reviewing agent should have no producer role or interest in defending the subject. Write only review-owned
-`report.md` and working `checklist.md` while preserving the target, source checklists, criteria, and
-workflow state.
+The reviewing agent should have no producer role or interest in defending the subject. Write only files the review
+creates, such as `report.md`, `checklist.md`, and check output, while preserving the target, source
+checklists, criteria, and workflow state.
 
 ### Support each judgment with direct evidence
 
@@ -58,7 +58,8 @@ limit causes and verdicts to what the evidence supports.
   criteria.** Record a quality opinion against current project design and vision that never
   changes that verdict.
 - **NEVER change the target, source checklists, supplied criteria, acceptance state, or
-  workflow state.** Write only the review-owned `report.md` and `checklist.md`.
+  workflow state.** Write only files this review creates, such as `report.md`, `checklist.md`, and check
+  output.
 
 ## Procedure
 
@@ -93,8 +94,10 @@ limit causes and verdicts to what the evidence supports.
 #### 1.3 Study the quality bar and freeze the target
 
 - Load, in this order, whichever exist: current design memory under the project's
-  `memory/design/`; project vision, philosophy, architecture, and governing decisions; and
-  accepted session design.
+  `memory/design/`; project vision, philosophy, architecture, and governing decisions;
+  accepted session design; and the session ontology area files in the session's `ontology/`, with their
+  Memory copies under the project's `memory/ontology/`. Then load
+  [Ontology](../../ontology/SKILL.md) and [Design Review ontology](ontology.md).
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
   gate criteria unless the caller listed them.
 - Freeze the exact artifact, state, version, or content hash only when that state is stable;
@@ -235,6 +238,8 @@ limit causes and verdicts to what the evidence supports.
 | Name | Description |
 |---|---|
 | [Checklist](../../checklist/SKILL.md) | Standalone operation for reusable sources, coverage accounts, and the scenario spectrum this review challenges by link. |
-| [Design Review checklist](checklist.md) | Design Review-owned baseline source for reviewing general visual-work quality.
+| [Design Review checklist](checklist.md) | Design Review-owned baseline source for reviewing general visual-work quality. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report with dual-record fields. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules loaded in Step 1.3. |
+| [Design Review ontology](ontology.md) | Domain questions for visual work, loaded in Step 1.3. |
 | [Design Execution](../design-execution/SKILL.md) | Consumes the base checklist for self-review and owns implementation, repair, verification, and the focused task commit. |

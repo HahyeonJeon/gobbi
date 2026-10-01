@@ -1,0 +1,25 @@
+# Unit: the common keys that every unit has, in this order. The kind block follows them.
+# add writes these keys, then the kind block from the kind's template. Their rules: the ontology SKILL.md, Record.
+# relationship holds each edge that no kind-block field holds. parent: this unit exists only for the target;
+# a unit has at most one parent. link: this unit reads or uses the target, such as a Property that a Function
+# reads or that an Action type's submissionCriteria read. child is the reverse of parent: show prints it, and
+# no file stores it.
+unitId:
+  status: "{one of: EXPERIMENTAL | ACTIVE | DEPRECATED}"
+  deprecation:
+    message: "{deprecation null unless status is DEPRECATED: why the unit is deprecated}"
+    replacedBy: "{optional: reference to the unit that replaces it}"
+    deadline: "{date or release after which the id may be removed, such as 2027-03-31}"
+  definition:
+    displayName: "{null or: preferred name, only when it differs from the id in words}"
+    description: "{one sentence that tells a member from a non-member}"
+    aliases:
+      - "{null or: non-preferred term that maps to the preferred name}"
+  responsibility: "{what only this unit owns: one decision, or the facts about one concept}"
+  boundary:
+    outside: "{what is outside the unit, and which unit owns it}"
+    neverTouches:
+      - "{null or: reference to a unit this unit never touches}"
+  relationship:
+    - type: "{relationship null or: one of: parent | link}"
+      target: "{reference to the other unit or Property}"

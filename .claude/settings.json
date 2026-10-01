@@ -6,45 +6,59 @@
   "teammateMode": "in-process",
   "permissions": {
     "allow": [
-      "Skill(gobbi)",
-      "Skill(gobbi:agent-teams)",
+      "Agent(gobbi:manager)",
+      "Agent(gobbi:assistant)",
+      "Agent(gobbi:coding-leader)",
+      "Agent(gobbi:coding-planner)",
+      "Agent(gobbi:coding-executor)",
+      "Agent(gobbi:coding-reviewer)",
+      "Agent(gobbi:authoring-leader)",
+      "Agent(gobbi:authoring-planner)",
+      "Agent(gobbi:authoring-executor)",
+      "Agent(gobbi:authoring-reviewer)",
+      "Agent(gobbi:design-leader)",
+      "Agent(gobbi:design-planner)",
+      "Agent(gobbi:design-executor)",
+      "Agent(gobbi:design-reviewer)",
+      "Skill(gobbi:authoring)",
+      "Skill(gobbi:authoring-execution)",
+      "Skill(gobbi:authoring-ideation)",
+      "Skill(gobbi:authoring-planning)",
+      "Skill(gobbi:authoring-review)",
+      "Skill(gobbi:checklist)",
+      "Skill(gobbi:coding)",
+      "Skill(gobbi:coding-execution)",
+      "Skill(gobbi:coding-ideation)",
+      "Skill(gobbi:coding-object-oriented-programming)",
+      "Skill(gobbi:coding-planning)",
+      "Skill(gobbi:coding-review)",
+      "Skill(gobbi:cowork)",
+      "Skill(gobbi:delegation)",
+      "Skill(gobbi:design)",
+      "Skill(gobbi:design-execution)",
+      "Skill(gobbi:design-ideation)",
+      "Skill(gobbi:design-planning)",
+      "Skill(gobbi:design-review)",
+      "Skill(gobbi:discussion)",
+      "Skill(gobbi:git)",
+      "Skill(gobbi:gobbi)",
       "Skill(gobbi:partner)",
-      "Skill(gobbi:gobbi-setup)",
-      "Skill(gobbi-setup)",
-      "Skill(cowork)",
-      "Skill(workflow)",
-      "Skill(git)",
-      "Skill(principles)",
-      "Skill(delegation)",
-      "Skill(discussion)",
-      "Skill(coding)",
-      "Skill(authoring)",
-      "Skill(design)",
-      "Skill(memory)",
-      "Skill(wrap-up)",
-      "Agent(manager)",
-      "Agent(developer)",
-      "Agent(designer)",
-      "Agent(author)",
-      "Agent(assistant)",
+      "Skill(gobbi:gobbi-skill)",
+      "Skill(gobbi:domain-skill)",
+      "Skill(gobbi:operation-skill)",
+      "Skill(gobbi:preference-skill)",
+      "Skill(gobbi:tool-skill)",
+      "Skill(gobbi:memory)",
+      "Skill(gobbi:ontology)",
+      "Skill(gobbi:principles)",
+      "Skill(gobbi:workflow)",
+      "Skill(gobbi:wrap-up)",
       "WebSearch"
     ],
     "defaultMode": "auto"
   },
   "enabledPlugins": {
-    "codex@openai-codex": true
-  },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.gobbi/projects/gobbi/hooks/stop-remind.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+    "codex@openai-codex": true,
+    "gobbi@gobbi": true
   }
 }

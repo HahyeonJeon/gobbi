@@ -6,7 +6,7 @@
 > **Purpose:** Provide baseline coverage for trustworthy, clear, compact, usable, and maintainable documentation during Authoring Execution self-review and independent review<br>
 > **Scope:** Purpose, scope, change coverage, content, structure, headings, prose, vocabulary, lists, tables, readability, complexity, reader use, reading contexts, and maintenance<br>
 > **Exclusions:** Product behavior beyond the documentation artifact; domain-, document-type-, accessibility-, locale-, safety-, privacy-, and sensitivity-specific expectations not activated by the target<br>
-> **Governing sources:** [Authoring Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), the accepted work contract, and applicable project or document sources<br>
+> **Governing sources:** [Authoring Review](SKILL.md), [Checklist](../../checklist/SKILL.md), [Principles](../../principles/SKILL.md), [Ontology](../../ontology/SKILL.md), [Authoring Review ontology](ontology.md), the accepted work contract, and applicable project or document sources<br>
 > **Context:** Apply the intended readers, reader tasks, document type, affected set, and reading contexts current at the bound review state<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 

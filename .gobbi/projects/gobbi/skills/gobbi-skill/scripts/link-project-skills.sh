@@ -3,8 +3,9 @@
 set -euo pipefail
 export LC_ALL=C
 
-# Initialize missing Claude Code, Codex, Grok, and Cursor skill links for canonical project skills.
-# Existing discovery directories are not migrated or deleted.
+# Refuse a second Gobbi skill tree under .cursor/skills.
+# Grok scans that directory, so those links register local:gobbi beside the plugin.
+# Does not create .claude/skills, .grok/skills, .agents/skills, or .cursor/skills.
 
 fail() {
   printf 'error: %s\n' "$1" >&2
@@ -38,45 +39,6 @@ if [[ -z "$project_name" || "$project_name" == */* ]]; then
   fail 'the Gobbi skills root must use .gobbi/projects/{project}/skills'
 fi
 
-check_discovery_root() {
-  local path="$1"
-
-  if [[ -L "$path" ]]; then
-    fail "discovery path is a symlink: ${path#"$project_root"/}"
-  fi
-  if [[ -e "$path" && ! -d "$path" ]]; then
-    fail "discovery path is not a directory: ${path#"$project_root"/}"
-  fi
-}
-
-check_skill_link() {
-  local link_path="$1"
-  local expected_target="$2"
-  local actual_target
-  local target_summary
-
-  if [[ -L "$link_path" ]]; then
-    actual_target="$(readlink "$link_path")" \
-      || fail "cannot read symlink: ${link_path#"$project_root"/}"
-    if [[ "$actual_target" != "$expected_target" ]]; then
-      target_summary="actual '$actual_target', expected '$expected_target'"
-      fail "symlink target differs for ${link_path#"$project_root"/}: $target_summary"
-    fi
-    if [[ ! -f "$link_path/SKILL.md" ]]; then
-      fail "symlink does not resolve to a skill: ${link_path#"$project_root"/}"
-    fi
-    return
-  fi
-
-  if [[ -d "$link_path" ]]; then
-    return
-  fi
-
-  if [[ -e "$link_path" ]]; then
-    fail "skill discovery entry already exists and is not a symlink: ${link_path#"$project_root"/}"
-  fi
-}
-
 skill_paths=()
 for skill_path in "$skills_root"/*; do
   if [[ -L "$skill_path" ]]; then
@@ -107,50 +69,12 @@ if (( skill_count == 0 )); then
   fail "no skills with SKILL.md were found under $skills_relative"
 fi
 
-for discovery_root in \
-  "$project_root/.claude/skills" \
-  "$project_root/.agents/skills" \
-  "$project_root/.grok/skills" \
-  "$project_root/.cursor/skills"
-do
-  check_discovery_root "${discovery_root%/skills}"
-  check_discovery_root "$discovery_root"
-done
-
+cursor_skills="$project_root/.cursor/skills"
 for skill_path in "${skill_paths[@]}"; do
   skill_name="${skill_path##*/}"
-  expected_target="../../$skills_relative/$skill_name"
-  check_skill_link "$project_root/.claude/skills/$skill_name" "$expected_target"
-  check_skill_link "$project_root/.agents/skills/$skill_name" "$expected_target"
-  check_skill_link "$project_root/.grok/skills/$skill_name" "$expected_target"
-  check_skill_link "$project_root/.cursor/skills/$skill_name" "$expected_target"
+  if [[ -e "$cursor_skills/$skill_name" || -L "$cursor_skills/$skill_name" ]]; then
+    fail ".cursor/skills/$skill_name is a second skill tree"
+  fi
 done
 
-mkdir -p \
-  "$project_root/.claude/skills" \
-  "$project_root/.agents/skills" \
-  "$project_root/.grok/skills" \
-  "$project_root/.cursor/skills"
-
-created_count=0
-for skill_path in "${skill_paths[@]}"; do
-  skill_name="${skill_path##*/}"
-  expected_target="../../$skills_relative/$skill_name"
-
-  for discovery_root in \
-    "$project_root/.claude/skills" \
-    "$project_root/.agents/skills" \
-    "$project_root/.grok/skills" \
-    "$project_root/.cursor/skills"
-  do
-    link_path="$discovery_root/$skill_name"
-    if [[ -L "$link_path" || -d "$link_path" ]]; then
-      continue
-    fi
-    ln -s "$expected_target" "$link_path"
-    printf 'linked %s -> %s\n' "${link_path#"$project_root"/}" "$expected_target"
-    ((created_count += 1))
-  done
-done
-
-printf 'project skills ready: %d skills, %d links created\n' "$skill_count" "$created_count"
+printf 'project skills ready: %d canonical skills, no runtime skill links\n' "$skill_count"

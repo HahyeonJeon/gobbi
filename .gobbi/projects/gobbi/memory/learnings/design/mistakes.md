@@ -42,3 +42,16 @@ over layer grouping, into a rule the user did not ask for. The user reversed bot
 
 **Correction:** Keep the user's exact terms. Offer a participant preference to the user as an option, not as a
 rule. Add a rule only when the user asks for it or names the failure it prevents.
+
+## Patching a teaching example one gap at a time after a global rule
+
+**Context:** A design adds a global rule, such as default deny for access grants, to a model that has a teaching
+example.
+
+**Mistake:** Each fix to the example exposed a new gap: a missing run grant, then link reads, then a role that
+could not see a needed object. Default deny made the example's grant set a complete access model, and each new
+rule widened what it had to cover. The loop took three review iterations.
+
+**Correction:** When a new global rule lands, sweep every unit it now governs, not only the units the design
+touched. Prefer a rule that keeps the example small, such as "a read on the first side covers its link", over
+adding one grant per gap.

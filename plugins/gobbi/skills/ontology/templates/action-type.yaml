@@ -1,0 +1,46 @@
+# Action type: one named change that runs as one unit. Its id is kebab-case, such as delay-flight.
+# Kind block actionType, in the group actionTypes. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   actionType <id>, then add each parameter with add <file> parameter <id>.<parameterId> (parameter.yaml).
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - An Action type applies all its operations or none. When a criterion fails or an operation cannot apply,
+#   nothing changes, and the person sees the failed criterion's configuredFailureMessage.
+# - Each Property that an operation sets gets its value from a propertyArguments entry: a parameter, a static
+#   value, the current user, or the current time. A value computed from others needs a Function, not an Action
+#   type rule.
+# - Side effects run after the operations and are not undone with them.
+#
+# Relationship: operations and parameters name the Object types and Link types it changes or takes. Each
+# Property that a submissionCriteria condition reads is a link in relationship, such as flight.state.
+#
+# Review checklist (validate does not check these):
+# - The Action type is named after one business operation, such as Delay flight, not a field update.
+# - No operation sets a DERIVED or CAPTURED Property.
+# - It is a RUN target of at least one grant, in this area or another; under default deny it cannot run without.
+# - No criterion restates a condition on the person that a grant already holds.
+# - An Action type that an Automation runs is safe to run twice, including its side effects.
+# - relationship has a link to each Property that a condition reads, and to nothing a condition does not read.
+#
+# Palantir: ActionTypeV2. operations take the LogicRule type values and the ActionLogicRule fields.
+# submissionCriteria is the API v2 field name; condition is ours, and configuredFailureMessage is Palantir's.
+actionType:
+  parameters: "{null or: entries: parameter.yaml}"
+  submissionCriteria:
+    - condition: "{submissionCriteria null or: condition that must hold before the change runs}"
+      configuredFailureMessage: "{optional: message the person sees when the condition fails}"
+  operations:
+    - type: "{one of: createObject | modifyObject | deleteObject | createLink | deleteLink}"
+      objectTypeApiName: "{only when type is not createLink or deleteLink: Object type reference}"
+      objectToModify: "{only when type is modifyObject: id of the parameter that holds the object}"
+      objectToDelete: "{only when type is deleteObject: id of the parameter that holds the object}"
+      propertyArguments:
+        propertyId:
+          type: "{propertyArguments only when type is createObject or modifyObject: one of: parameterId | staticValue | currentUser | currentTime}"
+          parameterId: "{only when type is parameterId: id of the parameter that gives the value}"
+          value: "{only when type is staticValue: the value}"
+      linkTypeApiName: "{only when type is createLink or deleteLink: Link type reference}"
+      sourceObject: "{only when type is createLink or deleteLink: id of the parameter for the near end}"
+      targetObject: "{only when type is createLink or deleteLink: id of the parameter for the far end}"
+  sideEffects:
+    - "{null or: effect after the operations, such as a notification}"

@@ -1,0 +1,103 @@
+# Flight sample: the Link types of the flight-operations area. See area.yaml.
+linkTypes:
+  flightAircraft:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The connection from one flight to the aircraft that operates it."
+      aliases:
+        - "tail assignment"
+    responsibility: "This link owns which aircraft operates each flight."
+    boundary:
+      outside: "The aircraft's seat capacity and service state, which Aircraft owns, and the choice of aircraft, which the schedule outside this area makes."
+      neverTouches: null
+    relationship: null
+    linkType:
+      sides:
+        - apiName: "aircraft"
+          objectTypeApiName: "aircraft"
+          cardinality: "ONE"
+        - apiName: "flights"
+          objectTypeApiName: "flight"
+          cardinality: "MANY"
+  flightDepartureAirport:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The connection from one flight to the airport it departs from."
+      aliases: null
+    responsibility: "This link owns which airport each flight departs from."
+    boundary:
+      outside: "The departure times, which Flight owns."
+      neverTouches: null
+    relationship: null
+    linkType:
+      sides:
+        - apiName: "departureAirport"
+          objectTypeApiName: "airport"
+          cardinality: "ONE"
+        - apiName: "departures"
+          objectTypeApiName: "flight"
+          cardinality: "MANY"
+  flightArrivalAirport:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The connection from one flight to the airport it arrives at."
+      aliases: null
+    responsibility: "This link owns which airport each flight arrives at."
+    boundary:
+      outside: "The arrival times, which Flight owns."
+      neverTouches: null
+    relationship: null
+    linkType:
+      sides:
+        - apiName: "arrivalAirport"
+          objectTypeApiName: "airport"
+          cardinality: "ONE"
+        - apiName: "arrivals"
+          objectTypeApiName: "flight"
+          cardinality: "MANY"
+  bookingFlight:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The connection from one booking to the flight it is for."
+      aliases: null
+    responsibility: "This link owns which flight each booking is for."
+    boundary:
+      outside: "The seat and fare class, which Booking owns."
+      neverTouches: null
+    relationship: null
+    linkType:
+      sides:
+        - apiName: "flight"
+          objectTypeApiName: "flight"
+          cardinality: "ONE"
+        - apiName: "bookings"
+          objectTypeApiName: "booking"
+          cardinality: "MANY"
+  bookingPassenger:
+    status: "ACTIVE"
+    deprecation: null
+    definition:
+      displayName: null
+      description: "The connection from one booking to the passenger who holds it."
+      aliases: null
+    responsibility: "This link owns which passenger holds each booking."
+    boundary:
+      outside: "The passenger's personal data, which Passenger owns."
+      neverTouches: null
+    relationship: null
+    linkType:
+      sides:
+        - apiName: "passenger"
+          objectTypeApiName: "passenger"
+          cardinality: "ONE"
+        - apiName: "bookings"
+          objectTypeApiName: "booking"
+          cardinality: "MANY"

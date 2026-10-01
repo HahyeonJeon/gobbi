@@ -1,20 +1,16 @@
 # Dev Tips
 
-## Follow-surface skill paths are directory or file symlinks, not hardlinks
+## This checkout has no second skill tree
 
 **Context:** Editing a skill through `.grok/skills/<name>`, `.agents/skills/<name>`,
 `.cursor/skills/<name>`, or `.claude/skills/<name>`.
 
-**Tip:** `.grok/skills/<name>`, `.agents/skills/<name>`, and `.cursor/skills/<name>`
-are directory symlinks (git mode `120000`) to the canonical skill directory. A Write
-through those paths edits the canonical file (same inode). `.claude/skills/<name>/`
-is a real directory; `SKILL.md` is a file symlink. A Write that replaces that file
-forks a regular copy and leaves the canonical file unchanged. These are not
-hardlinks: canonical `delegation/SKILL.md` has `nlink` 1.
+**Tip:** This checkout does not keep those follow-surface skill trees. Claude, Codex, and Grok load skills
+from `plugins/gobbi`. `.cursor/skills` is not a second skill tree. The checker fails when
+`.cursor/skills/gobbi` is present. The package copy is not a symlink to the canonical skill.
 
-**Application:** Edit the canonical path, or confirm the follow path is a directory
-symlink before writing. Do not assume a Claude follow-surface Write updates the
-canonical skill.
+**Application:** Edit the canonical skill, then project the package. Do not recreate `.cursor/skills`,
+`.grok/skills`, `.claude/skills`, or `.agents/skills` as a load path.
 
 ## Prove a generated identifier by running the tool that consumes it
 

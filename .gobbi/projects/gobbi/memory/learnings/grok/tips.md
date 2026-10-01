@@ -19,8 +19,22 @@ capture files are read. This host cap is not Grok's Partner
 **Context:** Choosing a Grok hook event to feed reminder or other text to the model.
 
 **Tip:** Grok ignores stdout for SessionStart and UserPromptSubmit. Stop is the event that can inject. Emit
-`hookSpecificOutput.additionalContext` only. Identify Grok by a non-empty `GROK_HOOK_EVENT`. SessionStart
-fires once per session and cannot re-inject on a later user turn.
+`hookSpecificOutput.additionalContext` only. The hook file names the runtime. The script does not probe for a
+host. SessionStart fires once per session and cannot inject text on a later user turn.
 
-**Application:** Do not add a SessionStart hook to inject text on Grok. Use Stop and a per-turn lock. See
-[stop reminder](../../design/feature/stop-reminder.md).
+**Application:** Grok SessionStart prints nothing. Store one settings report there. The next eligible Stop
+shows it once and then deletes it. Do not use a per-turn lock. See
+[Session hooks](../../design/feature/stop-reminder.md).
+
+## Grok roles load from the plugin
+
+**Context:** Launching a Gobbi role on Grok.
+
+**Tip:** This checkout loads Grok from `plugins/gobbi` through `.grok/plugins/gobbi`. It does not keep
+`.grok/agents`, `.grok/skills`, or `.grok/hooks`. A 2026-09-26 probe of Grok 1.0.41 found local `--agent`
+files only in `.grok/agents/`, and an unknown name fell back to `grok-build-plan` with no error. That
+directory is not this checkout's load path.
+
+**Application:** Do not add `.grok/agents` as the load path. After a launch that still uses `--agent`, read
+`agent_name` in the saved session's `summary.json`. See
+[Grok silent fallback](../../backlogs/project.md#grok-silent-fallback-for-an-unknown-agent-name).

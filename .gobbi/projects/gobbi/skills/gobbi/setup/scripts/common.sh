@@ -5,7 +5,12 @@ set -uo pipefail
 set -C # noclobber: the shell itself refuses to truncate an existing file
 export LC_ALL=C
 
-roles=(manager developer designer author assistant)
+roles=(
+  manager assistant
+  coding-leader coding-planner coding-executor coding-reviewer
+  authoring-leader authoring-planner authoring-executor authoring-reviewer
+  design-leader design-planner design-executor design-reviewer
+)
 permission_skills=(gobbi principles discussion delegation)
 
 # The canonical .gobbi/.gitignore, verbatim from gobbi/SKILL.md Step 1.2. Both patterns carry a middle
@@ -16,12 +21,18 @@ projects/*/worktrees/
 '
 
 # The minimum .claude/settings.json, created only when the file is absent. Namespaced, because a plugin
-# consumer's entries read Agent(gobbi:<role>) and Skill(gobbi:<name>).
+# consumer's entries read Agent(gobbi:<role>) and Skill(gobbi:<name>). It holds one Agent entry per roles
+# element and one Skill entry per permission_skills element; scripts/prove-gobbi-setup.sh proves both.
 minimum_claude_settings='{
   "permissions": {
     "allow": [
-      "Agent(gobbi:manager)", "Agent(gobbi:developer)", "Agent(gobbi:designer)",
-      "Agent(gobbi:author)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:manager)", "Agent(gobbi:assistant)",
+      "Agent(gobbi:coding-leader)", "Agent(gobbi:coding-planner)",
+      "Agent(gobbi:coding-executor)", "Agent(gobbi:coding-reviewer)",
+      "Agent(gobbi:authoring-leader)", "Agent(gobbi:authoring-planner)",
+      "Agent(gobbi:authoring-executor)", "Agent(gobbi:authoring-reviewer)",
+      "Agent(gobbi:design-leader)", "Agent(gobbi:design-planner)",
+      "Agent(gobbi:design-executor)", "Agent(gobbi:design-reviewer)",
       "Skill(gobbi:gobbi)", "Skill(gobbi:principles)", "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)"
     ]
@@ -454,6 +465,7 @@ report_settings_gaps() {
   local missing=()
   local role
   local skill
+  local expected=$((${#roles[@]} + ${#permission_skills[@]}))
 
   for role in "${roles[@]}"; do
     if ! has_claude_permission "Agent($role)" "Agent(gobbi:$role)" "$settings"; then
@@ -467,9 +479,10 @@ report_settings_gaps() {
   done
 
   if ((${#missing[@]} == 0)); then
-    printf 'left untouched; all 12 expected entries present'
+    printf 'left untouched; all %d expected entries present' "$expected"
   else
-    printf 'left untouched; %d of 12 expected entries missing: %s' "${#missing[@]}" "${missing[*]}"
+    printf 'left untouched; %d of %d expected entries missing: %s' \
+      "${#missing[@]}" "$expected" "${missing[*]}"
   fi
 }
 
@@ -497,7 +510,8 @@ write_claude_settings() {
     return 1
   fi
   if jq -e 'type == "object"' "$absolute" >/dev/null 2>&1; then
-    record "$relative" created "minimum object; 5 Agent + 6 Skill entries"
+    record "$relative" created \
+      "minimum object; ${#roles[@]} Agent + ${#permission_skills[@]} Skill entries"
     return 0
   fi
   record "$relative" stopped "the written file is not a JSON object"
@@ -574,6 +588,7 @@ finish() {
     exit 1
   fi
   printf 'PASS prerequisites: %d passed, %d warnings, 0 failed\n' "$pass_count" "$warn_count"
+  exit 0
 }
 
 resolve_script_directory() {
@@ -835,6 +850,8 @@ append_shared_targets() {
     ".gobbi/projects/$project_key/memory/design/feature"
     ".gobbi/projects/$project_key/memory/design/process"
     ".gobbi/projects/$project_key/memory/design/roadmap"
+    ".gobbi/projects/$project_key/memory/ontology"
+    ".gobbi/projects/$project_key/memory/ontology/README.md"
     ".gobbi/projects/$project_key/memory/learnings"
     ".gobbi/projects/$project_key/memory/reports"
     ".gobbi/projects/$project_key/memory/reports/README.md"
@@ -883,6 +900,8 @@ write_shared_layout() {
   ensure_directory ".gobbi/projects/$project_key/memory/design/feature" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/design/process" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/design/roadmap" "real directory"
+  ensure_directory ".gobbi/projects/$project_key/memory/ontology" "real directory"
+  create_empty_file ".gobbi/projects/$project_key/memory/ontology/README.md"
   ensure_directory ".gobbi/projects/$project_key/memory/learnings" "real directory"
   ensure_directory ".gobbi/projects/$project_key/memory/reports" "real directory"
   create_empty_file ".gobbi/projects/$project_key/memory/reports/README.md"
@@ -932,7 +951,7 @@ check_shared_layout() {
   check_real_directory ".gobbi/projects/$project_key/agents directory" "$gobbi_project/agents"
   check_real_directory ".gobbi/projects/$project_key/skills directory" "$gobbi_project/skills"
   check_real_directory ".gobbi/projects/$project_key/memory directory" "$gobbi_project/memory"
-  for category in design learnings reports history materials backlogs; do
+  for category in design ontology learnings reports history materials backlogs; do
     check_real_directory ".gobbi/projects/$project_key/memory/$category directory" \
       "$gobbi_project/memory/$category"
   done
@@ -943,8 +962,8 @@ check_shared_layout() {
       "$gobbi_project/memory/$subject"
   done
   for stub in agents/README.md skills/README.md memory/design/README.md \
-    memory/reports/README.md memory/history/README.md memory/materials/README.md \
-    memory/backlogs/README.md; do
+    memory/ontology/README.md memory/reports/README.md memory/history/README.md \
+    memory/materials/README.md memory/backlogs/README.md; do
     check_readable_file ".gobbi/projects/$project_key/$stub" "$gobbi_project/$stub"
   done
 }
@@ -955,11 +974,6 @@ check_claude() {
   check_real_directory ".claude directory" "$project_root/.claude"
   check_readable_file ".claude/CLAUDE.md" "$project_root/.claude/CLAUDE.md"
   check_readable_file ".claude/settings.json" "$settings"
-  check_readable_file ".claude/skills/gobbi/SKILL.md" "$project_root/.claude/skills/gobbi/SKILL.md"
-  check_readable_file ".claude/skills/principles/SKILL.md" "$project_root/.claude/skills/principles/SKILL.md"
-  for role in "${roles[@]}"; do
-    check_readable_file ".claude/agents/$role.md" "$project_root/.claude/agents/$role.md"
-  done
   if command -v jq >/dev/null 2>&1 && [[ -f "$settings" && -r "$settings" ]] \
     && jq -e 'type == "object"' "$settings" >/dev/null 2>&1; then
     if jq -e '(.permissions.allow | type) == "array"' "$settings" >/dev/null 2>&1; then
@@ -970,7 +984,7 @@ check_claude() {
           fail "Claude Agent permission is missing: $role"
         fi
       done
-      for skill in gobbi principles discussion delegation; do
+      for skill in "${permission_skills[@]}"; do
         if has_claude_permission "Skill($skill)" "Skill(gobbi:$skill)" "$settings"; then
           pass "Claude Skill permission: $skill"
         else
@@ -990,8 +1004,22 @@ check_codex() {
   local role agent_path
   check_real_directory ".codex directory" "$project_root/.codex"
   check_readable_file ".codex/AGENTS.md" "$project_root/.codex/AGENTS.md"
-  check_readable_file ".codex/config.toml" "$project_root/.codex/config.toml"
   check_real_directory ".codex/agents directory" "$project_root/.codex/agents"
+  if [[ -e "$project_root/.codex/hooks.json" || -L "$project_root/.codex/hooks.json" ]]; then
+    fail ".codex/hooks.json is a second hook"
+  else
+    pass ".codex/hooks.json is absent"
+  fi
+  if [[ -e "$project_root/.agents/agents" || -L "$project_root/.agents/agents" ]]; then
+    fail ".agents/agents is a second role tree"
+  else
+    pass ".agents/agents is absent"
+  fi
+  if [[ -e "$project_root/.agents/skills" || -L "$project_root/.agents/skills" ]]; then
+    fail ".agents/skills is a second skill tree"
+  else
+    pass ".agents/skills is absent"
+  fi
   for role in "${roles[@]}"; do
     agent_path="$project_root/.codex/agents/$role.toml"
     check_readable_file ".codex/agents/$role.toml" "$agent_path"
@@ -1000,15 +1028,13 @@ check_codex() {
 }
 
 check_grok() {
-  local role
+  local plugin="$project_root/.grok/plugins/gobbi"
   check_real_directory ".grok directory" "$project_root/.grok"
-  check_real_directory ".grok/skills directory" "$project_root/.grok/skills"
-  check_readable_file ".grok/skills/gobbi/SKILL.md" "$project_root/.grok/skills/gobbi/SKILL.md"
-  check_readable_file ".grok/skills/principles/SKILL.md" "$project_root/.grok/skills/principles/SKILL.md"
-  check_real_directory ".grok/agents directory" "$project_root/.grok/agents"
-  for role in "${roles[@]}"; do
-    check_readable_file ".grok/agents/$role.md" "$project_root/.grok/agents/$role.md"
-  done
+  if [[ -d "$plugin" && -r "$plugin/.grok-plugin/plugin.json" ]]; then
+    pass ".grok/plugins/gobbi"
+  else
+    fail ".grok/plugins/gobbi is missing or unreadable"
+  fi
   check_cli grok
 }
 
@@ -1019,8 +1045,11 @@ check_cursor() {
     agent_path="$project_root/.cursor/agents/$role.md"
     check_readable_file ".cursor/agents/$role.md" "$agent_path"
   done
-  check_readable_file ".cursor/skills/gobbi/SKILL.md" "$project_root/.cursor/skills/gobbi/SKILL.md"
-  check_readable_file ".cursor/skills/principles/SKILL.md" "$project_root/.cursor/skills/principles/SKILL.md"
+  if [[ -e "$project_root/.cursor/skills/gobbi" || -L "$project_root/.cursor/skills/gobbi" ]]; then
+    fail ".cursor/skills/gobbi is a second skill tree"
+  else
+    pass ".cursor/skills/gobbi is absent"
+  fi
   warn "Cursor parent session must start as grok-4.7[effort=high]"
   check_cli cursor-agent
 }

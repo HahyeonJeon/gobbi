@@ -38,15 +38,7 @@ Principles is the behavioral foundation every Gobbi agent must follow. It applie
 
 ---
 
-## Principle 5 — Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR.
-
-- *Use plain, exact language:* Use common words ("use" not "utilize"), keep technical terms exact, define jargon at first use, and state meaning literally rather than through metaphor.
-- *Write short, direct sentences:* Keep one idea per sentence, usually 15–20 words, split long multi-clause thoughts, and remove filler and hedging.
-- *Stop before ambiguity:* Never cut words needed for understanding, especially in warnings, irreversible actions, and multi-step instructions.
-
----
-
-## Principle 6 — Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS.
+## Principle 5 — Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS.
 
 - *Trace and fix the root:* Trace each cause to the cause beneath it until changing the root, rather than a symptom or intermediate cause, would end the entire failure.
 - *Reproduce it, before and after:* Reproduce the failure before the change and verify afterward that the fix removes rather than hides it.
@@ -54,7 +46,7 @@ Principles is the behavioral foundation every Gobbi agent must follow. It applie
 
 ---
 
-## Principle 7 — Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES.
+## Principle 6 — Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES.
 
 - *List the affected files first:* Before editing, find every dependent or consistency-bound file, including the target, callers, mirrors, tables, tests, and documents, then treat that set as the edit unit.
 - *Plan CRUD and 5W1H:* Across the affected set, map **Create**, consistency **Read**, exact-line **Update**, **Delete**, and co-touches, then answer who depends, what changes, when it takes effect, where else it reaches, why it changes, and how it propagates before saving.
@@ -62,7 +54,7 @@ Principles is the behavioral foundation every Gobbi agent must follow. It applie
 
 ---
 
-## Principle 8 — Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK.
+## Principle 7 — Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK.
 
 - *Know the scope's lower bound:* Treat every agreed item, not just easy ones, as required because scope is both a floor and a ceiling.
 - *Finish before you call it done:* Report completion only after delivering every in-scope item, because a partial result is not done.

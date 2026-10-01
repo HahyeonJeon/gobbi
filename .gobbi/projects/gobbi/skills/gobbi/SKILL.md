@@ -105,6 +105,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
       │   │   ├── feature/
       │   │   ├── process/
       │   │   └── roadmap/
+      │   ├── ontology/README.md    tracked, 0-byte
       │   ├── learnings/
       │   ├── reports/
       │   │   ├── README.md         tracked, 0-byte
@@ -136,16 +137,14 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   [grok.md](setup/grok.md) tell how to create the namespace, Memory tree, placeholders, settings, and Codex
   roles; they create no `sessions/`, `worktrees/`, marker, or `rules/` path.
 
-#### 1.3 Stop on an unsafe layout
+#### 1.3 Leave the settings check to the hook
 
-- Probe local layout paths and ignore ownership with `test` and `git check-ignore`. Do not invoke setup or
-  a prerequisite script.
-- Stop before routing when those probes show a partial, contradictory, unreadable, or unsafe layout, and
-  point the user at the matching setup guide: [claude.md](setup/claude.md), [codex.md](setup/codex.md),
-  [cursor.md](setup/cursor.md), or [grok.md](setup/grok.md).
-- For plugin consumers, recommend namespaced permissions such as `Agent(gobbi:developer)` and
-  `Skill(gobbi:principles)`; repository-local Claude skills use bare names. Partner availability belongs to
-  the [Partner Manual](partner/SKILL.md#availability).
+- The SessionStart hook owns the Gobbi settings check. This skill does not probe layout, stop on
+  layout, or run setup `--check`.
+- Grok stores that check at SessionStart. The next Stop shows it once.
+- This checkout loads Claude from the plugin and does not register repository-local Claude skills.
+  This checkout does not load the Cursor plugin, so the package Cursor hook does not run here.
+- Partner availability belongs to the [Partner Manual](partner/SKILL.md#availability).
 
 #### 1.4 Load the entry foundation
 

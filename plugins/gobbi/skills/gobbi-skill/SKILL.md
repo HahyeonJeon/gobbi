@@ -115,9 +115,8 @@ skill-type: domain|operation|tool|preference
   operation, Preferences for a preference, Manual for a tool, or the Child Skills table for a domain root.
 - Keep discovery commands and applicability out of `description`; state applicability in the Intro and in a
   domain root's routing table.
-- When the project needs local discovery entries, run
-  [`link-project-skills.sh`](scripts/link-project-skills.sh) from the canonical Gobbi Skill. It creates missing
-  top-level links for Claude Code, Codex, Grok, and Cursor and stops instead of migrating or replacing an existing entry.
+- Do not link project skills into `.cursor/skills`, `.claude/skills`, `.grok/skills`, or `.agents/skills`.
+  Grok scans `.cursor/skills`, so those links become a second Gobbi skill source beside the plugin.
 
 ### Phase 3 — Review and Improve the Skill
 

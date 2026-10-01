@@ -1,0 +1,26 @@
+# Security policy: who may read, run, or propose what, under which condition.
+# Kind block securityPolicy, in the group securityPolicies. Add: python3 <ontology skill>/scripts/ontology.py
+#   add <file> securityPolicy <id>
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - Each permission allows one thing, and anything no grant allows is denied. READ: see the target's members.
+#   RUN: run the target Action type, or call the target Function. PROPOSE: submit a run of the target Action type
+#   that applies only after a person with RUN on it accepts it.
+# - A grant filters reads only. A Function result, a notification, or an export keeps the guard only when the
+#   unit that makes it says so in its boundary.
+#
+# Relationship: each grant names its targets. relationship is null unless an edge has no field here.
+#
+# Review checklist (validate does not check these):
+# - A PROPOSE grant targets only Action types, and a RUN grant only Action types and Functions.
+# - No agent or automation role holds a grant that the person or owner it acts for lacks.
+#
+# Palantir: no Ontology API schema. grants, role, permission, targets, and condition are ours.
+securityPolicy:
+  grants:
+    - role: "{person role, agent role, or an Automation's runsAs role}"
+      permission: "{one of: READ | RUN | PROPOSE}"
+      targets:
+        - "{reference to a unit the role may read, run, or propose}"
+      condition: "{optional: condition under which the grant applies}"

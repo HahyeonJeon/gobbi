@@ -16,8 +16,8 @@ This file records live Review facts for Memory readers. Do not copy a live SOP h
 - One `VERDICT:` line from in-contract Problems, sufficient evidence, and caller-supplied criteria.
 - Quality opinion uses `meets-design`, `mixed`, `does-not-meet`, or `not-available` and never changes the gate.
 - Out-of-contract Problems escalate. After completed `P1 · User Review` they do not reopen design.
-- A runtime directory that holds only one of `report.md` and `checklist.md` is incomplete evidence and never
-  PASS input.
+- A `<class>/<runtime>/` directory that holds only one of `report.md` and `checklist.md` is incomplete evidence
+  and never PASS input.
 - Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and
   `grok`.
 
@@ -44,10 +44,16 @@ Workflow:
 ```text
 <record-directory>/review/iteration-N/
   gate.md
-  <runtime>/
-    report.md
-    checklist.md
+  <class>/
+    <runtime>/
+      report.md
+      checklist.md
 ```
+
+Each review has one class directory per artifact class the subject contains. Class tokens are `code`,
+`docs`, and `design`. Each class gets one fresh matching reviewer and one Partner wrapper per remaining
+runtime. The aggregate gate passes only when every class passes. A class passes only when every complete
+pair in its directory passes. A class with no complete pair does not pass.
 
 `<record-directory>` for this layout is `3-execution/task-NN-slug/` or `wrap-up/`. Ideation and
 Planning write a receipt only and do not create this review tree. Receipt stays
@@ -55,7 +61,7 @@ Planning write a receipt only and do not create this review tree. Receipt stays
 reviewer does not.
 
 Cowork has no `gate.md` and no Workflow iteration tree. One unique caller-named directory below
-`tmp/` is the aggregation parent, with the same per-runtime children.
+`tmp/` is the aggregation parent, with the same `<class>/<runtime>/` children and every-class gate.
 
 Remaining-runtime reviewer briefs name write set `runtime-directory` and `writing-path` as the
 absolute `report.md`. Missing write set still means `writing-path-only` and cannot complete the

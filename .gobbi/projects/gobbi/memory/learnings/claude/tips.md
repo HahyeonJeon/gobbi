@@ -47,15 +47,16 @@ a stable public mechanism — it could disappear without notice.
 
 **Application:** Use this only as a fallback signal, never as the primary acquisition step.
 
-## Claude Stop injects through additionalContext only
+## Claude hook text uses additionalContext
 
-**Context:** Writing a Claude Code Stop hook that should continue the model with extra text.
+**Context:** Writing the Claude Gobbi hook payload.
 
-**Tip:** Claude Code continues from `hookSpecificOutput.additionalContext` only. Codex
-`{decision: "block", reason}` is the wrong payload on Claude.
+**Tip:** Claude SessionStart and UserPromptSubmit use `hookSpecificOutput.additionalContext`, with
+`hookEventName` `SessionStart` or `UserPromptSubmit`. The hook file names the runtime. The script does not
+probe stdin for a host.
 
-**Application:** Share the additionalContext payload with Grok. Detect Claude when `GROK_HOOK_EVENT` is unset
-and `turn_id` is absent. See [stop reminder](../../design/feature/stop-reminder.md).
+**Application:** Do not register a repository `.claude` Stop hook beside the plugin, and do not detect Claude
+by the absence of `GROK_HOOK_EVENT`. See [Session hooks](../../design/feature/stop-reminder.md).
 
 ## `/plugin marketplace add` creates a full git clone
 
@@ -64,3 +65,29 @@ and `turn_id` is absent. See [stop reminder](../../design/feature/stop-reminder.
 **Tip:** `~/.claude/plugins/marketplaces/<name>/` is a full git clone of the marketplace source repository,
 created automatically by `/plugin marketplace add`. Every consumer of that marketplace gets one, and it
 satisfies the same sentinel checks a genuine plugin install does.
+
+## Claude Code refuses a subagent's report-file write
+
+**Context:** A review brief tells a Claude Code subagent, such as the `author` role, to write its own
+`report.md` and `checklist.md`.
+
+**Tip:** The harness often refuses the `report.md` write with "Subagents should return findings as text, not
+write report files". The refusal is not uniform. The `checklist.md` write is usually allowed, and in one review
+a reviewer's report write succeeded while a second reviewer's was refused.
+
+**Application:** Run Review through the registered reviewer role types; new role types register only after a
+session restart. Ask every Claude Code reviewer to return its full report in its Handoff, capped at about 40 KB.
+The [Review](../../design/process/evaluation.md#ownership) design treats a write denial as `BLOCKED` and forbids
+a manager scribe. Save a report verbatim, marked manager-saved, only when the user allows it. See
+[Review report persistence](../../backlogs/evaluation.md#review-report-persistence-when-claude-code-refuses-the-report-write).
+
+## A full model id works in Claude agent frontmatter
+
+**Context:** Pinning a Claude role contract to one exact model instead of an alias such as `opus`.
+
+**Tip:** Claude Code accepts a full model id such as `model: claude-opus-5-5` in agent frontmatter.
+`claude -p --agent assistant --output-format json` reports `modelUsage` keyed by that id, which proves the
+pin took effect.
+
+**Application:** Use that `modelUsage` key to verify a pin after changing a Claude role contract. The
+current pins are in [Role model pins](../../design/process/role-model-pins.md).

@@ -1,0 +1,25 @@
+# Object type: a real-world thing or event with its own identity, such as one scheduled flight.
+# Kind block objectType, in the group objectTypes. Add: python3 <ontology skill>/scripts/ontology.py add <file>
+#   objectType <id>, then add each Property with add <file> property <id>.<propertyId> (property.yaml).
+# Common keys, placeholders, ids, references, and YAML rules: the ontology SKILL.md, Record.
+#
+# Rules:
+# - primaryKey names one Property that is NOT_NULLABLE, STABLE, and not DERIVED. When no captured value
+#   identifies a member alone, add one captured id Property, such as flightId.
+# - titleProperty names the Property that people see as a member's name.
+# - A connection that carries its own data is an Object type, not a Link type.
+#
+# Relationship: implementsInterfaces holds each Interface it implements. Its Link types hold its links. Other
+# edges go in relationship.
+#
+# Review checklist (validate does not check these):
+# - Split the unit when a Property's meaning depends on another Property's value, or most members leave it empty.
+#
+# Palantir: ObjectTypeV2, with implementsInterfaces from ObjectTypeFullMetadata.
+objectType:
+  pluralDisplayName: "{plural preferred name, such as Flights}"
+  primaryKey: "{id of the Property that identifies one member}"
+  titleProperty: "{id of the Property that names a member for people}"
+  properties: "{entries: property.yaml}"
+  implementsInterfaces:
+    - "{null or: Interface reference}"

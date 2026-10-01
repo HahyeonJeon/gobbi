@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/gobbi-skill/tool-skill/checklist.md

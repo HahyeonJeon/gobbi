@@ -11,3 +11,6 @@ Authoring Execution implements and verifies one accepted writing task under a se
 Use it when one accepted task has a settled writing design and a writer frontier that includes durable prose.
 
 This file is a placeholder. The procedure is not written yet.
+
+Apply [Ontology](../../ontology/SKILL.md) through [Authoring Execution ontology](ontology.md) to each document,
+section, and defined term that the task creates or changes.

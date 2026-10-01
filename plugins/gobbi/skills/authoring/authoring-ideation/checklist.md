@@ -2,6 +2,7 @@
 
 > **Subject:** Authoring Ideation work and complete indexed results<br>
 > **Applicability:** General Authoring Ideation evaluation with a current indexed result<br>
+> **Governing sources:** [Authoring Ideation](SKILL.md) and [Ontology](../../ontology/SKILL.md)<br>
 > **Checkbox meaning:** Check an item when evidence shows the problem is present.
 
 ## Project Lifecycle
@@ -38,10 +39,10 @@
 
 - [ ] A required choice is left open, so two competent consumers could build materially different results from the same result.
 - [ ] Only the successful path is designed; alternative-valid, invalid, failure, and recovery behavior cannot be derived.
-- [ ] An ownership or responsibility boundary is undefined.
+- [ ] A new or changed document or section under Structure and Claims, or a defined term under Naming and Vocabulary, lacks one Ontology facet, or a domain concept has no kind or no session unit id.
 - [ ] Behavior or surfaces that must stay unchanged are not identified.
 - [ ] An accessibility, localization, or publication constraint has no design treatment.
-- [ ] A writing-design level was decided before the level it depends on, or a level is neither decided nor classified as inherited, not applicable, or a material change.
+- [ ] A writing-design level was decided before the level it depends on, or a Design heading does not start with `Inherited` and a pointer, `Not applicable` and a reason, or `Material change`.
 - [ ] A new term is introduced where the project already uses a term for the same thing.
 
 ### Result Integrity
