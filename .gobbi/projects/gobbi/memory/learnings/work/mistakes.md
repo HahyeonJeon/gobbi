@@ -277,3 +277,13 @@ not check for them, and the user had to correct it.
 **Correction:** The user's standing preference is that skill examples and descriptions are project-agnostic.
 State this in every skill-writing brief. At acceptance, grep the new skill text for the project's own names and
 paths.
+
+## Assigning the Partner wrapper to the assistant role
+
+**Context:** Cowork launches a named Partner through one local wrapper subagent.
+
+**Mistake:** The wrapper was the assistant role. That role is a narrow lookup. It sat for minutes with no tool
+call, so the Codex command never started. A second wrapper, a general agent, ran the same command.
+
+**Correction:** Spawn the wrapper as a general agent whose only job is the frozen command. Do not use
+assistant, a domain leader, or a domain executor for that launch.

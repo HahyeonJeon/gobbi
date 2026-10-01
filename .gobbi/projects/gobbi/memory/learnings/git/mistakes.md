@@ -35,3 +35,15 @@ old tree, so `git status` shows the new commit's files as modified or deleted.
 **Correction:** That dirtiness is the other checkout's stale index, not a second copy of the work.
 Do not restore, reset, or check out files there from the session. Leave it until a separately
 authorized tidy of that checkout.
+
+## A relative delete from the worktree can hit the base checkout
+
+**Context:** A specialist edits a linked worktree whose skills are reached by relative symlinks, while the
+start checkout stays on the base branch.
+
+**Mistake:** A relative delete removed Authoring and Design Ideation files in the base checkout. The specialist
+restored those paths from `HEAD`. The base checkout was clean afterward, and the old files were present again.
+
+**Correction:** Name every write and delete as an absolute path under the session worktree. After the
+specialist returns, run `git status` on the base checkout and confirm the files that must stay there still
+exist.
