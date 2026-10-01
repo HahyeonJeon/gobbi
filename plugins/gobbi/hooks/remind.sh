@@ -29,8 +29,28 @@ if [ "$runtime" = grok ]; then
   [ "$active" = true ] && exit 0
 fi
 
-jq -nc --rawfile remind "$REMIND" --arg runtime "$runtime" '
-  ($remind | sub("\\s+$"; "") + "\n") as $reminder
+pending=""
+pending_path=""
+if [ "$runtime" = grok ] && [ -r "$DIR/settings-pending.sh" ]; then
+  # shellcheck source=settings-pending.sh
+  . "$DIR/settings-pending.sh"
+  session_id=$(grok_session_id "$data")
+  if [ -n "$session_id" ]; then
+    pending_path=$(grok_pending_path "$session_id")
+    if [ -n "$pending_path" ] && [ -f "$pending_path" ] && [ -r "$pending_path" ]; then
+      pending=$(cat -- "$pending_path") || pending=""
+      if [ -z "$pending" ]; then
+        pending_path=""
+      fi
+    else
+      pending_path=""
+    fi
+  fi
+fi
+
+jq -nc --rawfile remind "$REMIND" --arg runtime "$runtime" --arg pending "$pending" '
+  ($remind | sub("\\s+$"; "") + "\n") as $base
+  | (if $pending != "" then $base + "\n" + $pending else $base end) as $reminder
   | if $runtime == "cursor" then
       {additional_context: $reminder}
     elif $runtime == "grok" then
@@ -39,4 +59,7 @@ jq -nc --rawfile remind "$REMIND" --arg runtime "$runtime" '
       {hookSpecificOutput: {hookEventName: "UserPromptSubmit", additionalContext: $reminder}}
     end
 ' || exit 0
+if [ -n "$pending_path" ]; then
+  rm -f -- "$pending_path"
+fi
 exit 0

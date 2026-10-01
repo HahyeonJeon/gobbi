@@ -33,8 +33,9 @@ checkout's Cursor agents are the local adapter. Cursor plugin load is not the ch
 
 ## After setup
 
-- The package file `hooks/cursor-hooks.json` is the hook for an installed Cursor plugin. This checkout does
-  not load that plugin, so that hook does not run here.
+- For an installed Cursor plugin, `hooks/cursor-hooks.json` runs `check-settings.sh cursor` on
+  `sessionStart` before `remind.sh`, and the check prints JSON `additional_context`. This checkout does
+  not load that plugin, and there is no `.cursor/hooks.json`, so that hook does not run here.
 - Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
 ## Scripts

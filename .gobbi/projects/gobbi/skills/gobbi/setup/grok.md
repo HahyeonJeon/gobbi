@@ -18,9 +18,11 @@ Then install with trust:
 grok plugin install gobbi --trust
 ```
 
-Do not use Claude `/plugin`. An enabled, trusted install runs the reminder hook from the package:
-`.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json` (`Stop` → `hooks/remind.sh grok`).
-Do not copy that hook into `~/.grok/hooks/`.
+Do not use Claude `/plugin`. An enabled, trusted install runs the package hooks.
+`.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json`. `SessionStart` runs
+`check-settings.sh grok`, which prints nothing and stores one report, because Grok SessionStart
+text is not visible to the model. The next `Stop` runs `remind.sh grok`, which appends that report
+once and then deletes it. Do not copy that hook into `~/.grok/hooks/`.
 
 A repository checkout already exposes `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove load with
 `grok inspect --json`: `plugins` contains `name` `gobbi`, `scope` `project`, `enabled` true.

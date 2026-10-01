@@ -70,9 +70,10 @@ overwrites an existing settings file, `CLAUDE.md`, or role contract. It never cr
 ## After setup
 
 - This checkout enables `gobbi@gobbi` and does not keep a settings `hooks` object, `.claude/agents`, or
-  `.claude/skills`. Claude loads agents, skills, and the hook from `plugins/gobbi`.
-- The Claude Code hook is `hooks/hooks.json` on `UserPromptSubmit`, found by default discovery. Do not add a
-  `hooks` key to `.claude-plugin/plugin.json`.
+  `.claude/skills`. Claude loads agents, skills, and hooks from `plugins/gobbi`.
+- `hooks/hooks.json`, found by default discovery, runs `check-settings.sh claude` on `SessionStart` and
+  `remind.sh` on `UserPromptSubmit`. SessionStart emits `hookSpecificOutput` with `hookEventName`
+  `SessionStart`. Do not add a `hooks` key to `.claude-plugin/plugin.json`.
 - Role contracts come from the plugin's flat `agents/`.
 - If the existing `.claude/settings.json` is missing a permission, add the exact `Agent(gobbi:...)` or
   `Skill(gobbi:...)` entry. Setup does not edit a present settings file.

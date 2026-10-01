@@ -588,6 +588,7 @@ finish() {
     exit 1
   fi
   printf 'PASS prerequisites: %d passed, %d warnings, 0 failed\n' "$pass_count" "$warn_count"
+  exit 0
 }
 
 resolve_script_directory() {

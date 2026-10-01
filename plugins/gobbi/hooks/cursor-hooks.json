@@ -2,6 +2,7 @@
   "version": 1,
   "hooks": {
     "sessionStart": [
+      { "command": "bash ./hooks/check-settings.sh cursor" },
       { "command": "bash ./hooks/remind.sh cursor" }
     ]
   }
