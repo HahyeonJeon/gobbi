@@ -3,7 +3,7 @@
 > **Index:** [Design Ideation](ideation-index.md)<br>
 > **Covers:** {One coherent work-definition or idea group.}
 
-{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table row, or recovery contract across parts.}
+{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table, or recovery contract across parts.}
 
 ## Summary
 
@@ -27,7 +27,7 @@
 |---|---|---|
 | `{viewer}` | `{need}` | `{desired observable outcome}` |
 
-{State the intended form, capabilities, observable behavior, inputs, outputs, integration boundary, and unchanged behavior.}
+{State the intended form, capabilities, observable behavior, inputs, outputs, integration boundary, and unchanged behavior. Keep viewer need and outcome in this section.}
 
 ### Required Outcomes
 
@@ -52,7 +52,7 @@
 
 ## Design
 
-{State the accepted idea: what to do and how to do it, to the depth planning and execution need. These headings stay in this document order. Discussion decides them in two image passes: structure, then direction. Fill each heading only when that object is in the supplied design-and-decision scope. Keep the headings. An empty unscoped section is not an in-contract absence. Linked images illustrate; this text governs. A property visible only in an image is not a commitment.}
+{Keep the six headings in this document order. Discussion decides structure from images before direction from images. Start each heading with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and give the design only under `Material change`. Never leave a heading empty. For each Discussion topic that links to a heading, state the chosen option, why it won, its trade-offs, and the evidence that would reopen it. Linked images illustrate; this text governs. A property visible only in an image is not a commitment.}
 
 ### Materials
 
@@ -76,8 +76,8 @@
 
 ### Visual Language
 
-{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Give each named visual-language term its Ontology facets. Exclude production files, exact assets, radius, shadow, and realization recipes.}
+{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Named visual-language terms are artifacts: state each one's five facets here. Exclude production files, exact assets, radius, shadow, and realization recipes.}
 
 ### Components
 
-{The inventory revealed by the accepted wireframe. After the accepted direction, give each component and user-facing object its Ontology facets, with variants and states as properties. For each component, name the Object type it presents and the Action type each of its controls triggers. For a user-facing object, give its session ontology unit id instead of restating the facets kept there. List the session ontology unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}
+{The inventory the accepted wireframe reveals, defined after the accepted direction. Components are artifacts: state each one's five facets here, with variants and states as properties. Name the Object type each component presents and the Action type each control triggers. For a domain concept, give one kind and its session unit id. List the session ontology unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}

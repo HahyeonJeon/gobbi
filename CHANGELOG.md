@@ -42,9 +42,8 @@ The role split names fourteen roles, and model pins follow that split. The ontol
   that a built artifact changes, and Review only reads the file. Workflow Wrap-up and Cowork Wrap-up promote
   each file that passes the record checklist into `memory/ontology/`. They stop on a unit change that no
   accepted handoff names.
-- Added an `ontology.md` child to Authoring and Design Ideation, Execution, and Review. The Ideation children
-  give the facets and kinds their writing or design terms. The Execution children apply them to what the task
-  builds, and the Review children list the questions a reviewer asks.
+- Added an `ontology.md` child to Authoring and Design Execution and Review. The Execution children apply
+  Ontology to what the task builds, and the Review children list the questions a reviewer asks.
 
 ### Changed
 
@@ -80,6 +79,11 @@ The role split names fourteen roles, and model pins follow that split. The ontol
   record's Function and Action type fields. Code that realizes a Function changes nothing, and each Action type
   has one public entry point; the Coding Review checklist flags a break of either rule. The Modularization
   examples now use an `airline/flight.py` module from the Flight sample.
+- Authoring Ideation and Design Ideation now use four flat templates: `ideation-index.md`, `ideation-NN.md`,
+  `discussion-index.md`, and `discussion-NN.md`. This is the same record contract as Coding Ideation. Requirements
+  live only in the ideation part. A Discussion topic links its decision to the Design heading, and that heading
+  holds the chosen option, why it won, the trade-offs, and the reopen condition. Removed the two Ideation
+  `ontology.md` files. Facets, kinds, vocabulary, and storage stay in the Ontology skill.
 
 ### Removed
 

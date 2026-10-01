@@ -316,5 +316,3 @@ Formal logic adds cost and reads a missing fact as unknown
 | [ontology.py](scripts/ontology.py) | Command-line tool that creates, extends, lists, shows, and validates area files. |
 | [Memory](../memory/SKILL.md) | Placement, naming, index, and closure rules for `ontology/`. |
 | [Coding Principles](../coding/principles.md) | Modularization: the code form of the facets and kinds. |
-| [Authoring Ideation ontology](../authoring/authoring-ideation/ontology.md) | The writing form of the facets and kinds. |
-| [Design Ideation ontology](../design/design-ideation/ontology.md) | The visual-design form of the facets and kinds. |

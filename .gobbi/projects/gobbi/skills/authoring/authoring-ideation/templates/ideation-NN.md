@@ -3,7 +3,7 @@
 > **Index:** [Authoring Ideation](ideation-index.md)<br>
 > **Covers:** {One coherent work-definition or idea group.}
 
-{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table row, or recovery contract across parts.}
+{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table, or recovery contract across parts.}
 
 ## Summary
 
@@ -52,7 +52,7 @@
 
 ## Design
 
-{State the accepted idea: what to do and how to do it, to the depth planning and execution need. These headings are the writing-design ladder in dependency order. Fill each heading only when that object is in the supplied design-and-decision scope. Keep the headings. An empty unscoped section is not an in-contract absence.}
+{Keep the four headings in this order. Start each one with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and give the design only under `Material change`. Never leave a heading empty. For each Discussion topic that links to a heading, state the chosen option, why it won, its trade-offs, and the evidence that would reopen it.}
 
 ### Readers and Jobs
 
@@ -60,11 +60,11 @@
 
 ### Structure and Claims
 
-{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing. Add each new or changed document's and section's Ontology facets.}
+{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing. Documents and sections are artifacts. State each one's five facets here.}
 
 ### Naming and Vocabulary
 
-{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. Add the Ontology facets of each defined term that is not a domain concept, including its non-preferred names and, for a shared term, its status. For a term that names a domain concept, give its preferred name, Ontology kind, and session ontology unit id instead of restating the facets kept there. List the session ontology unit ids this design adds, changes, or removes.}
+{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. A defined term that is not a domain concept is an artifact: state its five facets here, including its non-preferred names. For a term that names a domain concept, give its preferred name, one kind, and its session unit id. List the session ontology unit ids this design adds, changes, or removes.}
 
 ### Voice and Evidence
 

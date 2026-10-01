@@ -1,9 +1,9 @@
 # Design Execution Ontology
 
 This document applies [Ontology](../../ontology/SKILL.md) to the visual work that
-[Design Execution](SKILL.md) builds, and the skill's placeholder line links it. The design terms for facets and
-kinds are in [Design Ideation ontology](../design-ideation/ontology.md), and the test questions are in
-[Ontology Facets](../../ontology/SKILL.md#facets).
+[Design Execution](SKILL.md) builds, and the skill's placeholder line links it. Facets and kinds are in
+[Ontology Facets](../../ontology/SKILL.md#facets) and [Ontology Kinds](../../ontology/SKILL.md#kinds). The test
+questions are in Ontology Facets.
 
 ## Before Building
 
@@ -14,11 +14,9 @@ kinds are in [Design Ideation ontology](../design-ideation/ontology.md), and the
   [Ontology Storage](../../ontology/SKILL.md#storage) gives. Look up each domain unit the design names by id,
   such as `flight`, the Object type that `FlightCard` presents.
 - When no Ideation ran, state the facets of each component and named term you create in the
-  [execution handoff](handoff.md), in the
-  [design terms](../design-ideation/ontology.md#facets-in-design-terms). Write each new user-facing object to the
-  session area file as an Object type, and give any other new domain concept one
-  [kind](../design-ideation/ontology.md#kinds-in-visual-design), seeding the file first as Ontology Storage
-  states.
+  [execution handoff](handoff.md), as [Ontology Facets](../../ontology/SKILL.md#facets) states. Write each new
+  user-facing object to the session area file as an Object type, and give any other new domain concept one
+  [kind](../../ontology/SKILL.md#kinds), seeding the file first as Ontology Storage states.
 - The execution handoff's fields are not written yet. Put any facets you state there in their own section, and
   the unit ids that [Handoff](#handoff) asks for in another section.
 
@@ -29,10 +27,9 @@ kinds are in [Design Ideation ontology](../design-ideation/ontology.md), and the
   `article` that Boundary gives. A cancelled flight is a `state` value, not a new component.
 - Add no state visual that the Process lacks. `StateBadge` has one visual for each Flight lifecycle state. A
   delayed flight shows its new estimated times, not a "Delayed" badge, because Delay flight changes no state.
-- Wire each control to one Action type, in the design form that
-  [Kinds in Visual Design](../design-ideation/ontology.md#kinds-in-visual-design) gives. The Delay control on
-  `FlightCard` opens the Delay flight dialog, which runs Delay flight and nothing else, and the dialog names the
-  failed criterion when Delay flight fails.
+- Wire each control to one Action type, as [Ontology Kinds](../../ontology/SKILL.md#kinds) defines that kind.
+  The Delay control on `FlightCard` opens the Delay flight dialog, which runs Delay flight and nothing else, and
+  the dialog names the failed criterion when Delay flight fails.
 
 ## Handoff
 

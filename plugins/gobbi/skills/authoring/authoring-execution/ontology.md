@@ -1,9 +1,9 @@
 # Authoring Execution Ontology
 
 This document applies [Ontology](../../ontology/SKILL.md) to the writing that
-[Authoring Execution](SKILL.md) builds, and the skill's placeholder line links it. The writing terms for facets
-and kinds are in [Authoring Ideation ontology](../authoring-ideation/ontology.md), and the test questions are in
-[Ontology Facets](../../ontology/SKILL.md#facets).
+[Authoring Execution](SKILL.md) builds, and the skill's placeholder line links it. Facets and kinds are in
+[Ontology Facets](../../ontology/SKILL.md#facets) and [Ontology Kinds](../../ontology/SKILL.md#kinds). The test
+questions are in Ontology Facets.
 
 ## Before Writing
 
@@ -12,9 +12,8 @@ and kinds are in [Authoring Ideation ontology](../authoring-ideation/ontology.md
 - Read the session area file: the session's working model of one domain area, at the path
   [Ontology Storage](../../ontology/SKILL.md#storage) gives. Look up each domain unit the design names by id.
 - When no Ideation ran, state the facets of each document, section, and defined term you create in the
-  [execution handoff](handoff.md), in the
-  [writing terms](../authoring-ideation/ontology.md#facets-in-writing-terms). Give each new domain concept one
-  [kind](../authoring-ideation/ontology.md#kinds-in-writing), and write it to the session area file, seeding the
+  [execution handoff](handoff.md), as [Ontology Facets](../../ontology/SKILL.md#facets) states. Give each new
+  domain concept one [kind](../../ontology/SKILL.md#kinds), and write it to the session area file, seeding the
   file first as Ontology Storage states.
 - The execution handoff's fields are not written yet. Put any facets you state there in their own section, and
   the unit ids that [Handoff](#handoff) asks for in another section.

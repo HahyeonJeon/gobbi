@@ -31,16 +31,16 @@ Resolve parents before children, and reopen the earliest affected decision when 
 
 ### Design one dependent writing-design level at a time
 
-Close reader and job before structure, structure before naming, and naming before voice. Classify each level
-as `inherited/current`, `not applicable`, or `material change`.
+Close reader and job before structure, structure before naming, and naming before voice. Start each level
+with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`.
 
 ## Rules
 
 - **MUST preserve caller and user authority.** The user decides each required in-scope success, direction,
   risk, destructive implication, external dependency, and load-bearing assumption.
 - **MUST write one closed indexed result at the caller-supplied output root, located by `ideation-index.md`.**
-  Authoritative parts define the work and the idea; Discussion records topics keyed to the Design headings,
-  study, and decisions.
+  Write every result file directly in that root, list each one from `ideation-index.md` or
+  `discussion-index.md`, and keep each decision in its Design heading rather than in Discussion.
 - **MUST finish agent discussion before synthesizing options, then resume only from the recorded user
   decision.** Do not force consensus or repeat without new evidence.
 - **MUST stop at the design boundary.** Drafted prose, file-level edits, publication recipes, and other
@@ -67,8 +67,7 @@ as `inherited/current`, `not applicable`, or `material change`.
 
 - State the current situation, desired outcome, readers, unchanged behavior, and Included, Excluded, Deferred,
   or Rejected scope. Distinguish facts from hypotheses.
-- Write Requirements in the authoritative part. When requested, also write the
-  [requirements snapshot](templates/ideation/requirements/requirements-index.md).
+- Write Requirements only in the authoritative part, from the [part template](templates/ideation-NN.md).
 - Return each unresolved in-scope choice through the caller's user-decision route.
 
 ### Phase 2 — Study and Discuss
@@ -79,42 +78,45 @@ as `inherited/current`, `not applicable`, or `material change`.
   use external prior art only when it can improve an in-scope choice.
 - Compare, challenge, and recommend. Write each study as an `S{N}` block under `## Study` in the Discussion
   view, not in an authoritative part.
-- Record agent suggestion and critique in the owning group's `#### Suggestions and Critique`.
+- Record where the independent suggestions and critique agreed or differed in that group's `### Discussion`.
+  Do not copy study assessments or findings.
 
 #### 2.2 Discuss options and build topics
 
 - Get separate supported suggestions and critique from available agents before synthesizing options. Resolve
   or expose conflict.
-- Write the topic tree and each `## Topic {path}` group through `### Discussion` from the
-  [discussion templates](templates/ideation/discussion/discussion-index.md). Use the Design headings as
-  parent topics in ladder order, set **Design:** to that heading, keep groups flat, and cite study IDs.
-- Add a missing in-scope topic under its parent, or record an evidenced not-applicable decision.
+- Write the topic tree and each `## Topic {path}` group through `#### Options` from the
+  [discussion templates](templates/discussion-index.md). Use the Design headings as parent topics in ladder
+  order, link **Decision** to that heading, keep groups flat, and cite study IDs.
+- Add a missing in-scope topic under its parent, or mark that heading `Not applicable — {reason}` in Step 3.1.
 
 #### 2.3 Ask the user and record decisions
 
 - For each user-owned choice, return the question, options, recommendation, and what would change it, then
   stop dependent work.
-- Resume only from the recorded user decision and write it in that group's `### Decision`.
+- Resume only from the recorded user decision, which Step 3.1 writes in the linked Design heading. Do not
+  copy that decision into Discussion.
 - Reopen the earliest affected decision when new evidence changes it.
 
 ### Phase 3 — Design
 
 #### 3.1 Walk the writing-design ladder
 
-- Resolve and classify each level in order: reader and job, structure and claims, naming and vocabulary, then
-  voice and evidence. Define each new or changed document, section, and defined term as
-  [Authoring Ideation ontology](ontology.md) states.
-- Write Readers and Jobs, Structure and Claims, Naming and Vocabulary, and Voice and Evidence in the
-  authoritative part from the matching topic Decision. Cite Requirements Result for reader need and
-  outcome.
-- Assemble the accepted levels into one idea planning and execution can follow. Reopen the earliest defect;
-  begin no realization.
+- Resolve the levels in order: reader and job, structure and claims, naming and vocabulary, then voice and
+  evidence. Start each heading with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`,
+  and write the design only under `Material change`.
+- On every heading a topic links to, state the chosen option, why it won, the trade-offs, and the reopen
+  condition. Documents and sections are artifacts under Structure and Claims, and defined terms are under
+  Naming and Vocabulary.
+- Give each domain concept one [kind](../../ontology/SKILL.md#kinds) and a session unit id, and use
+  [Ontology](../../ontology/SKILL.md) for facets, vocabulary, and storage. Assemble the accepted levels into
+  one idea planning and execution can follow, and reopen the earliest defect before realization.
 
 #### 3.2 Write the indexed result
 
 - Create `ideation-index.md`, the required Discussion view, and at least one authoritative part from the
-  [ideation](templates/ideation/ideation-index.md) and
-  [discussion](templates/ideation/discussion/discussion-index.md) templates.
+  [ideation index](templates/ideation-index.md) and
+  [discussion index](templates/discussion-index.md) templates.
 - Keep discussion parts as complete topic groups and `S{N}` entries. Keep authoritative parts as work
   definition and idea.
 - List every file from the root index. Add no unlisted file.
@@ -130,10 +132,9 @@ as `inherited/current`, `not applicable`, or `material change`.
 | Name | Description |
 |---|---|
 | [Authoring Ideation checklist](checklist.md) | Evaluation source for Authoring Ideation work and indexed results. |
-| [Authoring Ideation index](templates/ideation/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
-| [Authoring Ideation part](templates/ideation/ideation-NN.md) | Template for the work definition and the idea. |
-| [Discussion index](templates/ideation/discussion/discussion-index.md) | Template for topics keyed to Design headings, study, and decisions. |
-| [Discussion part](templates/ideation/discussion/discussion-NN.md) | Repeatable discussion group and study template. |
-| [Ontology](../../ontology/SKILL.md) | Kinds, facets, and rules that Step 3.1 applies. |
-| [Authoring Ideation ontology](ontology.md) | Writing terms for the Ontology facets and kinds, and the session area file rules, loaded in Step 3.1. |
+| [Authoring Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
+| [Authoring Ideation part](templates/ideation-NN.md) | Template for the requirements and the four writing-design headings. |
+| [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
+| [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
+| [Ontology](../../ontology/SKILL.md) | Facets, kinds, vocabulary, and storage that Step 3.1 applies. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |
