@@ -124,8 +124,8 @@ The same terms set the defaults for directories and files. An existing project o
 - A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
   long.
 
-**Good example.** A flat package for the [Flight sample](../ontology/examples/area.yaml). Each file
-realizes one Object type, with its Action types, or one Function.
+**Good example.** A flat package. Each file realizes one object, with the changes to that object, or one
+function.
 
 ```text
 airline/
