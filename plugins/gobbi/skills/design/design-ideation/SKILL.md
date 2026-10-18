@@ -133,7 +133,6 @@ from the direction pass. Write component variants only after the visual directio
 
 | Name | Description |
 |---|---|
-| [Design Ideation checklist](checklist.md) | Evaluation source for Design Ideation work and indexed results. |
 | [Design Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, Discussion view, and listed images. |
 | [Design Ideation part](templates/ideation-NN.md) | Template for the requirements and the six Design headings. |
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |

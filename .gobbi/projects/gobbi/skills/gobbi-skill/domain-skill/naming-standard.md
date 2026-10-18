@@ -13,7 +13,7 @@ Use a reserved word only for its fixed meaning.
 | `planning` | Turns defined work into a traceable task hierarchy, a dependency-valid execution plan, and the assignment contract those require, and stops before implementation recipes. |
 | `execution` | Implements and verifies one defined task under an accepted design and caller delivery policy; excludes multi-task Planning, independent review, and acceptance. |
 | `development` | Implements an accepted domain change and coordinates implementation handoffs; excludes independent review and acceptance. |
-| `review` | Independently critiques one frozen target and returns an evidence-based report plus working checklist, with a criteria-derived verdict or `Not issued`; excludes target mutation and decision-state change. |
+| `review` | Independently critiques one frozen target and returns an evidence-based report, with a criteria-derived verdict or `Not issued`; excludes target mutation and decision-state change. |
 | `testing` | Exercises a domain subject to produce test evidence; excludes independent review and acceptance. |
 | `conventions` | Defines project-overridable names, written forms, topology, role and branch vocabulary, handoffs, evidence forms, and departure boundaries. |
 | `source` | Defines source-file organization, formatter layout, import form, and generated provenance. |

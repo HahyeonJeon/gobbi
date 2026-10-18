@@ -245,7 +245,7 @@ CW · Wrap-up
   not name a subset, stop and ask for `commit` or a named subject.
 - Activate only `CW · Review`, name one locked `review-depth` token, define the decision criteria and
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
-  parent with children `<class>/<runtime>/report.md` and `<class>/<runtime>/checklist.md`, one class
+  parent with children `<class>/<runtime>/report.md`, one class
   directory per artifact class the subject contains, so a single-class subject has one. Write each of those
   paths as an ignored session record under Memory preferences. Keep class tokens `code`, `docs`, and
   `design`, and runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias
@@ -262,24 +262,24 @@ CW · Wrap-up
   architecture designs (`code`),
   [Authoring Review](../authoring/authoring-review/SKILL.md) with `authoring-reviewer` for writing (`docs`), or
   [Design Review](../design/design-review/SKILL.md) with `design-reviewer` for visual work (`design`).
-  Apply each review baseline only to the artifact class it owns. Keep
+  Apply each review skill only to the artifact class it owns. Keep
   remaining-runtime briefs naming write set `runtime-directory`, that class's directory below the aggregation
   parent, a Delegation prompt, `expected-partner`, and `review-depth`; a missing write set still means
   `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
-  session and is not the aggregation parent; a launchable runtime produces both files, an Unavailable
+  session and is not the aggregation parent; a launchable runtime produces `report.md`, an Unavailable
   attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
-  complete pairs after the assigned review skill has applied the token rather than writing a RECORD.
+  complete reports after the assigned review skill has applied the token rather than writing a RECORD.
 
 #### 4.2 Apply findings and coverage
 
 - Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction returns
   to its owning writer and waits for `commit` when it changes tracked files; it does not auto-commit, and it
   makes prior coverage stale.
-- Treat a `<class>/<runtime>/` directory that holds only one of `report.md` and `checklist.md` as incomplete
-  evidence, never a report to disposition, and never PASS input. Assemble and disposition only complete pairs,
-  using contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the aggregation
-  result. The aggregate passes only when every class passes; a class passes only when every complete pair in
-  its directory passes, and a class with no complete pair does not pass.
+- Treat a `<class>/<runtime>/` directory without a complete `report.md` as incomplete
+  evidence, never a report to disposition, and never PASS input. Assemble and disposition only complete
+  reports, using contract-gate verdicts; do not treat quality opinion or out-of-contract Problems as the
+  aggregation result. The aggregate passes only when every class passes; a class passes only when every
+  complete `report.md` in its directory passes, and a class with no complete `report.md` does not pass.
 - Complete Review only when every finding has a disposition and no correction remains unreviewed. Another
   corrected subject requires another explicit `review` call.
 
@@ -325,9 +325,9 @@ CW · Wrap-up
 | [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Light code-work decomposition and its indexed result. |
 | [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Light writing-work decomposition and its indexed result. |
 | [Design Planning](../design/design-planning/SKILL.md) | Owns Light visual-work decomposition and its indexed result. |
-| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
-| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
-| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md`. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md`. |
+| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md`. |
 | [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Light code design and its indexed result. |
 | [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Light writing design and its indexed result. |
 | [Design Ideation](../design/design-ideation/SKILL.md) | Owns Light visual design and its indexed result. |

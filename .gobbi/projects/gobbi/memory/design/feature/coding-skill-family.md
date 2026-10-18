@@ -20,8 +20,8 @@ routing, and Review meaning without copying skill procedures.
 | [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts Cowork or Workflow work. |
 | [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) | Operation | Owns study with the OOP child and Coding Principles, discussion with independent subagents, a three-level design, and a user-confirmation stop with a draft and a resume entry, then one indexed result for an unresolved material code-design choice. | Stops before Planning or realization. |
 | [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Owns decomposition, grouping, order, and dispatch for defined code work. It takes leaves and writer frontiers from the accepted design; with no Ideation result, the caller's topic contract is the design. | Stops before implementation recipes. Coding Execution may order work only inside one accepted task. |
-| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, one checklist pass, and handoff for one code task with no open material code-design choice, whether or not Coding Ideation ran. It also owns code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
-| [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Operation | Reviews one exact frozen code subject independently and writes `report.md` plus a working `checklist.md`. | Derives a contract-gate verdict that Cowork and Workflow gate on. No target-mutation right, `gate.md` write, correction, or acceptance authority. |
+| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, one principles self-review, and handoff for one code task with no open material code-design choice, whether or not Coding Ideation ran. It also owns code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
+| [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Operation | Reviews one exact frozen code subject independently and writes `report.md`. | Derives a contract-gate verdict that Cowork and Workflow gate on. No target-mutation right, `gate.md` write, correction, or acceptance authority. |
 | [Coding Object-Oriented Programming](../../../skills/coding/coding-object-oriented-programming/SKILL.md) | Preference | Owns the defaults for classes, interfaces, and inheritance, and the OOP principle, SOLID, and design pattern entries. | Owns no procedure, stage, or design decision. Accepted designs and project conventions come before its defaults. |
 
 Language, framework, platform, tool, and product-domain skills retain their specialist judgments
@@ -55,40 +55,24 @@ becomes a prerequisite for direct child use.
 ## Review
 
 Coding Review is independent: the caller assigns a fresh `coding-reviewer` that did not design, author, or
-implement the target. It keeps the target, source checklists, criteria, acceptance state, and workflow state
-read-only. It writes only files the review creates, such as `report.md`, a working `checklist.md`, and check
-output.
+implement the target. It keeps the target, criteria, acceptance state, and workflow state read-only. It writes
+only files the review creates, such as `report.md` and check output.
 
 Coding Review labels each Problem and Improvement `in-contract` or `out-of-contract`. It derives a contract-gate
 verdict only from in-contract Problems, sufficient evidence, and caller-supplied criteria. Cowork aggregates
-these verdicts from complete report pairs, and Workflow writes `gate.md` from them. The quality opinion
+these verdicts from complete reports, and Workflow writes `gate.md` from them. The quality opinion
 (`meets-design`, `mixed`, `does-not-meet`, or `not-available`) never changes the verdict.
 
-Item results are `problem-present`, `no-problem-found`, `not-applicable`, and `evidence-insufficient`. A bound
-`review-depth` token sets the in-contract bar and the baseline checklist: `ideation-design` uses the Coding
-Ideation checklist, `planning-decomposition` the Coding Planning checklist, `execution-implementation` the
-Coding Review checklist, and `by-owning-stage` the row of each artifact's owning stage. Durable Reports Memory
+A bound `review-depth` token sets the in-contract bar: `ideation-design`, `planning-decomposition`,
+`execution-implementation`, or `by-owning-stage` for each artifact's owning stage. Durable Reports Memory
 requires a separate authorized Memory action.
 
-## Shared code-quality baseline
+## Shared code-quality bar
 
-The [Coding Review checklist](../../../skills/coding/coding-review/checklist.md) is the single reusable code
-baseline. Coding Review owns its substantive meaning and report vocabulary; Checklist owns reusable-source
-revision policy. Its Governing sources include Coding Principles and the OOP child's `oop-principles.md`,
-`solid.md`, and `design-pattern.md`. An item that begins "In object-oriented code" applies only when the code
-defines or changes classes, interfaces, or inheritance.
-
-The Coding Review, Coding Ideation, and Coding Planning checklists omit the Coverage Account that the Checklist
-skill template holds. This is a family exception: the applying operation records coverage. Coding Review
-re-challenges coverage with the Checklist spectrum and does not record the missing account as a Limit. Coding
-Execution records the categories it answered in its handoff.
-
-The Coding Review checklist has these consumers with separate authority:
-
-- Coding Review applies it after the frozen-target critique and writes the caller-bound Review report.
-- Coding Execution applies it during its one final-identity checklist pass. It answers the categories whose
-  subject the change touches and records the results in its handoff. It runs no review and writes no Review
-  report.
+[Coding Principles](../../../skills/coding/principles.md) and, for object-oriented code, the OOP child are the
+quality bar Coding Review loads before its critique. Coding Execution applies the same principles while it
+writes and again when it reviews the verified change. Coding Execution records the self-review result in its
+handoff and writes no Review report.
 
 ## Shared coding principles
 
@@ -166,10 +150,7 @@ handoff concern.
 
 Coding Review loads the session ontology area files and their Memory copies, then Coding Principles with
 Ontology, before its critique. It loads the child `SKILL.md` when the target defines or changes classes,
-interfaces, or inheritance. The Coding Review checklist cites the child as the source for the object-oriented
-Design Pattern and Abstraction items. It cites Coding Principles as the source for the Project Structure, Public
-API, Modularization, Reusability, Overengineering, Readability, Vocabulary, and Naming Convention items. The
-checklist items stay in that checklist.
+interfaces, or inheritance. Coding Principles and the OOP child are the quality bar for that critique.
 
 ## Writing preferences
 
@@ -181,8 +162,8 @@ The user set these preferences for later edits to Coding Principles and the OOP 
 - Prefer soft guidance, such as a short default or an example, over a new strict (MUST) rule. Add a binding
   rule only for a failure the user names. Remove conflicting strict wording instead of adding stricter wording.
 - Use the user's own design terms: conceptual definition, responsibility, boundary, and relationship. The
-  Ontology skill adds properties as the fifth facet. Name a principle with an established term that the Coding
-  Review checklist already uses, such as Modularization, instead of coining a new heading.
+  Ontology skill adds properties as the fifth facet. Name a principle with an established term that Coding
+  Principles already uses, such as Modularization, instead of coining a new heading.
 
 ## Public ownership and migration
 

@@ -124,7 +124,6 @@ P3 · Note
   <class>/
     <runtime>/
       report.md
-      checklist.md
 ```
 
 - Use that review layout only for Execution tasks and Wrap-up, with one class directory per artifact class
@@ -171,7 +170,7 @@ P3 · Note
   `{session-root}/tmp/`, and recovery boundary. Route a returned decision package to Step 1.4, then resume that
   leader only from the recorded answer.
 - **RECORD:** Reread the indexed result, reproduce membership, order, path, hash, and tracked-tree checks, and
-  write the receipt without reports, checklists, or `gate.md`. Return to Step 1.4 only for missing or
+  write the receipt without reports or `gate.md`. Return to Step 1.4 only for missing or
   contradictory project/work design, required participant discussion, or a required user decision, and return
   to WORK when the indexed result is incomplete.
 
@@ -212,7 +211,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 #### 2.2 Record Planning
 
 - **RECORD:** Reread the indexed plan, reproduce membership, order, path, hash, and tracked-tree checks, and
-  write the receipt without reports, checklists, or `gate.md`. Return to Step 2.1 only for missing or
+  write the receipt without reports or `gate.md`. Return to Step 2.1 only for missing or
   contradictory decomposition, grouping, order, assignment-contract field, authority, or indexed integrity,
   then verify obligation coverage, stable task IDs, dependencies, writer frontier, indexed membership and
   hashes, and unchanged tracked state before activating Execution.
@@ -233,11 +232,11 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
   and launch remaining runtimes from the recorded set minus the active runtime with write set
   `runtime-directory` bound to that class directory; if that set is empty, launch nothing, and a missing write
-  set is `writing-path-only` and cannot complete REVIEW. A `<class>/<runtime>/` directory that holds only one
-  of `report.md` and `checklist.md` is incomplete and never PASS input.
+  set is `writing-path-only` and cannot complete REVIEW. A `<class>/<runtime>/` directory without a complete
+  `report.md` is incomplete and never PASS input.
 - **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
-  class meets its criteria with no correction pending; a class passes only when every complete pair in its
-  directory passes, and a class with no complete pair does not pass. REVISE means an authorized correction
+  class meets its criteria with no correction pending; a class passes only when every complete `report.md` in
+  its directory passes, and a class with no complete `report.md` does not pass. REVISE means an authorized correction
   remains; return to this task's WORK with a new `iteration-N`. FAIL means a safe correction is unavailable;
   stop and do not start the next task. Write and verify the receipt at `<record-directory>/record/iteration-N.md`.
   Quality `does-not-meet` with contract-gate PASS is not REVISE, and after completed `P1 · User Review`
@@ -275,7 +274,7 @@ Note after Continue.
   risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
   stops without a design question when authority, safety, or the locked contract cannot support one route.
 - Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
-  final paths, per-class, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths,
+  final paths, per-class, per-runtime `report.md` paths, `gate.md` and receipt paths,
   checks, merge authority, and protected state.
 
 #### 3.2 Run closure WORK
@@ -297,16 +296,16 @@ Note after Continue.
   risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and
   one Partner wrapper per remaining runtime, each at
-  `wrap-up/review/iteration-N/<class>/<runtime>/{report.md,checklist.md}`, with write set
+  `wrap-up/review/iteration-N/<class>/<runtime>/report.md`, with write set
   `runtime-directory` bound to that class directory; if that set is empty, launch nothing, a missing write set is
   `writing-path-only` and cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence,
   not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
   class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
   return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
-  class passes only when every complete pair in its directory passes, and a class with no complete pair does
-  not pass. A `<class>/<runtime>/` directory that holds only one of
-  `report.md` and `checklist.md` is incomplete and never PASS input; quality `does-not-meet` with contract-gate
+  class passes only when every complete `report.md` in its directory passes, and a class with no complete
+  `report.md` does not pass. A `<class>/<runtime>/` directory without a complete `report.md` is incomplete
+  and never PASS input; quality `does-not-meet` with contract-gate
   PASS is not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design.
 - Any tracked correction makes prior coverage stale and repeats WORK and REVIEW. Retry a bounded agent or
   Partner operation only when its prior effect is absent or safely reusable.
@@ -346,9 +345,9 @@ Note after Continue.
 | [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
 | [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
 | [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
-| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
-| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
-| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
+| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md`. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md`. |
+| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable work Note, commit, merge, Git/recovery Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |

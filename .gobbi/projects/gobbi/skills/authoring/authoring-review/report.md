@@ -24,18 +24,7 @@ opinion value, or `None`.}
 
 ## Method
 
-Coverage detail lives in sibling `checklist.md` at `{absolute or relative path}`.
-
-### Checklist
-
-| Source | Coverage | Additions | Limits |
-|---|---|---|---|
-| `{Checklist or governing source}` | `{Items applied to this target}` | `{Coverage added from internal or external study}` | `{Exclusions, ambiguity, or evidence limits}` |
-
-### Critical review and reconcile
-
-{Summarize the Phase 2 critical review plus Step 3.5 reconcile, and the safe inspections,
-reproductions, tests, or measurements used.}
+{Summarize the critical review and the safe inspections, reproductions, tests, or measurements used.}
 
 ## Problems
 
@@ -134,4 +123,4 @@ change the verdict. Do not put quality-opinion tokens in the Verdict field.}
 
 | Name | Location | Use |
 |---|---|---|
-| `{Internal or external source}` | `{Path or URL}` | `{Checklist addition, evidence, or judgment it supports}` |
+| `{Internal or external source}` | `{Path or URL}` | `{Evidence or judgment it supports}` |

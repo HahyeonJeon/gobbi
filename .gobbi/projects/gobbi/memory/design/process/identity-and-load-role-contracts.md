@@ -51,7 +51,7 @@ Visual work is design. Ideate is leader. Plan is planner. Implement is executor.
 | Leader | `coding-leader`, `authoring-leader`, or `design-leader` loads the matching domain ideation skill for an unresolved material design choice: [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md), [Authoring Ideation](../../../skills/authoring/authoring-ideation/SKILL.md), or [Design Ideation](../../../skills/design/design-ideation/SKILL.md). | The leader writes the ideation result and does not change the product or review it. |
 | Planner | `coding-planner`, `authoring-planner`, or `design-planner` loads the matching domain planning skill: [Coding Planning](../../../skills/coding/coding-planning/SKILL.md), [Authoring Planning](../../../skills/authoring/authoring-planning/SKILL.md), or [Design Planning](../../../skills/design/design-planning/SKILL.md). | The planner writes the plan and does not change the product. |
 | Executor | `coding-executor`, `authoring-executor`, or `design-executor` loads the matching domain execution skill: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). | The executor changes the product. In-stage self-review stays with that work. Independent review is a reviewer. |
-| Reviewer | `coding-reviewer` loads [Coding Review](../../../skills/coding/coding-review/SKILL.md), `authoring-reviewer` loads [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), and `design-reviewer` loads [Design Review](../../../skills/design/design-review/SKILL.md). | The reviewer reads another agent's work in that domain and does not change it. Domain Review writes `report.md` and working `checklist.md`. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
+| Reviewer | `coding-reviewer` loads [Coding Review](../../../skills/coding/coding-review/SKILL.md), `authoring-reviewer` loads [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), and `design-reviewer` loads [Design Review](../../../skills/design/design-review/SKILL.md). | The reviewer reads another agent's work in that domain and does not change it. Domain Review writes `report.md`. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
 | Assistant | No domain-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation or review. |
 
 The phase reviewer owns independent review, and no reviewer reviews work it produced. The manager accepts.
@@ -59,7 +59,7 @@ See the [Coding skill family](../feature/coding-skill-family.md), [Authoring ski
 and [Design skill family](../feature/design-skill-family.md).
 
 Former evaluator loads of Generic Evaluation and both evaluation templates are gone. Cowork still
-names `review`, `report.md`, working `checklist.md`, and `review-depth`. Domain Review is the
+names `review`, `report.md`, and `review-depth`. Domain Review is the
 independent-review writer, not a second mode owner.
 
 ## Ownership

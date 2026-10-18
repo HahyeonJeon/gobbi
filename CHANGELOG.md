@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Removed
+
+- Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
+
 ## 1.3.3 - 2026-10-01
 
 This patch adds phase roles, ontology support, and session-start settings checks. By project decision,

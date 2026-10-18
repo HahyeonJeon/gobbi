@@ -35,7 +35,7 @@ affected set. Repository type or file extension alone does not.
 
 ## Rules
 
-- **MUST complete study, implementation, verification, repair, and the checklist pass in this operation.** Bind
+- **MUST complete study, implementation, verification, and repair in this operation.** Bind
   the full direct task contract; do not delegate the lifecycle to another execution skill.
 - **MUST commit when the caller grants commit authority, and use the caller’s retained-state policy
   when authority is none.** Under no authority, the exact verified uncommitted tree is a completed Coding
@@ -49,9 +49,9 @@ affected set. Repository type or file extension alone does not.
   either operation.
 - **MUST load each applicable language, framework, platform, tool, and domain owner before making its code
   choices.** Keep one selected lifecycle operation primary and do not copy specialist procedures.
-- **NEVER run Coding Review, write its report, claim reviewer independence, create a review working
-  checklist, issue a verdict, accept the work, or change mode state.** Preserve out-of-scope findings and return
-  them to their owner without implementing them.
+- **NEVER run Coding Review, write its report, claim reviewer independence, issue a verdict, accept the
+  work, or change mode state.** Preserve out-of-scope findings and return them to their owner without
+  implementing them.
 
 ## Procedure
 
@@ -139,12 +139,11 @@ affected set. Repository type or file extension alone does not.
 - Record each verification command or observation, configuration and environment, subject identity, result,
   skips or unavailable checks, and claim limits.
 
-#### 4.2 Run the checklist pass
+#### 4.2 Review the verified change
 
-- Select the [Coding Review checklist](../coding-review/checklist.md) categories whose subject the change
-  touches, and answer their items against the verified identity under the checklist’s Context conditions.
-- Record, for the handoff, the categories answered and each item whose problem is present or that the evidence
-  cannot decide, with its evidence.
+- Review the verified identity against the [Coding Principles](../principles.md) and any
+  `coding-object-oriented-programming` entries Step 1.3 loaded.
+- Record, for the handoff, each problem that is present or that the evidence cannot decide, with its evidence.
 - Treat each in-scope present problem as a task-introduced failure in Step 4.3. Record an out-of-scope one as a
   handoff concern for its owner.
 
@@ -153,7 +152,7 @@ affected set. Repository type or file extension alone does not.
 - Classify each failure against the baseline as task-introduced, pre-existing, flaky, or out-of-scope. Do not
   repair a pre-existing, flaky, or out-of-scope result as though this task caused it.
 - Repair only an in-scope cause, then rerun the exposing check, affected downstream checks, Step 4.1, and the
-  Step 4.2 categories the repair touches. When a premise of the thinking guide fails, return to Step 2.1, and stop
+  Step 4.2 review the repair touches. When a premise of the thinking guide fails, return to Step 2.1, and stop
   per Step 1.1 if a material design choice opens.
 - Stop on missing authority, unsafe scope expansion, or repeated unexplained failure, and return the stop handoff
   in Step 5.1.
@@ -165,7 +164,7 @@ affected set. Repository type or file extension alone does not.
 - When the caller grants commit authority, commit the exact verified result. When authority is none, do not stage
   or commit, and retain the exact verified tree under the caller’s retained-state policy.
 - Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with these Execution fields: commit or
-  retained-tree identity and caller policy, verification record, reach account, checklist-pass result, principles
+  retained-tree identity and caller policy, verification record, reach account, self-review result, principles
   and `coding-object-oriented-programming` entries applied, and, when there was no Ideation, the design record.
   Put the Step 3.3 and Step 4.2 concerns in its concerns.
 - On any stop, preserve the exact worktree identity and return the earliest owner, first failed obligation and
@@ -178,5 +177,4 @@ affected set. Repository type or file extension alone does not.
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Rules and entries for code that creates or changes classes, interfaces, or inheritance. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, applied while code is written and simplified. |
 | [Ontology](../../ontology/SKILL.md) | Kinds and facets that Step 3.1 records as Modularization lines when there was no Ideation, and the session storage that Step 3.1 updates. |
-| [Coding Review checklist](../coding-review/checklist.md) | Baseline for the Step 4.2 checklist pass. |
 | [Delegation](../../delegation/SKILL.md) | Handoff Content that Step 5.1 returns with the Execution fields. |

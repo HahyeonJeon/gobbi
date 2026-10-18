@@ -183,7 +183,7 @@ context.
   | Ideate | Coding Ideation, Authoring Ideation, or Design Ideation by subject | One accepted design the next phase can follow. Do not implement. |
   | Plan | Coding Planning, Authoring Planning, or Design Planning by subject | One accepted plan the matching execution skill can follow. Do not implement. |
   | Implement | Coding Execution, Authoring Execution, or Design Execution by writer frontier | One accepted change that meets the bar. Do not add extra files or features. |
-  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report and checklist | One complete `report.md` by the matching reviewer, with a criteria-derived gate verdict or `Not issued` and the working `checklist.md` beside it. Do not implement fixes. |
+  | Review | Coding Review, Authoring Review, or Design Review by subject, plus that skill's report template | One complete `report.md` by the matching reviewer, with a criteria-derived gate verdict or `Not issued`. Do not implement fixes. |
 
 - Put the phase quality bar and minimum result in `## Task`. Put method in `## Instructions`.
 - For Review, assign a fresh domain reviewer (coding-reviewer, authoring-reviewer, or design-reviewer) that matches the subject domain. Do not reuse the producer of the target.

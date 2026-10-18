@@ -147,4 +147,3 @@ Preserve meaningful variation when context, evidence, accessibility, safety, or 
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
-| [Preference Skill checklist](checklist.md) | Reusable source for evaluating consistency boundaries, authority, guidance classes, preferences, and valid variation. |

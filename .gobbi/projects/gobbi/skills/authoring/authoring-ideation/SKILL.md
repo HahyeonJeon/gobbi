@@ -131,7 +131,6 @@ with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material chan
 
 | Name | Description |
 |---|---|
-| [Authoring Ideation checklist](checklist.md) | Evaluation source for Authoring Ideation work and indexed results. |
 | [Authoring Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
 | [Authoring Ideation part](templates/ideation-NN.md) | Template for the requirements and the four writing-design headings. |
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |

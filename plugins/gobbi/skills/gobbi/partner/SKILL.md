@@ -145,14 +145,12 @@ invalid result remains a visible failure rather than transformed or relabeled co
 
 #### Bind runtime-directory
 
-- `runtime-directory` may write sibling `checklist.md` beside `writing-path` and may create the missing parent
-  of `writing-path` when that parent resolves inside the caller-named directory from the brief and is not a
-  symlink.
-- Partner checks only `writing-path` plus sibling `checklist.md` in the same parent, both regular non-symbolic-link
-  files, parent creation only inside that caller-named directory, and both files non-empty. Missing
-  `checklist.md` is Missing or invalid result.
-- Forbidden under this set: `gate.md`, other siblings, nested files, other runtimes' directories, target
-  files, and reusable checklist sources.
+- `runtime-directory` may create the missing parent of `writing-path` when that parent resolves inside the
+  caller-named directory from the brief and is not a symlink. It may change only `writing-path` inside that
+  parent.
+- Partner checks only `writing-path`: a regular non-symbolic-link file, non-empty, with parent creation only
+  inside that caller-named directory.
+- Forbidden under this set: `gate.md`, siblings, nested files, other runtimes' directories, and target files.
 
 ### Route
 
@@ -164,9 +162,8 @@ invalid result remains a visible failure rather than transformed or relabeled co
   the exact command from this manual, `worktree`, `session-directory`, `writing-path`, and the three capture
   paths. The brief that the Partner process receives remains `agent: partner`.
 - Remaining-runtime wrappers may run together only when every assignment is `writing-path-only` or
-  `runtime-directory`, those writing-paths and any implied `checklist.md` siblings are disjoint, and each
-  brief forbids other worktree writes. A `worktree` write-set assignment is serial, and two `worktree`
-  assignments never overlap.
+  `runtime-directory`, those writing-paths are disjoint, and each brief forbids other worktree writes. A
+  `worktree` write-set assignment is serial, and two `worktree` assignments never overlap.
 
 #### Limit the wrapper
 
@@ -292,9 +289,8 @@ Set `partner_timeout` to 3600 unless the caller already named another positive i
 #### Validate the result and Handoff
 
 - Wait for the wrapper to return with a zero exit status, no timeout, one non-empty regular result at the
-  exact writing path when the assignment requires that file, one non-empty regular sibling `checklist.md`
-  when the write set is `runtime-directory`, and one non-empty final Handoff on stdout. Read stderr only as
-  an immediate diagnostic.
+  exact writing path when the assignment requires that file, and one non-empty final Handoff on stdout. Read
+  stderr only as an immediate diagnostic.
 - Compare the worktree preimage with the post-run inventory and require the Handoff changed-path list to match
   that list. Then apply the assignment write set.
 - Compare main-checkout branch, `HEAD`, and porcelain, plus worktree `HEAD`, current branch, and
@@ -304,9 +300,9 @@ Set `partner_timeout` to 3600 unless the caller already named another positive i
 #### Apply write-set and extras
 
 - `writing-path-only`, including a missing write set, may change only `writing-path`; `runtime-directory` may
-  change only `writing-path`, sibling `checklist.md` in the same parent, and that parent when the run creates
-  it. `worktree` may change any path under the worktree, the Handoff must list every changed worktree path, and
-  `writing-path` still holds the named result when the assignment has one.
+  change only `writing-path` and that parent when the run creates it. `worktree` may change any path under the
+  worktree, the Handoff must list every changed worktree path, and `writing-path` still holds the named result
+  when the assignment has one.
 - Documented extras are incidental runtime writes, not results: Grok `~/.grok/`, `/tmp`, `/var/tmp`, and
   official macOS temp dirs from the Grok Sandbox Mode table; incidental Codex `/tmp`; and the wrapper capture
   directory. Do not add a custom Grok profile.
@@ -323,7 +319,7 @@ Set `partner_timeout` to 3600 unless the caller already named another positive i
   |---|---|---|
   | Unavailable | Missing binary or dependency and `command -v` result; or a named runtime whose write-bound measurement failed, with version, help excerpt, and write-test result | Launch or substitute output |
   | Timeout or process error | Exit status, bound, and immediate diagnostic | Partial-result acceptance |
-  | Missing or invalid result | Exact path and observed file state, including missing sibling `checklist.md` under `runtime-directory` | Extraction or repair |
+  | Missing or invalid result | Exact path and observed file state | Extraction or repair |
   | Unexpected write | Preimage and changed-path inventory, including main checkout and worktree git semantic state | Silent cleanup or acceptance |
   | Tool denial | Required Read or Bash blocked in print or exec mode, with the path or command | Treating the run as partial success |
   | Handoff mismatch | Expected and observed field, including omitted worktree paths | Relabeling or inferred completion |

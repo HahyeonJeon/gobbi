@@ -136,7 +136,6 @@ contract alone. If completion needs hidden coordination, the group is too broad 
 
 | Name | Description |
 |---|---|
-| [Coding Planning checklist](checklist.md) | Reusable unchecked source for evaluating Coding Planning work and complete current indexed results. |
 | [Task index](templates/tasks-index.md) | Index template for the numbered task-hierarchy output. |
 | [Task part](templates/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
 | [Plan index](templates/plan-index.md) | Root template for result authority, task source, and plan-part order. |

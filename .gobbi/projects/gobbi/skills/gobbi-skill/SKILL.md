@@ -147,7 +147,6 @@ skill-type: domain|operation|tool|preference
 
 | Name | Description |
 |---|---|
-| [Gobbi Skill checklist](checklist.md) | Reusable source for evaluating shared skill design, structure, minimality, language, references, and system boundaries. |
 | [`domain-skill`](domain-skill/SKILL.md) | Guidance for writing a navigation-only domain skill and its selected child family. |
 | [`operation-skill`](operation-skill/SKILL.md) | Guidance for writing a straightforward standard operating procedure with well-structured Phases and Steps. |
 | [`tool-skill`](tool-skill/SKILL.md) | Guidance for writing a direct-lookup manual for a named tool, platform, or cohesive tool collection. |

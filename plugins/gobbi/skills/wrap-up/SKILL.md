@@ -176,7 +176,6 @@ altered completion claim.
 
 | Name | Description |
 |---|---|
-| [Wrap-up checklist](checklist.md) | Reusable unchecked source for evaluating closure governance, durable Memory, exact-tree integration, recovery, and factual Note reporting. |
 | [Memory-note template](templates/memory-note.md) | Tracked Memory report shape for the Phase 2 `reports/note/` work account. |
 | [Note template](templates/note.md) | Response-only Git/recovery note for every terminal state. |
 | [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, Closure extraction, and session-versus-durable split. |

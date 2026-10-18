@@ -148,7 +148,6 @@ breaks.
 
 | Name | Description |
 |---|---|
-| [Coding Ideation checklist](checklist.md) | Evaluation source for Coding Ideation work and indexed results. |
 | [Coding Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
 | [Coding Ideation part](templates/ideation-NN.md) | Template for the requirements and the three-level design. |
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
