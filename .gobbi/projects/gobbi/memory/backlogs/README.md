@@ -46,7 +46,6 @@ each group. Order implies no priority, readiness, or sequence.
 - `Identity-and-load role contracts beyond the four-part role files` → `project.md#identity-and-load-role-contracts-beyond-the-four-part-role-files`
 - `Locator no-brief fallback unverified for a spawned specialist` → `project.md#locator-no-brief-fallback-unverified-for-a-spawned-specialist`
 - `Manifest descriptions omit Cursor plugin agents` → `project.md#manifest-descriptions-omit-cursor-plugin-agents`
-- `Naming-standard scope for sibling references and preference words` → `project.md#naming-standard-scope-for-sibling-references-and-preference-words`
 - `Plugin package sync can copy __pycache__` → `project.md#plugin-package-sync-can-copy-__pycache__`
 - `Reconsider plugin-only distribution` → `project.md#reconsider-plugin-only-distribution`
 - `Review depth wording drift in process memory` → `project.md#review-depth-wording-drift-in-process-memory`

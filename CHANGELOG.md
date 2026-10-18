@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
+- Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
 
 ## 1.3.3 - 2026-10-01
 

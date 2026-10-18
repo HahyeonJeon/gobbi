@@ -226,21 +226,6 @@ Code and Grok. The Cursor plugin manifest also declares agents.
 (`:4`). The Grok and Cursor manifests declare `./runtimes/grok` and `./runtimes/cursor`; see
 `.gobbi/projects/gobbi/agents/README.md`.
 
-## Naming-standard scope for sibling references and preference words
-
-**Backlogged at:** 2026-09-25T18:00:36Z
-
-**What:** Clarify two points in the [naming standard](../../skills/gobbi-skill/domain-skill/naming-standard.md).
-Say whether the "refer to a sibling child by its backticked slug" rule covers prose mentions. About 37
-title-case names, such as "Coding Ideation", remain in the Coding skills. Also say that the free word
-`object-oriented-programming` names a preference child, not a `design` operation.
-
-**Why backlogged:** The v1.3.2 release reviews raised both as out-of-contract improvements (review-02 I4,
-review-01 I8). The user deferred them.
-
-**Context:** The sibling-reference row and the free-word list are in the naming standard. The Coding family
-names are in the [Coding skill family design](../design/feature/coding-skill-family.md).
-
 ## Setup Skill allow list differs between docs and script
 
 **Backlogged at:** 2026-09-29T08:19:28Z

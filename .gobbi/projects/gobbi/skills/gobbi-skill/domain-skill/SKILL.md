@@ -49,9 +49,6 @@ keep identities clear.
   require root predicate `R` to be true if and only if at least one direct-child predicate `Ci` is true.
 - **MUST keep applicability wording canonical.** Put identity only in each `description`, put one applicability
   sentence in each Intro, and copy that sentence byte for byte into the root routing row.
-- **MUST use the [Naming Standard](naming-standard.md) for every child capability word.** Keep one fixed meaning per reserved word,
-  use a free word only for a distinct domain-owned meaning, and update the register when its vocabulary
-  changes.
 
 ## Procedure
 
@@ -73,8 +70,7 @@ keep identities clear.
 
 #### 1.3 Design names and routing
 
-- Name each child `{domain}-{capability}` with a capability word from the
-  [Naming Standard](naming-standard.md).
+- Name each child `{domain}-{capability}`.
 - Write one canonical applicability sentence for each child and derive its predicate `Ci` from that sentence.
 - Write the root applicability sentence, derive predicate `R` from it, and check both directions: every true
   `Ci` makes `R` true, and every true `R` has at least one true `Ci`.
@@ -132,7 +128,6 @@ keep identities clear.
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
-| [Naming Standard](naming-standard.md) | Reserved and free capability words plus canonical applicability and routing forms. |
 | [`Operation Skill`](../operation-skill/SKILL.md) | Guidance for writing each operation child as a straightforward SOP. |
 | [`Tool Skill`](../tool-skill/SKILL.md) | Guidance for writing each tool child and any direct Tool Skill children as direct-lookup manuals. |
 | [`Preference Skill`](../preference-skill/SKILL.md) | Guidance for writing each preference child as consistency guidance for recurring agent choices and results. |
