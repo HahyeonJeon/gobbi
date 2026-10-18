@@ -98,7 +98,7 @@ logs, trivia, and operational exhaust.
 | Directory | Holds |
 |---|---|
 | `design/` | Current architecture, feature, process, and roadmap intent |
-| `ontology/` | The current domain model: units of the nine Ontology kinds, with their facets, as YAML |
+| `ontology/` | The current domain model: the six kinds Object, Function, and Link, each as a Definition and an Instance, as YAML |
 | `learnings/` | Reusable tips and repeatable mistakes |
 | `reports/` | Final accounts of completed work |
 | `history/` | One compact record per completed session that changed the project |
@@ -115,7 +115,7 @@ logs, trivia, and operational exhaust.
 
 - Callers Wrap-up and Cowork wrap-up extract accepted design, decisions, intended behaviors, and standing
   preferences into the existing homes in the table above. They promote into `ontology/` each session area file
-  at `{session-root}/ontology/<area>.yaml` that passes the [Ontology Record](../ontology/SKILL.md#record)
+  at `{session-root}/ontology/<area>.yaml` that passes the [Ontology Check](../ontology/SKILL.md#check)
   checks in the [Ontology](../ontology/SKILL.md) skill. Place decisions in
   the design they shape, and standing user project preferences in `design/process/` unless they constrain a
   named feature or architecture file.
@@ -148,7 +148,7 @@ logs, trivia, and operational exhaust.
 #### Keep one YAML file per bounded area
 
 - Name each file `ontology/<area>.yaml` with a kebab-case `<area>`. Split an area when the
-  [Ontology Record](../ontology/SKILL.md#write-one-area-file-per-bounded-scope) split rule applies.
+  [Ontology](../ontology/SKILL.md) split rule applies.
 - Write each file in the Ontology Record format. A `design/` file links to a unit instead of restating it.
 - Keep `ontology/README.md` as a link list of the area files, each with its scope.
 

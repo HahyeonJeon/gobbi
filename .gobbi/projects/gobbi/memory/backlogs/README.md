@@ -31,14 +31,6 @@ each group. Order implies no priority, readiness, or sequence.
 - `Workflow Planning RECORD leftover writer-boundaries wording` → `evaluation.md#workflow-planning-record-leftover-writer-boundaries-wording`
 - `Wrap-up checklist as a named Evaluation baseline` → `evaluation.md#wrap-up-checklist-as-a-named-evaluation-baseline`
 
-## Ontology skill
-
-- `Independent review of ontology skill v2` → `ontology-skill.md#independent-review-of-ontology-skill-v2`
-- `ontology.py at its 500-code-line cap` → `ontology-skill.md#ontologypy-at-its-500-code-line-cap`
-- `Property nullability wording: required versus may be null` → `ontology-skill.md#property-nullability-wording-required-versus-may-be-null`
-- `Python 3.9 support unproven for ontology.py` → `ontology-skill.md#python-39-support-unproven-for-ontologypy`
-- `show omits bare-id Property fields` → `ontology-skill.md#show-omits-bare-id-property-fields`
-
 ## Project
 
 - `Authoring and Design Execution handoff placeholders` → `project.md#authoring-and-design-execution-handoff-placeholders`
