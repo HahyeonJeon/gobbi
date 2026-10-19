@@ -128,7 +128,7 @@ Value Object have no separate entry. Examples are short, typed Python 3.12.
 Coding Ideation studies the child `SKILL.md`, Coding Principles, and Ontology, then opens only the supporting
 docs a choice needs. It designs three levels in order: Conceptual Definition, then Class and Function Design,
 then Codebase Structure. Conceptual Definition states what will be implemented and its vocabulary, gives each
-domain concept its Ontology kind, and writes it to the session ontology area file. Class and Function Design
+domain concept its Ontology kind, and names its unit id in the design. Class and Function Design
 gives each new or changed public class and public function its Modularization lines, including its caller
 contract. Codebase Structure places each new or changed directory and file with its five facet lines, chosen
 with Modularization and Naming. No pattern is the default; an added pattern records its force and the simpler
@@ -144,11 +144,11 @@ code. It loads the child `SKILL.md` when the change creates or changes classes, 
 an Ideation design, it builds each class and function to the Class and Function Design and its caller contract,
 reads only the entries that design names, and adds no pattern the design does not name. With no Ideation, it
 designs each unit it creates with the principles and records the Modularization lines and any added
-abstraction's force in its handoff. When a built unit adds or changes a domain unit, it updates the session
-ontology area file. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a
+abstraction's force in its handoff. When a built unit adds or changes a domain unit, it names the unit id in
+the handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a
 handoff concern.
 
-Coding Review loads the session ontology area files and their Memory copies, then Coding Principles with
+Coding Review loads the session README and `memory/ontology/`, then Coding Principles with
 Ontology, before its critique. It loads the child `SKILL.md` when the target defines or changes classes,
 interfaces, or inheritance. Coding Principles and the OOP child are the quality bar for that critique.
 

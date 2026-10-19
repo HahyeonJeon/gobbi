@@ -91,10 +91,10 @@ route.
   verify the purpose-based work branch and isolated worktree; the sole main-checkout exception is an
   explicitly approved commit containing only Gobbi's required layout and ignore file. Name the worktree and
   session leaves `<YYYY-MM-DD>-<slug>-<full-uuid>` and require byte equality, set the session root to
-  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` directly
-  below it.
+  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` and
+  `README.md` directly below it.
 - Render the [configuration template](templates/configuration.md) as the Configuration phase's accepted record,
-  write it as an ignored session record under [Memory](../memory/SKILL.md) preferences, and verify its
+  write it as an ignored session record as [Memory](../memory/SKILL.md) defines, and verify its
   identity, locations, settings, creation evidence, ignored state, and the native TODO list before completing
   Configuration. A recovered session without this file may
   create it only when one exact identity, branch, registered worktree, session root, and accepted topic history
@@ -113,12 +113,9 @@ route.
 | Topic Ideation | `topic-NN-slug/1-ideation/` |
 | Topic Planning | `topic-NN-slug/2-planning/` |
 | Topic Execution records | `topic-NN-slug/3-execution/` |
-| Session ontology | `ontology/` |
 | Session wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
-- Name the session ontology directory, `{session-root}/ontology/`, in every Ideation, Execution, and Review
-  assignment.
 - Keep these TODO titles fixed. Topic, task, assignment, stage, round, subject, and closure identifiers belong
   in contracts, paths, and evidence rather than TODO titles:
 
@@ -247,7 +244,7 @@ CW · Wrap-up
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
   parent with children `<class>/<runtime>/report.md`, one class
   directory per artifact class the subject contains, so a single-class subject has one. Write each of those
-  paths as an ignored session record under Memory preferences. Keep class tokens `code`, `docs`, and
+  paths as an ignored session record as Memory defines. Keep class tokens `code`, `docs`, and
   `design`, and runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias
   historical names such as `codex.md`. Use
   `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
@@ -291,9 +288,9 @@ CW · Wrap-up
   changes remain, stop and require `commit` first; otherwise organize the accepted closure input under
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
-- Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md) preferences, including Closure,
-  to the full session root and closure input: extract accepted knowledge into existing homes, promote each
-  session area file at `{session-root}/ontology/<area>.yaml` into Memory `ontology/` under Memory Closure, write
+- Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md), including Closure,
+  to the full session root and closure input: extract accepted knowledge into existing homes, update
+  `memory/ontology/` only for a unit change an accepted handoff names, write
   one `reports/note/` durable work account, and write `history/` only on durable change. Supply the exact absolute
   current-project Memory root, update only that boundary, verify it, and create one focused Memory commit or a
   verified no-change result.
@@ -334,5 +331,5 @@ CW · Wrap-up
 | [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff. |
 | [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff. |
 | [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff. |
-| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
+| [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
 | [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |

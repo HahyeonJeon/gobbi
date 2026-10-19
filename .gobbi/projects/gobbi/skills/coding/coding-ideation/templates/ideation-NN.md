@@ -56,7 +56,7 @@
 
 ### Conceptual Definition
 
-{What will be implemented, and the vocabulary for it: give each term one preferred name, a one-sentence definition, and, for a domain concept, its Ontology kind. List the session ontology unit ids this design adds, changes, or removes. Name no directory, file, class, or function.}
+{What will be implemented, and the vocabulary for it: give each term one preferred name, a one-sentence definition, and, for a domain concept, its Ontology kind. List the unit ids this design adds, changes, or removes. Name no directory, file, class, or function.}
 
 ### Class and Function Design
 

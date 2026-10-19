@@ -9,18 +9,17 @@ questions are in Ontology Facets.
 
 - Read the facets the accepted design gives each document, section, and defined term you will write. Documents
   and sections are under Structure and Claims, and defined terms are under Naming and Vocabulary.
-- Read the session area file: the session's working model of one domain area, at the path
-  [Ontology Storage](../../ontology/SKILL.md#storage) gives. Look up each domain unit the design names by id.
+- Read the domain model in `memory/ontology/`. Look up each domain unit the design names by id. Do not write
+  `sessions/<session>/ontology/`.
 - When no Ideation ran, state the facets of each document, section, and defined term you create in the
   [execution handoff](handoff.md), as [Ontology Facets](../../ontology/SKILL.md#facets) states. Give each new
-  domain concept one [kind](../../ontology/SKILL.md#kinds), and write it to the session area file, seeding the
-  file first as Ontology Storage states.
+  domain concept one [kind](../../ontology/SKILL.md#kinds), and name its unit id in the handoff.
 - The execution handoff's fields are not written yet. Put any facets you state there in their own section, and
   the unit ids that [Handoff](#handoff) asks for in another section.
 
 ## While Writing
 
-- Write each unit's preferred name from the session area file. A non-preferred name appears only where it
+- Write each unit's preferred name from `memory/ontology/`. A non-preferred name appears only where it
   points the reader to the preferred one, as "Leg states" points to "Flight states".
 - Describe a state only as its Process lists it, and a change only as its Action type states it. "Flight states"
   lists the four Flight lifecycle states, and "Delay a flight" says a departed flight stays unchanged because
@@ -33,8 +32,7 @@ questions are in Ontology Facets.
 - Stop and return to the caller when the writing needs a term or unit that contradicts the accepted design. Do
   not coin it. If a source names a `diverted` state, which the Flight lifecycle lacks, return it, naming
   `flightLifecycle` and `flight.state`, and keep "Flight states" at four states.
-- For any other change that a document you build makes to a domain unit, update the session area file in the
-  same step. If controllers call a delay a "retime", add `retime` to the `definition.aliases` of `delay-flight`.
-- List in the handoff each unit id you added, changed, or removed, or write that none changed. At closure, the
-  file reaches Memory only when an accepted handoff names each changed id. Never write Memory `ontology/`
-  yourself.
+- For any other change that a document you build makes to a domain unit, name it in the handoff in the same
+  step. If controllers call a delay a "retime", record `retime` as an alias of `delay-flight`.
+- List in the handoff each unit id you added, changed, or removed, or write that none changed. Closure updates
+  `memory/ontology/` only when an accepted handoff names each changed id. Do not write that directory yourself.

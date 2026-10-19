@@ -335,4 +335,4 @@ Set `partner_timeout` to 3600 unless the caller already named another positive i
 |---|---|
 | [Delegation](../../delegation/SKILL.md) | Defines the base prompt, skills and docs indexes, and final Handoff contract. |
 | [Gobbi](../SKILL.md) | Owns the session-wide Partner policy and route. |
-| [Memory](../../memory/SKILL.md) | Defines the memory tree and ignored session-record conventions. |
+| [Memory](../../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |

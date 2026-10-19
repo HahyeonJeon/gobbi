@@ -17,8 +17,8 @@ authority.
 ### Keep project memory current
 
 Extract accepted design, decisions, behaviors, and standing preferences into existing Memory homes instead of
-adding a session-shaped record. Update current knowledge through Memory directory conventions, and preserve
-completed point-in-time records under those conventions.
+adding a session-shaped record. Update current knowledge through Memory, and preserve
+completed point-in-time records under Memory.
 
 ### Integrate the exact accepted work
 
@@ -101,10 +101,9 @@ altered completion claim.
 
 - Give one writer the frozen closure evidence, session and memory roots, allowed and protected paths, required
   actions, expected result, and verification contract.
-- Require the writer to apply [Memory](../memory/SKILL.md) preferences, including Closure, to extract accepted
+- Require the writer to apply [Memory](../memory/SKILL.md), including Closure, to extract accepted
   design, decisions, intended behaviors, and standing preferences into `design/`, `learnings/`, and `backlogs/`.
-  The writer also promotes each session area file at `{session-root}/ontology/<area>.yaml` into Memory
-  `ontology/` under Memory Closure.
+  The writer updates `memory/ontology/` only for a unit change an accepted handoff names.
 - Update or merge existing homes first; create only missing content. Reject session-shaped dumps and talk.
 
 #### 2.2 Write the durable work Note
@@ -178,5 +177,5 @@ altered completion claim.
 |---|---|
 | [Memory-note template](templates/memory-note.md) | Tracked Memory report shape for the Phase 2 `reports/note/` work account. |
 | [Note template](templates/note.md) | Response-only Git/recovery note for every terminal state. |
-| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, Closure extraction, and session-versus-durable split. |
+| [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it, including Closure. |
 | [Git](../git/SKILL.md) | Supplies focused-commit, integration, retained-object, and recovery preferences; Wrap-up owns the ordered Git actions. |

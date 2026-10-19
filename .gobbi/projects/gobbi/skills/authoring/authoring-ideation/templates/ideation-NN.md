@@ -64,7 +64,7 @@
 
 ### Naming and Vocabulary
 
-{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. A defined term that is not a domain concept is an artifact: state its five facets here, including its non-preferred names. For a term that names a domain concept, give its preferred name, one kind, and its session unit id. List the session ontology unit ids this design adds, changes, or removes.}
+{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. A defined term that is not a domain concept is an artifact: state its five facets here, including its non-preferred names. For a term that names a domain concept, give its preferred name, one kind, and its unit id. List the unit ids this design adds, changes, or removes.}
 
 ### Voice and Evidence
 

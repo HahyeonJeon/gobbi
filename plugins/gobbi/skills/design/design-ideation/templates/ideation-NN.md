@@ -80,4 +80,4 @@
 
 ### Components
 
-{The inventory the accepted wireframe reveals, defined after the accepted direction. Components are artifacts: state each one's five facets here, with variants and states as properties. Name the Object type each component presents and the Action type each control triggers. For a domain concept, give one kind and its session unit id. List the session ontology unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}
+{The inventory the accepted wireframe reveals, defined after the accepted direction. Components are artifacts: state each one's five facets here, with variants and states as properties. Name the Object type each component presents and the Action type each control triggers. For a domain concept, give one kind and its unit id. List the unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}

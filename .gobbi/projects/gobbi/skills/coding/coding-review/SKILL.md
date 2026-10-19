@@ -89,8 +89,8 @@ limit causes and verdicts to what the evidence supports.
 
 - Load, in this order, whichever exist: current design memory under the project's
   `memory/design/`; project vision, philosophy, architecture, and governing decisions;
-  accepted session design; and the session ontology area files in the session's `ontology/`, with their
-  Memory copies under the project's `memory/ontology/`. Then load
+  accepted session design; the session README; and the area files under the project's `memory/ontology/`.
+  Then load
   [Coding Principles](../principles.md) with [Ontology](../../ontology/SKILL.md), and load
   [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the
   target defines or changes classes, interfaces, or inheritance.

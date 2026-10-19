@@ -108,9 +108,9 @@ affected set. Repository type or file extension alone does not.
   apply the entries that Step 1.3 loaded, and record each new directory’s, file’s, public class’s, and public
   function’s [Modularization](../principles.md#modularization) lines and any added abstraction’s force in the
   handoff before you create it.
-- When a built unit adds or changes a domain unit, such as a new Property, update the session area file as
-  Ontology [Storage](../../ontology/SKILL.md#storage) states, and name the unit id in the handoff. Stop and
-  return to the caller when that change contradicts the accepted design.
+- When a built unit adds or changes a domain unit, such as a new Property, name the unit id in the handoff.
+  Do not write `sessions/<session>/ontology/`, and stop and return to the caller when that change contradicts
+  the accepted design.
 
 #### 3.2 Prove each slice
 
@@ -176,5 +176,5 @@ affected set. Repository type or file extension alone does not.
 |---|---|
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Rules and entries for code that creates or changes classes, interfaces, or inheritance. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, applied while code is written and simplified. |
-| [Ontology](../../ontology/SKILL.md) | Kinds and facets that Step 3.1 records as Modularization lines when there was no Ideation, and the session storage that Step 3.1 updates. |
+| [Ontology](../../ontology/SKILL.md) | Kinds and facets that Step 3.1 records as Modularization lines when there was no Ideation. A changed unit id goes in the handoff. |
 | [Delegation](../../delegation/SKILL.md) | Handoff Content that Step 5.1 returns with the Execution fields. |

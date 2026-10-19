@@ -42,8 +42,7 @@ breaks.
 - **MUST write one closed indexed result at the caller-supplied output root, located by `ideation-index.md`.**
   Write every result file directly in that root, and list each one from `ideation-index.md` or
   `discussion-index.md`.
-- **MUST keep unconfirmed requirements, study, discussion, and design in the caller-named draft location,
-  except the session ontology area file that [Ontology Storage](../../ontology/SKILL.md#storage) governs.**
+- **MUST keep unconfirmed requirements, study, discussion, and design in the caller-named draft location.**
   Write the result to the output root only after the user confirms the design shown in Step 4.1.
 - **MUST stop at the design boundary.** Private helpers, implementation details, recipes, file-level edits,
   code, and other realized output are out of scope.
@@ -99,8 +98,8 @@ breaks.
   Design only the `Material change` levels.
 - Under Conceptual Definition, state what will be implemented and define its vocabulary by the
   [Ontology](../../ontology/SKILL.md) vocabulary rules. Name no directory, file, class, or function.
-- Give each domain concept its Ontology [kind](../../ontology/SKILL.md#kinds), write it to the session area file
-  as Ontology [Storage](../../ontology/SKILL.md#storage) states, and name its unit id under Conceptual Definition.
+- Give each domain concept its Ontology [kind](../../ontology/SKILL.md#kinds) and name its unit id under
+  Conceptual Definition. Do not write `sessions/<session>/ontology/`.
 
 #### 3.2 Design the public classes and functions
 
@@ -154,5 +153,5 @@ breaks.
 | [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP defaults and entry index, studied in Step 2.1. Open its supporting docs only when a choice needs them. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, studied in Step 2.1 and applied in Steps 3.2 and 3.3. |
-| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, rules, and session storage, studied in Step 2.1 and applied in Steps 3.1 to 3.3. |
+| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules, studied in Step 2.1 and applied in Steps 3.1 to 3.3. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

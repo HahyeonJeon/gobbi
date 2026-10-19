@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
 
+### Changed
+
+- Memory decides when to write project memory or a session record. Every `memory/` directory is in `memory.md`. `record.md` covers `sessions/` only.
+- Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read. `memory/ontology/` stays the domain model.
+
 ## 1.3.3 - 2026-10-01
 
 This patch adds phase roles, ontology support, and session-start settings checks. By project decision,
