@@ -13,12 +13,11 @@ In a Claude Code session:
 /reload-plugins
 ```
 
-Allow the fourteen Gobbi roles in project `.claude/settings.json`.
-The roles are manager, assistant, coding-leader, coding-planner, coding-executor, coding-reviewer,
-authoring-leader, authoring-planner, authoring-executor, authoring-reviewer, design-leader,
-design-planner, design-executor, and design-reviewer.
+Allow the five Gobbi roles in project `.claude/settings.json`.
+The roles are manager, assistant, leader, executor, and reviewer.
 Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
-The twelve names after assistant are phase roles. The named role must match the assignment phase.
+Leader, executor, and reviewer are phase roles, and the named role must match the assignment phase.
+Leader owns Ideation and Planning, executor owns Execution, and reviewer owns Review.
 
 ```json
 {
@@ -30,18 +29,9 @@ The twelve names after assistant are phase roles. The named role must match the 
       "Skill(gobbi:delegation)",
       "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
-      "Agent(gobbi:coding-leader)",
-      "Agent(gobbi:coding-planner)",
-      "Agent(gobbi:coding-executor)",
-      "Agent(gobbi:coding-reviewer)",
-      "Agent(gobbi:authoring-leader)",
-      "Agent(gobbi:authoring-planner)",
-      "Agent(gobbi:authoring-executor)",
-      "Agent(gobbi:authoring-reviewer)",
-      "Agent(gobbi:design-leader)",
-      "Agent(gobbi:design-planner)",
-      "Agent(gobbi:design-executor)",
-      "Agent(gobbi:design-reviewer)"
+      "Agent(gobbi:leader)",
+      "Agent(gobbi:executor)",
+      "Agent(gobbi:reviewer)"
     ]
   }
 }

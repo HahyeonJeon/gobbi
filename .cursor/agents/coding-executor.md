@@ -1,1 +1,0 @@
-../../.gobbi/projects/gobbi/agents/cursor/coding-executor.md

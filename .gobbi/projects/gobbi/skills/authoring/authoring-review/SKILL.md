@@ -10,7 +10,7 @@ skill-type: operation
 Authoring Review binds and freezes one writing subject, criticizes it, applies caller criteria, and writes
 `report.md`.
 Use it after one exact stable writing subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh `authoring-reviewer` and does not reuse the producer. It does not modify the target
+The caller assigns a fresh `reviewer` and does not reuse the producer. It does not modify the target
 or decision state.
 
 This skill is a draft adapted from Evaluation.

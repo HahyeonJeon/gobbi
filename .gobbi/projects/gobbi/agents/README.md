@@ -1,39 +1,29 @@
 # Gobbi role contracts
 
-Gobbi has fourteen roles. Manager and assistant are session roles. The other twelve are phase roles.
-Phase is a role. Manager is session authority. Assistant is support. Neither is a phase role.
+Gobbi has five roles. Manager and assistant are session roles. Leader, executor, and reviewer are phase
+roles. Manager is session authority. Assistant is support. Neither is a phase role.
 
-Coding is software. That includes software architecture, source, tests, and run/build config. Authoring is
-durable writing: docs, skills, and changelog. Design is visual work: UI, images, video, presentations,
-reports, and other visual artifacts.
+The named phase role matches the assignment phase. Ideate is leader. Plan is leader. Implement is executor.
+Review is reviewer.
 
-The named phase role matches both the domain and the assignment phase. Ideate is leader. Plan is
-planner. Implement is executor. Review is reviewer.
+Leader owns Ideation and Planning. Leader writes the ideation result and the plan result and does not change
+the product. Executor owns Execution and changes the product. Reviewer owns Review. Reviewer reads another
+agent's work, does not change it, and never reviews its own.
 
-Leader owns ideation. Leader writes the ideation result and does not change the product. Planner owns
-planning. Planner writes the plan result and does not change the product. Executor owns execution and
-changes the product. Reviewer owns review. Reviewer reads another agent's work in that domain and does
-not change it.
+Role files hold no domain. The brief's Role names the domain expert the work needs. The coding, authoring,
+and design skills hold the domain standards, and the brief's Materials index the ones the work needs.
 
-Each role file is intro, Responsibility, In scope, and Out of scope. Responsibility is the quality bar
-the role owns. In scope is CRUD and domain subjects. Out of scope is Never.
+Each role file is intro, Responsibility, In scope, and Out of scope. The intro is a persona: the experience,
+abilities, and character the role needs, shown as working habits. Responsibility is the quality bar the role
+owns. In scope is CRUD and the role's subjects. Out of scope is Never.
 
-| Role | Phase | Subject |
+| Role | Phase | Result |
 |---|---|---|
 | manager | session authority | User, mode, routing, acceptance |
 | assistant | support | Lookup and authorized Memory or record work |
-| coding-leader | ideation | Software: architecture, source, tests, and run/build config |
-| coding-planner | planning | Software: architecture, source, tests, and run/build config |
-| coding-executor | execution | Software: architecture, source, tests, and run/build config |
-| coding-reviewer | review | Software: architecture, source, tests, and run/build config |
-| authoring-leader | ideation | Durable writing: docs, skills, and changelog |
-| authoring-planner | planning | Durable writing: docs, skills, and changelog |
-| authoring-executor | execution | Durable writing: docs, skills, and changelog |
-| authoring-reviewer | review | Durable writing: docs, skills, and changelog |
-| design-leader | ideation | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
-| design-planner | planning | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
-| design-executor | execution | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
-| design-reviewer | review | Visual work: UI, images, video, presentations, reports, and other visual artifacts |
+| leader | ideation and planning | The ideation result and the plan result |
+| executor | execution | Changes to the product |
+| reviewer | review | A review report on another agent's work |
 
 Each role has one full copy per runtime, and all four runtimes live together in this directory.
 
@@ -79,7 +69,7 @@ unlimited depth, and a subfolder becomes part of the agent's scoped identifier â
 `agents/review/security.md` in plugin `p` registers as `p:review:security`. Documented for Claude Code at
 `docs/en/sub-agents`, and measured: same-basename files in different subdirectories do **not** collide, so
 shipping `agents/claude/manager.md` would register `gobbi:claude:manager` instead of `gobbi:manager`, and the
-cursor and grok copies would add twenty-eight more live agents with identical leaf names. `claude plugin validate
+cursor and grok copies would add ten more live agents with identical leaf names. `claude plugin validate
 --strict` reports no warning about any of it.
 
 So the package flattens Claude's contracts into `agents/` and ships the other three in a `runtimes/` sibling,

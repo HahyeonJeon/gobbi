@@ -7,8 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+**Upgrade:** Gobbi now has five roles: manager, assistant, leader, executor, and reviewer. Replace each old
+`coding-*`, `authoring-*`, or `design-*` role call by its phase. A `*-leader` or `*-planner` call becomes
+`leader`, a `*-executor` call becomes `executor`, and a `*-reviewer` call becomes `reviewer`. Put the domain
+expert in the brief's Role instead of the role name. In Claude `.claude/settings.json`, replace the twelve old
+`Agent(gobbi:...)` phase-role entries with `Agent(gobbi:leader)`, `Agent(gobbi:executor)`, and
+`Agent(gobbi:reviewer)`. Rerun the matching runtime setup script; Codex setup adds the three new
+`.codex/agents` role files. Claude Code and Grok load the roles from the updated plugin. Update Cursor project
+adapters from the new Cursor role contracts. Setup does not edit an existing `.claude/settings.json` and does
+not delete old role files; remove those after you migrate their callers.
+
 ### Removed
 
+- **Breaking:** Removed the twelve domain phase roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, in every runtime. Removed the planner role; leader now owns Planning.
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
 - Removed the Ontology skill and the Recursive Exploration skill.
@@ -20,6 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Gobbi agents are classified by role, not by domain and phase. The five roles are manager, assistant, leader, executor, and reviewer, with one file per runtime: twenty role files instead of fifty-six. Leader owns the Ideation result and the Planning result and never changes the product. Executor changes the product. Reviewer reads another agent's work, never changes it, and never reviews its own.
+- Role files hold no coding, authoring, or design content. The brief's Role names the domain expert, and the coding, authoring, and design skills hold the domain standards.
+- Every role intro is now a persona: the experience, abilities, and character the role needs, shown as working habits. No role file uses the "world-best" frame.
+- Pins carry over by phase. Leader uses `claude-sonnet-5-5` at `high` and Codex `gpt-6.1-sol` at `high`. Executor uses `claude-opus-5-5` at `high` and Codex `gpt-6-astra` at `high`. Reviewer uses `claude-sonnet-5-5` at `xhigh` and Codex `gpt-6.1-sol` at `high`. Manager and assistant keep their pins. Grok is `grok-4.7` at `xhigh` for every role. Cursor manager and assistant stay `grok-4.7[effort=xhigh]`, and the other Cursor roles use their Claude model and effort in the bracket.
+- The manager's specialist pick is now leader for ideate and plan, executor for implement, and reviewer for review. Cowork, Workflow, and the Coding, Authoring, and Design Review skills assign these roles.
+- Setup installs and allows five roles. The minimum Claude allow list, the Claude and Codex setup guides, the project README, and this checkout's `.claude/settings.json`, `.codex/agents/`, and `.cursor/agents/` name the five roles.
 - Delegation is now a general skill for writing a brief that hands work to another agent, in any project or field, with no Gobbi content. A brief has, in order, Role, Goal, Context, Constraints, Taste and Preference, Materials, and Return. Role describes the experience, abilities, and character of a real expert through the habits they work by. Goal is free-form: it states concretely what must be true when the work is done, who uses the result, how to tell it is done, and what a strong result looks like. Constraints hold only rules that must hold, each with a reason, and end with "Choose the approach within these boundaries." Taste and Preference states known leanings, or one default line when none is known. Materials is one `Name | Path | Description` table. The Handoff opens with `Done` or `Blocked` unless the caller names its own status.
 - Gobbi entry now has each specialist brief write a Role for the named specialist, name its phase in Context, put the skills and docs indexes in Materials, and tell the specialist to load an index row only when it cannot proceed without it. Cowork and Workflow review briefs now also name the review skill's report template.
 - Memory decides when to write project memory or a session record. Every `memory/` directory is in `memory.md`. `record.md` covers `sessions/` only.

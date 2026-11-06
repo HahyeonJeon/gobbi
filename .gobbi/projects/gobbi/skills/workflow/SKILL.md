@@ -47,9 +47,8 @@ the worktree and session root recorded by Configuration and the latest handoff.
   dependent work starts.
 - **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
   self-reviews; independent local and remaining Partner inputs stay separate until synthesis; REVIEW, when
-  the unit includes it, uses, for each artifact class the unit contains, one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and one attempted invocation per
-  remaining runtime.
+  the unit includes it, uses, for each artifact class the unit contains, one fresh `reviewer`, not the
+  producer, and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
@@ -158,9 +157,8 @@ P3 · Note
   unresolved material code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it
   has an unresolved material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md)
   when it has an unresolved material visual-design choice. Apply the selected operation
-  through Delegation to the matching domain leader (coding-leader, authoring-leader, or design-leader)
-  with that skill's complete caller contract plus Workflow's project/work scope,
-  recorded participant discussion records,
+  through Delegation to the `leader` with that skill's complete caller contract plus Workflow's project/work
+  scope, recorded participant discussion records,
   fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
   `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, caller-named draft location under
   `{session-root}/tmp/`, and recovery boundary. Route a returned decision package to Step 1.4, then resume that
@@ -201,7 +199,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   [Design Planning](../design/design-planning/SKILL.md) when it is visual work. Apply the selected
   operation through Delegation with absolute output root
   `{session-root}/2-planning/outputs/planning/` and exact locator
-  `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching domain planner (coding-planner, authoring-planner, or design-planner) writes and self-reviews the indexed plan
+  `{session-root}/2-planning/outputs/planning/plan-index.md`. The `leader` writes and self-reviews the indexed plan
   while preserving Ideation members and locked decisions.
 
 #### 2.2 Record Planning
@@ -216,7 +214,7 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 
 - **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
   available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
-  gives one matching domain executor (coding-executor, authoring-executor, or design-executor) exact inputs, paths, authority, criteria, checks, and protected work.
+  gives the `executor` exact inputs, paths, authority, criteria, checks, and protected work.
 - **WORK:** Apply the matching domain execution skill:
   [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
   [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
@@ -224,10 +222,9 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   Keep one active writer, read-only helpers, self-review, fresh verification, and one
   focused local commit. An in-stage self-review cannot replace stage REVIEW.
 - **REVIEW:** Freeze the commit and result and name `review-depth` `execution-implementation`. For each
-  artifact class the task contains, apply the matching domain review skill through one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
-  and launch one read-only background [Partner](../partner/SKILL.md) run per remaining runtime from the
-  recorded set minus the active runtime. The Delegation brief for each reviewer and each run names that
+  artifact class the task contains, apply the matching domain review skill through one fresh `reviewer`, not
+  the producer, and launch one read-only background [Partner](../partner/SKILL.md) run per remaining runtime
+  from the recorded set minus the active runtime. The Delegation brief for each reviewer and each run names that
   class's slice, the review skill and its report template, and `review-depth`, and the manager saves each
   final message as `<class>/<runtime>/report.md`; if that set is empty, launch nothing. A `<class>/<runtime>/`
   directory without a complete `report.md` is incomplete and never PASS input.
@@ -290,12 +287,12 @@ Note after Continue.
 
 - Freeze the actual closure tree, name `review-depth` `by-owning-stage`, and review it with the Memory
   diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
-  risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and
-  one read-only background Partner run per remaining runtime. The Delegation brief for each reviewer and each
-  run names that class's slice, the review skill and its report template, and `review-depth`. The manager
-  saves each run's final message as `wrap-up/review/iteration-N/<class>/<runtime>/report.md`; if that set is
-  empty, launch nothing, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+  risks, and recovery paths. For each artifact class the closure contains, use one fresh `reviewer`, not the
+  producer, and one read-only background Partner run per remaining runtime. The Delegation brief for each
+  reviewer and each run names that class's slice, the review skill and its report template, and
+  `review-depth`. The manager saves each run's final message as
+  `wrap-up/review/iteration-N/<class>/<runtime>/report.md`; if that set is empty, launch nothing, and an
+  Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
   class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
   return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
