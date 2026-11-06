@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read.
 - Partner is now a short manual for a manager agent. The manager launches a Codex, Claude Code, or Grok CLI itself as a background process, learns when the run ends, reads its final message and changed files, and follows up by resuming the run's session. It documents three access levels with each runtime's flags: read-only, workspace-write, and full-access, which needs user authorization. The read-only, workspace-write, and resume commands were measured on codex-cli 0.167.0, Claude Code 2.1.319, and grok 1.0.70.
 - Partner moved out of the Gobbi entry skill to its own top-level skill, `skills/partner/`. It holds no Gobbi content, so it no longer sits under `skills/gobbi/`.
+- A user can now invoke Partner directly. It runs the runtime the user names, or asks which one when none is named.
 - Cowork and Workflow review now run each remaining-runtime Partner read-only, and the manager saves each run's final message as `<class>/<runtime>/report.md`.
 - Coding Modularization stands alone. Each new directory, file, public class, and public function still gets five unit lines, and each public class and function still gets a caller contract, which now separates a unit that computes from a unit that changes state. The Ontology Record mapping table and the id-case rule are gone.
 

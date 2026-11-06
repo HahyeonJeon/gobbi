@@ -3,13 +3,13 @@ name: partner
 description: "Partner is a manual for running a Codex, Claude Code, or Grok CLI as a background partner agent."
 allowed-tools: Read, Bash
 skill-type: tool
-user-invocable: false
 ---
 
 # Partner
 
 Partner is a manual for a manager agent that runs another runtime's CLI as a partner: Codex, Claude Code, or
 Grok. Use it to launch a partner in the background, know when the run ends, read its output, and follow up.
+When a user invokes it directly, run the runtime the user names, or ask which one when none is named.
 
 ## Principles
 
