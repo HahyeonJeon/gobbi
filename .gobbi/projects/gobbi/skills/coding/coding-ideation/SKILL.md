@@ -26,8 +26,8 @@ independent subagents before you recommend a design.
 ### Keep the design simple and every unit defined
 
 The best design meets the requirements with the fewest units, and no pattern is the default. Define each new
-or changed directory, file, public class, and public function by the [Ontology](../../ontology/SKILL.md)
-facets, in the code form that [Modularization](../principles.md#modularization) names.
+or changed directory, file, public class, and public function by its
+[Modularization](../principles.md#modularization) lines.
 
 ### Design one dependent level at a time
 
@@ -74,9 +74,9 @@ breaks.
 #### 2.1 Study the evidence
 
 - Study the codebase and project docs, then
-  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md),
-  [Coding Principles](../principles.md), and [Ontology](../../ontology/SKILL.md). Open supporting docs,
-  official docs, references, or trends only when that evidence can change an in-scope choice.
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) and
+  [Coding Principles](../principles.md). Open supporting docs, official docs, references, or trends only when
+  that evidence can change an in-scope choice.
 - Record each study once as an `S{N}` entry in a draft part made from the
   [discussion part template](templates/discussion-NN.md).
 - When study finds a missing requirement or a user-owned choice, return the question through the caller's
@@ -96,10 +96,9 @@ breaks.
 
 - Label each level `Inherited`, `Not applicable`, or `Material change` under its Design heading in the draft.
   Design only the `Material change` levels.
-- Under Conceptual Definition, state what will be implemented and define its vocabulary by the
-  [Ontology](../../ontology/SKILL.md) vocabulary rules. Name no directory, file, class, or function.
-- Give each domain concept its Ontology [kind](../../ontology/SKILL.md#kinds) and name its unit id under
-  Conceptual Definition. Do not write `sessions/<session>/ontology/`.
+- Under Conceptual Definition, state what will be implemented and define its vocabulary: give each term one
+  preferred name and a one-sentence definition, chosen with [Naming](../principles.md#naming). Name no
+  directory, file, class, or function.
 
 #### 3.2 Design the public classes and functions
 
@@ -114,7 +113,7 @@ breaks.
 #### 3.3 Place the directories and files
 
 - Under Codebase Structure, draw the new or changed directories and files with their one-way relationships,
-  and give each one its Modularization lines: the five facet lines, with no caller contract. Choose them with
+  and give each one its Modularization lines: the five unit lines, with no caller contract. Choose them with
   [Modularization](../principles.md#modularization) and [Naming](../principles.md#naming).
 - Return to Step 3.2 when a placement shows that the class and function design cannot stand.
 
@@ -152,6 +151,5 @@ breaks.
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
 | [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP defaults and entry index, studied in Step 2.1. Open its supporting docs only when a choice needs them. |
-| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, studied in Step 2.1 and applied in Steps 3.2 and 3.3. |
-| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules, studied in Step 2.1 and applied in Steps 3.1 to 3.3. |
+| [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, studied in Step 2.1 and applied in Steps 3.1 to 3.3. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

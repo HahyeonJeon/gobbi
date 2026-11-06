@@ -78,7 +78,7 @@ A caller or an explicit user request owns when a write happens. Do not invent a 
   the required fields are present.
 - Remove current memory that this write replaces. Leave an earlier report, history file, or session record in
   place, and link a later correction.
-- Stop and report a missing caller, a failed Ontology check, or a unit change no accepted handoff names.
+- Stop and report when the caller is missing.
 
 ### Phase 3 — Closure
 
@@ -88,8 +88,6 @@ A caller or an explicit user request owns when a write happens. Do not invent a 
   standing preferences into the homes in [Memory directories](memory.md).
 - Place a decision in the design it shapes. Place a standing preference in `design/process/` unless it
   constrains a named feature or architecture file.
-- Update `memory/ontology/` only when an accepted handoff names the unit change. Do not read or write
-  `sessions/<session>/ontology/`. Stop when a unit change has no accepted handoff.
 
 #### 3.2 Write the closure memory
 
@@ -105,5 +103,4 @@ A caller or an explicit user request owns when a write happens. Do not invent a 
 | [Memory directories](memory.md) | Definition, naming, and writing rules for every directory under `memory/`. |
 | [Session records](record.md) | Definition, naming, and writing rules for session records under `sessions/`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Caller that runs Closure, including the durable `reports/note/`. |
-| [Ontology](../ontology/SKILL.md) | Checks and record format for the domain model that `ontology/` stores. |
 | [Git](../git/SKILL.md) | Conventions for focused Memory commits. |

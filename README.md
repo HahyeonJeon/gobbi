@@ -150,8 +150,8 @@ permissions using the domain and phase:
 Choose `leader` for ideation, `planner` for planning, `executor` for execution, and `reviewer` for review.
 For example, implementation formerly assigned to `developer` now uses `coding-executor`.
 
-Rerun the matching runtime setup script linked above to add `memory/ontology/`. Codex setup also adds the new
-`.codex/agents` role files. Claude Code and Grok load roles from the updated plugin. Cursor projects using
+Rerun the matching runtime setup script linked above. Codex setup adds the new `.codex/agents` role files.
+Claude Code and Grok load roles from the updated plugin. Cursor projects using
 `.cursor/agents` must update those files from the [Cursor role contracts](plugins/gobbi/runtimes/cursor/).
 Setup leaves existing `.claude/settings.json` and old project role files untouched. Update those permissions
 and remove obsolete role files after migrating their callers.

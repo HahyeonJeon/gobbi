@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
+- Removed the Ontology skill and the Recursive Exploration skill.
+- Removed the `ontology.md` children of Authoring and Design Execution and Review, and every Ontology step in Coding, Authoring, and Design Ideation, Execution, and Review. Designs no longer give kinds, facets, or unit ids, and Review no longer loads Ontology.
+- Removed the Memory `ontology/` home. Setup no longer creates or checks `memory/ontology/README.md`, and Closure in Wrap-up and Cowork no longer updates `memory/ontology/`.
 
 ### Changed
 
 - Memory decides when to write project memory or a session record. Every `memory/` directory is in `memory.md`. `record.md` covers `sessions/` only.
-- Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read. `memory/ontology/` stays the domain model.
+- Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read.
+- Coding Modularization stands alone. Each new directory, file, public class, and public function still gets five unit lines, and each public class and function still gets a caller contract, which now separates a unit that computes from a unit that changes state. The Ontology Record mapping table and the id-case rule are gone.
 
 ## 1.3.3 - 2026-10-01
 

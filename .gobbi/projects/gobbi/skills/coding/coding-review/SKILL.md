@@ -89,9 +89,8 @@ limit causes and verdicts to what the evidence supports.
 
 - Load, in this order, whichever exist: current design memory under the project's
   `memory/design/`; project vision, philosophy, architecture, and governing decisions;
-  accepted session design; the session README; and the area files under the project's `memory/ontology/`.
-  Then load
-  [Coding Principles](../principles.md) with [Ontology](../../ontology/SKILL.md), and load
+  accepted session design; and the session README. Then load
+  [Coding Principles](../principles.md), and load
   [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the
   target defines or changes classes, interfaces, or inheritance.
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
@@ -165,7 +164,6 @@ limit causes and verdicts to what the evidence supports.
 |---|---|
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP principles, SOLID, and design patterns that Step 1.3 loads for object-oriented code. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API that Step 1.3 loads. |
-| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules that Step 1.3 loads with Coding Principles. |
 | [Coding Ideation](../coding-ideation/SKILL.md) | Operation whose result `ideation-design` reviews. |
 | [Coding Planning](../coding-planning/SKILL.md) | Operation whose result `planning-decomposition` reviews. |
 | [Report template](report.md) | Default structure for a short, evidence-based review report. |

@@ -60,11 +60,11 @@
 
 ### Structure and Claims
 
-{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing. Documents and sections are artifacts. State each one's five facets here.}
+{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing.}
 
 ### Naming and Vocabulary
 
-{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. A defined term that is not a domain concept is an artifact: state its five facets here, including its non-preferred names. For a term that names a domain concept, give its preferred name, one kind, and its unit id. List the unit ids this design adds, changes, or removes.}
+{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. Give each defined term one preferred name, and list the non-preferred names it replaces.}
 
 ### Voice and Evidence
 

@@ -289,8 +289,7 @@ CW · Wrap-up
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
 - Assign one assistant through Delegation to apply [Memory](../memory/SKILL.md), including Closure,
-  to the full session root and closure input: extract accepted knowledge into existing homes, update
-  `memory/ontology/` only for a unit change an accepted handoff names, write
+  to the full session root and closure input: extract accepted knowledge into existing homes, write
   one `reports/note/` durable work account, and write `history/` only on durable change. Supply the exact absolute
   current-project Memory root, update only that boundary, verify it, and create one focused Memory commit or a
   verified no-change result.

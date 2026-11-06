@@ -64,58 +64,42 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 ## Modularization
 
-**Description.** Modularization applies the [Ontology](../ontology/SKILL.md) facets and kinds to code. It gives
-each unit one conceptual definition, one secret, one boundary, one-way relationships, and the data it owns. A
-reader then finds where a change goes from the definition alone, and the unit can change its private parts
-without breaking callers. Before you create a directory, file, public class, or public function, write its five
-facet lines in the design record: the Ideation design, or the Execution handoff when there was no Ideation. A
-public class or function also gets a caller contract. Together these are the unit's Modularization lines.
-Source code does not carry them as comments. If a line fails, split, merge, or move the unit. Private helpers
-need only a good name.
+**Description.** Modularization gives each unit one conceptual definition, one secret, one boundary, one-way
+relationships, and the data it owns. A reader then finds where a change goes from the definition alone, and the
+unit can change its private parts without breaking callers. Before you create a directory, file, public class,
+or public function, write its five unit lines in the design record: the Ideation design, or the Execution
+handoff when there was no Ideation. A public class or function also gets a caller contract. Together these are
+the unit's Modularization lines. Source code does not carry them as comments. If a line fails, split, merge, or
+move the unit. Private helpers need only a good name.
 
-- **Conceptual definition** (the Definition facet): one sentence in domain words, with no "and".
+The five unit lines are:
+
+- **Conceptual definition:** one sentence in domain words, with no "and".
 - **Responsibility:** its secret, which is what only this unit changes: one decision, or the facts about one
   concept.
 - **Boundary:** what it hides, and the named neighbours it never imports. Keep the public surface small: other
   code imports only the names the unit chooses to share.
-- **Relationship:** what it uses, what uses it, and the Ontology units it realizes. Dependencies point one way,
-  with no cycles.
+- **Relationship:** what it uses and what uses it. Dependencies point one way, with no cycles.
 - **Properties:** the data it owns, with types, invariants, and whether each value is stable or changing; `None`
   when it owns none.
-- **Caller contract** (public classes and functions only): the code form of the Function or Action type that the
-  unit realizes. For a Function, state its inputs, its output, and the errors it raises; it changes nothing. For
-  an Action type, state its parameters, the checks that raise errors, the data it changes, its side effects, and
-  its allowed callers. A public class or function that realizes neither states inputs, output, and errors, as
-  for a Function.
 
-"Caller contract" is coding's name for the fields that each kind block of the
-[Ontology Record](../ontology/SKILL.md#record) keeps under Palantir names. Each part maps to one field:
+The caller contract applies to public classes and functions only. It states what a caller must know to call the
+unit, and its form depends on what the unit does:
 
-| Caller contract part | Record field |
-|---|---|
-| Function inputs | Function `parameters` |
-| Function output (the return value) | Function `output` |
-| Function errors | None; only the caller contract states them |
-| Action type parameters | Action type `parameters` |
-| Checks that raise errors | Action type `submissionCriteria` |
-| The error result | None; the record gives every Action type one failure result: nothing changes, and the failed criterion is named |
-| The data it changes | Action type `operations` |
-| Side effects | Action type `sideEffects` |
-| Allowed callers | The `RUN` grants of each Security policy that targets the Action type; a `PROPOSE` grant adds a proposer, not a caller |
+- **A unit that computes** returns a value and changes nothing. State its inputs, its output, and the errors it
+  raises.
+- **A unit that changes state** sets a field, writes a record, or sends a message. State its parameters, the
+  checks that raise errors, the error result, the data it changes, its side effects, and its allowed callers.
 
-A Function's `relationship` links, the units it reads, belong in the Relationship line. Directories and files
-state only the five facet lines.
+Directories and files state only the five unit lines.
 
-Record ids are lowerCamelCase, and Action type ids are kebab-case; code uses its language's case, so the Action
-type `delay-flight` is the Python function `delay_flight`.
+Keep computing and changing apart, so that a caller can call a computing unit anywhere and find each change to
+state in one place. A unit that computes sets no field, writes no record, and sends no message. Each change to
+state has one public entry point. It runs the checks, makes the change, sends the side effects, and returns the
+result or raises the error. When a check fails, it changes nothing, and the error names the failed check. No
+second public function makes the same change.
 
-Keep computing and changing apart, because Functions return results and only Action types commit changes
-([Ontology Rules](../ontology/SKILL.md#rules)). A function that realizes a Function returns a value and changes
-nothing: it sets no field, writes no record, and sends no message. Each Action type has one public entry point.
-It checks the submission criteria, applies its operations, sends the side effects, and returns the result or
-raises the error. No second public function makes the same change.
-
-The same terms set the defaults for directories and files. An existing project or framework layout wins.
+The unit lines also set the defaults for directories and files. An existing project or framework layout wins.
 
 - Start flat. Make a directory only when needed: when its files share one conceptual definition,
   responsibility, and boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the
@@ -124,8 +108,8 @@ The same terms set the defaults for directories and files. An existing project o
 - A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
   long.
 
-**Good example.** A flat package. Each file realizes one object, with the changes to that object, or one
-function.
+**Good example.** A flat package. Each file holds one domain object with the changes to it, or one
+computation.
 
 ```text
 airline/
@@ -135,20 +119,21 @@ airline/
   connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
-The design record gives these lines for `flight.py`. The code keeps only the Properties that Delay flight needs.
+The design record gives these lines for `flight.py`. The code keeps only the Properties that `delay_flight`
+needs.
 
 - **Conceptual definition:** one scheduled trip of one aircraft between two airports on one date.
 - **Responsibility:** which schedule changes a flight may take.
 - **Boundary:** hides `_DELAYABLE`; shares `Flight`, `FlightState`, `InvalidDelay`, and `delay_flight`; never
   imports `booking`.
-- **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`; realizes the Object type
-  Flight (`flight`) and the Action type Delay flight (`delay-flight`).
+- **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`.
 - **Properties:** `flight_id: str`, `number: str`, and `departure_date: date`, stable; `state: FlightState`,
   `estimated_departure: datetime`, `estimated_arrival: datetime`, and `delay_reason: str`, changing. Both
   estimated times are in UTC, with `tzinfo=UTC`. The estimated arrival is later than the estimated departure;
   `Flight` raises `ValueError` otherwise.
 
-The public function `delay_flight` also gets its caller contract, from the Delay flight fields:
+The public function `delay_flight` changes state, so its caller contract states its checks, error result,
+changes, side effects, and allowed callers:
 
 - **Caller contract:**
   `delay_flight(flight, new_estimated_departure, new_estimated_arrival, reason, *, notify) -> Flight`, where
@@ -156,9 +141,8 @@ The public function `delay_flight` also gets its caller contract, from the Delay
   `scheduled`, the new estimated departure is later than the current one, and the new estimated arrival is
   later than the new estimated departure. Error result: the flight is unchanged, no one is notified, and the
   error names the failed check. Changes: both estimated times and the reason are set. Side effects: notifies
-  each booked passenger, by calling `notify` once with the delayed flight after the change. `notify` is the
-  sender that the caller passes in, not a Delay flight parameter. Allowed callers: operations-control code, as
-  the Ops-control policy grant to run `delay-flight` states.
+  each booked passenger, by calling the caller's `notify` once with the delayed flight after the change.
+  Allowed callers: operations-control code only.
 
 ```python
 # airline/flight.py
@@ -240,10 +224,9 @@ assert sent == [late]
 ```
 
 **Anti-pattern: a one-file dump directory, and a rule hard-coded in code.** Its definition needs "and" (dates
-and connection times), so both kinds of change edit it. `MIN_CONNECTION` hard-codes a rule that belongs to Airport
-data: each airport sets its own minimum connection time, and people must be able to review it
-([Ontology Rules](../ontology/SKILL.md#rules)). `connection_ok` also drops the name
-`meets_minimum_connection_time`, the Python form of `meetsMinimumConnectionTime`.
+and connection times), so both kinds of change edit it. `MIN_CONNECTION` hard-codes a rule that belongs to airport
+data: each airport sets its own minimum connection time, and people must be able to review it there.
+`connection_ok` also drops the domain's name for the rule, `meets_minimum_connection_time`.
 
 ```python
 # airline/utils/helpers.py, the only file in utils/.

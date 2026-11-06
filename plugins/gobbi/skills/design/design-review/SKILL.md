@@ -84,9 +84,7 @@ limit causes and verdicts to what the evidence supports.
 
 - Load, in this order, whichever exist: current design memory under the project's
   `memory/design/`; project vision, philosophy, architecture, and governing decisions;
-  accepted session design; the session README; and the area files under the project's `memory/ontology/`.
-  Then load
-  [Ontology](../../ontology/SKILL.md) and [Design Review ontology](ontology.md).
+  accepted session design; and the session README.
 - Record missing bar sources as a Gap and never invent a vision. Never add these sources to
   gate criteria unless the caller listed them.
 - Freeze the exact artifact, state, version, or content hash only when that state is stable;
@@ -157,6 +155,4 @@ limit causes and verdicts to what the evidence supports.
 | Name | Description |
 |---|---|
 | [Report template](report.md) | Default structure for a short, evidence-based review report. |
-| [Ontology](../../ontology/SKILL.md) | Kinds, facets, test questions, and rules loaded in Step 1.3. |
-| [Design Review ontology](ontology.md) | Domain questions for visual work, loaded in Step 1.3. |
 | [Design Execution](../design-execution/SKILL.md) | Owns implementation, repair, verification, and the focused task commit. |

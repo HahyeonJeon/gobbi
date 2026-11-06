@@ -110,7 +110,7 @@ grep -q 'created: 0 filesystem objects' "$tmp/s9-claude.err" || fail ".claude/sk
 [[ ! -e "$fx/.gobbi" ]] || fail ".claude/skills S9 probe created .gobbi"
 pass "S9 refuses .claude/skills"
 
-# 2. claude.sh creates the shared layout plus Claude files, with only the eight README stubs.
+# 2. claude.sh creates the shared layout plus Claude files, with only the seven README stubs.
 set +e
 (cd "$fx" && "$SETUP" --project-key demo --skills-root "$SKILLS_ROOT" --agents-root "$AGENTS_ROOT") \
   >"$tmp/setup.out" 2>"$tmp/setup.err"
@@ -126,7 +126,6 @@ readme_stubs=(
   agents/README.md
   skills/README.md
   memory/design/README.md
-  memory/ontology/README.md
   memory/reports/README.md
   memory/history/README.md
   memory/materials/README.md
@@ -136,9 +135,10 @@ for stub in "${readme_stubs[@]}"; do
   [[ -f "$ns/$stub" && ! -s "$ns/$stub" ]] || fail "missing or non-empty README stub $stub"
 done
 readme_count=$(find "$ns" -name README.md -print | awk 'END { print NR }')
-((readme_count == 8)) || fail "fixture has $readme_count README.md files, expected 8"
+((readme_count == 7)) || fail "fixture has $readme_count README.md files, expected 7"
 [[ ! -e "$ns/memory/learnings/README.md" ]] || fail "learnings/README.md exists"
 [[ ! -e "$ns/memory/README.md" ]] || fail "memory/README.md exists"
+[[ ! -e "$ns/memory/ontology" ]] || fail "memory/ontology exists"
 
 leaf_dirs=(
   memory/design/architecture
@@ -158,7 +158,7 @@ for leaf in "${leaf_dirs[@]}"; do
 done
 [[ ! -e "$fx/.claude/skills" ]] || fail ".claude/skills exists after setup"
 [[ ! -e "$fx/.codex" ]] || fail ".codex exists after claude.sh"
-pass "claude.sh creates the shared layout plus Claude files, with only the eight README stubs"
+pass "claude.sh creates the shared layout plus Claude files, with only the seven README stubs"
 
 # 6. Setup covers every role and permission skill.
 #   - common.sh roles equal the canonical Claude contracts.

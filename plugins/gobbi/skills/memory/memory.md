@@ -14,14 +14,6 @@ report in place except to correct a factual error. Session files under `sessions
 | `design/process/` | A project process, workflow, or pipeline, including collaboration and standing preferences. | `<kebab-name>.md` | Put a standing preference here unless it constrains a named feature or architecture file. |
 | `design/roadmap/` | Past direction, current focus, future horizons, sequencing, and rationale. | `<kebab-name>.md` | Keep sequencing and the reason for it in the same file. |
 
-## ontology/
-
-| Path | Definition | Naming | Writing |
-|---|---|---|---|
-| `ontology/` | The current domain model. The six kinds are Object, Function, and Link, each as a Definition and an Instance. | `ontology/<area>.yaml` | Update this directory at Closure when an accepted Ideation or Execution handoff names a unit change. Do not keep a copy under `sessions/`. Stop when a unit change has no accepted handoff or the file fails the Ontology checks. A `design/` file links to a unit instead of restating it. |
-| `ontology/README.md` | The list of area files. | `ontology/README.md` | One link and one scope line per area file. Update it when an area file changes. |
-| `ontology/<area>.yaml` | One bounded area of the domain model. | Kebab-case `<area>`. Split an area when the Ontology split rule applies. | Write the Ontology record format. |
-
 ## learnings/
 
 | Path | Definition | Naming | Writing |

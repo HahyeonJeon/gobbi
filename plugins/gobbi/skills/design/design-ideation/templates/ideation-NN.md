@@ -76,8 +76,8 @@
 
 ### Visual Language
 
-{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Named visual-language terms are artifacts: state each one's five facets here. Exclude production files, exact assets, radius, shadow, and realization recipes.}
+{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Exclude production files, exact assets, radius, shadow, and realization recipes.}
 
 ### Components
 
-{The inventory the accepted wireframe reveals, defined after the accepted direction. Components are artifacts: state each one's five facets here, with variants and states as properties. Name the Object type each component presents and the Action type each control triggers. For a domain concept, give one kind and its unit id. List the unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}
+{The inventory the accepted wireframe reveals, defined after the accepted direction. List each component with its variants and states. Exclude production files, exact assets, and implementation recipes.}

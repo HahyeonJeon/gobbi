@@ -107,9 +107,7 @@ from the direction pass. Write component variants only after the visual directio
   that document order, including each heading's recorded decision. Start each heading with
   `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and write the design only under
   `Material change`.
-- Components are artifacts under Components, and named visual-language terms are artifacts under Visual
-  Language. Give each domain concept one [kind](../../ontology/SKILL.md#kinds) and a unit id, and do not
-  write `sessions/<session>/ontology/`.
+- Components go under Components, and named visual-language terms go under Visual Language.
 - Link the accepted structure image under Layout and Hierarchy and the accepted direction image under Concept
   and Idea. Assemble the headings so planning and execution can follow the idea without opening an image, and
   reopen the earliest defect before realization.
@@ -137,5 +135,4 @@ from the direction pass. Write component variants only after the visual directio
 | [Design Ideation part](templates/ideation-NN.md) | Template for the requirements and the six Design headings. |
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
 | [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, study, and option images. |
-| [Ontology](../../ontology/SKILL.md) | Facets, kinds, and vocabulary that Step 3.1 applies. |
 | [Design](../SKILL.md) | Routes unresolved material visual-design work to this operation. |

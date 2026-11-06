@@ -103,7 +103,6 @@ altered completion claim.
   actions, expected result, and verification contract.
 - Require the writer to apply [Memory](../memory/SKILL.md), including Closure, to extract accepted
   design, decisions, intended behaviors, and standing preferences into `design/`, `learnings/`, and `backlogs/`.
-  The writer updates `memory/ontology/` only for a unit change an accepted handoff names.
 - Update or merge existing homes first; create only missing content. Reject session-shaped dumps and talk.
 
 #### 2.2 Write the durable work Note

@@ -106,11 +106,10 @@ with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material chan
   evidence. Start each heading with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`,
   and write the design only under `Material change`.
 - On every heading a topic links to, state the chosen option, why it won, the trade-offs, and the reopen
-  condition. Documents and sections are artifacts under Structure and Claims, and defined terms are under
-  Naming and Vocabulary.
-- Give each domain concept one [kind](../../ontology/SKILL.md#kinds) and a unit id, and do not write
-  `sessions/<session>/ontology/`. Assemble the accepted levels into one idea
-  planning and execution can follow, and reopen the earliest defect before realization.
+  condition. Documents and sections go under Structure and Claims, and defined terms go under Naming and
+  Vocabulary.
+- Assemble the accepted levels into one idea planning and execution can follow, and reopen the earliest defect
+  before realization.
 
 #### 3.2 Write the indexed result
 
@@ -135,5 +134,4 @@ with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material chan
 | [Authoring Ideation part](templates/ideation-NN.md) | Template for the requirements and the four writing-design headings. |
 | [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
 | [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
-| [Ontology](../../ontology/SKILL.md) | Facets, kinds, and vocabulary that Step 3.1 applies. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |
