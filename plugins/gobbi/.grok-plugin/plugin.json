@@ -5,6 +5,5 @@
   "author": { "name": "HahyeonJeon", "email": "jeonhh0061@gmail.com" },
   "license": "MIT",
   "keywords": ["gobbi", "workflow", "grok"],
-  "agents": "./runtimes/grok",
-  "hooks": "./hooks/grok-hooks.json"
+  "agents": "./runtimes/grok"
 }

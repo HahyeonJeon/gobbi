@@ -19,6 +19,7 @@ not delete old role files; remove those after you migrate their callers.
 
 ### Removed
 
+- Removed every script and hook, to be reimplemented: the SessionStart settings check, the per-prompt and Stop reminder, the setup scripts for each runtime, `scripts/sync-plugin-package.sh`, `scripts/prove-gobbi-setup.sh`, and `link-project-skills.sh`. The Codex, Cursor, and Grok manifests no longer declare `hooks`. Until reimplementation, the setup guides and the README install steps that name these scripts or hooks are out of date, and the package is kept in step with canonical by hand.
 - **Breaking:** Removed the twelve domain phase roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, in every runtime. Removed the planner role; leader now owns Planning.
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.

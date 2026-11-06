@@ -16,7 +16,6 @@
     "codex"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",

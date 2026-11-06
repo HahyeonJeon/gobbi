@@ -136,13 +136,11 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   [grok.md](setup/grok.md) tell how to create the namespace, Memory tree, placeholders, settings, and Codex
   roles; they create no `sessions/`, `worktrees/`, marker, or `rules/` path.
 
-#### 1.3 Leave the settings check to the hook
+#### 1.3 Do not check settings
 
-- The SessionStart hook owns the Gobbi settings check. This skill does not probe layout, stop on
-  layout, or run setup `--check`.
-- Grok stores that check at SessionStart. The next Stop shows it once.
+- No hook or setup script ships, so nothing checks the Gobbi settings automatically. This skill does not
+  probe layout or stop on layout.
 - This checkout loads Claude from the plugin and does not register repository-local Claude skills.
-  This checkout does not load the Cursor plugin, so the package Cursor hook does not run here.
 - Partner availability belongs to the [Partner Manual](../partner/SKILL.md#check-availability).
 
 #### 1.4 Load the entry foundation

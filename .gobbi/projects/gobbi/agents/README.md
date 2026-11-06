@@ -82,25 +82,19 @@ which that scan never reads:
 | `agents/cursor/{role}.md` | `runtimes/cursor/{role}.md` |
 | `agents/grok/{role}.md` | `runtimes/grok/{role}.md` |
 
-`scripts/sync-plugin-package.sh` owns that projection. `--check` exits non-zero on any divergence;
-`--materialize` rebuilds it. Bytes are copied verbatim — the shape difference is directory mapping only.
+No script builds that projection now; the sync script was removed and will be reimplemented. Until then, copy
+each changed canonical file to its package path by hand. Bytes are copied verbatim — the shape difference is
+directory mapping only.
 
 This README is not mapped anywhere, so it never ships and cannot become live agent surface.
 
 The Grok and Cursor plugin manifests declare `"agents": "./runtimes/grok"` and `"./runtimes/cursor"`; a declared
 path replaces default discovery, measured on Grok in both directions. Codex custom agents are not a plugin
-component — `gobbi-setup` writes them into a consumer's `.codex/agents/{role}.toml`, reading
-`{gobbi-agents-root}/codex/` in a checkout or `<plugin>/runtimes/codex/` in an install.
+component, so a consumer copies them into `.codex/agents/{role}.toml` from `{gobbi-agents-root}/codex/` in a
+checkout or `<plugin>/runtimes/codex/` in an install.
 
 ## The one file whose content differs
 
 `skills/gobbi/SKILL.md` links to role contracts by relative path, and those paths differ between the two trees.
-The generator rewrites those links from the canonical prefix to the package prefix using the same mapping table
-above, and changes nothing else. The rewrite is **derived, not stored**: there is no second copy of the file, so
-it cannot fall out of sync when canonical changes.
-
-One file is excluded rather than mapped: `skills/gobbi-skill/scripts/link-project-skills.sh`, a
-repository-local development script. Because nothing else is transformed, a link *pointing at* an excluded file
-cannot be rewritten, so it dangles in the package — `skills/gobbi-skill/SKILL.md` references it and resolves
-only in canonical. That predates the generator and is accepted. Before adding an exclusion, check what links to
-the file.
+Its package copy rewrites those links from the canonical prefix to the package prefix using the mapping table
+above, and changes nothing else. When you copy it by hand, apply that rewrite.
