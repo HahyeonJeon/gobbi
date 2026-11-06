@@ -14,11 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the Ontology skill and the Recursive Exploration skill.
 - Removed the `ontology.md` children of Authoring and Design Execution and Review, and every Ontology step in Coding, Authoring, and Design Ideation, Execution, and Review. Designs no longer give kinds, facets, or unit ids, and Review no longer loads Ontology.
 - Removed the Memory `ontology/` home. Setup no longer creates or checks `memory/ontology/README.md`, and Closure in Wrap-up and Cowork no longer updates `memory/ontology/`.
+- Removed Cursor as a partner because its print mode failed with `Error: Authentication required`. The Partner policy set is now `{claude-code, codex, grok}`, with valid values `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`, `claude-code,grok`, and `codex,grok`. A recovered policy that names `cursor` is outside the grammar and stops. Cursor stays a supported runtime.
+- Removed the Partner wrapper subagent, the copied Delegation prompt template, the write sets `writing-path-only`, `runtime-directory`, and `worktree`, and the `expected-partner`, `session-directory`, and `writing-path` metadata.
 
 ### Changed
 
 - Memory decides when to write project memory or a session record. Every `memory/` directory is in `memory.md`. `record.md` covers `sessions/` only.
 - Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read.
+- Partner is now a short manual for a manager agent. The manager launches a Codex, Claude Code, or Grok CLI itself as a background process, learns when the run ends, reads its final message and changed files, and follows up by resuming the run's session. It documents three access levels with each runtime's flags: read-only, workspace-write, and full-access, which needs user authorization. The read-only, workspace-write, and resume commands were measured on codex-cli 0.167.0, Claude Code 2.1.319, and grok 1.0.70.
+- Partner moved out of the Gobbi entry skill to its own top-level skill, `skills/partner/`. It holds no Gobbi content, so it no longer sits under `skills/gobbi/`.
+- Cowork and Workflow review now run each remaining-runtime Partner read-only, and the manager saves each run's final message as `<class>/<runtime>/report.md`.
 - Coding Modularization stands alone. Each new directory, file, public class, and public function still gets five unit lines, and each public class and function still gets a caller contract, which now separates a unit that computes from a unit that changes state. The Ontology Record mapping table and the id-case rule are gone.
 
 ## 1.3.3 - 2026-10-01

@@ -127,4 +127,4 @@ when that makes the difference easier to see than text alone.
 | [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns bounded writing-design study during ideation. |
 | [Design Ideation](../design/design-ideation/SKILL.md) | Owns bounded visual-design study during ideation. |
 | [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent assignments. |
-| [Partner](../gobbi/partner/SKILL.md) | Write-bounded external-runtime invocation and final Handoff contract. |
+| [Partner](../partner/SKILL.md) | How the manager launches a partner CLI in the background, reads its output, and follows up. |

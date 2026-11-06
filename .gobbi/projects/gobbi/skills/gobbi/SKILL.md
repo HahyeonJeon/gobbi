@@ -143,7 +143,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 - Grok stores that check at SessionStart. The next Stop shows it once.
 - This checkout loads Claude from the plugin and does not register repository-local Claude skills.
   This checkout does not load the Cursor plugin, so the package Cursor hook does not run here.
-- Partner availability belongs to the [Partner Manual](partner/SKILL.md#availability).
+- Partner availability belongs to the [Partner Manual](../partner/SKILL.md#check-availability).
 
 #### 1.4 Load the entry foundation
 
@@ -178,11 +178,10 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
   matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
   through `com1`–`com9` and `lpt1`–`lpt9`.
-- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, cursor, grok}`
+- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, grok}`
   limited to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order
-  joined by one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `cursor`, `grok`,
-  `claude-code,codex`, `claude-code,cursor`, `claude-code,grok`, `codex,cursor`, `codex,grok`, and
-  `cursor,grok`.
+  joined by one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `grok`,
+  `claude-code,codex`, `claude-code,grok`, and `codex,grok`.
 - Record mode, normalized slug when applicable, and that one Partner field together. A named set authorizes
   launch of the selected names minus the active runtime; `disabled` authorizes no launch. A value outside the
   grammar, including recovered `enabled`, is invalid and a stop; recovered `disabled` stays valid. Do not add
@@ -222,7 +221,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Manager role](../../agents/claude/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../agents/grok/manager.md), [Codex](../../agents/codex/manager.toml), [Cursor](../../agents/cursor/manager.md). |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
-| [Partner](partner/SKILL.md) | Defines each write-bounded opposite-runtime invocation. |
+| [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
 | [Claude Code setup](setup/claude.md) | How to install Gobbi and create missing layout for Claude Code. |
 | [Codex setup](setup/codex.md) | How to install Gobbi and create missing layout for Codex. |
 | [Cursor setup](setup/cursor.md) | How to load Gobbi and create missing layout for Cursor. |

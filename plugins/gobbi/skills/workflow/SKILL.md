@@ -226,10 +226,11 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 - **REVIEW:** Freeze the commit and result and name `review-depth` `execution-implementation`. For each
   artifact class the task contains, apply the matching domain review skill through one fresh matching reviewer
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
-  and launch remaining runtimes from the recorded set minus the active runtime with write set
-  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, and a missing write
-  set is `writing-path-only` and cannot complete REVIEW. A `<class>/<runtime>/` directory without a complete
-  `report.md` is incomplete and never PASS input.
+  and launch one read-only background [Partner](../partner/SKILL.md) run per remaining runtime from the
+  recorded set minus the active runtime. Each run's Delegation brief names that class's slice, the review
+  skill, and `review-depth`, and the manager saves each final message as `<class>/<runtime>/report.md`; if
+  that set is empty, launch nothing. A `<class>/<runtime>/` directory without a complete `report.md` is
+  incomplete and never PASS input.
 - **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
   class meets its criteria with no correction pending; a class passes only when every complete `report.md` in
   its directory passes, and a class with no complete `report.md` does not pass. REVISE means an authorized correction
@@ -291,11 +292,10 @@ Note after Continue.
   diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
   risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and
-  one Partner wrapper per remaining runtime, each at
-  `wrap-up/review/iteration-N/<class>/<runtime>/report.md`, with write set
-  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, a missing write set is
-  `writing-path-only` and cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence,
-  not a Partner Handoff.
+  one read-only background Partner run per remaining runtime, whose Delegation brief names that class's slice,
+  the review skill, and `review-depth`. The manager saves each run's final message as
+  `wrap-up/review/iteration-N/<class>/<runtime>/report.md`; if that set is empty, launch nothing, and an
+  Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
   class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
   return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
@@ -347,4 +347,4 @@ Note after Continue.
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable work Note, commit, merge, Git/recovery Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |
+| [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |

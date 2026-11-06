@@ -14,7 +14,7 @@ installed plugin. This checkout does not load that plugin. There is no repo-root
 `.cursor-plugin/marketplace.json`.
 
 Start the parent session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare
-`agent`. Official help uses `agent`; that name is not Gobbi Partner.
+`agent`. Official help names it `agent`.
 
 ## Create missing project layout
 

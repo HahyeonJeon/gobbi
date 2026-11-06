@@ -125,7 +125,7 @@ to the canonical Cursor contracts. It does not keep `.cursor/skills`, because Gr
 would load the same skills beside `plugins/gobbi`. The package contains a Cursor manifest and
 `hooks/cursor-hooks.json` for an installed plugin. This checkout does not load that plugin. Start the parent
 session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare `agent`. Official help
-uses `agent`; that name is not Gobbi Partner.
+names it `agent`.
 
 Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
@@ -172,7 +172,7 @@ alias for Grok.
 
 Gobbi presents Cowork and Workflow and waits for your selection. It next asks for a privacy-safe session
 slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of `claude-code`, `codex`,
-`cursor`, and `grok`.
+and `grok`.
 
 ## Cowork
 
@@ -209,20 +209,18 @@ for the full session.
 ## Partner
 
 Partner is an optional session-wide policy selected after the mode and applicable slug. The policy is
-`disabled` or one or two of `{claude-code,codex,cursor,grok}`. Launch set is the selected names minus the active
+`disabled` or one or two of `{claude-code,codex,grok}`. The launch set is the selected names minus the active
 runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
-With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps attempt one
-invocation per remaining runtime. A launchable runtime writes the authorized worktree set and returns a
-compact Handoff. Grok 1.0.5 launches with `--sandbox workspace` and worktree cwd. Cursor is a named partner
-and Unavailable; do not invoke `agent` as Gobbi Partner. The worktree is the write root. A session result
-path may still exist. `--always-approve` is not the restricting flag. Unavailable evidence is not a Partner
-Handoff.
+With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps start one partner
+run per remaining runtime. The manager launches each partner CLI itself as a background process, with no
+wrapper agent, and gives it a Delegation brief and the access level the work needs: read-only,
+workspace-write, or full-access only when you authorize it. The manager learns when each run ends, reads its
+final message and any changed files, and may send a follow-up by resuming the run's session. A failed launch
+is recorded as Unavailable evidence, not a partner result.
 
-Every prompt names the exact worktree, the session directory inside it, and one writing path under the
-worktree. The caller starts each launch through one local wrapper subagent. Wrappers for different remaining
-runtimes may run in parallel. The active runtime verifies the write after the wrapper returns, assembles
-the round, decides what to accept, and remains the session authority.
+Cursor remains a supported runtime but is not a partner, because its print mode failed authentication when
+measured. The active runtime decides what to accept and remains the session authority.
 
 ## License
 

@@ -60,7 +60,7 @@ route.
 - **MUST run review, implementation commit, and Cowork closure only after the matching explicit user
   `review`, `commit`, or `wrap up` call.** One `review` authorizes, for each artifact class in the subject,
   one fresh matching reviewer (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
-  and one Partner wrapper per remaining runtime; one `commit` authorizes focused
+  and one read-only background Partner run per remaining runtime; one `commit` authorizes focused
   implementation commits; one `wrap up` applies Memory directly and never loads Wrap-up or creates Workflow
   TODOs, gates, RECORD receipts, or a Workflow Note.
 
@@ -171,11 +171,11 @@ CW · Wrap-up
   skill, path, and description, a docs index of doc, path, and description, and, when the assignment is Review, one named `review-depth` token. Set Execution
   commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
-  still fit, and always issue a complete new Delegation brief. Apply [Partner](../gobbi/partner/SKILL.md) to the
+  still fit, and always issue a complete new Delegation brief. Apply [Partner](../partner/SKILL.md) to the
   recorded launch set minus the active runtime; launch none when the set is empty or disabled without rewriting
-  the policy, otherwise spawn one parallel-capable wrapper per launchable runtime through the active runtime's
-  subagent system with its named outside-session capture, prompt, and `expected-partner`, then validate the
-  worktree write set, unchanged main checkout, and Handoff after return or record Unavailable when launch fails.
+  the policy. Otherwise, the manager launches one background Partner run per launchable runtime with a
+  Delegation brief, read-only unless the assignment needs writes, keeps each run's output under `tmp/`, and
+  records Unavailable when launch fails.
 
 #### 2.3 Accept the shaping results
 
@@ -253,18 +253,16 @@ CW · Wrap-up
   assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
 - In the same `review` call, for each artifact class the subject contains, apply the matching domain review
-  skill through one fresh matching reviewer, not the producer, and one Partner wrapper subagent per remaining
+  skill through one fresh matching reviewer, not the producer, and one read-only Partner run per remaining
   runtime over that class's slice of the same frozen subject and the named `review-depth`:
   [Coding Review](../coding/coding-review/SKILL.md) with `coding-reviewer` for software, including
   architecture designs (`code`),
   [Authoring Review](../authoring/authoring-review/SKILL.md) with `authoring-reviewer` for writing (`docs`), or
   [Design Review](../design/design-review/SKILL.md) with `design-reviewer` for visual work (`design`).
-  Apply each review skill only to the artifact class it owns. Keep
-  remaining-runtime briefs naming write set `runtime-directory`, that class's directory below the aggregation
-  parent, a Delegation prompt, `expected-partner`, and `review-depth`; a missing write set still means
-  `writing-path-only` and cannot complete this assignment. Wrapper capture stays private outside the
-  session and is not the aggregation parent; a launchable runtime produces `report.md`, an Unavailable
-  attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
+  Apply each review skill only to the artifact class it owns. Each remaining-runtime Partner run is
+  read-only, and its Delegation brief names that class's slice, the review skill, and `review-depth`. The
+  manager saves each run's final message as `<class>/<runtime>/report.md` below the aggregation parent; an
+  Unavailable attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
   complete reports after the assigned review skill has applied the token rather than writing a RECORD.
 
 #### 4.2 Apply findings and coverage
@@ -331,4 +329,4 @@ CW · Wrap-up
 | [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff. |
 | [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff. |
 | [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |
+| [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
