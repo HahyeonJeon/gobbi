@@ -205,9 +205,10 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | **Cowork** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Cowork](../cowork/SKILL.md). |
   | **Workflow** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Workflow](../workflow/SKILL.md). |
 
-- Before specialist work, load Delegation, add the selected owner's fields, and put a skills index and a docs
-  index of name, absolute path, and description in the brief. Resolve those paths from the validated root pair.
-  The specialist loads an index row only when the assignment cannot proceed without it.
+- Before specialist work, load Delegation, write the brief's Role for the named specialist, name its phase in
+  Context, add the selected owner's fields, and put a skills index and a docs index of name, absolute path,
+  and description in its Materials. Resolve those paths from the validated root pair. The brief tells the
+  specialist to load an index row only when the assignment cannot proceed without it.
 - Stop with the exact blocker when mode evidence, owner evidence, identity, path, or authority is invalid.
   Never invent a fallback mode, cursor, worktree, session directory, or participant route.
 
@@ -217,7 +218,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 |---|---|
 | [Principles](../principles/SKILL.md) | Defines the behavioral foundation loaded at entry. |
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
-| [Delegation](../delegation/SKILL.md) | Defines every specialist prompt, skills and docs indexes, and final Handoff. |
+| [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Manager role](../../agents/claude/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../agents/grok/manager.md), [Codex](../../agents/codex/manager.toml), [Cursor](../../agents/cursor/manager.md). |
 | [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |

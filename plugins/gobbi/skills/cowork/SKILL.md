@@ -260,10 +260,11 @@ CW · Wrap-up
   [Authoring Review](../authoring/authoring-review/SKILL.md) with `authoring-reviewer` for writing (`docs`), or
   [Design Review](../design/design-review/SKILL.md) with `design-reviewer` for visual work (`design`).
   Apply each review skill only to the artifact class it owns. Each remaining-runtime Partner run is
-  read-only, and its Delegation brief names that class's slice, the review skill, and `review-depth`. The
-  manager saves each run's final message as `<class>/<runtime>/report.md` below the aggregation parent; an
-  Unavailable attempt produces Unavailable evidence, and the manager aggregates only contract-gate verdicts from
-  complete reports after the assigned review skill has applied the token rather than writing a RECORD.
+  read-only. The Delegation brief for each reviewer and each run names that class's slice, the review skill
+  and its report template, and `review-depth`. The manager saves each run's final message as
+  `<class>/<runtime>/report.md` below the aggregation parent; an Unavailable attempt produces Unavailable
+  evidence, and the manager aggregates only contract-gate verdicts from complete reports after the assigned
+  review skill has applied the token rather than writing a RECORD.
 
 #### 4.2 Apply findings and coverage
 
@@ -315,7 +316,7 @@ CW · Wrap-up
 | [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
 | [Git](../git/SKILL.md) | Supplies branch, worktree, commit, publication, cleanup, and recovery preferences. |
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
-| [Delegation](../delegation/SKILL.md) | Owns the base specialist prompt, skills and docs indexes, and final Handoff contract. |
+| [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Light code-work decomposition and its indexed result. |
 | [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Light writing-work decomposition and its indexed result. |
 | [Design Planning](../design/design-planning/SKILL.md) | Owns Light visual-work decomposition and its indexed result. |

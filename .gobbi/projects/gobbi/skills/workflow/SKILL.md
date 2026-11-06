@@ -227,10 +227,10 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   artifact class the task contains, apply the matching domain review skill through one fresh matching reviewer
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
   and launch one read-only background [Partner](../partner/SKILL.md) run per remaining runtime from the
-  recorded set minus the active runtime. Each run's Delegation brief names that class's slice, the review
-  skill, and `review-depth`, and the manager saves each final message as `<class>/<runtime>/report.md`; if
-  that set is empty, launch nothing. A `<class>/<runtime>/` directory without a complete `report.md` is
-  incomplete and never PASS input.
+  recorded set minus the active runtime. The Delegation brief for each reviewer and each run names that
+  class's slice, the review skill and its report template, and `review-depth`, and the manager saves each
+  final message as `<class>/<runtime>/report.md`; if that set is empty, launch nothing. A `<class>/<runtime>/`
+  directory without a complete `report.md` is incomplete and never PASS input.
 - **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
   class meets its criteria with no correction pending; a class passes only when every complete `report.md` in
   its directory passes, and a class with no complete `report.md` does not pass. REVISE means an authorized correction
@@ -292,10 +292,10 @@ Note after Continue.
   diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
   risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer
   (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and
-  one read-only background Partner run per remaining runtime, whose Delegation brief names that class's slice,
-  the review skill, and `review-depth`. The manager saves each run's final message as
-  `wrap-up/review/iteration-N/<class>/<runtime>/report.md`; if that set is empty, launch nothing, and an
-  Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
+  one read-only background Partner run per remaining runtime. The Delegation brief for each reviewer and each
+  run names that class's slice, the review skill and its report template, and `review-depth`. The manager
+  saves each run's final message as `wrap-up/review/iteration-N/<class>/<runtime>/report.md`; if that set is
+  empty, launch nothing, and an Unavailable attempt produces Unavailable evidence, not a Partner Handoff.
 - Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
   class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
   return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
@@ -330,7 +330,7 @@ Note after Continue.
 | [Configuration template](templates/configuration.md) | Defines the ignored Workflow configuration and its fixed worktree and session identity. |
 | [Handoff template](templates/handoff.md) | Defines each ignored phase-completion and recovery checkpoint. |
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
-| [Delegation](../delegation/SKILL.md) | Owns the base specialist brief, skills and docs indexes, and final assignment handoff. |
+| [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, deciding with the user, and User Review Continue / Stop asks. |
 | [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work decomposition and its indexed result. |
 | [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work decomposition and its indexed result. |
