@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document role | Canonical ignored Cowork configuration and recovery record |
-| Authority | Records identity, locations, settings, and creation evidence; current TODO, topic records, Git state, and user authority remain controlling |
+| Authority | Records identity, locations, settings, and creation evidence; topic records, Git state, and user authority remain controlling |
 | Recorded at | {exact UTC timestamp} |
 
 ## Identity

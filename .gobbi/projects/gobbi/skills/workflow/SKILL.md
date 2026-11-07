@@ -13,15 +13,10 @@ recovery in the same worktree and session directory.
 
 ## Principles
 
-### Route through one native TODO
-
-The native TODO list selects the current phase and stage. Session evidence identifies the active task and
-iteration and proves transitions, but it never becomes another route.
-
 ### Wait, design, then deliver inside later frames
 
 After Configuration, idle-wait until the user delivers the work. Design with the user in Phase 1, wait at each
-User Review TODO, and stay autonomous inside later frames.
+User Review, and stay autonomous inside later frames.
 
 ### Apply one frame in every phase
 
@@ -36,8 +31,6 @@ the worktree and session root recorded by Configuration and the latest handoff.
 
 ## Rules
 
-- **MUST use the native TODO list to select the current phase and stage.** Use only `pending`, `in_progress`, and
-  `completed`, with at most one item `in_progress`; keep task, iteration, and decision data in session evidence.
 - **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
   project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
   or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
@@ -51,7 +44,7 @@ the worktree and session root recorded by Configuration and the latest handoff.
   producer, and one attempted invocation per remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
-- **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
+- **NEVER accept a report, idle signal, handoff, gate, receipt, or summary as completion evidence
   by itself.** Reread the promised result or commit and reproduce its verification.
 
 ## Procedure
@@ -66,28 +59,13 @@ Ideation, and lock the contract. It idle-waits after Configuration until deliver
 
 - Enter from Gobbi with `mode: Workflow`, the normalized slug, partner policy, runtime, and validated Gobbi root
   pair. Load [Discussion](../discussion/SKILL.md), [Delegation](../delegation/SKILL.md), [Git](../git/SKILL.md),
-  and [Memory](../memory/SKILL.md), then inspect the repository, worktrees, TODO, configuration, handoffs, and
+  and [Memory](../memory/SKILL.md), then inspect the repository, worktrees, configuration, handoffs, and
   unfinished evidence before mutation.
-- Publish this complete fixed TODO on fresh entry. Start only Configuration and keep dynamic identifiers in
-  session evidence:
-
-```text
-P1 · Configuration
-P1 · Ideation
-P1 · User Review
-P2 · Planning
-P2 · Execution
-P2 · User Review
-P3 · Wrap-up
-P3 · User Review
-P3 · Note
-```
-
 - On recovery, require the recorded identity, branch, registered worktree, absolute worktree, session root,
   configuration, latest handoff, and later valid records to agree, and stop instead of creating or selecting a
   replacement worktree or session directory. Reconstruct the idle wait when Configuration is complete and
-  delivered work is absent; otherwise reconstruct the first unproved TODO, keep a Complete `handoff.md` at its
-  User Review until Continue, and resume a Stopped `handoff.md` at the first unproved productive TODO.
+  delivered work is absent; otherwise keep a Complete `handoff.md` at its User Review until Continue, and resume a
+  Stopped `handoff.md` at its first unproved action.
 
 #### 1.2 Create the worktree and configuration
 
@@ -104,7 +82,7 @@ P3 · Note
   [configuration template](templates/configuration.md) and `README.md` directly below it as ignored session
   records as Memory defines.
 - Verify identity, settings, roots, observed `Base branch`, registration, containment, ignored state, tracked
-  tree, base checkout, and the rendered configuration. Do not activate `P1 · Ideation`.
+  tree, base checkout, and the rendered configuration. Do not start `P1 · Ideation`.
 
 #### 1.3 Establish phase and session locations
 
@@ -134,16 +112,16 @@ P3 · Note
   `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and write each of those paths as an ignored
   session record as Memory defines. Do not update `configuration.md` after the Configuration write except when
   writing a phase `handoff.md`, and then set only `Latest handoff` to that path.
-- Complete `P1 · Configuration` as an idle wait after those location rules are recorded. Leave every later
-  item `pending` with no item `in_progress`, and do not run 1.4 or activate `P1 · Ideation`.
+- Complete `P1 · Configuration` after those location rules are recorded, then wait for delivered work. Do not
+  run 1.4 or start `P1 · Ideation`.
 
 #### 1.4 Discuss and lock project/work design
 
 - Enter only when Configuration is complete and delivered work exists: a user statement of the outcome, topic,
   or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository state. Use a concrete
-  outcome already in the session after Configuration; otherwise idle-wait with no item `in_progress` and allow
+  outcome already in the session after Configuration; otherwise idle-wait and allow
   only a request for the user to state the work.
-- Activate `P1 · Ideation` and define project/work design and decisions as choices whose viable answers can
+- Start `P1 · Ideation` and define project/work design and decisions as choices whose viable answers can
   change the project/work goal, requirements, scope or boundary, observable behavior, policy, strategy,
   algorithm, pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility,
   or acceptance.
@@ -173,13 +151,13 @@ P3 · Note
 - Render the [handoff template](templates/handoff.md) at `1-ideation/handoff.md` for Complete or Stopped. Record
   the exact identity, worktree, session root, branch, result and hashes, checks, decisions, authority, findings,
   first unproved action, and recovery command.
-- For Complete, record `Next TODO: P1 · User Review`, set `configuration.md` `Latest handoff` to
-  `1-ideation/handoff.md`, activate `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
-  the runtime ask tool for Continue or Stop only. For Stopped, keep the current
-  first unproved productive TODO and do not activate User Review as a next-phase gate.
-- Do not activate Planning from the file, from silence, or from the absence of an interrupt. Continue
-  completes `P1 · User Review` and then activates `P2 · Planning`; Stop leaves User Review `in_progress` or
-  records a stop and does not activate Planning or rewrite the Complete file into a failed phase.
+- For Complete, set `configuration.md` `Latest handoff` to `1-ideation/handoff.md`, enter
+  `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
+  the runtime ask tool for Continue or Stop only. For Stopped, keep the first
+  unproved action and do not enter User Review.
+- Do not start Planning from the file, from silence, or from the absence of an interrupt. Continue
+  completes `P1 · User Review` and then starts `P2 · Planning`; Stop keeps the wait or records a stop and
+  does not start Planning or rewrite the Complete file into a failed phase.
 
 ### Phase 2 — Plan and Execute
 
@@ -241,16 +219,15 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
 - After every planned task earns PASS, render the handoff template at `3-execution/handoff.md` with the plan,
-  task commits, checks, reviews, decisions, dispositions, exact worktree and session root, and
-  `Next TODO: P2 · User Review`.
+  task commits, checks, reviews, decisions, dispositions, and exact worktree and session root.
 - On a safe terminal stop, render the same path with `Status: Stopped`, the current first unproved Planning or
-  Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, set
+  Execution action, retained evidence, and no User Review. For Complete, set
   `configuration.md` `Latest handoff` to `3-execution/handoff.md`, verify the handoff against all named evidence,
-  activate `P2 · User Review`, display the file, and use Discussion with the runtime ask tool for Continue or
+  enter `P2 · User Review`, display the file, and use Discussion with the runtime ask tool for Continue or
   Stop only.
-- Do not activate Wrap-up from the file, from silence, or from the absence of an interrupt. Continue completes
-  `P2 · User Review` and then activates `P3 · Wrap-up`; Stop leaves User Review `in_progress` or records a stop
-  and does not activate Wrap-up; recovery returns to the first unproved action without replacing accepted
+- Do not start Wrap-up from the file, from silence, or from the absence of an interrupt. Continue completes
+  `P2 · User Review` and then starts `P3 · Wrap-up`; Stop keeps the wait or records a stop and does not start
+  Wrap-up; recovery returns to the first unproved action without replacing accepted
   history or asking a design question.
 
 ### Phase 3 — Wrap Up and Report
@@ -306,14 +283,13 @@ Note after Continue.
 #### 3.4 Run closure RECORD and return the Note
 
 - For PASS, write and verify the closure gate and receipt, then reread the reviewed tree, branches, checks,
-  authority, and active Wrap-up TODO. Apply Wrap-up's Git procedure and [Git](../git/SKILL.md) preferences to
+  and authority. Apply Wrap-up's Git procedure and [Git](../git/SKILL.md) preferences to
   commit remaining closure changes and merge the exact accepted work head into the configured base branch.
 - Prove the resulting base tree equals the reviewed tree. Render `wrap-up/handoff.md` for accepted integration
   or any safe terminal stop, set `configuration.md` `Latest handoff` to that path, and record exact Git states,
-  retained objects, first unproved action, and recovery command in the handoff; for Complete record
-  `Next TODO: P3 · User Review`, and a Stopped handoff never claims Phase 3 completion or opens User Review as a
-  next-phase gate.
-- For Complete, activate `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
+  retained objects, first unproved action, and recovery command in the handoff. A Stopped handoff never claims
+  Phase 3 completion or opens User Review.
+- For Complete, enter `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
   Continue or Stop only; do not start `P3 · Note` from the file or from the absence
   of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's response-only
   [Note template](../wrap-up/templates/note.md) from the verified Git and recovery state, citing the durable

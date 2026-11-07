@@ -30,11 +30,6 @@ remain recoverable in the retained worktree; implementation commits happen only 
 Every selected stage self-reviews or self-verifies before acceptance. Independent review is a separate
 user-called judgment and never substitutes for stage quality.
 
-### Route through one native TODO
-
-The native TODO list selects Cowork's current action. Evidence proves transitions but never becomes a second
-route.
-
 ## Rules
 
 - **MUST establish one verified isolated Cowork worktree before the first tracked edit, except for the one
@@ -42,11 +37,9 @@ route.
   change nothing else in the main checkout.
 - **MUST continue and recover only in the registered Cowork worktree and session root.** Never create or select
   a replacement worktree or session directory for the same Cowork identity.
-- **MUST use the native TODO list to select Configuration, topic stages, Commit, Review, and Wrap-up,
-  using only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`, and complete
-  Configuration as an idle wait that leaves later items `pending`.** Start a topic stage only after
-  delivered work exists: a user statement of the outcome, topic, or request, not mode, slug, partner
-  policy, "continue", "ok", "looks good", or repository state.
+- **MUST start a topic stage only after delivered work exists.** Delivered work is a user statement of the
+  outcome, topic, or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository
+  state.
 - **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending
   a consequential topic/work option or asking for a required topic/work decision.** Cowork selects available
   subagents or teammates and each launchable remaining Partner, routes any needed focused follow-up to an
@@ -59,7 +52,7 @@ route.
   `review`, `commit`, or `wrap up` call.** One `review` authorizes, for each artifact class in the subject,
   one fresh `reviewer`, not the producer, and one read-only background Partner run per remaining runtime;
   one `commit` authorizes focused implementation commits; one `wrap up` applies Memory directly and never
-  loads Wrap-up or creates Workflow TODOs, gates, RECORD receipts, or a Workflow Note.
+  loads Wrap-up or creates Workflow gates, RECORD receipts, or a Workflow Note.
 
 ## Procedure
 
@@ -70,10 +63,8 @@ route.
 - Enter from Gobbi with `mode: Cowork`, the normalized slug, session partner policy, and validated Gobbi root
   pair. Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
   [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order.
-- Publish the complete fixed Cowork TODO template through the native runtime control. Start only
-  `CW · Configuration`; recovery inspects the surviving route and direct evidence before changing a status,
-  reconstructs the idle wait when Configuration is complete and delivered work is absent, and may activate
-  the earliest unproved item only after delivered work exists.
+- On recovery, inspect direct evidence first. Return to the idle wait when Configuration is complete and
+  delivered work is absent, and resume the earliest unproved step only after delivered work exists.
 - For a fresh session, capture the original UTC session-start date and generate one full lowercase hyphenated
   UUID. For recovery, require one matching recorded identity, branch, registered worktree, and session root;
   stop instead of creating or selecting a replacement, and do not ask which branch is the base.
@@ -91,11 +82,10 @@ route.
   `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and place `configuration.md` and
   `README.md` directly below it.
 - Render the [configuration template](templates/configuration.md) as the Configuration phase's accepted record,
-  write it as an ignored session record as [Memory](../memory/SKILL.md) defines, and verify its
-  identity, locations, settings, creation evidence, ignored state, and the native TODO list before completing
-  Configuration. A recovered session without this file may
-  create it only when one exact identity, branch, registered worktree, session root, and accepted topic history
-  agree; do not rewrite `configuration.md` again until a topic reaches PASS.
+  write it as an ignored session record as [Memory](../memory/SKILL.md) defines, and verify its identity,
+  locations, settings, creation evidence, and ignored state before completing Configuration. A recovered session
+  without this file may create it only when one exact identity, branch, registered worktree, session root, and
+  accepted topic history agree; do not rewrite `configuration.md` again until a topic reaches PASS.
 
 #### 1.3 Establish topic and session locations
 
@@ -113,32 +103,18 @@ route.
 | Session wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
-- Keep these TODO titles fixed. Topic, task, assignment, stage, round, subject, and closure identifiers belong
-  in contracts, paths, and evidence rather than TODO titles:
-
-```text
-CW · Configuration
-CW · Topic · IDEATION
-CW · Topic · PLANNING
-CW · Topic · EXECUTION
-CW · Topic · PASS
-CW · Commit
-CW · Review
-CW · Wrap-up
-```
-
 #### 1.4 Complete Configuration as an idle wait
 
-- Mark `CW · Configuration` completed without rewriting `configuration.md`. Leave every later item `pending`
-  with no item `in_progress`, and do not activate the earliest unproved item.
+- Complete Configuration without rewriting `configuration.md`, then wait for delivered work. Start no topic
+  stage.
 
 ### Phase 2 — Deliver User Topics
 
 #### 2.1 Lock the topic and choose its depth
 
 - Enter only when Configuration is complete and delivered work exists; a concrete outcome statement already
-  in the session may be used after Configuration, not during it. If delivered work is absent, idle-wait with
-  no item `in_progress`; asking the user to state the work is allowed, and studying, ideating, planning, or
+  in the session may be used after Configuration, not during it. If delivered work is absent, idle-wait;
+  asking the user to state the work is allowed, and studying, ideating, planning, or
   executing is not.
 - Apply [Discussion](../discussion/SKILL.md) to lock the topic outcome, purpose, scope, acceptance evidence,
   first action, exclusions, and required user decisions; assign the next stable `topic-NN-slug` and keep this
@@ -158,9 +134,9 @@ CW · Wrap-up
 
 #### 2.2 Route the selected stages
 
-- For Fast, mark the Ideation and Planning TODO items completed as not selected and activate Execution; for
-  Light, activate Ideation, Planning, Execution, and PASS in order, and neither shaping stage is optional.
-  After a topic is locked, activate the next selected stage and stop on competing evidence. Do not rewrite
+- For Fast, skip Ideation and Planning and start Execution; for Light, run Ideation, Planning, Execution,
+  and PASS in order, and neither shaping stage is optional. After a topic is locked, start the next selected
+  stage and stop on competing evidence. Do not rewrite
   `configuration.md` at lock, stage, commit, or review boundaries.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
   stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
@@ -209,22 +185,22 @@ CW · Wrap-up
   work. An in-stage review cannot replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
 - Complete PASS only after every selected result is accepted and verified, then append that topic ID and
-  record path to `configuration.md` `Accepted topics`. Do not copy TODO statuses, hashes, or idle state, and
+  record path to `configuration.md` `Accepted topics`. Do not copy hashes or idle state, and
   do not replace earlier pointers. Do not require a focused implementation commit or a clean tracked tree;
   report outcome, scope, results, commits, checks, exclusions, concerns, partner evidence, and review
-  coverage separately, then wait with no active item.
+  coverage separately, then wait for the user's next request.
 
 ### Phase 3 — Commit on User Call
 
 #### 3.1 Commit accepted implementation changes
 
-- Enter only for an explicit `commit` and activate only `CW · Commit`. Do not render the diff; the call is the
+- Enter only for an explicit `commit`. Do not render the diff; the call is the
   confirmation.
 - Assign the `executor` through [Delegation](../delegation/SKILL.md) to create focused commit(s) of accepted
   uncommitted tracked implementation changes. Use one commit in the normal case, or one commit per
   accepted topic when the dirty set spans more than one topic.
 - Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
-  Complete `CW · Commit` and wait with no active item.
+  Then wait for the user's next request.
 
 ### Phase 4 — Review on User Call
 
@@ -235,7 +211,7 @@ CW · Wrap-up
   changes exist; an indexed result includes its index and every listed member, and whole-branch review uses
   `review-depth` `by-owning-stage`. If uncommitted tracked implementation changes exist and the user did
   not name a subset, stop and ask for `commit` or a named subject.
-- Activate only `CW · Review`, name one locked `review-depth` token, define the decision criteria and
+- Name one locked `review-depth` token, define the decision criteria and
   contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
   parent with children `<class>/<runtime>/report.md`, one class
   directory per artifact class the subject contains, so a single-class subject has one. Write each of those
@@ -277,7 +253,7 @@ CW · Wrap-up
 
 #### 5.1 Reconcile durable Memory
 
-- Enter only for an explicit `wrap up` and activate only `CW · Wrap-up`. If uncommitted tracked implementation
+- Enter only for an explicit `wrap up`. If uncommitted tracked implementation
   changes remain, stop and require `commit` first; otherwise organize the accepted closure input under
   `wrap-up/` from caller-named temporary sources and freeze topics, decisions, results, commits, checks,
   coverage, exclusions, risks, change points, project state, and existing Memory without loading Wrap-up.
@@ -287,7 +263,7 @@ CW · Wrap-up
   current-project Memory root, update only that boundary, verify it, and create one focused Memory commit or a
   verified no-change result.
 - Stop on invalid paths, unresolved decisions, failed checks, wrong-worktree evidence, or unrelated work.
-  Never merge, and never create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Note.
+  Never merge, and never create Workflow phase receipts, RECORD evidence, or a Workflow Note.
 
 #### 5.2 Check freshness and return the result
 

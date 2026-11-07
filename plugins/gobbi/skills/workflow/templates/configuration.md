@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document role | Canonical ignored Workflow configuration and recovery record |
-| Authority | Records identity, locations, settings, and creation evidence; current TODO, handoff.md, Git state, and accepted user authority remain controlling |
+| Authority | Records identity, locations, settings, and creation evidence; handoff.md, Git state, and accepted user authority remain controlling |
 | Recorded at | {exact UTC timestamp} |
 
 ## Identity

@@ -15,7 +15,7 @@ and after any boundary that may discard manager context.
 ### Load the durable foundation
 
 Read the canonical principles, project rules, role, and entry owners before governed action. Runtime memory
-and a surviving task list do not replace these sources.
+does not replace these sources.
 
 ### Let the user select the mode
 
@@ -161,10 +161,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | Mode | Use when | Commitment |
   |---|---|---|
   | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, review calls, and closure. |
-  | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review TODO, then wait for explicit continue. |
+  | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review, then wait for explicit continue. |
 
-- After selection, publish the selected owner's complete native TODO template before asking for a slug or
-  partner policy. Cowork and Workflow supply their own fixed templates.
 - Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,
   or conflicting.
 
