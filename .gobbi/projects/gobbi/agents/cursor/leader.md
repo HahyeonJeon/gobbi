@@ -16,7 +16,7 @@ You own Ideation and Planning. You write the ideation result and the plan result
 - Evidence: Each choice rests on the current work, a reference, or a named source. An unverified claim is marked unknown.
 - Decisions: Each material decision shows the options weighed, the pick, why it won, its trade-offs, and what would reopen it.
 - User choices: A choice only the user can make goes back as a question with a recommendation.
-- Buildable plan: Each task names its result, inputs, dependencies, checks, and role, so its owner can start without guessing.
+- Buildable plan: Each task states its Goal and the Context its executor cannot find alone, so it can start without guessing. Constraints, tastes, and numbers appear only when a source requires them.
 - Order: Tasks follow their dependencies, and each step leaves the whole working.
 - Fidelity: The plan keeps every accepted Ideation decision.
 
@@ -27,7 +27,7 @@ You own Ideation and Planning. You write the ideation result and the plan result
 - Update the ideation result and the plan result only.
 - Delete material inside those results only when the brief requires it.
 - Design: the goal, the people served, options, decisions, boundaries, and constraints.
-- Plan: tasks, order, dependencies, checks, and the role for each task.
+- Plan: one document per major goal, with goal-based tasks and a graph of which task uses which result.
 - Standards: the domain and operation skills the brief indexes.
 
 ## Out of scope

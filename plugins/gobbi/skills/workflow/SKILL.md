@@ -37,11 +37,11 @@ the worktree and session root recorded by Configuration and the latest handoff.
   subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
 - **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `REVIEW` between WORK and
   RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete that unit before
-  dependent work starts.
-- **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
-  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; REVIEW, when
-  the unit includes it, uses, for each artifact class the unit contains, one fresh `reviewer`, not the
-  producer, and one attempted invocation per remaining runtime.
+  work that needs it starts.
+- **MUST apply the recorded participant policy.** Each active-runtime writer self-reviews; independent local and
+  remaining Partner inputs stay separate until synthesis; REVIEW, when the unit includes it, uses, for each
+  artifact class the unit contains, one fresh `reviewer`, not the producer, and one attempted invocation per
+  remaining runtime.
 - **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
   recorded worktree and session root; never create a replacement for the same Workflow identity.
 - **NEVER accept a report, idle signal, handoff, gate, receipt, or summary as completion evidence
@@ -169,36 +169,34 @@ role, evidence, addressability, and write boundary and issuing a complete new De
 
 #### 2.1 Run the Planning DISCUSSION and WORK
 
-- **DISCUSSION:** Enter only from completed `P1 · User Review`. The manager uses independent local and remaining
-  Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted
-  design; an unresolvable authority or contract conflict stops without a design question.
+- **DISCUSSION:** Enter only from completed `P1 · User Review`. The manager gives the `leader` the accepted
+  goal, the Ideation result, and relevant participant input; the leader chooses the major goals and the task
+  split. An unresolvable authority or contract conflict stops without a design question.
 - **WORK:** Select [Coding Planning](../coding/coding-planning/SKILL.md) when the productive work is code
   work, [Authoring Planning](../authoring/authoring-planning/SKILL.md) when it is writing work, or
   [Design Planning](../design/design-planning/SKILL.md) when it is visual work. Apply the selected
-  operation through Delegation with absolute output root
-  `{session-root}/2-planning/outputs/planning/` and exact locator
-  `{session-root}/2-planning/outputs/planning/plan-index.md`. The `leader` writes and self-reviews the indexed plan
-  while preserving Ideation members and locked decisions.
+  operation through Delegation with absolute output directory `{session-root}/2-planning/`. The `leader`
+  writes and self-reviews one plan document per major goal while preserving the locked Ideation decisions.
 
 #### 2.2 Record Planning
 
-- **RECORD:** Reread the indexed plan, reproduce membership, order, path, hash, and tracked-tree checks, and
-  write the receipt without reports or `gate.md`. Return to Step 2.1 only for missing or
-  contradictory decomposition, grouping, order, assignment-contract field, authority, or indexed integrity,
-  then verify obligation coverage, stable task IDs, dependencies, writer frontier, indexed membership and
-  hashes, and unchanged tracked state before activating Execution.
+- **RECORD:** Reread every plan document, record their paths and hashes, check the tracked tree is unchanged,
+  and write the receipt without reports or `gate.md`. Return to Step 2.1 only when the tasks miss or overlap
+  part of the work, a task Goal cannot be judged, a constraint, taste, or number lacks a source, or the Task Graph
+  has a cycle.
 
 #### 2.3 Run each Execution task
 
-- **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
-  available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
-  gives the `executor` exact inputs, paths, authority, criteria, checks, and protected work.
-- **WORK:** Apply the matching domain execution skill:
-  [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
-  [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
-  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
-  Keep one active writer, read-only helpers, self-review, fresh verification, and one
-  focused local commit. An in-stage self-review cannot replace stage REVIEW.
+- **DISCUSSION:** Select the next ready `task-NN-slug`, or several ready tasks to run in parallel, from the
+  Task Graph and the files they change; tasks that run at the same time must not change the same files. The
+  manager consults available subagents or teammates and remaining Partner runtimes when the approach needs
+  it, then builds each `executor` brief through Delegation from the task's Goal, Context, Constraints, and
+  Taste and Preference, adding paths, authority, and protected work.
+- **WORK:** Apply the matching domain execution skill: [Coding Execution](../coding/coding-execution/SKILL.md) when
+  the writer frontier includes code, [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it
+  includes durable prose, or [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
+  Each task gets self-review, fresh verification, and one focused local commit, made one at a time. An in-stage
+  self-review cannot replace stage REVIEW.
 - **REVIEW:** Freeze the commit and result and name `review-depth` `execution-implementation`. For each
   artifact class the task contains, apply the matching domain review skill through one fresh `reviewer`, not
   the producer, and launch one read-only background [Partner](../partner/SKILL.md) run per remaining runtime
@@ -207,14 +205,14 @@ role, evidence, addressability, and write boundary and issuing a complete new De
   final message as `<class>/<runtime>/report.md`; if that set is empty, launch nothing. A `<class>/<runtime>/`
   directory without a complete `report.md` is incomplete and never PASS input.
 - **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
-  class meets its criteria with no correction pending; a class passes only when every complete `report.md` in
-  its directory passes, and a class with no complete `report.md` does not pass. REVISE means an authorized correction
-  remains; return to this task's WORK with a new `iteration-N`. FAIL means a safe correction is unavailable;
-  stop and do not start the next task. Write and verify the receipt at `<record-directory>/record/iteration-N.md`.
+  class meets its criteria with no correction pending; a class passes only when every complete `report.md` in its
+  directory passes, and a class with no complete `report.md` does not pass. REVISE means an authorized correction
+  remains; return to this task's WORK with a new `iteration-N`. FAIL means a safe correction is unavailable; stop
+  and do not start the next task. Write and verify the receipt at `<record-directory>/record/iteration-N.md`.
   Quality `does-not-meet` with contract-gate PASS is not REVISE, and after completed `P1 · User Review`
-  out-of-contract opinions do not reopen design. Any tracked correction makes prior coverage stale and repeats
-  WORK and REVIEW. After PASS, reread the commit, diff, checks, reports, findings, and dispositions before the
-  next task and amend only pending plan work when an in-contract plan defect appears.
+  out-of-contract opinions do not reopen design. Any tracked correction makes prior coverage stale and repeats WORK
+  and REVIEW. After PASS, reread the commit, diff, checks, reports, findings, and dispositions before starting any
+  task that needs this result, and amend only pending plan work when an in-contract plan defect appears.
 
 #### 2.4 Write the Phase 2 handoff and wait at User Review
 
@@ -305,9 +303,9 @@ Note after Continue.
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
 | [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, deciding with the user, and User Review Continue / Stop asks. |
-| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work decomposition and its indexed result. |
-| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work decomposition and its indexed result. |
-| [Design Planning](../design/design-planning/SKILL.md) | Owns Phase 2 visual-work decomposition and its indexed result. |
+| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work planning and its plan documents. |
+| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work planning and its plan documents. |
+| [Design Planning](../design/design-planning/SKILL.md) | Owns Phase 2 visual-work planning and its plan documents. |
 | [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Phase 1 code design and its indexed result. |
 | [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Phase 1 writing design and its indexed result. |
 | [Design Ideation](../design/design-ideation/SKILL.md) | Owns Phase 1 visual design and its indexed result. |

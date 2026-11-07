@@ -160,7 +160,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
   | Mode | Use when | Commitment |
   |---|---|---|
-  | **Cowork** | The user wants bounded topics with Fast or Light delivery. | The user controls topic decisions, review calls, and closure. |
+  | **Cowork** | The user wants bounded topics, one at a time. | The user controls topic decisions, review calls, and closure. |
   | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review, then wait for explicit continue. |
 
 - Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,

@@ -7,9 +7,9 @@ skill-type: operation
 
 # Cowork
 
-Cowork takes one user-supplied topic at a time through Fast or Light delivery in one isolated worktree. Use it
-after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit review, or explicit
-closure action.
+Cowork takes one user-supplied topic at a time through Ideation, Planning, and Execution in one isolated
+worktree. Use it after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit review, or
+explicit closure action.
 
 ## Principles
 
@@ -21,7 +21,7 @@ returns accepted evidence, and waits at later topic boundaries.
 
 ### Keep one inspectable local history
 
-One linked worktree and one ordered writer chain keep tracked results attributable. Ignored shaping results
+One linked worktree and clear task ownership keep each tracked change traceable. Ignored shaping results
 remain recoverable in the retained worktree; implementation commits happen only after an explicit user
 `commit`, and durable Memory commits still happen on `wrap up`.
 
@@ -43,9 +43,8 @@ user-called judgment and never substitutes for stage quality.
 - **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending
   a consequential topic/work option or asking for a required topic/work decision.** Cowork selects available
   subagents or teammates and each launchable remaining Partner, routes any needed focused follow-up to an
-  addressable subagent or teammate, and owns user decisions and the reported route; Fast skips Ideation and
-  Planning, while Light runs bounded canonical Ideation and Planning before Execution.
-- **MUST keep one ordered writer chain with role-bound acceptance.** The `leader` owns ignored Ideation and
+  addressable subagent or teammate, and owns user decisions and the reported route.
+- **MUST keep role-bound acceptance.** The `leader` owns ignored Ideation and
   Planning results. The `executor` owns implementation writes and, only after `commit` authority,
   implementation commits. Assistants own direct-Memory closure commits.
 - **MUST run review, implementation commit, and Cowork closure only after the matching explicit user
@@ -110,7 +109,7 @@ user-called judgment and never substitutes for stage quality.
 
 ### Phase 2 — Deliver User Topics
 
-#### 2.1 Lock the topic and choose its depth
+#### 2.1 Lock the topic and choose its stages
 
 - Enter only when Configuration is complete and delivered work exists; a concrete outcome statement already
   in the session may be used after Configuration, not during it. If delivered work is absent, idle-wait;
@@ -122,27 +121,21 @@ user-called judgment and never substitutes for stage quality.
   the topic/work goal, requirements, scope or boundary, observable behavior, policy, strategy, algorithm,
   pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility, or
   acceptance.
-- Choose the smallest valid depth from this table. Document completeness and implementation detail enter the
-  topic/work design and decision scope only when they prove a missing or contradictory topic/work choice; if
-  the topic is too broad, risky, irreversible, or uncertain for Light, ask the user to narrow or split it or
-  start Workflow through Gobbi, and never create another depth or switch modes without the user's decision.
-
-| Depth | Selection evidence | Route |
-|---|---|---|
-| **Fast** | The topic contract is complete, no in-scope design choice remains, and the work needs no decomposition. | Skip Ideation and Planning, then run Execution. |
-| **Light** | The topic is bounded, but an in-scope design choice or decomposition need remains; decomposition may select Light without becoming an Ideation decision. | Run bounded Ideation, bounded Planning, then ordered Execution. |
+- Run Ideation when the topic has an open design choice, and Planning when the work is too large for one task;
+  go straight to Execution when neither applies. Ideation and Planning are the same as in Workflow. If the
+  topic is too broad, risky, irreversible, or uncertain for one topic, ask the user to narrow or split it or
+  start Workflow through Gobbi, and never switch modes without the user's decision.
 
 #### 2.2 Route the selected stages
 
-- For Fast, skip Ideation and Planning and start Execution; for Light, run Ideation, Planning, Execution,
-  and PASS in order, and neither shaping stage is optional. After a topic is locked, start the next selected
-  stage and stop on competing evidence. Do not rewrite
+- Run the selected stages in order, then PASS. After a topic is locked, start the next selected stage and stop
+  on competing evidence. Do not rewrite
   `configuration.md` at lock, stage, commit, or review boundaries.
-- Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, depth,
-  stage, stable assignment ID, absolute worktree and session root, branch, allowed and protected paths,
-  exact temporary and final paths, authoritative result, verification, commit authority, a skills index of
-  skill, path, and description, a docs index of doc, path, and description, and, when the assignment is Review, one named `review-depth` token. Set Execution
-  commit authority to none unless the assignment is the user-called `commit`.
+- Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, stage, stable
+  assignment ID, absolute worktree and session root, branch, allowed and protected paths, exact temporary and final
+  paths, authoritative result, verification, commit authority, a skills index of skill, path, and description, a
+  docs index of doc, path, and description, and, when the assignment is Review, one named `review-depth` token. Set
+  Execution commit authority to none unless the assignment is the user-called `commit`.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../partner/SKILL.md) to the
   recorded launch set minus the active runtime; launch none when the set is empty or disabled without rewriting
@@ -152,37 +145,41 @@ user-called judgment and never substitutes for stage quality.
 
 #### 2.3 Accept the shaping results
 
-- Fast produces no Ideation or Planning result. Existing recovered sessions retain accepted selected or
-  omitted stages and one exact evidence-proved legacy result shape without renaming or migration.
-- For Light with an in-scope topic/work design or decision, apply the collaboration Rule and select
+- A skipped stage produces no result. Existing recovered sessions keep their accepted stages and result shapes
+  without renaming or migration.
+- For a topic with an open design choice, apply the collaboration Rule and select
   [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive subject has an unresolved material
   code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it has an unresolved
   material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md) when it has an
   unresolved material visual-design choice. Give the selected operation that skill's complete caller contract
   plus the topic/work scope, applicable participant discussion
-  records, absolute locators
-  `{session-root}/topic-NN-slug/1-ideation/ideation-index.md` and
-  `{session-root}/topic-NN-slug/2-planning/plan-index.md`, and recovery boundary, then route a returned decision
-  package to Step 2.1; a decomposition-only Light route selects no ideation operation, creates no Ideation
-  decision or participant discussion, and proceeds to the matching domain planning skill.
+  records, output root `{session-root}/topic-NN-slug/1-ideation/` and its `ideation-index.md` locator, and
+  recovery boundary, then route a returned decision package to Step 2.1. When only Planning runs, select no
+  ideation operation.
 - Use caller-named `tmp/` paths for drafts and supporting inputs, then have the creator write the curated result
   directly to its phase directory. Accept Ideation only when its caller completion test passes, the index and
   members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any membership, order,
-  path, or byte change makes it stale, and accepted Ideation then continues to the matching domain planning
-  skill: [Coding Planning](../coding/coding-planning/SKILL.md) for code work,
+  path, or byte change makes it stale.
+- When the work needs more than one task, apply the matching domain planning skill:
+  [Coding Planning](../coding/coding-planning/SKILL.md) for code work,
   [Authoring Planning](../authoring/authoring-planning/SKILL.md) for writing work, or
-  [Design Planning](../design/design-planning/SKILL.md) for visual work.
+  [Design Planning](../design/design-planning/SKILL.md) for visual work. Give the `leader` the goal, the
+  accepted Ideation result or the topic contract, and output directory `{session-root}/topic-NN-slug/2-planning/`.
+  Reread the returned plan documents and confirm Planning's checks before Execution; otherwise go to
+  Execution.
 
 #### 2.4 Execute and accept the topic
 
-- Assign each dependency-ready task to the `executor` through the matching domain execution skill:
+- Assign each ready task to the `executor` through the matching domain execution skill:
   [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
   [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
   [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
-  Fast receives one manager-assigned `task-NN-slug`; Light preserves the task IDs from the accepted
-  Planning result.
-- Keep one writer active, reread every promised result or commit, and reproduce verification before dependent
-  work. An in-stage review cannot replace required implementation or a user-called review;
+  Without Planning, the manager assigns one `task-NN-slug`; otherwise keep the plan's task IDs and build each
+  brief from the task's Goal, Context, Constraints, and Taste and Preference.
+- Decide which ready tasks run in parallel and which in order from the Task Graph and the files they change.
+  Tasks that run at the same time must not change the same files, and commits are made one at a time. Reread
+  every promised result or commit and reproduce verification before dependent work. An in-stage review cannot
+  replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
 - Complete PASS only after every selected result is accepted and verified, then append that topic ID and
   record path to `configuration.md` `Accepted topics`. Do not copy hashes or idle state, and
@@ -220,8 +217,8 @@ user-called judgment and never substitutes for stage quality.
   historical names such as `codex.md`. Use
   `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
   integrity, required discussion, and user decisions, not implementation completeness or document polish),
-  `planning-decomposition` for Planning (hierarchy coverage, grouping coherence, dependency-valid order,
-  assignment contract, and indexed integrity, not implementation recipes), `execution-implementation` for
+  `planning-decomposition` for Planning (coverage without overlap, goal-based tasks, sourced constraints,
+  tastes, and numbers, and an acyclic Task Graph, not implementation steps), `execution-implementation` for
   implementation, and `by-owning-stage` for mixed subjects.
 - In the same `review` call, for each artifact class the subject contains, apply the matching domain review
   skill through one fresh `reviewer`, not the producer, and one read-only Partner run per remaining
@@ -287,15 +284,15 @@ user-called judgment and never substitutes for stage quality.
 | [Git](../git/SKILL.md) | Supplies branch, commit, pull-request, and tag conventions and the shared Git safety rules. |
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
 | [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
-| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Light code-work decomposition and its indexed result. |
-| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Light writing-work decomposition and its indexed result. |
-| [Design Planning](../design/design-planning/SKILL.md) | Owns Light visual-work decomposition and its indexed result. |
+| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns code-work planning and its plan documents. |
+| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns writing-work planning and its plan documents. |
+| [Design Planning](../design/design-planning/SKILL.md) | Owns visual-work planning and its plan documents. |
 | [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md`. |
 | [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md`. |
 | [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md`. |
-| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Light code design and its indexed result. |
-| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Light writing design and its indexed result. |
-| [Design Ideation](../design/design-ideation/SKILL.md) | Owns Light visual design and its indexed result. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns code design and its indexed result. |
+| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns writing design and its indexed result. |
+| [Design Ideation](../design/design-ideation/SKILL.md) | Owns visual design and its indexed result. |
 | [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff. |
 | [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff. |
 | [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff. |

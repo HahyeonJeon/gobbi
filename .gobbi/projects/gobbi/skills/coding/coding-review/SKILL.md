@@ -67,7 +67,7 @@ limit causes and verdicts to what the evidence supports.
   | `review-depth` | In-contract bar |
   |---|---|
   | `ideation-design` | Goal, decisions, boundaries, constraints, work strategy, indexed integrity, and required discussion and user decisions. Not implementation completeness or document polish. |
-  | `planning-decomposition` | Hierarchy coverage, grouping coherence, dependency-valid order, assignment contract, and indexed integrity. Not implementation recipes. |
+  | `planning-decomposition` | Coverage of the whole work without overlap, goal-based tasks a reviewer can judge, sourced constraints, tastes, and numbers, and an acyclic Task Graph. Not implementation steps. |
   | `execution-implementation` | Implementation and task verification. |
   | `by-owning-stage` | A mixed subject: each artifact takes the row of the stage that owns it. |
 

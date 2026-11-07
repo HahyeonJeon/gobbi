@@ -16,5 +16,5 @@ direct Design child applies, and load every direct child whose applicability sen
 |---|---|---|
 | [`design-execution`](design-execution/SKILL.md) | operation | Use it when one accepted task has a settled visual design and a writer frontier that includes visual work. |
 | [`design-ideation`](design-ideation/SKILL.md) | operation | Use it when a bounded topic has an unresolved material visual-design choice. |
-| [`design-planning`](design-planning/SKILL.md) | operation | Use it when scope and direction are defined for visual work but that work still needs decomposition, grouping, order, and dispatch. |
+| [`design-planning`](design-planning/SKILL.md) | operation | Use it when the goal and design of visual work are settled but the work is too large for one task. |
 | [`design-review`](design-review/SKILL.md) | operation | Use it after one exact stable visual subject is ready for independent review and before an acceptance or workflow decision. |

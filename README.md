@@ -166,8 +166,8 @@ and `grok`.
 
 ## Cowork
 
-Cowork is the fast path for implementation work that you direct one topic at a time. Fast delivery skips
-Ideation and Planning; Light delivery runs a bounded version of both before verified Execution.
+Cowork is the fast path for implementation work that you direct one topic at a time. It uses the same
+Ideation and Planning as Workflow, and runs each only when the topic needs it before verified Execution.
 
 Independent review and closure run only when you explicitly request them. One isolated branch and linked
 worktree hold the session, keeping your main checkout separate from the ordered local commits.
