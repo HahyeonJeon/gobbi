@@ -177,4 +177,4 @@ altered completion claim.
 | [Memory-note template](templates/memory-note.md) | Tracked Memory report shape for the Phase 2 `reports/note/` work account. |
 | [Note template](templates/note.md) | Response-only Git/recovery note for every terminal state. |
 | [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it, including Closure. |
-| [Git](../git/SKILL.md) | Supplies focused-commit, integration, retained-object, and recovery preferences; Wrap-up owns the ordered Git actions. |
+| [Git](../git/SKILL.md) | Supplies commit and merge conventions and the shared Git safety rules; Wrap-up owns the ordered Git actions. |

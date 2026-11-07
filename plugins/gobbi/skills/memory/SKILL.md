@@ -103,4 +103,4 @@ A caller or an explicit user request owns when a write happens. Do not invent a 
 | [Memory directories](memory.md) | Definition, naming, and writing rules for every directory under `memory/`. |
 | [Session records](record.md) | Definition, naming, and writing rules for session records under `sessions/`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Caller that runs Closure, including the durable `reports/note/`. |
-| [Git](../git/SKILL.md) | Conventions for focused Memory commits. |
+| [Git](../git/SKILL.md) | Conventions for Memory commit messages. |

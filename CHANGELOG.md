@@ -32,6 +32,7 @@ not delete old role files; remove those after you migrate their callers.
 
 ### Changed
 
+- The Git skill is one `SKILL.md` that holds only what an agent cannot infer from Git: branch names, commit messages, pull-request and issue body order, merge method, and release tags, plus four shared safety rules (repository policy wins, stage explicit paths, explicit authority for push, pull request, merge, rewrite, and deletion, and `--force-with-lease` instead of `--force`). Removed the Git command how-to and doc links, general commit advice agents already follow, the Continuation write-safety section, the Cowork and Workflow base-branch line, the References section, and the `templates/` pull-request and issue files.
 - Gobbi agents are classified by role, not by domain and phase. The five roles are manager, assistant, leader, executor, and reviewer, with one file per runtime: twenty role files instead of fifty-six. Leader owns the Ideation result and the Planning result and never changes the product. Executor changes the product. Reviewer reads another agent's work, never changes it, and never reviews its own.
 - Role files hold no coding, authoring, or design content. The brief's Role names the domain expert, and the coding, authoring, and design skills hold the domain standards.
 - Every role intro is now a persona: the experience, abilities, and character the role needs, shown as working habits. No role file uses the "world-best" frame.

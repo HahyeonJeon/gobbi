@@ -343,5 +343,5 @@ Note after Continue.
 | [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md`. |
 | [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable work Note, commit, merge, Git/recovery Note delivery, and recovery. |
 | [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
-| [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
+| [Git](../git/SKILL.md) | Supplies branch, commit, pull-request, and tag conventions and the shared Git safety rules. |
 | [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
