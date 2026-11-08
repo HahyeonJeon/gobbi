@@ -49,7 +49,7 @@ def _skill_check(check_id: str, summary: str, paths: Sequence[str]) -> Check:
     shared = _SKILL_CHECKS[check_id]
 
     def run(repo: Repo) -> Iterable[Finding]:
-        return shared.run(SkillTree(repo.root, paths), OPTIONS)
+        return shared.run(SkillTree(repo.root, paths, listed=repo.files()), OPTIONS)
 
     return Check(check_id, summary, run, shared.advisory)
 

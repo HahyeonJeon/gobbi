@@ -34,6 +34,16 @@ class PathsTest(GuardCase):
         changes = {**dict.fromkeys(read, broken), "README.md": broken, "docs/notes.md": broken}
         self.assertEqual(self.found("links", changes), sorted(["README.md", *read]))
 
+    def test_ignored_files_do_not_count(self):
+        changes = {
+            ".gitignore": "local.md\n",
+            f"{SKILLS}/alpha/notes.md": "# Notes\n\n[x](local.md)\n",
+            f"{SKILLS}/alpha/local.md": "IGNORED " + "word " * 40,
+        }
+        self.assertEqual(self.found("links", changes), [f"{SKILLS}/alpha/notes.md"])
+        self.assertEqual(self.found("line-length", changes), [])
+        self.assertEqual(self.found("all-caps", changes), [])
+
 
 if __name__ == "__main__":
     unittest.main()
