@@ -213,6 +213,13 @@ failed launch is recorded as Unavailable evidence, not a partner result.
 Cursor remains a supported runtime but is not a partner, because its print mode failed authentication when
 measured. The active runtime decides what to accept and remains the session authority.
 
+## Cleansing
+
+Run `/gobbi:cleansing` (Codex: `$cleansing`) when code or docs have grown messy. Gobbi asks how deep (module,
+class, function) and how bold (aggressive, moderate, conservative) refactoring, renaming, and removing may go,
+maps what each part is for, shows you a simpler target, and changes files only after you approve it. Behavior
+stays the same. Only you can start it.
+
 ## Develop Gobbi
 
 Edit skills and roles in the canonical tree under `.gobbi/projects/gobbi/`, never in `plugins/gobbi/`. Then run
