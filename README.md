@@ -10,9 +10,9 @@ Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
-Gobbi is an orchestration system that brings structured planning, implementation, review, and durable
-handoffs to the AI coding tools you already use. You choose Cowork for topic-by-topic work or Workflow for a
-fully recorded lifecycle. Gobbi never preselects the mode for you.
+Gobbi is an orchestration system that brings structured planning, implementation, review, and durable handoffs
+to the AI coding tools you already use. You choose Cowork for user-led work that keeps related requests
+together or Workflow for a fully recorded lifecycle. Gobbi never preselects the mode for you.
 
 The name comes from 고삐 (*gobbi*), Korean for "reins."
 
@@ -166,8 +166,9 @@ and `grok`.
 
 ## Cowork
 
-Cowork is the fast path for implementation work that you direct one topic at a time. It uses the same
-Ideation and Planning as Workflow, and runs each only when the topic needs it before verified Execution.
+Cowork is the fast path for implementation work that you direct request by request. Related requests stay in
+one topic; a new topic starts only when you ask for one or approve the manager's proposal. It uses the same
+Ideation and Planning as Workflow, and runs each only when a request needs it before verified Execution.
 
 Independent review and closure run only when you explicitly request them. One isolated branch and linked
 worktree hold the session, keeping your main checkout separate from the ordered local commits.

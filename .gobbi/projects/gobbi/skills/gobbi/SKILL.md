@@ -160,7 +160,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
   | Mode | Use when | Commitment |
   |---|---|---|
-  | **Cowork** | The user wants bounded topics, one at a time. | The user controls topic decisions, review calls, and closure. |
+  | **Cowork** | The user leads the work request by request, and related requests stay in one topic. | The user controls new topics, decisions, review calls, and closure. |
   | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review, then wait for explicit continue. |
 
 - Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,
@@ -216,7 +216,7 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
 | [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Manager role](../../agents/claude/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../agents/grok/manager.md), [Codex](../../agents/codex/manager.toml), [Cursor](../../agents/cursor/manager.md). |
-| [Cowork](../cowork/SKILL.md) | Owns user-led bounded topics, explicit review, and explicit closure. |
+| [Cowork](../cowork/SKILL.md) | Owns user-led topics, explicit review, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
 | [Claude Code setup](setup/claude.md) | How to install Gobbi and create missing layout for Claude Code. |

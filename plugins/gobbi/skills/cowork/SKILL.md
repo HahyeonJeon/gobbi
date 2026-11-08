@@ -1,15 +1,15 @@
 ---
 name: cowork
-description: "Cowork is a user-led Gobbi work mode for bounded topics in one isolated worktree."
+description: "Cowork is a user-led Gobbi work mode that keeps related requests in one topic in one worktree."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Cowork
 
-Cowork takes one user-supplied topic at a time through Ideation, Planning, and Execution in one isolated
-worktree. Use it after Gobbi selects Cowork and before any Cowork topic, explicit commit, explicit review, or
-explicit closure action.
+Cowork takes the user's requests through Ideation, Planning, and Execution in one isolated worktree. Related
+requests stay in one topic, and a new topic starts only on the user's call or approval. Use it after Gobbi
+selects Cowork and before any Cowork topic, explicit commit, explicit review, or explicit closure action.
 
 ## Principles
 
@@ -17,7 +17,12 @@ explicit closure action.
 
 The user owns every material scope, design, risk, destructive-action, and external-service decision. The
 manager idle-waits after Configuration until the user delivers the work, then makes each topic concrete,
-returns accepted evidence, and waits at later topic boundaries.
+returns accepted evidence, and waits for the next request.
+
+### Keep related work in one topic
+
+A topic is the line of work the user is pursuing, not one request or one task. Most new requests continue it,
+so related work, its decisions, and its records stay together. Changing the topic is the user's call.
 
 ### Keep one inspectable local history
 
@@ -37,6 +42,9 @@ user-called judgment and never substitutes for stage quality.
   change nothing else in the main checkout.
 - **MUST continue and recover only in the registered Cowork worktree and session root.** Never create or select
   a replacement worktree or session directory for the same Cowork identity.
+- **MUST continue related work in the current topic.** Open a new topic only when the user asks for one, or
+  when the manager judges the work truly unrelated and the user approves. Ask with the reason, and stay in the
+  current topic until the user answers.
 - **MUST start a topic stage only after delivered work exists.** Delivered work is a user statement of the
   outcome, topic, or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository
   state.
@@ -62,8 +70,10 @@ user-called judgment and never substitutes for stage quality.
 - Enter from Gobbi with `mode: Cowork`, the normalized slug, session partner policy, and validated Gobbi root
   pair. Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
   [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order.
-- On recovery, inspect direct evidence first. Return to the idle wait when Configuration is complete and
-  delivered work is absent, and resume the earliest unproved step only after delivered work exists.
+- On recovery, recover the current topic from the topic records and the user's latest topic decision, then
+  inspect its latest request and evidence, including unfinished work. Return to the idle wait when Configuration
+  is complete and delivered work is absent, and resume the earliest unproved step only after delivered work
+  exists.
 - For a fresh session, capture the original UTC session-start date and generate one full lowercase hyphenated
   UUID. For recovery, require one matching recorded identity, branch, registered worktree, and session root;
   stop instead of creating or selecting a replacement, and do not ask which branch is the base.
@@ -84,23 +94,24 @@ user-called judgment and never substitutes for stage quality.
   write it as an ignored session record as [Memory](../memory/SKILL.md) defines, and verify its identity,
   locations, settings, creation evidence, and ignored state before completing Configuration. A recovered session
   without this file may create it only when one exact identity, branch, registered worktree, session root, and
-  accepted topic history agree; do not rewrite `configuration.md` again until a topic reaches PASS.
+  accepted topic history agree; do not rewrite `configuration.md` again except to add a topic's first
+  accepted-work pointer in Step 2.4.
 
 #### 1.3 Establish topic and session locations
 
 - Create each ignored directory only when its first result needs it, and name every temporary directory and
   file in its owning assignment. Drafts, subagent or teammate responses, Partner results, reviews, scratch
-  work, and user-called review material start below `tmp/`; accepted session records go in their topic
-  phase or session wrap-up directory, while tracked results stay at their owner-defined paths.
+  work, and user-called review material start below the current topic's `tmp/`; accepted session records go
+  in their topic phase or session wrap-up directory, while tracked results stay at their owner-defined paths.
 
 | Content | Relative directory |
 |---|---|
 | Topic | `topic-NN-slug/` |
-| Topic Ideation | `topic-NN-slug/1-ideation/` |
+| Topic Ideation, one directory per Ideation result | `topic-NN-slug/1-ideation/NN-slug/` |
 | Topic Planning | `topic-NN-slug/2-planning/` |
 | Topic Execution records | `topic-NN-slug/3-execution/` |
+| Topic temporary work | `topic-NN-slug/tmp/` |
 | Session wrap-up | `wrap-up/` |
-| Temporary work | `tmp/` |
 
 #### 1.4 Complete Configuration as an idle wait
 
@@ -109,28 +120,29 @@ user-called judgment and never substitutes for stage quality.
 
 ### Phase 2 — Deliver User Topics
 
-#### 2.1 Lock the topic and choose its stages
+#### 2.1 Settle the request and choose its stages
 
 - Enter only when Configuration is complete and delivered work exists; a concrete outcome statement already
   in the session may be used after Configuration, not during it. If delivered work is absent, idle-wait;
   asking the user to state the work is allowed, and studying, ideating, planning, or
   executing is not.
-- Apply [Discussion](../discussion/SKILL.md) to lock the topic outcome, purpose, scope, acceptance evidence,
-  first action, exclusions, and required user decisions; assign the next stable `topic-NN-slug` and keep this
-  contract authoritative. Define topic/work design and decisions as choices whose viable answers can change
-  the topic/work goal, requirements, scope or boundary, observable behavior, policy, strategy, algorithm,
-  pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility, or
-  acceptance.
-- Run Ideation when the topic has an open design choice, and Planning when the work is too large for one task;
-  go straight to Execution when neither applies. Ideation and Planning are the same as in Workflow. If the
-  topic is too broad, risky, irreversible, or uncertain for one topic, ask the user to narrow or split it or
-  start Workflow through Gobbi, and never switch modes without the user's decision.
+- The first delivered work, including a review request, opens `topic-01-slug` before Discussion or temporary
+  output. Apply [Discussion](../discussion/SKILL.md) to settle the request's outcome, purpose, scope, acceptance
+  evidence, first action, exclusions, and required user decisions. A later request continues the current topic:
+  add it and its decisions to the topic contract and keep the earlier entries. Open the next `topic-NN-slug` only
+  as the topic Rule allows. The topic contract stays authoritative. Define topic/work design and decisions as
+  choices whose viable answers can change the topic/work goal, requirements, scope or boundary, observable
+  behavior, policy, strategy, algorithm, pattern or design direction, safety or privacy risk, authority, cost,
+  dependency or reversibility, or acceptance.
+- For each request, run Ideation when it has an open design choice, and Planning when the work is too large for
+  one task; go straight to Execution when neither applies. Ideation and Planning are the same as in Workflow.
+  If a request is too broad, risky, irreversible, or uncertain for Cowork, ask the user to narrow it or start
+  Workflow through Gobbi, and never switch modes without the user's decision.
 
 #### 2.2 Route the selected stages
 
-- Run the selected stages in order, then PASS. After a topic is locked, start the next selected stage and stop
-  on competing evidence. Do not rewrite
-  `configuration.md` at lock, stage, commit, or review boundaries.
+- Run the selected stages in order, then PASS. After the request is settled, start the next selected stage and
+  stop on competing evidence. Do not rewrite `configuration.md` at request, stage, commit, or review boundaries.
 - Build every assignment through [Delegation](../delegation/SKILL.md) with the Cowork UUID, topic ID, stage, stable
   assignment ID, absolute worktree and session root, branch, allowed and protected paths, exact temporary and final
   paths, authoritative result, verification, commit authority, a skills index of skill, path, and description, a
@@ -139,53 +151,54 @@ user-called judgment and never substitutes for stage quality.
 - Route a needed Discussion follow-up to an addressable subagent or teammate whose role, evidence, and boundary
   still fit, and always issue a complete new Delegation brief. Apply [Partner](../partner/SKILL.md) to the
   recorded launch set minus the active runtime; launch none when the set is empty or disabled without rewriting
-  the policy. Otherwise, the manager launches one background Partner run per launchable runtime with a
-  Delegation brief, read-only unless the assignment needs writes, keeps each run's output under `tmp/`, and
+  the policy. Otherwise, the manager launches one background Partner run per launchable runtime with a Delegation
+  brief, read-only unless the assignment needs writes, keeps each run's output under the topic's `tmp/`, and
   records Unavailable when launch fails.
 
 #### 2.3 Accept the shaping results
 
 - A skipped stage produces no result. Existing recovered sessions keep their accepted stages and result shapes
   without renaming or migration.
-- For a topic with an open design choice, apply the collaboration Rule and select
+- For a request with an open design choice, apply the collaboration Rule and select
   [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive subject has an unresolved material
   code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it has an unresolved
   material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md) when it has an
   unresolved material visual-design choice. Give the selected operation that skill's complete caller contract
-  plus the topic/work scope, applicable participant discussion
-  records, output root `{session-root}/topic-NN-slug/1-ideation/` and its `ideation-index.md` locator, and
-  recovery boundary, then route a returned decision package to Step 2.1. When only Planning runs, select no
-  ideation operation.
-- Use caller-named `tmp/` paths for drafts and supporting inputs, then have the creator write the curated result
-  directly to its phase directory. Accept Ideation only when its caller completion test passes, the index and
-  members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any membership, order,
-  path, or byte change makes it stale.
+  plus the topic/work scope, applicable participant discussion records, an output root
+  `{session-root}/topic-NN-slug/1-ideation/NN-slug/` for this Ideation result, reused when resuming it, and its
+  `ideation-index.md` locator, and recovery boundary, then route a returned decision package to Step 2.1. When
+  only Planning runs, select no ideation operation.
+- Use caller-named paths in the topic's `tmp/` for drafts and supporting inputs, then have the creator write the
+  curated result directly to its phase directory. Accept Ideation only when its caller completion test passes,
+  the index and members are reread, paths and hashes are recorded, and the tracked tree is unchanged; any
+  membership, order, path, or byte change makes it stale.
 - When the work needs more than one task, apply the matching domain planning skill:
   [Coding Planning](../coding/coding-planning/SKILL.md) for code work,
   [Authoring Planning](../authoring/authoring-planning/SKILL.md) for writing work, or
-  [Design Planning](../design/design-planning/SKILL.md) for visual work. Give the `leader` the goal, the
-  accepted Ideation result or the topic contract, and output directory `{session-root}/topic-NN-slug/2-planning/`.
-  Reread the returned plan documents and confirm Planning's checks before Execution; otherwise go to
-  Execution.
+  [Design Planning](../design/design-planning/SKILL.md) for visual work. Give the `leader` the goal, the accepted
+  Ideation result or the topic contract, and output directory `{session-root}/topic-NN-slug/2-planning/`; plan
+  and task numbers continue across the topic. Reread the returned plan documents and confirm Planning's checks
+  before Execution; otherwise go to Execution.
 
-#### 2.4 Execute and accept the topic
+#### 2.4 Execute and accept the request
 
 - Assign each ready task to the `executor` through the matching domain execution skill:
   [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
   [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
-  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
-  Without Planning, the manager assigns one `task-NN-slug`; otherwise keep the plan's task IDs and build each
-  brief from the task's Goal, Context, Constraints, and Taste and Preference.
+  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work. Without Planning, the
+  manager assigns the topic's next `task-NN-slug`; otherwise keep the plan's task IDs and build each brief from
+  the task's Goal, Context, Constraints, and Taste and Preference.
 - Decide which ready tasks run in parallel and which in order from the Task Graph and the files they change.
   Tasks that run at the same time must not change the same files, and commits are made one at a time. Reread
   every promised result or commit and reproduce verification before dependent work. An in-stage review cannot
   replace required implementation or a user-called review;
   return failures, scope drift, or changed decisions to the earliest responsible stage.
-- Complete PASS only after every selected result is accepted and verified, then append that topic ID and
-  record path to `configuration.md` `Accepted topics`. Do not copy hashes or idle state, and
-  do not replace earlier pointers. Do not require a focused implementation commit or a clean tracked tree;
-  report outcome, scope, results, commits, checks, exclusions, concerns, partner evidence, and review
-  coverage separately, then wait for the user's next request.
+- Complete PASS for the request only after every selected result is accepted and verified. On each PASS, append
+  the request's outcome and evidence paths to the topic contract. On the topic's first PASS, add its topic ID and
+  contract path to `configuration.md` `Accepted topics` once. PASS does not close the topic. Do not copy hashes
+  or idle state, and do not replace earlier pointers. Do not require a focused implementation commit or a clean
+  tracked tree; report outcome, scope, results, commits, checks, exclusions, concerns, partner evidence, and
+  review coverage separately, then wait for the user's next request, which continues this topic by default.
 
 ### Phase 3 — Commit on User Call
 
@@ -194,8 +207,8 @@ user-called judgment and never substitutes for stage quality.
 - Enter only for an explicit `commit`. Do not render the diff; the call is the
   confirmation.
 - Assign the `executor` through [Delegation](../delegation/SKILL.md) to create focused commit(s) of accepted
-  uncommitted tracked implementation changes. Use one commit in the normal case, or one commit per
-  accepted topic when the dirty set spans more than one topic.
+  uncommitted tracked implementation changes. Use one focused commit in the normal case, and split independent
+  changes when needed.
 - Verify the resulting commits and that each tree contains only accepted tracked implementation changes.
   Then wait for the user's next request.
 
@@ -208,18 +221,16 @@ user-called judgment and never substitutes for stage quality.
   changes exist; an indexed result includes its index and every listed member, and whole-branch review uses
   `review-depth` `by-owning-stage`. If uncommitted tracked implementation changes exist and the user did
   not name a subset, stop and ask for `commit` or a named subject.
-- Name one locked `review-depth` token, define the decision criteria and
-  contract-gate aggregation rule, assign one unique caller-named directory below `tmp/` as the aggregation
-  parent with children `<class>/<runtime>/report.md`, one class
-  directory per artifact class the subject contains, so a single-class subject has one. Write each of those
-  paths as an ignored session record as Memory defines. Keep class tokens `code`, `docs`, and
-  `design`, and runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias
-  historical names such as `codex.md`. Use
-  `ideation-design` for Ideation (goal, decisions, boundaries, constraints, work strategy, indexed
-  integrity, required discussion, and user decisions, not implementation completeness or document polish),
-  `planning-decomposition` for Planning (coverage without overlap, goal-based tasks, sourced constraints,
-  tastes, and numbers, and an acyclic Task Graph, not implementation steps), `execution-implementation` for
-  implementation, and `by-owning-stage` for mixed subjects.
+- Name one locked `review-depth` token, define the decision criteria and contract-gate aggregation rule, assign
+  one unique caller-named directory below the current topic's `tmp/` as the aggregation parent with children
+  `<class>/<runtime>/report.md`, one class directory per artifact class the subject contains, so a single-class
+  subject has one. Write each of those paths as an ignored session record as Memory defines. Keep class tokens
+  `code`, `docs`, and `design`, and runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use
+  `claude` or alias historical names such as `codex.md`. Use `ideation-design` for Ideation (goal, decisions,
+  boundaries, constraints, work strategy, indexed integrity, required discussion, and user decisions, not
+  implementation completeness or document polish), `planning-decomposition` for Planning (coverage without
+  overlap, goal-based tasks, sourced constraints, tastes, and numbers, and an acyclic Task Graph, not
+  implementation steps), `execution-implementation` for implementation, and `by-owning-stage` for mixed subjects.
 - In the same `review` call, for each artifact class the subject contains, apply the matching domain review
   skill through one fresh `reviewer`, not the producer, and one read-only Partner run per remaining
   runtime over that class's slice of the same frozen subject and the named `review-depth`:
