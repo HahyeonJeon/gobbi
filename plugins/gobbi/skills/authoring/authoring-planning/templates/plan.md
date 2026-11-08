@@ -36,12 +36,12 @@ from.}
 
 - {A rule that must hold}: {its reason and source}
 
-{Write `None` when nothing must hold beyond the Goal.}
+{Leave this section out when nothing must hold beyond the Goal.}
 
 #### Taste and Preference
 
 - {A leaning, with its source or exemplar}
 
-{Write `None` when none is known.}
+{Leave this section out when none is known.}
 
 {Repeat the task block for each task in this goal.}

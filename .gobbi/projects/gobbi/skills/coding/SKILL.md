@@ -1,6 +1,6 @@
 ---
 name: coding
-description: "Coding is a domain skill that routes code work to specialized operation and preference children."
+description: "Coding routes code work to its design, planning, execution, review, and object-oriented design skills. Use it for work that designs, changes, or reviews software."
 allowed-tools: Read
 skill-type: domain
 ---

@@ -1,6 +1,6 @@
 ---
 name: authoring-review
-description: "Authoring Review is an operation for independent critique of one frozen writing subject and for writing an evidence-based report."
+description: "Authoring Review independently critiques one frozen writing subject and writes an evidence-based report. Use it when finished writing needs independent review before it is accepted."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,12 +8,9 @@ skill-type: operation
 # Authoring Review
 
 Authoring Review binds and freezes one writing subject, criticizes it, applies caller criteria, and writes
-`report.md`.
-Use it after one exact stable writing subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh `reviewer` and does not reuse the producer. It does not modify the target
-or decision state.
-
-This skill is a draft adapted from Evaluation.
+`report.md`. Use it after one exact stable writing subject is ready for independent review and before an
+acceptance or workflow decision. The caller assigns a fresh `reviewer` and does not reuse the producer. It does
+not modify the target or decision state.
 
 ## Principles
 
@@ -40,18 +37,16 @@ limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST bind the exact target, scope, intended results, supplied decision criteria, the report
-  path, and any caller-supplied `review-depth` before the critical review.** Confirm the report path
-  does not overlap the target or a source-owned input, and stop when identity, access, independence, or
-  preservation cannot support a responsible review.
-- **MUST criticize the frozen target from the review-owned prompts and the current project design and
-  vision before applying caller criteria.** Record those results before the verdict.
-- **MUST label every Problem and Improvement `in-contract` or `out-of-contract`, and derive
-  the gate verdict only from in-contract Problems, sufficient evidence, and caller-supplied
-  criteria.** Record a quality opinion against current project design and vision that never
-  changes that verdict.
-- **NEVER change the target, supplied criteria, acceptance state, or workflow state.** Write only files this
-  review creates, such as `report.md` and check output.
+- **Bind the exact target, scope, intended results, decision criteria, report path, and any `review-depth`
+  before the critical review.** A review of an unbound target cannot be checked or repeated, so stop when
+  identity, access, independence, or preservation cannot support it.
+- **Criticize the frozen target from the review-owned prompts and current project design and vision before
+  applying caller criteria.** Caller criteria alone miss what the criteria did not foresee.
+- **Label every Problem and Improvement `in-contract` or `out-of-contract`, and derive the gate verdict only
+  from in-contract Problems, sufficient evidence, and caller criteria.** The caller gates on its contract, so
+  the quality opinion against project design and vision never changes that verdict.
+- **NEVER change the target, supplied criteria, acceptance state, or workflow state.** The review must stay
+  independent of the work it judges, so it writes only files it creates, such as `report.md` and check output.
 
 ## Procedure
 

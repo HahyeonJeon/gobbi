@@ -1,6 +1,6 @@
 ---
 name: partner
-description: "Partner is a manual for running a Codex, Claude Code, or Grok CLI as a background partner agent."
+description: "Partner runs a Codex, Claude Code, or Grok CLI as a background partner agent. Use it when the manager or the user wants another runtime's independent work or opinion."
 allowed-tools: Read, Bash
 skill-type: tool
 ---
@@ -34,18 +34,18 @@ removes every safeguard.
 
 ## Rules
 
-- **MUST launch the partner CLI yourself as a background process under `timeout`, never through another
-  agent.** The default timeout is 3600 seconds.
-- **MUST choose the access level the work needs and use full-access only when the user authorized it for that
-  run.** Default to read-only when the work only needs reading.
-- **MUST give the partner one complete brief written with [Delegation](../delegation/SKILL.md).** The brief
-  says the partner runs non-interactively and must report any denied tool or path in its final message.
-- **MUST capture each run's final message, session id, exit status, and stderr in a private capture
-  directory.** Keep the directory until you have read the run.
-- **MUST read the final message, and for a write run the changed files, before acting on a run.** Exit status
-  0 alone is not success.
-- **NEVER edit, relabel, or automatically retry a partner result.** Send a follow-up by resuming the run's
-  session, or report the failure.
+- **Launch the partner CLI yourself, in the background, under `timeout` (default 3600 seconds).** An agent in
+  between would hold the brief, the access, and the run time instead of you.
+- **MUST use full-access only when the user authorized it for that run.** It removes every sandbox and
+  approval, so otherwise pick the lowest level the work needs, read-only when it only reads.
+- **Give the partner one complete brief written with [Delegation](../delegation/SKILL.md).** No one answers
+  its questions, so the brief says it runs non-interactively and must name any denied tool or path at the end.
+- **Capture each run's final message, session id, exit status, and stderr in a private directory, and keep it
+  until you have read the run.** The captures are the only record of the run and the only way to resume it.
+- **Read the final message, and for a write run the changed files, before acting on a run.** Exit status 0
+  alone does not show that the work is right.
+- **Do not edit, relabel, or automatically retry a partner result.** An edited result no longer shows the
+  partner's view and a retry is a new decision, so follow up by resuming the session or report the failure.
 
 ## Manual
 

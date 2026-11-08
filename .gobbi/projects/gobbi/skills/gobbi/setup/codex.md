@@ -15,6 +15,8 @@ does not load plugin agents. Do not add `.codex/hooks.json`. That file would reg
 
 ## Create missing project layout
 
+The layout is in [Claude Code setup](claude.md#project-layout); every runtime uses the same tree.
+
 From the consumer worktree:
 
 ```bash

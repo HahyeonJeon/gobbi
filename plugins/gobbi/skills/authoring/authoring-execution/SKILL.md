@@ -1,6 +1,6 @@
 ---
 name: authoring-execution
-description: "Authoring Execution is an operation for implementing and verifying one accepted writing task."
+description: "Authoring Execution writes and verifies one accepted writing task. Use it when a task with a settled writing design changes durable prose."
 allowed-tools: Read
 skill-type: operation
 ---

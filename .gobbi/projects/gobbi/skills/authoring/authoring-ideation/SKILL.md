@@ -1,6 +1,6 @@
 ---
 name: authoring-ideation
-description: "Authoring Ideation is an operation for developing an evidence-backed writing design from a problem and its requirements."
+description: "Authoring Ideation develops an evidence-backed writing design with the user. Use it when writing work has an open design choice, such as its reader, structure, or voice."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,130 +8,85 @@ skill-type: operation
 # Authoring Ideation
 
 Authoring Ideation develops one evidence-backed writing design from a problem and its requirements. Use it
-when a bounded topic has an unresolved material writing-design choice. It writes one indexed result and stops
-before realization.
+when a bounded topic has an unresolved material writing-design choice. It writes one result located by
+`ideation-index.md` and stops before the writing itself.
 
 ## Principles
 
-### Question through the caller until the idea is complete
+### Cover the design choices the writing needs
 
-An incomplete idea is a set of open topics, not permission to assume. Return evidence-backed questions until
-every material gap is answered, deferred, or removed from scope.
+Reader and job, structure and claims, naming and vocabulary, and voice and evidence each matter wherever they
+change the writing. Take them in the order the work needs, and decide a choice only after the choices it
+depends on, such as structure after the reader's job.
 
-### Study and discuss with other agents, then ask the user
+### Keep each decision in one place
 
-Study project evidence first, then trustworthy external prior art when it can change a choice. Get separate
-supported suggestions and critique from available agents, compare options, recommend one, and ask the user
-before treating a design choice as decided.
-
-### Discuss the design through a hierarchy of topics
-
-Root topics in the problem and outcome, and use the Design headings as the parent topics in ladder order.
-Resolve parents before children, and reopen the earliest affected decision when new evidence changes it.
-
-### Design one dependent writing-design level at a time
-
-Close reader and job before structure, structure before naming, and naming before voice. Start each level
-with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`.
+Each decision lives under its Design heading with the chosen option, why it won, its trade-offs, and what would
+reopen it. Discussion links to that heading instead of copying the decision, so the two cannot disagree.
 
 ## Rules
 
-- **MUST preserve caller and user authority.** The user decides each required in-scope success, direction,
-  risk, destructive implication, external dependency, and load-bearing assumption.
-- **MUST write one closed indexed result at the caller-supplied output root, located by `ideation-index.md`.**
-  Write every result file directly in that root, list each one from `ideation-index.md` or
-  `discussion-index.md`, and keep each decision in its Design heading rather than in Discussion.
-- **MUST finish agent discussion before synthesizing options, then resume only from the recorded user
-  decision.** Do not force consensus or repeat without new evidence.
-- **MUST stop at the design boundary.** Drafted prose, file-level edits, publication recipes, and other
-  realized output are out of scope.
-- **MUST resolve this exact writing-design ladder without merging, swapping, or extending levels:**
-  reader and job → structure and claims → naming and vocabulary → voice and evidence → whole-writing-design
-  check.
-- **NEVER change an accepted contract silently.** Reopen the earliest affected decision and obtain any
-  required user choice.
+- **MUST let the user decide each material choice.** The user owns success, direction, risk, destructive
+  effects, external dependencies, and load-bearing assumptions, so the agent recommends and returns the choice.
+- **Get independent suggestions or critique before recommending a consequential choice.** One agent misses
+  alternatives, and Principle 3 asks for this on choices that are hard to reverse or that the user owns.
+- **Write the result at the caller's output root, located by `ideation-index.md`.** Cowork and Workflow pass
+  that root and read the result from that file.
+- **Stop at the design boundary.** Drafted prose, file-level edits, and publication steps belong to Execution,
+  which works from the accepted design.
+- **NEVER change an accepted decision silently.** Planning and Execution build on it, so reopen the earliest
+  affected decision and get the user's choice.
 
 ## Procedure
 
-### Phase 1 — Understand the Problem and Requirements
+### Phase 1 — Understand the Problem
 
-#### 1.1 Establish the contract
+Done when the requirements state the goal and why it matters, the problem, the outcomes readers should get, what
+is in and out of scope, and the open questions.
 
-- Read the request, governing materials, problem, outcome, requirements, and caller-supplied design and
-  decision scope, output root, and user-decision route.
-- Stop and return missing, contradictory, or unclear input. Revise an existing target only with caller
-  authority.
-- Require the participant-discussion contract only when agents will be asked for suggestions or critique.
+#### 1.1 Read the inputs and write the requirements
 
-#### 1.2 Define the problem, outcome, and scope
+- Read the request, the participant discussion, the governing materials, and the output root. Return missing or
+  contradictory input to the caller, and revise an existing result only with the caller's authority.
+- Write the requirements from the [part template](templates/ideation-NN.md), separating facts from hypotheses.
 
-- State the current situation, desired outcome, readers, unchanged behavior, and Included, Excluded, Deferred,
-  or Rejected scope. Distinguish facts from hypotheses.
-- Write Requirements only in the authoritative part, from the [part template](templates/ideation-NN.md).
-- Return each unresolved in-scope choice through the caller's user-decision route.
+### Phase 2 — Study and Decide
 
-### Phase 2 — Study and Discuss
+Done when every material choice has a user decision, a deferral, or a scope exclusion, backed by recorded study.
 
-#### 2.1 Study applicable evidence
+#### 2.1 Study the evidence
 
-- Frame the question and what evidence would change the answer. Inspect the closest internal writing first;
-  use external prior art only when it can improve an in-scope choice.
-- Compare, challenge, and recommend. Write each study as an `S{N}` block under `## Study` in the Discussion
-  view, not in an authoritative part.
-- Record where the independent suggestions and critique agreed or differed in that group's `### Discussion`.
-  Do not copy study assessments or findings.
+- Study the closest internal writing first, and external prior art only when it can change an in-scope choice.
+- Record each study once from the [discussion part template](templates/discussion-NN.md), and cite its ID from
+  the topics it informs.
 
-#### 2.2 Discuss options and build topics
+#### 2.2 Ask the user and record the decision
 
-- Get separate supported suggestions and critique from available agents before synthesizing options. Resolve
-  or expose conflict.
-- Write the topic tree and each `## Topic {path}` group through `#### Options` from the
-  [discussion templates](templates/discussion-index.md). Use the Design headings as parent topics in ladder
-  order, link **Decision** to that heading, keep groups flat, and cite study IDs.
-- Add a missing in-scope topic under its parent, or mark that heading `Not applicable — {reason}` in Step 3.1.
+- For each user-owned choice, return the question, the options recommended first with Pros and Cons, and what
+  would change the recommendation, then stop work that depends on it. The option order is the user's standing
+  preference.
+- Record each decision under its Design heading, and reopen the earliest affected decision when new evidence
+  changes it.
 
-#### 2.3 Ask the user and record decisions
+### Phase 3 — Write the Result
 
-- For each user-owned choice, return the question, options, recommendation, and what would change it, then
-  stop dependent work.
-- Resume only from the recorded user decision, which Step 3.1 writes in the linked Design heading. Do not
-  copy that decision into Discussion.
-- Reopen the earliest affected decision when new evidence changes it.
+Done when a cold reader can plan and execute from the result without asking, and the caller has its locator.
 
-### Phase 3 — Design
+#### 3.1 Write and return the result
 
-#### 3.1 Walk the writing-design ladder
-
-- Resolve the levels in order: reader and job, structure and claims, naming and vocabulary, then voice and
-  evidence. Start each heading with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`,
-  and write the design only under `Material change`.
-- On every heading a topic links to, state the chosen option, why it won, the trade-offs, and the reopen
-  condition. Documents and sections go under Structure and Claims, and defined terms go under Naming and
-  Vocabulary.
-- Assemble the accepted levels into one idea planning and execution can follow, and reopen the earliest defect
-  before realization.
-
-#### 3.2 Write the indexed result
-
-- Create `ideation-index.md`, the required Discussion view, and at least one authoritative part from the
-  [ideation index](templates/ideation-index.md) and
-  [discussion index](templates/discussion-index.md) templates.
-- Keep discussion parts as complete topic groups and `S{N}` entries. Keep authoritative parts as work
-  definition and idea.
-- List every file from the root index. Add no unlisted file.
-
-#### 3.3 Review and freeze
-
-- Read the result once in index order and fix in-scope defects at the earliest step.
-- Freeze the listed membership and bytes. Independent review belongs to the caller.
-- Return the `ideation-index.md` locator and a short outcome summary through the caller's handoff.
+- Write the Design headings that apply and omit the rest. Link a decision inherited from earlier work instead
+  of restating it.
+- Write `ideation-index.md` from the [index template](templates/ideation-index.md). Keep the whole result in it
+  unless its size demands parts, and then list every part from it.
+- Read the result once as a cold reader, fix what fails, and return the `ideation-index.md` locator and a short
+  summary.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Authoring Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, and Discussion view. |
+| [Authoring Ideation index](templates/ideation-index.md) | Locator template that holds the whole result or lists its parts. |
 | [Authoring Ideation part](templates/ideation-NN.md) | Template for the requirements and the four writing-design headings. |
-| [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
-| [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, and study. |
+| [Discussion index](templates/discussion-index.md) | Template for listing discussion parts when the Discussion is split. |
+| [Discussion part](templates/discussion-NN.md) | Template for topics, options, and study. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |

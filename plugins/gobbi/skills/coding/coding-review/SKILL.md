@@ -1,6 +1,6 @@
 ---
 name: coding-review
-description: "Coding Review is an operation for independent critique of one frozen code subject and for writing an evidence-based report."
+description: "Coding Review independently critiques one frozen code subject and writes an evidence-based report. Use it when finished code or a code design needs independent review before it is accepted."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,9 +8,8 @@ skill-type: operation
 # Coding Review
 
 Coding Review binds and freezes one code subject, criticizes it, applies caller criteria, and writes
-`report.md`.
-Use it after one exact stable code subject is ready for independent review and before an acceptance or workflow decision.
-The caller assigns a fresh `reviewer` and does not reuse the producer.
+`report.md`. Use it after one exact stable code subject is ready for independent review and before an
+acceptance or workflow decision. The caller assigns a fresh `reviewer` and does not reuse the producer.
 
 ## Principles
 
@@ -37,18 +36,18 @@ limit causes and verdicts to what the evidence supports.
 
 ## Rules
 
-- **MUST bind the exact target, scope, intended results, supplied decision criteria, the report
-  path, and any caller-supplied `review-depth` before the critical review.** Confirm the report path
-  does not overlap the target or a source-owned input, and stop when identity, access, independence, or
-  preservation cannot support a responsible review.
-- **MUST criticize the frozen target from the review-owned prompts and the current project design and
-  vision before applying caller criteria.** Record those results before the verdict.
-- **MUST label every Problem and Improvement `in-contract` or `out-of-contract`, and derive
-  the gate verdict only from in-contract Problems, sufficient evidence, and caller-supplied
-  criteria.** Record a quality opinion against current project design and vision that never
-  changes that verdict.
-- **NEVER change the target, supplied criteria, acceptance state, or workflow state.** Write only files this
-  review creates, such as `report.md` and check output.
+- **Bind the exact target, scope, intended results, supplied decision criteria, report path, and any
+  caller-supplied `review-depth` before the critical review.** A review of an unbound subject cannot support a
+  verdict, so confirm the report path does not overlap the target or a source-owned input, and stop when
+  identity, access, independence, or preservation cannot support a responsible review.
+- **Criticize the frozen target from the review-owned prompts and the current project design and vision
+  before applying caller criteria.** Criteria applied first narrow what the reviewer sees, so record those
+  results before the verdict.
+- **Label every Problem and Improvement `in-contract` or `out-of-contract`, and derive the gate verdict only
+  from in-contract Problems, sufficient evidence, and caller-supplied criteria.** The verdict answers the
+  caller's contract, so the quality opinion against current project design and vision never changes it.
+- **NEVER change the target, supplied criteria, acceptance state, or workflow state.** A review reports and
+  does not decide, so write only files this review creates, such as `report.md` and check output.
 
 ## Procedure
 

@@ -1,7 +1,8 @@
 # Memory directories
 
 Project memory is the tracked `memory/` tree. Update or remove a current fact. Leave a history file or a dated
-report in place except to correct a factual error. Session files under `sessions/` are in [Session records](record.md).
+report in place except to correct a factual error. Session files under `sessions/` are in
+[Session records](record.md).
 
 ## design/
 
@@ -61,7 +62,7 @@ report in place except to correct a factual error. Session files under `sessions
 
 | Path | Definition | Naming | Writing |
 |---|---|---|---|
-| `backlogs/` | Deferred outcomes and why they wait. | `backlogs/project.md` or `backlogs/<feature>.md` | One independently discussable outcome per second-level heading. Require `Backlogged at` (immutable UTC), `What`, `Why backlogged`, and `Context`. Do not store priority, owner, estimate, or acceptance criteria. Remove an item after active work accepts it. Use Git for prior versions. Do not keep closed records. |
-| `backlogs/README.md` | Index of every deferred heading. | `backlogs/README.md` | Group by project or feature. Order headings alphabetically. Do not rank them. |
+| `backlogs/` | Deferred outcomes and why they wait. | `backlogs/project.md` or `backlogs/<feature>.md` | One independently discussable outcome per second-level heading. Require `Backlogged at` (immutable UTC), `What`, `Why backlogged`, and `Context`. Do not store priority, owner, estimate, or acceptance criteria; the work that accepts an item sets them. Remove an item after active work accepts it. Use Git for prior versions. Do not keep closed records. |
+| `backlogs/README.md` | Index of every deferred heading. | `backlogs/README.md` | Group by project or feature. Order headings alphabetically, not by rank, because priority is set when work picks an item up. |
 | `backlogs/project.md` | Project-wide or cross-feature deferred outcomes. | `project.md` | Keep a feature-owned outcome in that feature file. |
 | `backlogs/<feature>.md` | Deferred outcomes owned by one stable feature. | Prefer the `design/feature/` name when one exists. | Do not add readiness, status, or archive directories. |

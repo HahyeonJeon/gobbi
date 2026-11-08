@@ -1,6 +1,6 @@
 ---
 name: git
-description: "Git sets the naming, commit, pull-request, and issue conventions, and the few safety rules, for version-control work."
+description: "Git sets branch, commit, pull-request, issue, and tag conventions and the shared Git safety rules. Use it whenever you create a branch, commit, tag, pull request, or issue."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
@@ -20,14 +20,15 @@ form makes history easy to scan, search, and review.
 
 ## Rules
 
-- **MUST follow the repository's own policy before this skill.** Repository guidance, configured hooks, branch
-  protection, and templates win over every default here.
-- **MUST stage explicit paths.** NEVER use `git add -A`, `git add .`, or `git commit -a` in a checkout that may
-  hold changes you do not own.
+- **Follow the repository's own Git policy first.** Its guidance, configured hooks, branch protection, and
+  templates were set by its owners and win over every default here.
+- **Stage explicit paths.** `git add -A`, `git add .`, and `git commit -a` can commit changes you do not own in
+  a checkout that others also edit.
 - **MUST get explicit authority before a push, pull request, merge, history rewrite, branch or worktree
-  deletion, or moving or deleting a pushed tag.** Authority for one of these does not extend to another.
-- **NEVER use `git push --force`.** When an authorized rewrite must be published, use
-  `--force-with-lease=<ref>:<expected-object>`.
+  deletion, or moving or deleting a pushed tag.** These reach other people or cannot be undone, and authority
+  for one of them does not extend to another.
+- **NEVER use `git push --force`.** It can overwrite remote work you have not seen, so publish an authorized
+  rewrite with `--force-with-lease=<ref>:<expected-object>`.
 
 ## Preferences
 

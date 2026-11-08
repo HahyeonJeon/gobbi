@@ -1,20 +1,17 @@
 # {Idea or Problem Name} — Authoring Ideation
 
-> **Document role:** Authoritative Authoring Ideation locator and part index<br>
-> **Authority:** This index, every listed Authoring Ideation part, and the required Discussion view form the current result. The parts define the work and the idea, and each Design heading holds its decisions. Discussion records the topics, options, and study behind them.<br>
-> **Reading rule:** Read the Discussion view first, then every part once in the order below. A missing, duplicate, or unlisted output makes the result incomplete.<br>
-> **Output boundary:** The parts define the work and the idea for planning and execution. They do not contain ordered implementation tasks or realized implementation output.
+## Summary
 
-## Discussion
+{The problem, desired outcome, selected direction, decisive evidence, major trade-offs, and scope.}
 
-| View | Description |
-|---|---|
-| [Discussion](discussion-index.md) | Required record of topics, options, and study, each topic linked to its Design heading. |
+{When the result fits in one file, write the Requirements and Design sections of the
+[part template](ideation-NN.md) here, followed by a `## Discussion` section holding the sections of the
+[discussion part template](discussion-NN.md), and omit Parts. Otherwise move those sections into parts and list
+them below in reading order.}
 
 ## Parts
 
 | Part | Description |
 |---|---|
-| [ideation-NN.md](ideation-NN.md) | {Replace `NN` with the assigned number and state the work-definition or idea sections in this part.} |
-
-{List every authoritative `ideation-NN.md` file exactly once and in cold-reader order. The index order is authoritative even when later revisions add a higher-numbered file between older parts. Every result file sits directly in the output root and is reached from this index or the Discussion index.}
+| [ideation-NN.md](ideation-NN.md) | {The sections in this part.} |
+| [discussion-NN.md](discussion-NN.md) | {The Discussion, or link `discussion-index.md` when it spans several parts.} |

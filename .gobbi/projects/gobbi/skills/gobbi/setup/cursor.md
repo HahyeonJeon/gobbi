@@ -18,6 +18,8 @@ Start the parent session as `grok-4.7[effort=high]`. The required binary is `cur
 
 ## Create missing project layout
 
+The layout is in [Claude Code setup](claude.md#project-layout); every runtime uses the same tree.
+
 From the consumer worktree:
 
 ```bash

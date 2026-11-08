@@ -5,6 +5,9 @@ modularization, reusability, readability, naming, and intuitive public API. Each
 principle and its reason, a good example, and a labeled anti-pattern. Simplicity decides whether a unit exists;
 the other entries shape each unit that remains.
 
+The limits below, such as nesting depth, the third use, banned names, and learning depth, are heuristics a
+reviewer applies, not laws: a departure needs a stated reason.
+
 ## Simplicity
 
 **Description.** Write the least mechanism that meets a current need. Most overengineered code should not
@@ -66,11 +69,11 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 **Description.** Modularization gives each unit one conceptual definition, one secret, one boundary, one-way
 relationships, and the data it owns. A reader then finds where a change goes from the definition alone, and the
-unit can change its private parts without breaking callers. Before you create a directory, file, public class,
-or public function, write its five unit lines in the design record: the Ideation design, or the Execution
-handoff when there was no Ideation. A public class or function also gets a caller contract. Together these are
-the unit's Modularization lines. Source code does not carry them as comments. If a line fails, split, merge, or
-move the unit. Private helpers need only a good name.
+unit can change its private parts without breaking callers. Every directory, file, public class, and public
+function can state its five unit lines, and a public class or function also has a caller contract; together
+these are the unit's Modularization lines. The Ideation design records them for the units it designs, and
+without Ideation the Execution handoff records them for each new public unit. Source code does not carry them
+as comments. If a line fails, split, merge, or move the unit. Private helpers need only a good name.
 
 The five unit lines are:
 
@@ -119,7 +122,7 @@ airline/
   connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
-The design record gives these lines for `flight.py`. The code keeps only the Properties that `delay_flight`
+The Ideation design gives these lines for `flight.py`. The code keeps only the Properties that `delay_flight`
 needs.
 
 - **Conceptual definition:** one scheduled trip of one aircraft between two airports on one date.
@@ -311,7 +314,8 @@ assert export([{"a": "1", "b": "2"}], excel=True) == "1;2"
 Code is read far more often than it is written, and a wrong reading leads to a wrong change. Choose names
 with [Naming](#naming), and check while writing:
 
-- Every input and output has a type, and a small typed class replaces a `dict` with known keys.
+- Inputs and outputs carry types as far as the language in use supports, and a small typed class replaces a
+  `dict` with known keys.
 - No boolean or integer flag argument chooses between two behaviors.
 - Control flow stays flat: one condition states one rule, and an early return replaces a nested `else`.
 

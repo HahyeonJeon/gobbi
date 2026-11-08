@@ -1,14 +1,15 @@
 ---
 name: authoring
-description: "Authoring is a domain skill that routes writing work to specialized operation children."
+description: "Authoring routes writing work to its design, planning, execution, and review skills. Use it for work whose result is durable prose, such as docs, skills, or a changelog."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # Authoring
 
-Authoring routes writing design, planning, implementation, and non-gating review to focused operations. Use it when at least one
-direct Authoring child applies, and load every direct child whose applicability sentence matches the current work.
+Authoring routes writing design, planning, implementation, and independent review to focused operations. Use it
+when at least one direct Authoring child applies, and load every direct child whose applicability sentence matches
+the current work.
 
 ## Child Skills
 

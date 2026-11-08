@@ -1,6 +1,6 @@
 ---
 name: delegation
-description: "Delegation is guidance for writing a brief that hands work to another agent, and for the handoff that agent returns."
+description: "Delegation sets the shape of a brief that hands work to another agent and of the handoff it returns. Use it whenever you hand work to another agent."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
@@ -29,35 +29,46 @@ example steers the work without binding it.
 
 ### Write for an agent that knows nothing
 
-The agent has not seen your conversation, so the brief must carry every fact it needs. The handoff must carry
-the evidence you need to accept the result.
+The agent has not seen your conversation, so the brief must carry every fact it needs or the path to it. The
+handoff must carry the evidence you need to accept the result.
 
 ## Rules
 
-- **MUST write Goal, Constraints, Taste and Preference, and Return in every brief, in the template order.**
-  Leave out Role, Context, or Materials only when it would be empty.
-- **MUST state the Goal concretely and definitely.** Say what must be true when the work is done and how
-  someone who did not do the work can tell, in whatever form fits the work.
-- **MUST keep Constraints to rules that must hold, each with a short reason, and NEVER write the method
-  there.** End the section with `Choose the approach within these boundaries.`
-- **NEVER invent a taste or preference.** Take each one from the user, project records, or an exemplar, and
-  label any you inferred.
-- **MUST add every field, table, or status word the caller requires.** The caller is the skill, process, or
-  project rule that asked for the brief, and its requirement wins over this template.
-- **NEVER accept a run status or activity summary as the handoff.** Read the named result and rerun the checks
-  you rely on before you accept it.
+- **Write a Goal and a Return in every brief, and other sections only when they have content.** The agent
+  cannot start without the Goal or hand back without the Return; an empty section only invites filler.
+- **State the Goal as an end state someone who did not do the work can check.** If you cannot name the
+  evidence of done, the task is not scoped yet.
+- **Give each constraint a short reason, and keep method out of Constraints.** The reason lets the agent judge
+  cases the rule did not foresee, and a fixed method removes choices it could make better.
+- **Take each taste or preference from a named source.** An invented leaning steers the work toward a guess,
+  so label one you inferred.
+- **Add every field, table, or status word the caller requires.** The caller is the skill, process, or project
+  rule that asked for the brief, and its requirement wins over this template.
+- **Accept a handoff only after reading the named result and rerunning the checks you rely on.** A run status
+  or activity summary can report success that the work does not show.
 
 ## Preferences
+
+### Scope
+
+#### Delegate one self-contained task
+
+- Give each brief one task the agent can finish from the brief and its Materials alone. Point to paths instead
+  of pasting conversation history; the agent treats anything missing as unknown.
+- Do the work yourself when you can finish it in a few tool calls, because a brief and its handoff cost more.
+- Give new work to a fresh agent with one consolidated brief rather than resuming an interrupted agent, whose
+  context still holds the old task.
 
 ### Brief Construction
 
 #### Start from the template
 
-- Copy this template and replace every placeholder with facts about the task:
+- Copy this template, replace every placeholder with facts about the task, and drop the sections you have no
+  content for:
 
   ```markdown
   ## Role
-  <The expert this work needs: their experience, abilities, and character, shown through the habits they work by.>
+  <One line naming the expertise or standard the work needs.>
 
   ## Goal
   <What must be true when the work is done, who uses the result and for what, how to tell it is done,
@@ -69,10 +80,8 @@ the evidence you need to accept the result.
   ## Constraints
   - <a rule that must hold>: <short reason>
 
-  Choose the approach within these boundaries.
-
   ## Taste and Preference
-  - <a leaning, with its source or exemplar>
+  - <a leaning>: <its source or exemplar>
 
   ## Materials
   | Name | Path | Description |
@@ -83,22 +92,13 @@ the evidence you need to accept the result.
   <Where the result goes, then the handoff items the agent must return.>
   ```
 
-- Put in Context only what the agent cannot find for itself. The agent treats anything missing from the brief
-  and its Materials as unknown.
-- Add `###` subsections only when one section holds clearly separate subjects.
-
-#### Write Role through an expert's traits
-
-- Describe the expert this work needs: their experience and knowledge, their abilities, and their character,
-  shown through the habits they work by, so the agent works like that person.
-- Name real habits instead of praise: "you check every claim against its source before you report it", not
-  "you are meticulous".
+- Write Role only when naming the expertise or standard changes how the work is done, for example "a release
+  engineer who keeps every published tag reproducible".
 
 #### Write a concrete Goal
 
 - Write the Goal as an end state, not an activity, and say who uses the result and for what. Use prose, a
   list, or both, whatever states it most clearly.
-- Make done checkable: say how someone who did not do the work can tell the Goal is met.
 - Say what separates a strong result from one that only meets the minimum. This raises the bar and never adds
   scope.
 
@@ -118,25 +118,16 @@ the evidence you need to accept the result.
 
 #### Write each constraint with its reason
 
-- Write one line per constraint: the rule, a colon, then a short reason. The reason lets the agent judge cases
-  the rule did not foresee.
-- Check these areas for real constraints: what the agent may change or run, what is protected, the scope of the
-  result (extras go in the handoff, not the work), actions that need approval, what the agent must not read or
-  reuse, a fixed format or location, and a time or cost limit. Leave out anything the Goal, tools, or
-  permissions already enforce.
-- When nothing must hold beyond the Goal, write `No constraints beyond the Goal.` Then end with
-  `Choose the approach within these boundaries.`
+- Write one line per constraint: the rule, a colon, then a short reason.
+- Look for real constraints in what the agent may change or run, what is protected, what needs approval, and
+  where the result goes. Leave out anything the Goal, tools, or permissions already enforce.
 
 #### Write Taste and Preference from known sources
 
-- Write each leaning as `Prefer <choice> over <alternative>; match <exemplar>.` and name its source: the user's
-  words, a project record such as a style guide or accepted decision, or an exemplar. Mark a leaning you
-  inferred with `(inferred from <source>)`.
+- Phrase each leaning however reads best, and name its source: the user's words, a project record such as a
+  style guide or accepted decision, or an exemplar. Mark one you inferred with `(inferred from <source>)`.
 - A named exemplar beats an adjective. Write only leanings that change which acceptable result the agent
   picks.
-- When none is known, write this one line instead of leaving the section out: `No known taste or preference.
-  Match the nearest existing work; where there is none, choose what best serves the Goal and list your choices
-  in the handoff.`
 
 #### Write Materials as one table
 

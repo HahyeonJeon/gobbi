@@ -1,6 +1,6 @@
 ---
 name: design-execution
-description: "Design Execution is an operation for implementing and verifying one accepted visual-design task."
+description: "Design Execution produces and verifies one accepted visual task. Use it when a task with a settled visual design changes visual work."
 allowed-tools: Read
 skill-type: operation
 ---

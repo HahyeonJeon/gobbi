@@ -1,21 +1,22 @@
 ---
 name: gobbi
-description: "Gobbi is the read-only entry operation that establishes and routes Cowork or Workflow session state."
+description: "Gobbi is the read-only entry that sets up and routes a Cowork or Workflow session. Use it when the user starts or resumes a Gobbi session."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
+disable-model-invocation: true
 skill-type: operation
 ---
 
 # Gobbi
 
-Gobbi establishes the manager's durable entry state and routes it without mutation. Use it at session start
-and after any boundary that may discard manager context.
+Gobbi establishes the manager's durable entry state and routes it without mutation. Only the user starts it.
+After a boundary that may discard manager context, the manager rereads this file by path.
 
 ## Principles
 
 ### Load the durable foundation
 
-Read the canonical principles, project rules, role, and entry owners before governed action. Runtime memory
-does not replace these sources.
+Read the canonical principles, project rules, and role before governed action. Runtime memory does not
+replace these sources.
 
 ### Let the user select the mode
 
@@ -32,25 +33,24 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 ## Rules
 
-- **NEVER mutate from Gobbi entry.** Create no branch, worktree, session record, artifact, configuration, or
-  implementation.
-- **MUST obtain an explicit mode selection at every fresh entry.** Use `AskUserQuestion` in Claude Code,
-  `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending), or
-  `ask_user_question` in Grok; a recommendation cannot select the mode.
-- **MUST validate one Gobbi root pair and load the entry foundation before routing.** Hold the pair unchanged
-  for the session, carry it into every specialist brief, and include a skills index and a docs index of name,
-  absolute path, and description.
-- **MUST preserve skill ownership.** References expose owners but do not load them, and task triggers still
-  decide which task skill applies.
-- **MUST apply the session-wide finding gate.** Every correction receives fresh review, and only a verified
-  PASS continues automatically.
+- **NEVER mutate from Gobbi entry.** Entry runs before the user picks a mode, and the selected mode owns every
+  branch, worktree, session record, artifact, configuration, and implementation.
+- **MUST obtain an explicit mode selection at every fresh entry.** The modes make commitments only the user can
+  accept, so a recommendation cannot select one.
+- **Validate one Gobbi root pair and load the entry foundation before routing.** Every specialist path
+  resolves from that pair, so a wrong pair sends every later read to the wrong files.
+- **MUST apply the session-wide finding gate in Step 2.3.** A correction can break what it fixed, so each one
+  gets fresh review and only a verified PASS continues automatically.
 - **MUST keep the manager as the only authority for assignment, scope, user decisions, acceptance, and
-  external or destructive action.** Build specialist prompts through Delegation and keep writes in one ordered
-  chain.
+  external or destructive action.** One authority keeps writes in one ordered chain and every user decision
+  with the agent that talks to the user.
 
 ## Procedure
 
 ### Phase 1 — Establish the Entry
+
+Prove where Gobbi lives and read what governs the session. Done when one validated root pair and the project
+key are recorded and the entry foundation is read.
 
 #### 1.1 Resolve the Gobbi roots
 
@@ -64,95 +64,38 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | `{gobbi-skills-root}/principles/SKILL.md` | A sibling skill resolves from the same root. |
   | `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md` | Role contracts resolve from a runtime-flat or runtime-folder agents root. |
 
-- Expand and record the accepted pair with the runtime and entry trigger. Re-derive it after every context
-  boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed pair appears.
+- Record the accepted pair as absolute expanded paths with the runtime and entry trigger. Re-derive it after
+  every context boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed
+  pair appears.
 
-#### 1.1.1 Specialist root pair
+#### 1.2 Hand specialists the same pair
 
-- The two roots are one pair. A brief supplies both as absolute expanded paths, or supplies neither.
-- A specialist that holds neither derives `{gobbi-agents-root}` from its own contract location and
-  `{gobbi-skills-root}` from the sibling `skills/` directory.
-- Never guess a root. Never substitute a hardcoded repository path.
-- Validate whichever pair the specialist holds before resolving any `{gobbi-skills-root}` path against the
-  three sentinels above.
-- Each held value must be an absolute expanded path. The three sentinels must exist and be readable.
-- Report the exact token and stop:
-  - exactly one root → `NO_GOBBI_ROOT: <missing-root> partial-pair`
-  - relative, unexpanded, or placeholder value → `NO_GOBBI_ROOT: <root> <value> not-an-absolute-path`
-  - missing or unreadable sentinel → `NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`
-  - neither root and location underivable → `NO_GOBBI_ROOT: both-roots location-underivable`
-- A brief that carries one root, a relative value, an unexpanded value, or a placeholder is a defect.
-  The manager repairs it before reassigning.
+- A brief supplies both roots as absolute expanded paths, or neither. A specialist that holds neither derives
+  `{gobbi-agents-root}` from its own contract location and `{gobbi-skills-root}` from the sibling `skills/`.
+- A specialist checks the pair it holds against the three sentinels before resolving any path from it, and
+  reports a missing, relative, or unresolvable root as Blocked with the observed value.
 
-#### 1.2 Resolve the project layout
+#### 1.3 Resolve the project key
 
-- Derive the project key with
-  `basename(dirname(git rev-parse --path-format=absolute --git-common-dir))`. Accept at most 64 lowercase
-  alphanumeric or hyphen characters matching `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$`; ask before deriving paths
-  when it fails.
-- Use this layout:
-
-  ```text
-  .gobbi/                          tracked
-  ├── .gitignore                   tracked
-  └── projects/<project>/          tracked
-      ├── agents/                  tracked, 0-byte README.md
-      ├── skills/                  tracked, 0-byte README.md
-      ├── memory/                  tracked
-      │   ├── design/
-      │   │   ├── README.md         tracked, 0-byte
-      │   │   ├── architecture/
-      │   │   ├── feature/
-      │   │   ├── process/
-      │   │   └── roadmap/
-      │   ├── learnings/
-      │   ├── reports/
-      │   │   ├── README.md         tracked, 0-byte
-      │   │   ├── note/
-      │   │   ├── review/
-      │   │   └── analysis/
-      │   ├── history/README.md     tracked, 0-byte
-      │   ├── materials/
-      │   │   ├── README.md         tracked, 0-byte
-      │   │   ├── references/
-      │   │   ├── assets/
-      │   │   ├── docs/
-      │   │   └── data/
-      │   └── backlogs/README.md    tracked, 0-byte
-      ├── sessions/                ignored, not created by setup
-      └── worktrees/               ignored, not created by setup
-  ```
-
-  `.gobbi/.gitignore` owns these exact runtime-state entries:
-
-  ```text
-  # Gobbi runtime state. Session evidence and linked worktrees are never tracked.
-  projects/*/sessions/
-  projects/*/worktrees/
-  ```
-
-- Gobbi writes none of this layout. Setup is not a skill. Runtime guides
-  [claude.md](setup/claude.md), [codex.md](setup/codex.md), [cursor.md](setup/cursor.md), and
-  [grok.md](setup/grok.md) tell how to create the namespace, Memory tree, placeholders, settings, and Codex
-  roles; they create no `sessions/`, `worktrees/`, marker, or `rules/` path.
-
-#### 1.3 Do not check settings
-
-- No hook or setup script ships, so nothing checks the Gobbi settings automatically. This skill does not
-  probe layout or stop on layout.
-- This checkout loads Claude from the plugin and does not register repository-local Claude skills.
-- Partner availability belongs to the [Partner Manual](../partner/SKILL.md#check-availability).
+- Derive the key with `basename(dirname(git rev-parse --path-format=absolute --git-common-dir))`. Accept at
+  most 64 lowercase ASCII letters, digits, and inner hyphens, and ask before deriving paths when it fails.
+- Project paths live under `.gobbi/projects/<project>/`, laid out in
+  [Claude Code setup](setup/claude.md#project-layout). Entry neither creates nor checks that layout.
 
 #### 1.4 Load the entry foundation
 
-- Read [Principles](../principles/SKILL.md), [Discussion](../discussion/SKILL.md), and
-  [Delegation](../delegation/SKILL.md), in that order.
-- Read applicable repository instructions, every applicable project rule, and the canonical
-  [manager role](../../agents/claude/manager.md) for Claude, [grok/manager.md](../../agents/grok/manager.md) for Grok, [codex/manager.toml](../../agents/codex/manager.toml) for Codex, and [cursor/manager.md](../../agents/cursor/manager.md) for Cursor. Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules
-  directory is absent or empty.
-- Confirm the foundation and fixed root pair. Defer every other skill to the selected mode or its own trigger.
+- Read [Principles](../principles/SKILL.md), applicable repository instructions, every applicable project rule,
+  and the manager role: [claude/manager.md](../../agents/claude/manager.md) for Claude,
+  [grok/manager.md](../../agents/grok/manager.md) for Grok, [codex/manager.toml](../../agents/codex/manager.toml)
+  for Codex, or [cursor/manager.md](../../agents/cursor/manager.md) for Cursor.
+- Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules directory is absent or empty.
+- Load [Discussion](../discussion/SKILL.md), [Delegation](../delegation/SKILL.md), and every other skill on
+  first use, through the selected mode or its own trigger.
 
 ### Phase 2 — Select and Route the Mode
+
+Route the session to one owner under one finding gate. Done when the mode, normalized slug, partner policy,
+runtime, and validated root pair are handed to one owner, or entry stops with the exact blocker.
 
 #### 2.1 Obtain or preserve the mode
 
@@ -168,20 +111,13 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
 
 #### 2.2 Resolve the slug and partner policy
 
-- Warn that the slug enters paths and branch names. Ask for the slug and session-wide partner policy together
-  through one structured request.
-- Normalize the slug by lowercasing each maximal ASCII alphanumeric sequence, joining sequences with one
-  hyphen, and trimming separators. Do not transliterate, truncate, or append a suffix; accept 1–20 characters
-  matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject Windows device names from `con`, `prn`, `aux`, and `nul`
-  through `com1`–`com9` and `lpt1`–`lpt9`.
-- Ask one Partner policy with that slug: `disabled`, or a multi-select of `{claude-code, codex, grok}`
-  limited to one or two names. Record `disabled` as that word, or the distinct names in lexicographic order
-  joined by one comma and no spaces. Valid values are `disabled`, `claude-code`, `codex`, `grok`,
-  `claude-code,codex`, `claude-code,grok`, and `codex,grok`.
-- Record mode, normalized slug when applicable, and that one Partner field together. A named set authorizes
-  launch of the selected names minus the active runtime; `disabled` authorizes no launch. A value outside the
-  grammar, including recovered `enabled`, is invalid and a stop; recovered `disabled` stays valid. Do not add
-  a second policy field or rewrite an empty launch set to `disabled`.
+- Warn that the slug enters paths and branch names, then ask for the slug and the session-wide Partner policy
+  together in one structured request.
+- Normalize the slug to 1–20 lowercase ASCII letters, digits, and single inner hyphens, without
+  transliterating, truncating, or appending a suffix, because it becomes part of every session path.
+- Record the Partner policy as one of `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`,
+  `claude-code,grok`, or `codex,grok`; any other recovered value, including `enabled`, is a stop. A named set
+  authorizes launching those runtimes except the active one, and `disabled` authorizes none.
 
 #### 2.3 Apply the session-wide finding gate
 
@@ -201,10 +137,9 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   | **Cowork** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Cowork](../cowork/SKILL.md). |
   | **Workflow** | Mode, normalized slug, partner policy, runtime, and validated root pair to [Workflow](../workflow/SKILL.md). |
 
-- Before specialist work, load Delegation, write the brief's Role for the named specialist, name its phase in
-  Context, add the selected owner's fields, and put a skills index and a docs index of name, absolute path,
-  and description in its Materials. Resolve those paths from the validated root pair. The brief tells the
-  specialist to load an index row only when the assignment cannot proceed without it.
+- Build each specialist brief through Delegation: a Role for the named specialist, its phase in Context, the
+  selected owner's fields, the root pair, and in Materials a skills index and a docs index of name, absolute
+  path, and description resolved from that pair. The specialist loads an index row when it bears on the Goal.
 - Stop with the exact blocker when mode evidence, owner evidence, identity, path, or authority is invalid.
   Never invent a fallback mode, cursor, worktree, session directory, or participant route.
 

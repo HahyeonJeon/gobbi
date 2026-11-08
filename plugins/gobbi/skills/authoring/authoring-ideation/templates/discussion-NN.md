@@ -1,68 +1,33 @@
 # {Idea or Problem Name} — Discussion Part {NN}
 
-> **Index:** [Discussion](discussion-index.md)<br>
-> **Result:** [Authoring Ideation](ideation-index.md)<br>
-> **Covers:** {Topic paths and study IDs in this part.}
+> **Result:** [Authoring Ideation](ideation-index.md)
 
-{Keep each topic group and each study entry complete. Do not split one group or one study entry across parts.}
+{Keep each topic and each study whole within one part. Add a topic tree, parent topics, or Fit and Risks columns
+only when they help the reader.}
 
-## Topics
+## Topic {N} — {Topic}
 
-```text
-{Problem and Desired Outcome}
-├── {1} Readers and Jobs
-│   └── {1.1} {Child Topic}
-├── {2} Structure and Claims
-├── {3} Naming and Vocabulary
-└── {4} Voice and Evidence
-```
+> **Question:** {The design question.}<br>
+> **Decision:** [{Design heading}]({result file}#{design-heading})
 
-{Place this tree once, in the first listed part. Parent topics are the Design headings in ladder order. Keep every heading. The problem and outcome are the visual root, not a topic.}
+{The evidence behind the options, citing study IDs, and where the independent suggestions and critique agreed
+or differed.}
 
-## Topic {1} — Readers and Jobs
+| Option | Pros | Cons |
+|---|---|---|
+| `{recommended option}` | `{pros}` | `{cons}` |
 
-> **Question:** {Material design question.}<br>
-> **Parent:** `{Root}`<br>
-> **Status:** `{Open, Resolved, Deferred, or Reopened}`<br>
-> **Decision:** [Readers and Jobs](ideation-NN.md#readers-and-jobs)<br>
-> **Requirements:** {Requirement heading names in the authoritative part. Names only.}<br>
-> **Study:** `S1`, `S2`
-
-### Discussion
-
-{State the evidence, the relevant ancestor decisions, what each cited study entry means for this choice, and where the independent suggestions and critique agreed or differed. Do not copy study assessments or findings.}
-
-#### Options
-
-| Option | Pros | Cons | Fit | Risks |
-|---|---|---|---|---|
-| `{option}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
-
-{Put the recommended option first. The **Decision** link points to the Design heading that holds the chosen option, its reason, trade-offs, and reopen condition. Do not copy that decision here.}
-
-## Topic {1.1} — {Child Topic}
-
-{Repeat the group shape. Link **Decision** to the parent's Design heading. The heading is the topic path, so heading depth never grows with hierarchy depth.}
+{Put the recommended option first.}
 
 ## Study
 
 ### S{N} — {Question}
 
-> **Criteria:** {How an answer is judged.}<br>
-> **Would change:** {Evidence that would change the answer.}<br>
-> **Finding:** {Best-supported answer.}<br>
-> **Limits:** {Contradictions, gaps, scoped failed searches.}
+> **Finding:** {The best-supported answer.}<br>
+> **Limits:** {Contradictions, gaps, and searches that found nothing.}
 
-#### Internal Sources
+| Source | Why trusted |
+|---|---|
+| [{source}]({path or URL}) | {Its authority, currency, and fit for this question.} |
 
-| Source | Location | Assessment | Lesson | Status |
-|---|---|---|---|---|
-| `{source}` | `{path or link}` | `{authority, relevance, currency, applicability, and reuse limit}` | `{lesson}` | `{Adopt, Reject, or Uncertain}` |
-
-#### External Sources
-
-| Source | Link | Assessment | Status |
-|---|---|---|---|
-| `{source}` | `{URL}` | `{authority, relevance, currency, applicability, and reuse limit}` | `{Adopt, Reject, or Uncertain}` |
-
-{Record each study entry once. A later group cites that ID and never repeats the block.}
+{Record each study once, and cite its ID from every topic it informs.}

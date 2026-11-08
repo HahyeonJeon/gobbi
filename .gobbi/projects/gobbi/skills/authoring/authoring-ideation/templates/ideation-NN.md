@@ -1,70 +1,31 @@
 # {Idea or Problem Name} — Authoring Ideation Part {NN}
 
-> **Index:** [Authoring Ideation](ideation-index.md)<br>
-> **Covers:** {One coherent work-definition or idea group.}
+> **Index:** [Authoring Ideation](ideation-index.md)
 
-{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table, or recovery contract across parts.}
-
-## Summary
-
-{State the final problem, desired outcome, selected direction, decisive evidence, major trade-offs, and scope. Keep the summary in one part only.}
+{A part holds the sections the index moved into it. Keep each section whole within one part.}
 
 ## Requirements
 
-### Goal
-
-> **Target:** {Final result and desired change.}<br>
-> **Purpose:** {Why the result is needed.}<br>
-> **Why now:** {Trigger and reason action matters now.}
-
-### Problem
-
-{State the supported current situation, evidence, uncertainty, problem or opportunity, impact, and no-change context.}
-
-### Result
-
-| Reader | Need | Outcome |
-|---|---|---|
-| `{reader}` | `{need}` | `{desired observable outcome}` |
-
-{State the intended form, capabilities, observable behavior, inputs, outputs, integration boundary, and unchanged behavior.}
-
-### Required Outcomes
-
-#### {Requirement}
-
-> **Statement:** {Solution-neutral required outcome.}<br>
-> **Affected actors:** {Actors or outcomes served.}<br>
-> **Basis:** {Reason, source, or user decision.}<br>
-> **Observable result:** {How a reader recognizes success.}
-
-### Scope
-
-| Item | Status | Reason |
-|---|---|---|
-| `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
-
-### Questions
-
-| Question | Resolution | Effect |
-|---|---|---|
-| `{material question}` | `{answer or explicit deferral}` | `{effect on the design}` |
+{In free form: the goal and why it matters now, the problem, the outcomes each reader should get and how anyone
+can observe them, what is in and out of scope, and the open questions with their answers or deferrals.}
 
 ## Design
 
-{Keep the four headings in this order. Start each one with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and give the design only under `Material change`. Never leave a heading empty. For each Discussion topic that links to a heading, state the chosen option, why it won, its trade-offs, and the evidence that would reopen it.}
+{Write only the headings that apply, in this order. Link a decision inherited from earlier work instead of
+restating it. For each decision, state the chosen option, why it won, its trade-offs, and what would reopen it.}
 
 ### Readers and Jobs
 
-{The jobs the writing must support per reader, and what each reader must complete, expect, and recover from. Cite Requirements Result for need and outcome; do not restate that table.}
+{The jobs the writing must support for each reader, and what each reader must complete, expect, and recover from.}
 
 ### Structure and Claims
 
-{Section order, navigation, the parent and child claims each section carries, and what stays out of the writing.}
+{Documents, sections, and their order, navigation, the claims each section carries, and what stays out.}
 
 ### Naming and Vocabulary
 
-{Terms the reader must share, terms to avoid, how a new name is introduced, and how names stay stable under later edits. Give each defined term one preferred name, and list the non-preferred names it replaces.}
+{Terms the reader must share and terms to avoid, with one preferred name per defined term and the names it
+replaces, and how new names are introduced and kept stable.}
 
 ### Voice and Evidence
 

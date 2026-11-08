@@ -31,6 +31,8 @@ This checkout invokes Gobbi as `/gobbi:gobbi`. It does not keep `.grok/agents`, 
 
 ## Create missing project layout
 
+The layout is in [Claude Code setup](claude.md#project-layout); every runtime uses the same tree.
+
 From the consumer worktree, run the checker, then the writer. Neither script writes under `.grok/`.
 
 ```bash

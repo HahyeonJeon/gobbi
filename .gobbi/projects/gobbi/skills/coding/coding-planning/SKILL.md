@@ -1,6 +1,6 @@
 ---
 name: coding-planning
-description: "Coding Planning is an operation for splitting defined code work into goal-based tasks, one plan document per major goal."
+description: "Coding Planning splits settled code work into goal-based tasks, one plan document per major goal. Use it when the code work is too large for one task."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -27,21 +27,25 @@ adds the Role, Materials, and Return when it builds the brief.
 
 ## Rules
 
-- **MUST cover the whole accepted work.** Every part of the goal and the Ideation result falls in exactly one
-  task, and no task adds scope.
-- **MUST write each task's Goal, Context, Constraints, and Taste and Preference as Delegation defines them.**
-  Write a Goal as an end state a reviewer can judge, Context as what the executor cannot find alone, and
-  Constraints only for rules that must hold, each with its reason.
-- **NEVER add a constraint or taste without a source.** Take it from the user, the Ideation result, a project
-  rule, or existing code, and write `None` when there is none.
-- **NEVER set a numeric target unless the user, an accepted decision, or a project rule requires it.** Name the
-  source next to the number. Quality beyond the Goal is judged in Review.
-- **NEVER write implementation steps, file-by-file edits, or test lists.** Return an open design choice to the
-  caller instead of deciding it in the plan.
+- **Cover the whole accepted work.** Every part of the goal and the Ideation result falls in exactly one task
+  and no task adds scope, so nothing is dropped or done twice.
+- **Write each task's Goal, Context, Constraints, and Taste and Preference as Delegation defines them.** The
+  manager builds each brief from them, so a Goal is an end state a reviewer can judge, Context is what the
+  executor cannot find alone, and Constraints are only rules that must hold, each with its reason.
+- **Give every constraint and taste a source.** Take it from the user, the Ideation result, a project rule, or
+  existing code, and leave the section out when there is none, because an unsourced limit narrows the executor
+  for no reason.
+- **Set a numeric target only when the user, an accepted decision, or a project rule requires it.** Name the
+  source next to the number, because quality beyond the Goal is judged in Review.
+- **Leave implementation steps, file-by-file edits, and test lists to the executor.** The executor knows the
+  code better once it is in it; return an open design choice to the caller instead of deciding it in the plan.
 
 ## Procedure
 
 ### Phase 1 — Understand the Work
+
+Know what to plan and where it goes. Done when the inputs are read and any missing input, user-owned decision,
+or evidence against the accepted design has gone back to the caller.
 
 #### 1.1 Read the inputs
 
@@ -51,6 +55,9 @@ adds the Role, Materials, and Return when it builds the brief.
   exact question. Do not invent an answer.
 
 ### Phase 2 — Write the Plan
+
+Turn the work into goal-based tasks. Done when every plan document passes the Step 2.3 checks and their paths
+and task IDs are returned.
 
 #### 2.1 Choose the plan documents
 

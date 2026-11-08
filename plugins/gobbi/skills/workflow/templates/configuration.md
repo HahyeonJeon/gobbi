@@ -58,7 +58,6 @@
 | Entry contract | {mode, slug, partner policy, and source} |
 | Mode settings | {accepted settings and authority} |
 | Gobbi root pair | {validation observations} |
-| Required layout | {paths, states, and exact checks} |
 | Repository and immutable base | {repository and revision observations} |
 | Worktree registration | {command and observed registration} |
 | Session identity and containment | {path and identity checks} |

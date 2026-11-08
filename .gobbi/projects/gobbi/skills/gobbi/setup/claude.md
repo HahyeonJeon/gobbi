@@ -41,6 +41,51 @@ Gobbi reports any additional skill permissions needed by the selected mode. Appr
 or add their exact `Skill(gobbi:...)` entries to the same allow list. Do not add a setup skill permission.
 Setup is not a skill.
 
+## Project layout
+
+Every runtime uses this layout. The project key is the repository directory name, as Gobbi entry derives it.
+
+```text
+.gobbi/                          tracked
+├── .gitignore                   tracked
+└── projects/<project>/          tracked
+    ├── agents/                  tracked, 0-byte README.md
+    ├── skills/                  tracked, 0-byte README.md
+    ├── memory/                  tracked
+    │   ├── design/
+    │   │   ├── README.md         tracked, 0-byte
+    │   │   ├── architecture/
+    │   │   ├── feature/
+    │   │   ├── process/
+    │   │   └── roadmap/
+    │   ├── learnings/
+    │   ├── reports/
+    │   │   ├── README.md         tracked, 0-byte
+    │   │   ├── note/
+    │   │   ├── review/
+    │   │   └── analysis/
+    │   ├── history/README.md     tracked, 0-byte
+    │   ├── materials/
+    │   │   ├── README.md         tracked, 0-byte
+    │   │   ├── references/
+    │   │   ├── assets/
+    │   │   ├── docs/
+    │   │   └── data/
+    │   └── backlogs/README.md    tracked, 0-byte
+    ├── sessions/                ignored, not created by setup
+    └── worktrees/               ignored, not created by setup
+```
+
+`.gobbi/.gitignore` holds these runtime-state entries:
+
+```text
+# Gobbi runtime state. Session evidence and linked worktrees are never tracked.
+projects/*/sessions/
+projects/*/worktrees/
+```
+
+Setup creates no `sessions/`, `worktrees/`, marker, or `rules/` path; the session modes create what they need.
+
 ## Create missing project layout
 
 From the consumer worktree:

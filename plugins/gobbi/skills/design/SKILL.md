@@ -1,14 +1,15 @@
 ---
 name: design
-description: "Design is a domain skill that routes visual work to specialized operation children."
+description: "Design routes visual work to its design, planning, execution, and review skills. Use it for work whose result is visual, such as UI, images, slides, or reports."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # Design
 
-Design routes visual design, planning, implementation, and non-gating review to focused operations. Use it when at least one
-direct Design child applies, and load every direct child whose applicability sentence matches the current work.
+Design routes visual design, planning, implementation, and independent review to focused operations. Use it
+when at least one direct Design child applies, and load every direct child whose applicability sentence matches
+the current work.
 
 ## Child Skills
 
