@@ -1,6 +1,6 @@
 ---
 name: domain-skill
-description: "Domain Skill is guidance for writing a navigation-only skill that routes readers to applicable direct child skills."
+description: "Domain Skill guides writing a navigation-only domain skill and its child family. Use it after Gobbi Skill classifies a target as `domain`."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -36,23 +36,21 @@ keep identities clear.
 
 ## Rules
 
-- **MUST produce the exact navigation-root shape.** Use Frontmatter → Title → Intro → Child Skills table, set
-  `allowed-tools: Read`, and add no domain policy, Principles, Rules, Preferences, Manual, Procedure, or
-  References to the root.
-- **MUST keep children direct and globally namespaced.** Use `{domain}/{domain}-{capability}/SKILL.md`, make
-  each child `name` match its directory, and create no nested domain-routing child; a Tool Skill child may own
-  direct Tool Skill children under the Tool Skill contract.
-- **MUST give the family at least two independently loadable direct children, each an ordinary operation, tool,
-  or preference skill.** Author each child through a fresh Gobbi Skill pass and give it one matching type shape
-  with locally owned supporting documents only when needed.
-- **MUST keep root activation and child routing complete and bidirectional.** List each direct child once and
-  require root predicate `R` to be true if and only if at least one direct-child predicate `Ci` is true.
-- **MUST keep applicability wording canonical.** Put identity only in each `description`, put one applicability
-  sentence in each Intro, and copy that sentence byte for byte into the root routing row.
+- **Use the navigation-root shape.** Frontmatter → Title → Intro → Child Skills table with
+  `allowed-tools: Read`, and no policy or other sections, because the root only routes.
+- **Keep children direct and globally namespaced.** Use `{domain}/{domain}-{capability}/SKILL.md` with each
+  child `name` matching its directory and no nested domain-routing child, so every child is found by one lookup.
+- **Give the family at least two independently loadable children, each an operation, tool, or preference
+  skill.** A family of one is a single skill and needs no root.
+- **Route each child by when to load it, not by its rules.** List each child once with the one applicability
+  sentence from its Intro, so the root applies exactly when some child applies and carries none of its policy.
 
 ## Procedure
 
 ### Phase 1 — Design the Domain Family
+
+Settle the children and the routing before writing. Done when every material claim has one child owner and
+the root and child predicates pass the two-direction check.
 
 #### 1.1 Define the family boundary
 
@@ -76,6 +74,9 @@ keep identities clear.
   `Ci` makes `R` true, and every true `R` has at least one true `Ci`.
 
 ### Phase 2 — Write the Domain Family
+
+Write every child, then the root that routes to them. Done when every child has passed its type-specific review
+and the reconciled root routes every direct child through exactly one row.
 
 #### 2.1 Write each child
 
@@ -113,6 +114,9 @@ keep identities clear.
   outside-family cases.
 
 ### Phase 3 — Review and Improve the Domain Family
+
+Improve the family without breaking its routing. Done when the complete family reconciles after the last
+improvement and the parent stopping condition holds.
 
 #### 3.1 Improve structure, routing, sentences, and vocabulary
 

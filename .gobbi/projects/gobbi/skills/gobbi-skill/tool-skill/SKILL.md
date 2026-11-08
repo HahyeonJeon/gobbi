@@ -1,6 +1,6 @@
 ---
 name: tool-skill
-description: "Tool Skill is guidance for writing a direct-lookup manual for a named tool, platform, or cohesive tool collection."
+description: "Tool Skill guides writing the interface facts of a named tool, platform, or tool collection. Use it after Gobbi Skill classifies a target as `tool`."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -29,31 +29,31 @@ failures. Arrange the Manual so they can reach an answer without following an un
 Prefer official docs, built-in help, schemas, source, and observed supported behavior over recollection or
 summaries. Recheck behavior that can change with versions, configuration, permissions, or environment.
 
-### Explain failure as part of correct use
+### Write only what the agent cannot get elsewhere
 
-Pair important usage with the failures readers need to recognize, diagnose, and recover from. A successful
-example alone does not establish prerequisites or limits.
+A capable agent already knows common tools and can read built-in help and error messages. Write the interface
+facts it would otherwise get wrong: version-specific behavior, limits, side effects, permissions, and failures
+whose cause is not obvious.
 
 ## Rules
 
-- **MUST produce the exact tool target shape.** Use Frontmatter → Intro → Principles → Rules → Manual →
-  References, keep Manual dominant, and add no Procedure.
-- **MUST keep one named tool, platform, or cohesive collection inside an explicit compatibility boundary.**
-  For a collection, use `{collection}/{collection}-{tool}/SKILL.md`, route each child from the parent Manual,
-  and allow no deeper skill level.
-- **MUST include only material needed for approved lookup tasks.** Omit empty headings and let Step 1.2 own
-  the complete coverage inventory.
-- **MUST use the Manual hierarchy.** Use a `###` capability-category title, a `####` lookup-subcategory
-  subtitle, and at most three one-or-two-sentence detail bullets under each subtitle.
-- **MUST keep Manual entries direct and compact.** Put the answer first, use the tool's own vocabulary, and
-  remove narrative, repeated context, and workflow detail that belongs to an operation skill.
-- **MUST verify taught behavior safely against its authoritative owner or live supported surface.** Reconcile
-  conflicting evidence or state the limitation, and state material prerequisites, permissions, costs, and
-  compatibility conditions.
+- **Use the tool shape.** Frontmatter → Intro → Principles → Rules → Manual → References, with no Procedure,
+  so readers find answers by lookup rather than by following a workflow.
+- **Keep one named tool, platform, or cohesive collection inside a stated compatibility boundary.** For a
+  collection, use `{collection}/{collection}-{tool}/SKILL.md` routed from the parent Manual, with no deeper level.
+- **Include only facts an agent would otherwise get wrong.** Leave out usage the tool's help, its errors, or
+  general knowledge already supply, and leave workflows to the operations that use the tool.
+- **Use the Manual hierarchy.** A `###` capability title, a `####` lookup subtitle, and at most three
+  one-or-two-sentence detail bullets under each subtitle, with the answer first.
+- **Verify every taught behavior against its owner or the live tool.** State the limitation when evidence
+  conflicts, because a wrong tool fact fails silently in every task that uses it.
 
 ## Procedure
 
 ### Phase 1 — Design the Manual
+
+Know the named surface and what readers look up. Done when the surface and its boundaries are stated and the
+inventory is grouped by lookup question, with conflicting evidence resolved or recorded.
 
 #### 1.1 Define the named surface
 
@@ -73,6 +73,9 @@ example alone does not establish prerequisites or limits.
   capability and remove topics that do not apply.
 
 ### Phase 2 — Write the Tool Skill
+
+Write direct answers to the approved lookup tasks. Done when every approved lookup task has an entry, every
+example is run or traced, and the remaining sections are complete.
 
 #### 2.1 Start with the Manual structure
 
@@ -124,6 +127,9 @@ example alone does not establish prerequisites or limits.
   or supporting documents. Cite external owners beside their claims.
 
 ### Phase 3 — Review and Improve the Tool Skill
+
+Give each question one direct answer. Done when each approved question has one direct answer in a predictable
+place, retained claims match their evidence, and the parent stopping condition holds.
 
 #### 3.1 Improve structure, sentences, and vocabulary
 
