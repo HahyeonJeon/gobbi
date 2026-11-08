@@ -37,7 +37,7 @@ it. The code's real dependencies decide that set, not the repository type or fil
   belongs to Ideation and the user, and an executor's guess becomes design no one accepted.
 - **Stop before changing a surface outside the scope or writer frontier.** Another owner holds it, so return
   its effect, its owner, and the next action it needs; do the same for out-of-scope findings.
-- **NEVER run Coding Review, write its report, claim reviewer independence, issue a verdict, accept the work,
+- **NEVER run Coding Review, write a review report, claim reviewer independence, issue a verdict, accept the work,
   or change mode state.** Review needs a reviewer that did not produce the work, and acceptance belongs to the
   caller.
 

@@ -203,12 +203,12 @@ Partner is an optional session-wide policy selected after the mode and applicabl
 `disabled` or one or two of `{claude-code,codex,grok}`. The launch set is the selected names minus the active
 runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
-With `disabled`, Gobbi makes no external runtime calls. With a named set, applicable steps start one partner
-run per remaining runtime. The manager launches each partner CLI itself as a background process, with no
-wrapper agent, and gives it a Delegation brief and the access level the work needs: read-only,
-workspace-write, or full-access only when you authorize it. The manager learns when each run ends, reads its
-final message and any changed files, and may send a follow-up by resuming the run's session. A failed launch
-is recorded as Unavailable evidence, not a partner result.
+With `disabled`, Gobbi makes no external runtime calls. With a named set, Discussion and Review start a
+partner run from the launch set when the work calls for one. The manager launches each partner CLI itself as a
+background process, with no wrapper agent, and gives it a Delegation brief and the access level the work
+needs: read-only, workspace-write, or full-access only when you authorize it. The manager learns when each run
+ends, reads its final message and any changed files, and may send a follow-up by resuming the run's session. A
+failed launch is recorded as Unavailable evidence, not a partner result.
 
 Cursor remains a supported runtime but is not a partner, because its print mode failed authentication when
 measured. The active runtime decides what to accept and remains the session authority.

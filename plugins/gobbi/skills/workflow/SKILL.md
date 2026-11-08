@@ -37,8 +37,8 @@ from that file in the same worktree and session root.
 - **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
   options or asking for a Phase 1 decision.** Principle 3 of [Principles](../principles/SKILL.md) has the user
   choose among options that participants studied and critiqued.
-- **After `P1 · User Review`, rule each in-contract choice yourself and ask the user nothing but Continue or
-  Stop.** The user settled the design in Phase 1, so record each ruling in the unit's receipt as
+- **After `P1 · User Review`, rule each choice inside the accepted design yourself and ask the user nothing but
+  Continue or Stop.** The user settled the design in Phase 1, so record each ruling in the unit's receipt as
   `Ruling: <what> — <why> — <cost if wrong>`, check rather than ask a question that running something can
   answer, and stop at a Stopped `handoff.md` only for an unauthorized irreversible, security-sensitive, or
   external action or a user-owned decision.
@@ -46,7 +46,7 @@ from that file in the same worktree and session root.
   Only the user's Continue on a shown Complete handoff starts the next phase, never silence; a Stopped handoff
   records the first unproved action and opens no User Review.
 - **Accept a result only after rereading it or its commit and reproducing its verification.** A report,
-  handoff, gate, receipt, or summary is a claim, not evidence.
+  handoff, review report, receipt, or summary is a claim, not evidence.
 
 ## Procedure
 
@@ -83,20 +83,14 @@ Settle the design with the user in a recoverable session. Done when a verified `
 - Each unit writes its receipt at `<unit-dir>/record/iteration-N.md`. Phase handoffs are
   `1-ideation/handoff.md`, `3-execution/handoff.md`, and `wrap-up/handoff.md`, from the
   [handoff template](templates/handoff.md).
-- A REVIEW writes `<unit-dir>/review/iteration-N/gate.md` and one `<class>/<runtime>/report.md` per artifact
-  class (`code`, `docs`, `design`) and runtime (`claude-code`, `codex`, `cursor`, `grok`).
+- A REVIEW writes one report per reviewer at `<unit-dir>/review/iteration-N/<reviewer>.md`, such as
+  `reviewer.md` or `codex.md`; the unit's receipt records the verdict.
 
-#### 1.3 Review gate
+#### 1.3 Review
 
-- For each artifact class in the unit, apply the matching review skill through one fresh `reviewer` that did
-  not produce the work, and one read-only [Partner](../partner/SKILL.md) run per remaining runtime:
-  [Coding Review](../coding/coding-review/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md),
-  or [Design Review](../design/design-review/SKILL.md). Give each the frozen subject, its decision criteria
-  (the task Goal, or the closure plan), the `review-depth`, and its `report.md` path.
-- Write `gate.md` from the contract-gate verdicts of complete reports only. A class passes when it has at least
-  one complete report and every one passes. PASS needs every class to pass; REVISE means an authorized
-  correction remains; FAIL means no safe correction exists.
-- An out-of-contract opinion does not reopen the design. Any tracked correction makes earlier review stale.
+- Apply [Review](../review/SKILL.md) to the unit's frozen subject, with the task Goal or the closure plan as its
+  Goal. Record the verdict and its dropped and follow-up items in the unit's receipt.
+- A finding does not reopen the accepted design, and a correction needs a re-review of the fixes.
 
 #### 1.4 Ideation
 
@@ -114,7 +108,7 @@ Settle the design with the user in a recoverable session. Done when a verified `
 ### Phase 2 — Plan and Execute
 
 Deliver the accepted design as reviewed task commits. Done when a verified `3-execution/handoff.md` is the
-`Latest handoff`, Complete only after every task has passed its gate.
+`Latest handoff`, Complete only after every task has passed review.
 
 #### 2.1 Planning
 
@@ -142,10 +136,10 @@ Deliver the accepted design as reviewed task commits. Done when a verified `3-ex
 
 #### 2.3 Task review and record
 
-- **REVIEW:** Apply the review gate with `review-depth` `execution-implementation`.
-- **RECORD:** Write the gate and receipt; REVISE returns to WORK as the next iteration, and FAIL stops the
-  phase. After PASS, reread the commit and checks before starting a task that needs it, and amend only pending
-  plan work when an in-contract plan defect appears.
+- **REVIEW:** Apply Review with the Execution stage bar and the task's domain bar.
+- **RECORD:** Write the receipt with the verdict; REVISE returns to WORK as the next iteration, and FAIL stops
+  the phase. After PASS, reread the commit and checks before starting a task that needs it, and amend only
+  pending plan work when a plan defect inside the accepted design appears.
 - When every task has passed, end Phase 2 at `3-execution/handoff.md` and wait at `P2 · User Review`.
 
 ### Phase 3 — Wrap Up
@@ -164,9 +158,9 @@ Carry the accepted work into Memory and the base branch. Done when a verified `w
 
 #### 3.2 Closure review, merge, and handoff
 
-- **REVIEW:** Apply the review gate with `review-depth` `by-owning-stage` to the closure tree, with the Memory
-  diff, the durable note, commits, checks, and merge plan. REVISE returns to DISCUSSION.
-- **RECORD:** After PASS, write the gate and receipt, then apply Wrap-up's Git procedure and
+- **REVIEW:** Apply Review with the Execution stage bar to the closure tree, with the Memory diff, the durable
+  note, commits, checks, and merge plan. REVISE returns to DISCUSSION.
+- **RECORD:** After PASS, write the receipt with the verdict, then apply Wrap-up's Git procedure and
   [Git](../git/SKILL.md) to commit the closure changes and merge the accepted head into `Base branch`, rerunning
   the accepted checks on a temporary merge first when the base moved.
 - End Phase 3 at `wrap-up/handoff.md` and wait at `P3 · User Review`. After Continue, return Wrap-up's
@@ -189,4 +183,4 @@ Carry the accepted work into Memory and the base branch. Done when a verified `w
 | [Coding Ideation](../coding/coding-ideation/SKILL.md), [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), [Design Ideation](../design/design-ideation/SKILL.md) | Own code, writing, and visual design. |
 | [Coding Planning](../coding/coding-planning/SKILL.md), [Authoring Planning](../authoring/authoring-planning/SKILL.md), [Design Planning](../design/design-planning/SKILL.md) | Own code, writing, and visual planning. |
 | [Coding Execution](../coding/coding-execution/SKILL.md), [Authoring Execution](../authoring/authoring-execution/SKILL.md), [Design Execution](../design/design-execution/SKILL.md) | Own code, writing, and visual implementation and verification. |
-| [Coding Review](../coding/coding-review/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md), [Design Review](../design/design-review/SKILL.md) | Own independent code, writing, and visual review and each `report.md`. |
+| [Review](../review/SKILL.md) | Owns independent review: the reviewers, the report, the verdict, and fix rounds. |

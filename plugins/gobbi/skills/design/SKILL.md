@@ -7,9 +7,9 @@ skill-type: domain
 
 # Design
 
-Design routes visual design, planning, implementation, and independent review to focused operations. Use it
-when at least one direct Design child applies, and load every direct child whose applicability sentence matches
-the current work.
+Design routes visual design, planning, and implementation to focused operations, and the review bar to a
+preference skill. Use it when at least one direct Design child applies, and load every direct child whose
+applicability sentence matches the current work.
 
 ## Child Skills
 
@@ -18,4 +18,4 @@ the current work.
 | [`design-execution`](design-execution/SKILL.md) | operation | Use it when one accepted task has a settled visual design and a writer frontier that includes visual work. |
 | [`design-ideation`](design-ideation/SKILL.md) | operation | Use it when a bounded topic has an unresolved material visual-design choice. |
 | [`design-planning`](design-planning/SKILL.md) | operation | Use it when the goal and design of visual work are settled but the work is too large for one task. |
-| [`design-review`](design-review/SKILL.md) | operation | Use it after one exact stable visual subject is ready for independent review and before an acceptance or workflow decision. |
+| [`design-review`](design-review/SKILL.md) | preference | Use it when reviewing UI, images, video, slides, reports, or other visual work. |

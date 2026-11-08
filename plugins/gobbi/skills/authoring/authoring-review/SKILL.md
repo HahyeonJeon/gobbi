@@ -1,153 +1,94 @@
 ---
 name: authoring-review
-description: "Authoring Review independently critiques one frozen writing subject and writes an evidence-based report. Use it when finished writing needs independent review before it is accepted."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
-skill-type: operation
+description: "Authoring Review is the bar a reviewer applies to durable writing. Use it when reviewing docs, skills, a changelog, or other durable prose."
+allowed-tools: Read
+skill-type: preference
 ---
 
 # Authoring Review
 
-Authoring Review binds and freezes one writing subject, criticizes it, applies caller criteria, and writes
-`report.md`. Use it after one exact stable writing subject is ready for independent review and before an
-acceptance or workflow decision. The caller assigns a fresh `reviewer` and does not reuse the producer. It does
-not modify the target or decision state.
+Authoring Review is the domain bar for writing inside [Review](../../review/SKILL.md), which owns the procedure,
+the blocking rule, the report, and the verdict. Use it when reviewing docs, skills, a changelog, or other durable
+prose.
 
 ## Principles
 
-### Criticize the frozen target from the subject
+### Read as the reader, not the author
 
-Inspect and freeze the actual writing subject, then criticize that subject from the review-owned prompts and
-the bound bar.
-
-### Find useful improvements as well as problems
-
-Review should show how an acceptable subject can become better, not stop after identifying failures.
-Record evidence-backed improvement points with practical suggestions, while keeping them separate from
-Problems and verdicts.
-
-### Keep the review independent and preserve its inputs
-
-The reviewing agent should have no producer role or interest in defending the subject. Write only files the review
-creates, such as `report.md` and check output, while preserving the target, criteria, and workflow state.
-
-### Support each judgment with direct evidence
-
-Connect every result to the expected condition, observed state, impact, and evidence. State uncertainty and
-limit causes and verdicts to what the evidence supports.
+The author fills gaps from the session without noticing. Judge only what the page gives someone who was not
+there.
 
 ## Rules
 
-- **Bind the exact target, scope, intended results, decision criteria, report path, and any `review-depth`
-  before the critical review.** A review of an unbound target cannot be checked or repeated, so stop when
-  identity, access, independence, or preservation cannot support it.
-- **Criticize the frozen target from the review-owned prompts and current project design and vision before
-  applying caller criteria.** Caller criteria alone miss what the criteria did not foresee.
-- **Label every Problem and Improvement `in-contract` or `out-of-contract`, and derive the gate verdict only
-  from in-contract Problems, sufficient evidence, and caller criteria.** The caller gates on its contract, so
-  the quality opinion against project design and vision never changes that verdict.
-- **NEVER change the target, supplied criteria, acceptance state, or workflow state.** The review must stay
-  independent of the work it judges, so it writes only files it creates, such as `report.md` and check output.
+- **Let the project's own bar win.** The project's writing standard, accepted design, and the standard for the
+  document's type, such as [Gobbi Skill](../../gobbi-skill/SKILL.md) for a skill, come before these checks.
+- **Apply only the checks the stage reaches.** A writing design at Ideation or Planning is judged on reader,
+  purpose, and structure, not on the wording it does not contain yet.
 
-## Procedure
+## Preferences
 
-### Phase 1 — Understand and bind the target
+### Reader
 
-#### 1.1 Bind the target and review boundary
+#### A cold reader can act on it
 
-- Confirm that the reviewing agent did not design, author, or implement the target, and disclose any
-  relationship, interest, access limit, or missing capability that could affect independent
-  judgment. Do not read another reviewing agent's `report.md` from the same iteration.
-- Bind the exact artifact, state, version, or content hash; scope; intended results;
-  caller-supplied decision criteria; the review-owned `report.md` path; and any caller-supplied
-  `review-depth`. Confirm that the path does not overlap the target or a source-owned input, and that
-  the reviewing agent does not write `gate.md`.
-- Stop when identity, access, independence, or preservation cannot support a responsible
-  review. Absent decision criteria allow a report and forbid a contract-gate verdict.
+- Name the reader the Goal names, then read the result as that reader, without the session, transcript, or
+  author. Try the task the document exists for: follow its steps or answer its question.
+- Record the first place that reader would stop, guess, or need to ask.
 
-#### 1.2 Inspect the actual target
+#### Each instruction can be followed and checked
 
-- Inspect the artifacts and observable behavior before reading completion claims or prepared reports.
-  Distinguish delivered results from claims, deferred work, missing results, and unavailable state.
-- Trace the target's relevant structure, dependencies, interfaces, states, transitions,
-  failures, recovery, and consumer paths. Follow only the contexts that can change an expected
-  result or its evidence.
-- Record verified facts, open questions, assumptions, and evidence gaps, and do not record
-  Problems yet. Return to Step 1.1 when inspection changes the target identity, scope,
-  intended result, or decision criteria.
+- Each instruction names an action and a result someone can observe. A vague word such as `clean`,
+  `appropriate`, or `as needed` with no criterion fails this check.
 
-#### 1.3 Study the quality bar and freeze the target
+### Text
 
-- Load, in this order, whichever exist: current design memory under the project's
-  `memory/design/`; project vision, philosophy, architecture, and governing decisions;
-  accepted session design; and the session README.
-- Record missing bar sources as a Gap and never invent a vision. Never add these sources to
-  gate criteria unless the caller listed them.
-- Freeze the exact artifact, state, version, or content hash only when that state is stable;
-  stop instead of freezing an unstable target. After this freeze, Phase 2 may criticize and
-  must not mutate the target.
+#### Every line earns its place
 
-### Phase 2 — Review the target critically
+- Removing a line loses something the reader needs. Restatement, history, hedging, generic advice, and text
+  another document owns fail this check.
 
-#### 2.1 Criticize the frozen target
+#### Claims are true now
 
-- Run these review-owned prompts. They must not become report taxonomy. When `review-depth` is bound,
-  apply them only inside that depth.
+- Commands, paths, flags, names, versions, and counts match the project as it is now. Run the command or open
+  the file instead of trusting the text.
 
-  | Prompt | Ask about |
-  |---|---|
-  | **Project design and vision** | The frozen target contradicts or drifts from current design, vision, philosophy, architecture, or accepted session design. What those sources omit. |
-  | **Best version and gap** | The distance between this target and the best version a competent owner would produce for the same purpose and constraints. |
-  | **Failure, gaming, and cosmetic compliance** | The target fails, is exploited at a boundary, or satisfies the form of a requirement while missing the result. |
-  | **Absences across the target's life** | What is missing rather than wrong: an unowned consequence, an unhandled state, or a later stage no one covers. |
+### Structure, Variation, and Vocabulary
 
-- Study an uncovered expectation or risk against internal evidence and current primary external sources
-  before closing the record.
+#### Each document and section has one purpose, owner, boundary, and set of links
 
-#### 2.2 Record the critical-review results
+- For each document, skill, and section the change adds or changes, state what it is for in one sentence, the
+  facts or policy it owns, what it leaves to other documents, and what it links to and what links to it.
+- Each fact has one owner, and a reader meets a prerequisite before what depends on it. A section that does two
+  jobs, a copy of another document's policy, or a circular chain of "see X" fails this check.
 
-- Record labeled Problems, Improvements, Strengths, and gaps using the [report template](report.md)
-  field meanings.
-- Label every Problem and Improvement `in-contract`, citing the criterion or bound intended
-  result, or `out-of-contract`, citing the governing source; when `review-depth` is bound,
-  in-contract labeling follows the supplied token and the target skill's purpose and boundary.
-  Missing implementation detail at `ideation-design` or `planning-decomposition` is not an
-  in-contract Problem, and Phase 2 may still record out-of-contract Improvements for polish;
-  a Problem that maps to a supplied criterion must be `in-contract`, and an out-of-contract
-  result with no cited governing source is not a Problem and must be demoted to an Improvement
-  or dropped.
-- Return to Phase 1 if this review changes the bound target or review boundary.
+#### Shared text lives in one place and variants differ only where they must
 
-### Phase 3 — Apply criteria and report
+- Name what sibling documents share, such as a skill family or mirrored templates, and what really differs
+  between them. Shared rules are written once and linked; parallel documents differ only in that real difference.
+- Pasted paragraphs that will drift apart, or siblings that diverge by accident, fail this check.
 
-#### 3.1 Apply caller criteria and set opinions
+#### Terms are defined once and used consistently
 
-- Apply caller-supplied criteria, thresholds, and aggregation once to in-contract Problems
-  only. Optional Improvements, Strengths, out-of-contract Problems, and the quality opinion
-  do not change the contract-gate verdict.
-- Set the quality opinion to `meets-design`, `mixed`, `does-not-meet`, or `not-available`. If
-  the caller listed design or vision as criteria, those findings are `in-contract` and gate
-  normally, and the quality opinion still records the best-version gap without duplicating
-  the verdict.
-- Issue no contract-gate verdict when material evidence or decision criteria are insufficient.
-  Name what would resolve the gap.
+- One concept keeps one name through the document, its siblings, and the project's vocabulary, and one name never
+  means two things. A technical term is defined once, where its owner first uses it.
+- A plain common word beats a coined one, and a synonym used for variety fails this check.
 
-#### 3.2 Recheck identity and write the report
+### Fit and References
 
-- Recheck the frozen target identity and the report path. Return to Phase 1 when the target changed or
-  the path overlaps the target or a source-owned input.
-- Write `report.md` from the [report template](report.md) at the bound path, and include Escalations,
-  quality opinion, and finding fields. Add caller-required fields without replacing its target identity,
-  independence, scope, method, result, gap, quality, or verdict meanings.
-- Give each material result exact evidence and enough reproduction detail, and give each
-  Optional Improvement a concise evidence-backed suggestion. Cite internal paths and external
-  sources beside the claims they support.
-- Return a short summary with the contract-gate verdict or reason none was issued, Problems,
-  Optional Improvements, Strengths, Escalations, quality opinion, and unresolved evidence. Do
-  not read another reviewing agent's `report.md` from the same iteration.
+#### It fits the project's design and standards
+
+- The document agrees with the project's design memory, governing decisions, and accepted session design, and
+  takes the shape its type's standard sets.
+
+#### Links and references resolve
+
+- Every link, anchor, path, and named file or heading resolves.
+- When the change renames or removes a heading, path, or name, search the project for referrers and confirm
+  none still points at the old one.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Report template](report.md) | Default structure for a short, evidence-based review report. |
-| [Authoring Execution](../authoring-execution/SKILL.md) | Owns implementation, repair, verification, and the focused task commit. |
+| [Review](../../review/SKILL.md) | Owns the review procedure, stage bars, blocking rule, report, and verdict. |
+| [Gobbi Skill](../../gobbi-skill/SKILL.md) | The standard a skill under review must follow. |

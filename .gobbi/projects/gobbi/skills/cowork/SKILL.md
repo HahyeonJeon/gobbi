@@ -151,31 +151,22 @@ each commit holds only accepted changes.
 
 ### Phase 4 — Review on User Call
 
-Judge the named subject independently. Done when every class in the subject has a verdict from complete
-reports and every finding has passed through the finding gate.
+Judge the named subject independently. Done when the verdict and its dropped and follow-up items are in the
+topic contract and reported to the user.
 
 #### 4.1 Run the review
 
 - On `review`, freeze the subject the user names, or the whole branch from the base when none is named. If
   uncommitted tracked changes exist and no subject is named, ask for `commit` or a subject.
-- Name the decision criteria, taken from the topic contract's acceptance for the subject, and one
-  `review-depth`: `ideation-design`, `planning-decomposition`, `execution-implementation`, or `by-owning-stage`
-  for a mixed subject or the whole branch. [Coding Review](../coding/coding-review/SKILL.md) Step 1.1 defines
-  each depth's bar for every class.
-- For each artifact class in the subject (`code`, `docs`, `design`), apply the matching review skill through one
-  fresh `reviewer` that did not produce the work, and one read-only [Partner](../partner/SKILL.md) run per
-  remaining runtime: [Coding Review](../coding/coding-review/SKILL.md),
-  [Authoring Review](../authoring/authoring-review/SKILL.md), or
-  [Design Review](../design/design-review/SKILL.md). Save each report at
-  `<review-dir>/<class>/<runtime>/report.md` in the topic's `tmp/`, with runtime tokens `claude-code`,
-  `codex`, `cursor`, and `grok`.
+- Apply [Review](../review/SKILL.md) with the topic contract's acceptance for the subject as its Goal and the
+  bar of each stage the subject covers. Save one report per reviewer at `tmp/review-NN/<reviewer>.md` in the
+  topic.
 
-#### 4.2 Apply the findings
+#### 4.2 Record the verdict
 
-- Judge only complete reports, by their contract-gate verdicts. A class passes when it has at least one complete
-  report and every complete report in it passes; the review passes when every class passes.
-- Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate). A correction goes back
-  to its writer, waits for `commit`, and needs another `review`.
+- Record the verdict and its dropped and follow-up items in the topic contract, and report them to the user.
+- A correction that Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) allows goes
+  back to its writer, waits for `commit`, and needs another `review` of the fixes.
 
 ### Phase 5 — Close on User Call
 
@@ -212,4 +203,4 @@ closure handoff is returned.
 | [Coding Ideation](../coding/coding-ideation/SKILL.md), [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), [Design Ideation](../design/design-ideation/SKILL.md) | Own code, writing, and visual design. |
 | [Coding Planning](../coding/coding-planning/SKILL.md), [Authoring Planning](../authoring/authoring-planning/SKILL.md), [Design Planning](../design/design-planning/SKILL.md) | Own code, writing, and visual planning. |
 | [Coding Execution](../coding/coding-execution/SKILL.md), [Authoring Execution](../authoring/authoring-execution/SKILL.md), [Design Execution](../design/design-execution/SKILL.md) | Own code, writing, and visual implementation and verification. |
-| [Coding Review](../coding/coding-review/SKILL.md), [Authoring Review](../authoring/authoring-review/SKILL.md), [Design Review](../design/design-review/SKILL.md) | Own independent code, writing, and visual review and each `report.md`. |
+| [Review](../review/SKILL.md) | Owns independent review: the reviewers, the report, the verdict, and fix rounds. |

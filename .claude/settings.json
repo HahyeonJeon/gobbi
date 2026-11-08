@@ -16,7 +16,6 @@
       "Skill(gobbi:authoring-ideation)",
       "Skill(gobbi:authoring-planning)",
       "Skill(gobbi:authoring-review)",
-      "Skill(gobbi:checklist)",
       "Skill(gobbi:coding)",
       "Skill(gobbi:coding-execution)",
       "Skill(gobbi:coding-ideation)",
@@ -41,6 +40,7 @@
       "Skill(gobbi:tool-skill)",
       "Skill(gobbi:memory)",
       "Skill(gobbi:principles)",
+      "Skill(gobbi:review)",
       "Skill(gobbi:workflow)",
       "Skill(gobbi:wrap-up)",
       "WebSearch"

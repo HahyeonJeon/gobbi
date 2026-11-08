@@ -121,9 +121,10 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 
 #### 2.3 Apply the session-wide finding gate
 
-- Correct a finding automatically only when its severity is High, Medium, or Low; `blocking: no`; it stays
-  inside the locked contract; and it is reversible, authority-neutral, non-destructive, and non-external.
-- Send every other finding to the user in Cowork and in Workflow Phase 1. After completed
+- Correct a blocking finding automatically only when its fix stays inside the accepted Goal and design and is
+  reversible, authority-neutral, non-destructive, and non-external.
+- Send every other blocking finding to the user in Cowork and in Workflow Phase 1, and record follow-ups as
+  [Review](../review/SKILL.md) Step 3.1 says. After completed
   `P1 · User Review`, the manager decides from the accepted design, authority, available subagents or
   teammates, and remaining Partner runtimes, or writes a stopped `handoff.md` without asking the user.
 - Run fresh review after every correction. Continue automatically only from a verified PASS.
