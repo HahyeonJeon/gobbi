@@ -1,7 +1,7 @@
 ---
 name: cleansing
 description: "Cleansing reorganizes, renames, and removes parts of a codebase or document set so it stays simple and clearly defined. Use it when the user asks to cleanse code or docs."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
 ---
@@ -37,50 +37,58 @@ to do, stays the same.
   of the user's work, and a wrong plan is costly to undo.
 - **Stay within the chosen levels.** A change deeper or bolder than the user allowed goes into the report as a
   suggestion, not into the work.
-- **Keep behavior.** A change that would alter what the code does or what a document instructs goes back to the
-  user as a separate request, because cleansing is trusted not to change results.
-- **Remove only with evidence.** A part is removed only when a search shows nothing uses it, it duplicates
-  another part, or a newer part replaces it; record that evidence beside each removal.
+- **Keep behavior.** A change that would alter what the code does or what a document instructs, such as merging
+  copies that have drifted apart, goes to the user as a separate decision, because cleansing is trusted not to
+  change results.
+- **Remove only with evidence.** A part is removed when a search shows nothing uses it, it duplicates another part
+  exactly, a newer part replaces it, or the map marks it as complexity with no present need; record that
+  evidence beside each removal.
 
 ## Procedure
 
 ### Phase 1 — Set the Subject and Levels
 
 Agree what is cleansed and how far. Done when the subject, every action's depth and intensity, and the baseline
-checks are recorded.
+checks are recorded in the map.
 
 #### 1.1 Confirm the subject
 
 - Ask the user which paths are in the subject, if the request does not name them. Start only from committed
   work, so every change can be undone.
-- Run the subject's checks (tests, type checks, linters, build, and document or skill checkers such as
-  Gobbi Skill's `scripts/check_skills.py`) and record the results as the baseline.
+- Keep the [cleansing map](templates/map.md) outside the subject: in a Gobbi session, with that session's records
+  (a Cowork topic directory or the Workflow `tmp/`); otherwise at a path the user names.
 
 #### 1.2 Ask the levels
 
 - With the runtime's structured question tool, ask the depth of refactoring, renaming, and removing (Module,
   Class, Function, or Skip), then the intensity of each action not skipped. The [Levels](#levels) define each.
-- Record the answers in the [cleansing map](templates/map.md).
+- Record the answers in the map.
+
+#### 1.3 Record the baseline
+
+- Run the subject's checks (tests, type checks, linters, build, and document or skill checkers such as Gobbi
+  Skill's `scripts/check_skills.py`) and record the results in the map as the baseline.
 
 ### Phase 2 — Define What Exists
 
-Describe the subject as it is, at the chosen depth. Done when the map covers every unit in the subject.
+Describe the subject as it is. Done when the map covers every unit from the largest chosen depth down.
 
 #### 2.1 Map the units
 
-- For each unit at the chosen depth, write its definition in one sentence, its responsibility, its boundary, and
-  what it uses and what uses it.
-- Mark each unit whose definition needs "and", whose responsibility overlaps another, whose boundary leaks, or
-  whose dependencies form a cycle or point the wrong way.
+- For each unit, from the largest chosen depth down to the smallest, write its definition in one sentence, its
+  responsibility, its boundary, and what it uses and what uses it.
+- Mark each unit whose definition needs "and", whose responsibility overlaps another, whose boundary leaks, whose
+  dependencies form a cycle or point the wrong way, whose name contradicts its definition, that nothing uses, or
+  that a newer part replaces.
 - For a large subject, map separate areas with subagents through [Delegation](../delegation/SKILL.md), then
   merge their maps.
 
 #### 2.2 Map commonality, variability, and vocabulary
 
-- Name what units share and copy, and what really varies between them now. Mark copies that change together and
-  abstractions with no present variation.
-- List each concept's names across the subject next to the term the field uses for it, and mark synonyms and
-  names that mean two things.
+- Name what units share and copy, and what really varies between them now. Mark exact copies, copies that have
+  drifted apart, and abstractions or indirections with no present need.
+- List each concept's names across the subject beside the term to use: the user's or the project's own term
+  first, then the field's standard term. Ask the user when these disagree or none exists.
 
 ### Phase 3 — Design the Clean Target
 
@@ -92,11 +100,12 @@ Derive the simpler structure from the map and get the user's approval. Done when
   intensity. Drop any change outside the chosen levels into Suggestions.
 - Keep a change only if it makes the subject simpler or a definition true. A new abstraction needs a variation
   that exists now.
+- List a change that would alter behavior, such as merging drifted copies, as a separate decision for the user.
 
 #### 3.2 Approve the plan
 
 - Show the user the target structure beside the current one, the changes in order, every removal with its
-  evidence, and every public interface that changes.
+  evidence, every public interface that changes and its users outside the subject, and the separate decisions.
 - Apply the user's edits to the plan, then ask for approval with the runtime's structured question tool.
 
 ### Phase 4 — Apply in Small Verified Steps
@@ -112,6 +121,9 @@ checks match the baseline.
 
 #### 4.2 Check each step
 
+- Before changing a part no check covers, record its current behavior: add a test that pins it, or for a document
+  list its instructions so they can be compared after. For a behavior change the user approved, update that
+  record to the approved behavior in the same step.
 - Run the baseline checks after each step. A new failure is fixed in that step or the step is undone.
 - When the work reveals a change the plan did not include, add it to Suggestions instead of applying it.
 
@@ -121,8 +133,8 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 #### 5.1 Report
 
-- Report the structure before and after, the changes applied, the removals with their evidence, the checks
-  against the baseline, and the Suggestions.
+- Report the structure before and after with its final definitions and vocabulary, the changes applied, the
+  removals with their evidence, the checks against the baseline, what stays unverified, and the Suggestions.
 - Leave commits to the user or the calling mode, and suggest an independent [Review](../review/SKILL.md) of the
   result.
 
@@ -130,9 +142,9 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 | Action | What it changes |
 |---|---|
-| Refactoring | Structure: merge, split, or move parts so each has one definition and dependencies point one way. |
-| Renaming | Names: align each name with its definition and the field's vocabulary, one term per concept. |
-| Removing | Parts: delete what is unused, duplicated, superseded, or adds complexity without a present need. |
+| Refactoring | Structure: merge, split, inline, or move parts so each has one definition and dependencies point one way. |
+| Renaming | Names: align each name with its definition and the project's and field's vocabulary, one term per concept. |
+| Removing | Parts: delete what is unused, an exact duplicate, superseded, or complexity with no present need. |
 
 | Depth | Largest unit the action may change, in code | In docs |
 |---|---|---|
@@ -140,19 +152,19 @@ Tell the user what changed and what remains. Done when the user has the report.
 | Class | Classes, interfaces, and files | Documents and sections |
 | Function | Functions, methods, and variables | Paragraphs, list items, and table rows |
 
+Module includes Class and Function, Class includes Function, and Skip leaves the action out.
+
 | Intensity | How far the action goes |
 |---|---|
-| Conservative | Only clear defects: proven dead parts, names that contradict their definition, duplicates that already drifted. Public interfaces stay. |
-| Moderate | Also simplifications the map makes obvious. A public interface may change when every user inside the subject is updated. |
-| Aggressive | Rebuild toward the simplest structure the definitions allow. Public interfaces and layout may change, and users outside the subject are listed for the user. |
-
-A deeper level includes the shallower ones, and Skip leaves an action out.
+| Conservative | Only clear defects: parts nothing uses, exact duplicates, and names that contradict their definition. Public interfaces stay. |
+| Moderate | Also the merges, splits, inlines, renames, and removals of complexity with no present need that the map marks. A public interface changes only when all its users are inside the subject. |
+| Aggressive | Rebuild toward the simplest structure the definitions allow. A public interface may change, and its users outside the subject are listed in the plan. |
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Cleansing map](templates/map.md) | The one document that holds the levels, the unit map, and the plan. |
+| [Cleansing map](templates/map.md) | The one document that holds the levels, the baseline, the unit map, and the plan. |
 | [Coding Principles](../coding/principles.md) | The modularization, naming, and simplicity bar for code. |
 | [`coding-object-oriented-programming`](../coding/coding-object-oriented-programming/SKILL.md) | The bar for classes, interfaces, and patterns. |
 | [Authoring Review](../authoring/authoring-review/SKILL.md) | The structure and vocabulary checks for docs. |

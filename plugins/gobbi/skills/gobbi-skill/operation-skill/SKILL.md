@@ -32,8 +32,8 @@ transitions.
 
 ## Rules
 
-- **Use the operation shape.** Frontmatter → Intro → Principles → Rules → Procedure → References, with numbered
-  Phase headings, decimal Step headings, and bulleted bodies, so every operation reads the same way.
+- **Use the operation shape.** Frontmatter → Intro → Principles → Rules → Procedure → optional reference tables
+  that Steps point to → References, with numbered Phases and decimal Steps, so every operation reads the same way.
 - **Give each Phase a goal and the evidence that it is done.** A reviewer judges the work against that
   evidence, so a Phase without it cannot be reviewed.
 - **State authority boundaries, stop conditions, and handoffs where the reader meets them.** These are the

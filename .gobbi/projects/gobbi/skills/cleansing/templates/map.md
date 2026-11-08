@@ -10,11 +10,16 @@
 
 **Baseline checks:** {each check and its result before cleansing}
 
+**Map location:** {outside the subject: the Gobbi session's records or a path the user named}
+
 ## Units
 
 | Unit | Definition | Responsibility | Boundary | Uses | Used by | Mark |
 |---|---|---|---|---|---|---|
-| {path or name} | {one sentence} | {what only it decides} | {what it hides} | {units} | {units} | {"and", overlap, leak, cycle, or none} |
+| {path or name} | {one sentence} | {what only it decides} | {what it hides} | {units} | {units} | {each mark from Phase 2, or none} |
+
+{Marks: "and", overlap, leak, cycle, wrong-way dependency, contradicting name, unused, superseded, exact copy,
+drifted copy, or no present need.}
 
 ## Commonality and Variability
 
@@ -22,7 +27,7 @@
 
 ## Vocabulary
 
-| Concept | Names found | Field term |
+| Concept | Names found | Term to use |
 |---|---|---|
 | {concept} | {every name used for it} | {the term to use} |
 
@@ -33,6 +38,10 @@
 | 1 | {what changes} | {remove, refactor, or rename} | {level} | {the mark, or the search that shows it is unused} |
 
 {List removals first, then refactors, then renames. Public interfaces that change are named in the change.}
+
+## Separate Decisions
+
+- {Changes that would alter behavior, such as merging drifted copies, for the user to decide.}
 
 ## Suggestions
 
