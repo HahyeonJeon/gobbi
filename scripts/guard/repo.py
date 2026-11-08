@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-from markdown import Document, parse
+from skill_checks.markdown import Document, parse
 
 __all__ = ["CANONICAL", "PACKAGE", "Action", "Repo", "find_root"]
 

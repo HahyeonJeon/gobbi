@@ -5,8 +5,8 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterator
 
-from finding import Finding
 from repo import PACKAGE, Repo
+from skill_checks.finding import Finding
 
 __all__ = ["LOCATORS", "mismatches"]
 

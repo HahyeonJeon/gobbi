@@ -4,8 +4,8 @@ import tomllib
 from collections.abc import Callable, Iterator
 from pathlib import PurePosixPath
 
-from finding import Finding
 from repo import CANONICAL, Repo
+from skill_checks.finding import Finding
 
 __all__ = ["drift"]
 

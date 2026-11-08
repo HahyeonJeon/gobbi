@@ -1,4 +1,6 @@
-"""The reading of Gobbi Markdown: frontmatter, fences, prose lines, headings, anchors, and links."""
+"""The reading of Markdown documents: frontmatter, fences, prose lines, headings, anchors, and links."""
+
+from __future__ import annotations
 
 import json
 import re

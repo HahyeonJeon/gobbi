@@ -1,49 +1,152 @@
-"""Skill shape: frontmatter, operation phases, and the References table of each canonical SKILL.md."""
+"""Gobbi's skill-writing standard as checks: skill shape, links and anchors, and prose style.
 
+Each check reads a SkillTree with a project's Options and yields Findings. CHECKS lists them in run order.
+"""
+
+from __future__ import annotations
+
+import posixpath
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterable, Iterator
+from dataclasses import dataclass
 from pathlib import PurePosixPath
+from urllib.parse import unquote
 
-from finding import Finding
-from markdown import Document, Heading
-from repo import CANONICAL, Repo
+from .finding import Finding
+from .markdown import Document, Heading, Link
+from .tree import SkillTree
 
-__all__ = ["frontmatter", "phases", "references"]
+__all__ = [
+    "CHECKS",
+    "Check",
+    "Options",
+    "all_caps",
+    "frontmatter",
+    "line_length",
+    "links",
+    "phases",
+    "references",
+    "rule_leads",
+]
 
-SCOPE = f"{CANONICAL}/skills"
 SKILL_TYPES = ("domain", "operation", "tool", "preference")
 MAX_STEP_BULLETS = 3
 REFERENCES_HEADER = "| Name | Description |"
+# Adding a word is a reviewed one-line change.
+ALLOWED_CAPS = frozenset(
+    {
+        # Acronyms
+        "API", "ASCII", "CLI", "CRUD", "CSS", "HTML", "ID", "JSON", "OOP", "SC", "SMS", "SOLID", "SOP", "SVG",
+        "UI", "URL", "UTC", "UUID", "WCAG",
+        # File names
+        "README",
+        # Workflow unit tokens
+        "DISCUSSION", "RECORD", "REVIEW", "WORK",
+        # Gate tokens
+        "FAIL", "PASS", "REVISE",
+        # The term itself
+        "ALL-CAPS",
+    }
+)  # fmt: skip
 
 _USE_IT = re.compile(r"Use it (when|whenever|before|after|for)\b")
 _TOOL = re.compile(r"[A-Za-z][A-Za-z0-9_]*(\([^()]*\))?")
 _PHASE = re.compile(r"Phase (\d+) — \S.*")
 _STEP = re.compile(r"(\d+)\.(\d+) \S.*")
-_LINK = re.compile(r"\[[^\]]+\]\([^)]+\)")
+_CELL_LINK = re.compile(r"\[[^\]]+\]\([^)]+\)")
 _CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
+_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:")
+_CAPS = re.compile(r"(?<![\w-])[A-Z][A-Z0-9-]*[A-Z](?![\w-])")
+_RULE_LEAD = re.compile(r"\s*- \*\*((?:MUST|NEVER)\b[^*]*)")
+_LEAD_WORD = re.compile(r"(\s*- \*\*)(?:MUST|NEVER)\b")
+_CODE_SPAN = re.compile(r"(`+).+?(?<!`)\1(?!`)")
+_LINK_TARGET = re.compile(r"\]\([^)]*\)")
+_PLACEHOLDER = re.compile(r"\{[^}]*\}")
 
 
-def frontmatter(repo: Repo) -> Iterator[Finding]:
-    for document in _skills(repo):
+@dataclass(frozen=True)
+class Options:
+    """Project values for the checks."""
+
+    max_line: int = 115  # the longest prose line, in characters
+    allowed_caps: frozenset[str] = ALLOWED_CAPS  # the ALL-CAPS words prose may use
+
+
+@dataclass(frozen=True)
+class Check:
+    id: str
+    run: Callable[[SkillTree, Options], Iterable[Finding]]
+    advisory: bool = False  # an advisory check reports notes and never fails the run
+
+
+def frontmatter(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Each SKILL.md frontmatter parses and names its skill, H1 title, trigger, type, and tools."""
+    for document in _skills(tree):
         yield from _frontmatter(document)
 
 
-def phases(repo: Repo) -> Iterator[Finding]:
-    for document in _skills(repo):
+def phases(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Operation Phases and Steps are numbered in order, each Phase says Done when, and Steps stay short."""
+    for document in _skills(tree):
         if document.frontmatter is not None and document.frontmatter.get("skill-type") == "operation":
             yield from _phases(document)
 
 
-def references(repo: Repo) -> Iterator[Finding]:
-    for document in _skills(repo):
+def references(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """A non-domain SKILL.md that links internal documents lists them in a Name | Description table."""
+    for document in _skills(tree):
         if document.frontmatter is None or document.frontmatter.get("skill-type") != "domain":
             yield from _references(document)
 
 
-def _skills(repo: Repo) -> Iterator[Document]:
-    for path in repo.files(SCOPE):
-        if path.endswith("/SKILL.md"):
-            yield repo.document(path)
+def links(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Relative links and their anchors resolve inside the root."""
+    for document in _markdown(tree):
+        for link in document.links:
+            message = _problem(tree, document.path, link)
+            if message is not None:
+                yield Finding("links", document.path, link.line, message)
+
+
+def line_length(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Prose lines are at most `max_line` characters; a line of one unbreakable token is exempt."""
+    for document in _markdown(tree):
+        for number, line in document.prose:
+            if len(line) > options.max_line and len(line.split()) > 1:
+                message = f"line is {len(line)} characters (max {options.max_line})"
+                yield Finding("line-length", document.path, number, message)
+
+
+def all_caps(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Prose uses no ALL-CAPS word outside `allowed_caps`, except MUST or NEVER opening a bold rule lead."""
+    for document in _markdown(tree):
+        for number, line in document.prose:
+            for word in _CAPS.findall(_plain(line)):
+                if word not in options.allowed_caps:
+                    yield Finding("all-caps", document.path, number, f"ALL-CAPS word {word} is not allowed")
+
+
+def rule_leads(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Advisory: each MUST or NEVER lead, for a reviewer to confirm it guards safety, authority, or an
+    irreversible boundary."""
+    for document in _markdown(tree):
+        for number, line in document.prose:
+            match = _RULE_LEAD.match(line)
+            if match is not None:
+                message = f"rule lead: {match.group(1).strip()}"
+                yield Finding("rule-leads", document.path, number, message, advisory=True)
+
+
+def _skills(tree: SkillTree) -> Iterator[Document]:
+    for path in tree.files():
+        if PurePosixPath(path).name == "SKILL.md":
+            yield tree.document(path)
+
+
+def _markdown(tree: SkillTree) -> Iterator[Document]:
+    for path in tree.files():
+        if path.endswith(".md"):
+            yield tree.document(path)
 
 
 def _frontmatter(document: Document) -> Iterator[Finding]:
@@ -147,7 +250,7 @@ def _references(document: Document) -> Iterator[Finding]:
         cells = _cells(row)
         if len(cells) != 2:
             yield Finding("references", document.path, number, f"row has {len(cells)} cells, not 2")
-        elif _LINK.search(cells[0]) is None:
+        elif _CELL_LINK.search(cells[0]) is None:
             yield Finding("references", document.path, number, "Name cell holds no link")
 
 
@@ -174,5 +277,48 @@ def _key_line(document: Document, key: str) -> int:
 
 
 def _internal(target: str) -> bool:
-    """A link to another document in the repository, not a web address or an anchor in this file."""
+    """A link to another document in the project, not a web address or an anchor in this file."""
     return not target.startswith(("#", "http://", "https://", "mailto:"))
+
+
+def _problem(tree: SkillTree, path: str, link: Link) -> str | None:
+    target = link.target
+    if _SCHEME.match(target) or "{" in target or "<" in target:
+        return None
+    file_part, _, fragment = target.partition("#")
+    resolved = _resolve(path, unquote(file_part)) if file_part else path
+    if resolved == ".." or resolved.startswith("../"):
+        return f"link target {target} leaves the repository"
+    if not tree.exists(resolved):
+        return f"link target {target} does not exist"
+    if fragment and resolved.endswith(".md"):
+        anchors = {heading.anchor for heading in tree.document(resolved).headings}
+        if fragment not in anchors:
+            return f"anchor #{fragment} is not a heading in {resolved}"
+    return None
+
+
+def _resolve(path: str, target: str) -> str:
+    """A link target as a root-relative path: `/x` from the root, anything else from the linking file."""
+    if target.startswith("/"):
+        return posixpath.normpath(target.lstrip("/"))
+    return posixpath.normpath(posixpath.join(posixpath.dirname(path), target))
+
+
+def _plain(line: str) -> str:
+    """The line without a rule lead's first word, inline code, link targets, and {…} placeholders."""
+    line = _LEAD_WORD.sub(r"\1", line, count=1)
+    for pattern, replacement in ((_CODE_SPAN, " "), (_LINK_TARGET, "]"), (_PLACEHOLDER, " ")):
+        line = pattern.sub(replacement, line)
+    return line
+
+
+CHECKS = (
+    Check("frontmatter", frontmatter),
+    Check("phases", phases),
+    Check("references", references),
+    Check("links", links),
+    Check("line-length", line_length),
+    Check("all-caps", all_caps),
+    Check("rule-leads", rule_leads, advisory=True),
+)

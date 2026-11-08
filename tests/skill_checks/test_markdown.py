@@ -1,6 +1,6 @@
 import unittest
 
-from markdown import anchor, parse
+from skill_checks.markdown import anchor, parse
 
 
 class FrontmatterTest(unittest.TestCase):

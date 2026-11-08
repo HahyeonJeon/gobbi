@@ -17,12 +17,14 @@ sys.dont_write_bytecode = True  # before the local imports: no __pycache__ besid
 if sys.version_info < (3, 11):  # noqa: UP036 - say why instead of failing on tomllib
     sys.stderr.write("guard.py needs Python 3.11 or later\n")
     raise SystemExit(2)
+# The skill checks ship in the gobbi-skill skill; the guard imports them from this checkout's canonical copy.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".gobbi/projects/gobbi/skills/gobbi-skill/scripts"))
 
 import checks  # noqa: E402
 import generated  # noqa: E402
 import mirror  # noqa: E402
-from finding import Finding  # noqa: E402
 from repo import PACKAGE, Repo, find_root  # noqa: E402
+from skill_checks.finding import Finding  # noqa: E402
 
 _TOOL = "guard"
 _MAX_ACTION_LINES = 10
@@ -99,11 +101,11 @@ def _check(repo: Repo, ids: Sequence[str]) -> tuple[int, dict[str, Any], list[st
             crashed = False
         except Exception as error:  # isolate the crash; the other checks still run
             traceback.print_exc()
-            found = [Finding(check.id, ".", None, f"check-crashed {type(error).__name__}: {error}")]
+            message = f"check-crashed {type(error).__name__}: {error}"
+            found = [Finding(check.id, ".", None, message, check.advisory)]
             crashed = True
-        for finding in found:
-            lines.append(_line("NOTE" if check.advisory else "ERROR", finding))
-            reported.append({**asdict(finding), "advisory": check.advisory})
+        lines.extend(_line(finding) for finding in found)
+        reported.extend(asdict(finding) for finding in found)
         rows.append({"id": check.id, "advisory": check.advisory, "findings": len(found), "crashed": crashed})
     errors = sum(row["findings"] for row in rows if not row["advisory"])
     notes = sum(row["findings"] for row in rows if row["advisory"])
@@ -120,7 +122,7 @@ def _sync(repo: Repo) -> tuple[int, dict[str, Any], list[str]]:
     lines = [f"{action.op} {action.path}" for action in actions[:_MAX_ACTION_LINES]]
     if len(actions) > _MAX_ACTION_LINES:
         lines.append(f"... and {len(actions) - _MAX_ACTION_LINES} more action(s)")
-    lines.extend(_line("ERROR", problem) for problem in problems)
+    lines.extend(_line(problem) for problem in problems)
     lines.append(f"guard sync: {len(actions)} action(s), {len(problems)} unfixable problem(s)")
     result = {
         "actions": [{"op": action.op, "path": action.path} for action in actions],
@@ -135,8 +137,9 @@ def _list() -> tuple[int, dict[str, Any], list[str]]:
     return 0, {"checks": rows}, lines
 
 
-def _line(severity: str, finding: Finding) -> str:
+def _line(finding: Finding) -> str:
     """`<severity> <check> <path> <message> [L<line>]`: the line number last, so a failure id can omit it."""
+    severity = "NOTE" if finding.advisory else "ERROR"
     message = " ".join(finding.message.split())
     location = f" [L{finding.line}]" if finding.line is not None else ""
     return f"{severity} {finding.check} {finding.path} {message}{location}"

@@ -137,7 +137,10 @@ remaining line has a source, and an agent would do worse without it.
   [sort table](../delegation/SKILL.md#sort-each-line-before-you-write-it). Delete method the agent can choose
   and lines without a source, and move quality bars into the checks a reviewer applies.
 - Replace a rule that `allowed-tools`, a permission, a hook, or the project's tooling can enforce with that
-  mechanism. For Gobbi's own skills, a failure review keeps finding becomes a check in `scripts/guard/`.
+  mechanism. A skill-writing failure that review keeps finding becomes a check in this skill's
+  `scripts/skill_checks/checks.py`.
+- From the project root, run `python3 <this skill's directory>/scripts/check_skills.py` and fix its findings.
+  It checks the frontmatter, Phases, Steps, References, links, and prose that this standard requires.
 
 #### 3.3 Improve sentences and vocabulary
 

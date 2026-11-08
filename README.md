@@ -224,8 +224,16 @@ python3 scripts/guard/guard.py check   # report every finding; exit 0 means clea
 python3 -m unittest discover -s tests/guard -t .
 ```
 
-CI runs the same check on every push. To run it before each commit, enable the hook once per clone with
-`git config core.hooksPath .githooks`.
+The guard's skill checks ship in the Gobbi Skill skill, so any project can run them on its own skills (Python 3.9
+or later). By default they check every `.gobbi/projects/*/skills` directory; `--help` lists the options:
+
+```text
+python3 .gobbi/projects/gobbi/skills/gobbi-skill/scripts/check_skills.py
+python3 -m unittest discover -s tests/skill_checks -t .
+```
+
+CI runs the guard and both test suites on every push, the skill checks on Python 3.9 and 3.13. To run the guard
+before each commit, enable the hook once per clone with `git config core.hooksPath .githooks`.
 
 ## License
 

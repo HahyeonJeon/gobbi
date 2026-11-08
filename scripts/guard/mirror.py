@@ -3,8 +3,8 @@
 import re
 from collections.abc import Iterator
 
-from finding import Finding
 from repo import CANONICAL, PACKAGE, Action, Repo
+from skill_checks.finding import Finding
 
 __all__ = ["MAPPING", "OWNED", "REWRITTEN", "drift", "plan", "rewrite_links"]
 

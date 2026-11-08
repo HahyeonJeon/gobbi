@@ -3,12 +3,12 @@
 import json
 import shutil
 import subprocess
-import tempfile
 import unittest
 from pathlib import Path
 
 from repo import CANONICAL, PACKAGE, Repo
 
+from ..skill_checks.fixtures import skill, write_tree
 from . import GUARD_DIR
 
 GUARD = GUARD_DIR / "guard.py"
@@ -19,14 +19,7 @@ HAS_GIT = shutil.which("git") is not None
 
 def make_tree(files: dict[str, str | bytes], *, git: bool = False, commit: bool = False) -> Path:
     """Write files into a new temporary directory, optionally as a git work tree. The caller removes it."""
-    root = Path(tempfile.mkdtemp(prefix="guard-test-"))
-    for path, content in files.items():
-        target = root / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        if isinstance(content, bytes):
-            target.write_bytes(content)
-        else:
-            target.write_text(content, encoding="utf-8")
+    root = write_tree(files)
     if git or commit:
         _git(root, "init", "-q")
     if commit:
@@ -35,31 +28,6 @@ def make_tree(files: dict[str, str | bytes], *, git: bool = False, commit: bool 
     return root
 
 
-def skill(name: str, skill_type: str = "operation", body: str | None = None) -> str:
-    """A SKILL.md that passes every check for its type."""
-    title = name.replace("-", " ").title()
-    frontmatter = (
-        f'---\nname: {name}\ndescription: "{title} does one thing. Use it when testing."\n'
-        f"allowed-tools: Read, Bash(git:*)\nskill-type: {skill_type}\n---\n"
-    )
-    if body is None:
-        body = PROCEDURE if skill_type == "operation" else ""
-        if skill_type != "domain":
-            body += REFERENCES
-    return f"{frontmatter}\n# {title}\n\n{title} is a fixture.\n\n{body}"
-
-
-PROCEDURE = (
-    "## Procedure\n\n"
-    "### Phase 1 — Start\n\nBegin the work. Done when it has begun.\n\n"
-    "#### 1.1 First step\n\n- one\n- two\n- three\n\n"
-    "#### 1.2 Second step\n\n- one\n\n"
-    "### Phase 2 — Finish\n\nEnd the work. Done when it has ended.\n\n"
-    "#### 2.1 Last step\n\n- one\n\n"
-)
-REFERENCES = (
-    "## References\n\n| Name | Description |\n|---|---|\n| [Guide](../alpha/SKILL.md#alpha) | The guide. |\n"
-)
 ROLE_BODY = "# Leader\n\nYou lead.\n"
 # The principles source is copied into root files, so its one link is absolute.
 PRINCIPLES_SOURCE = skill(

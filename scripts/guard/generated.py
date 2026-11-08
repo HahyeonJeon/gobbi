@@ -4,8 +4,8 @@ import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from finding import Finding
 from repo import Action, Repo
+from skill_checks.finding import Finding
 
 __all__ = ["TARGETS", "drift", "expected_block", "plan"]
 
