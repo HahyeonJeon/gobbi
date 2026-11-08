@@ -213,6 +213,20 @@ is recorded as Unavailable evidence, not a partner result.
 Cursor remains a supported runtime but is not a partner, because its print mode failed authentication when
 measured. The active runtime decides what to accept and remains the session authority.
 
+## Develop Gobbi
+
+Edit skills and roles in the canonical tree under `.gobbi/projects/gobbi/`, never in `plugins/gobbi/`. Then run
+the repository guard from the repository root (Python 3.11 or later):
+
+```text
+python3 scripts/guard/guard.py sync    # write the package mirror and the generated Principles blocks
+python3 scripts/guard/guard.py check   # report every finding; exit 0 means clean
+python3 -m unittest discover -s tests/guard -t .
+```
+
+CI runs the same check on every push. To run it before each commit, enable the hook once per clone with
+`git config core.hooksPath .githooks`.
+
 ## License
 
 [MIT](./LICENSE)

@@ -49,6 +49,6 @@ The checker does not require `.codex/config.toml`. Codex reads `$CODEX_HOME/conf
 
 | Script | Path |
 |---|---|
-| Writer and checker | [codex.sh](scripts/codex.sh) |
+| Writer and checker | `scripts/codex.sh` (being reimplemented; not in this release) |
 
 Other runtimes: [Claude Code](claude.md), [Cursor](cursor.md), [Grok](grok.md).

@@ -279,7 +279,8 @@ removes every safeguard.
 - Start the command with `run_terminal_command` and `background: true`; it returns a `task_id`, and a
   notification appears when the command completes.
 - Read with `get_command_or_subagent_output` and `task_ids`; a positive `timeout_ms` waits. Unmeasured: from
-  the [Grok background tasks guide](https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/20-background-tasks.md).
+  the Grok background tasks guide,
+  <https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/20-background-tasks.md>.
 
 #### Cursor manager
 

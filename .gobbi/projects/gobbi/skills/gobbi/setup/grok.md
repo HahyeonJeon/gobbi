@@ -65,6 +65,6 @@ when those paths are absent. It never creates `.grok/skills`, `.grok/agents`, or
 
 | Script | Path |
 |---|---|
-| Writer and checker | [grok.sh](scripts/grok.sh) |
+| Writer and checker | `scripts/grok.sh` (being reimplemented; not in this release) |
 
 Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Cursor](cursor.md).

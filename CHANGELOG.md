@@ -17,9 +17,13 @@ expert in the brief's Role instead of the role name. In Claude `.claude/settings
 adapters from the new Cursor role contracts. Setup does not edit an existing `.claude/settings.json` and does
 not delete old role files; remove those after you migrate their callers.
 
+### Added
+
+- `scripts/guard/`: a Python 3.11 standard-library guard for Gobbi's own repository, with `check`, `sync`, and `list`. It checks skill frontmatter, Phase `Done when` lines and Step size, References tables, links and anchors, the canonical-to-package mirror, the generated Principles blocks, identical role bodies, version agreement, line length, ALL-CAPS words, and lists MUST and NEVER rule leads as notes. `sync` writes the package mirror and the generated blocks. Tests live in `tests/guard/`; `.githooks/pre-commit` and `.github/workflows/guard.yml` run it.
+
 ### Removed
 
-- Removed every script and hook, to be reimplemented: the SessionStart settings check, the per-prompt and Stop reminder, the setup scripts for each runtime, `scripts/sync-plugin-package.sh`, `scripts/prove-gobbi-setup.sh`, and `link-project-skills.sh`. The Codex, Cursor, and Grok manifests no longer declare `hooks`. Until reimplementation, the setup guides and the README install steps that name these scripts or hooks are out of date, and the package is kept in step with canonical by hand.
+- Removed every script and hook, to be reimplemented: the SessionStart settings check, the per-prompt and Stop reminder, the setup scripts for each runtime, `scripts/sync-plugin-package.sh`, `scripts/prove-gobbi-setup.sh`, and `link-project-skills.sh`. The Codex, Cursor, and Grok manifests no longer declare `hooks`. Until reimplementation, the setup guides and the README install steps that name these scripts or hooks are out of date; `scripts/guard/guard.py sync` (see Added) now keeps the package in step with canonical.
 - **Breaking:** Removed the twelve domain phase roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, in every runtime. Removed the planner role; leader now owns Planning.
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes `report.md` only. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
@@ -32,6 +36,7 @@ not delete old role files; remove those after you migrate their callers.
 
 ### Changed
 
+- A References section is required only when a skill links internal documents.
 - Gobbi Skill now tells authors to state the goal and the evidence of done and leave the method to the agent, to earn every line with an observed failure, review finding, requirement, or user boundary, and to improve results through review rather than up-front rules. Every Rule, constraint, and ordered Step needs a source and a one-line reason; section limits are ceilings; Phase 3 adds a step that removes unneeded constraints with Delegation's sort table. Operation skills are goal-led Phases with evidence of done and ordered Steps only where order matters; preference, tool, and domain skills follow the same direction.
 - Rules across all skills and role agents are a plain bold lead followed by a reason. `MUST` and `NEVER` remain only for safety, authority, and irreversible boundaries, and ALL-CAPS emphasis is gone, following Anthropic's guidance that emphasis makes agents over-apply rules.
 - Every skill `description` now says what the skill is and when to use it.

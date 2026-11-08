@@ -50,8 +50,8 @@ actions, conditions, and evidence so the cold reader reaches the intended unders
 - **Write each Rule as a plain bold lead followed by its reason.** Keep `MUST` and `NEVER` for safety, authority,
   and irreversible boundaries, and use no ALL-CAPS emphasis elsewhere, because emphasis makes agents over-apply
   rules.
-- **Write `## References` as the two-column table `Name | Description`, and omit it only from a domain root.**
-  Include only internal documents needed to use or maintain the skill; cite external sources beside their claims.
+- **Write `## References` as the two-column table `Name | Description` when the skill links internal documents.**
+  A domain root and a skill that links none leave it out; cite external sources beside their claims.
 
 ## Procedure
 
@@ -137,7 +137,7 @@ remaining line has a source, and an agent would do worse without it.
   [sort table](../delegation/SKILL.md#sort-each-line-before-you-write-it). Delete method the agent can choose
   and lines without a source, and move quality bars into the checks a reviewer applies.
 - Replace a rule that `allowed-tools`, a permission, a hook, or the project's tooling can enforce with that
-  mechanism.
+  mechanism. For Gobbi's own skills, a failure review keeps finding becomes a check in `scripts/guard/`.
 
 #### 3.3 Improve sentences and vocabulary
 

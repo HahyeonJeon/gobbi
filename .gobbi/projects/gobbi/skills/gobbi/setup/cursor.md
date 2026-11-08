@@ -44,6 +44,6 @@ checkout's Cursor agents are the local adapter. Cursor plugin load is not the ch
 
 | Script | Path |
 |---|---|
-| Writer and checker | [cursor.sh](scripts/cursor.sh) |
+| Writer and checker | `scripts/cursor.sh` (being reimplemented; not in this release) |
 
 Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Grok](grok.md).

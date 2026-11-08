@@ -117,6 +117,6 @@ overwrites an existing settings file, `CLAUDE.md`, or role contract. It never cr
 
 | Script | Path |
 |---|---|
-| Writer and checker | [claude.sh](scripts/claude.sh) |
+| Writer and checker | `scripts/claude.sh` (being reimplemented; not in this release) |
 
 Other runtimes: [Codex](codex.md), [Cursor](cursor.md), [Grok](grok.md).

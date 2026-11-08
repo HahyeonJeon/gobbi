@@ -44,4 +44,5 @@
 
 Keep every section and fixed table row. Use `Complete` only when every phase claim is directly verified; use
 `Stopped` for an incomplete or failed phase. This file does not start the next phase. Never recover into a
-different worktree or session directory, and never treat this handoff as proof without rereading its named evidence.
+different worktree or session directory, and never treat this handoff as proof without rereading its named
+evidence.

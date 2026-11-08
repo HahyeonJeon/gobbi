@@ -82,8 +82,8 @@ which that scan never reads:
 | `agents/cursor/{role}.md` | `runtimes/cursor/{role}.md` |
 | `agents/grok/{role}.md` | `runtimes/grok/{role}.md` |
 
-No script builds that projection now; the sync script was removed and will be reimplemented. Until then, copy
-each changed canonical file to its package path by hand. Bytes are copied verbatim — the shape difference is
+`python3 scripts/guard/guard.py sync` builds that projection from the repository root, and
+`python3 scripts/guard/guard.py check` reports any drift. Bytes are copied verbatim — the shape difference is
 directory mapping only.
 
 This README is not mapped anywhere, so it never ships and cannot become live agent surface.
@@ -97,4 +97,4 @@ checkout or `<plugin>/runtimes/codex/` in an install.
 
 `skills/gobbi/SKILL.md` links to role contracts by relative path, and those paths differ between the two trees.
 Its package copy rewrites those links from the canonical prefix to the package prefix using the mapping table
-above, and changes nothing else. When you copy it by hand, apply that rewrite.
+above, and changes nothing else. `guard.py sync` applies that rewrite.
