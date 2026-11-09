@@ -91,6 +91,8 @@
 
 ## Challenge Log
 
-| Round | Challenge | Element | Kind | Outcome |
-|---|---|---|---|---|
-| {1} | {the Questioner's challenge} | {element ID} | {question kind} | {how the Analyst resolved it, or the open question ID} |
+| Round | Challenge | Element | Kind | Answer and evidence | Outcome |
+|---|---|---|---|---|---|
+| {1} | {the Questioner's challenge or follow-up} | {element ID} | {question kind} | {the Analyst's answer and its source} | {changed, rejected, or the open question ID} |
+
+{The Questioner adds the first four cells of each row; the Analyst fills the last two.}
