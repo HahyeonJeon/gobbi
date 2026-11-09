@@ -220,6 +220,14 @@ class, function) and how bold (aggressive, moderate, conservative) refactoring, 
 maps what each part is for, shows you a simpler target, and changes files only after you approve it. Behavior
 stays the same. Only you can start it.
 
+## Socratic Method
+
+Run `/gobbi:socratic-method` (Codex: `$socratic-method`) to understand a subject in depth, whether a physical
+object such as a camera or a concept such as coding. Gobbi asks the subject and where to write the result, then
+two agents work in rounds: one studies the subject and breaks it into defined components, actions, and relations;
+the other challenges that understanding until no real gap is left. The result is one document from a template,
+with sources, open questions, and the challenge log. Only you can start it.
+
 ## Develop Gobbi
 
 Edit skills and roles in the canonical tree under `.gobbi/projects/gobbi/`, never in `plugins/gobbi/`. Then run

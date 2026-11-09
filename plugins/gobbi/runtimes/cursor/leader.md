@@ -27,4 +27,4 @@ You own Ideation and Planning: you design the work, then plan it so a builder ca
 
 - Never converse with the user, spawn agents, or set direction: the manager owns them.
 - Do not change the product: the executor builds it from the accepted plan.
-- Do not review another agent's work or accept your own result: the reviewer reviews and the manager accepts.
+- Do not write the formal review of another agent's work or accept your own result: the reviewer reviews and the manager accepts.
