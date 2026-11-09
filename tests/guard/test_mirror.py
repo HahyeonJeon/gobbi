@@ -4,6 +4,7 @@ import unittest
 import mirror
 from repo import Repo
 
+from ..skill_checks.fixtures import skill
 from .fixtures import HAS_GIT, SKILLS, GuardCase
 
 PACKAGE_SKILLS = "plugins/gobbi/skills"
@@ -59,6 +60,40 @@ class DriftTest(GuardCase):
             (root / f"{PACKAGE_SKILLS}/gobbi/SKILL.md").read_text(), "Role: [manager](../../agents/manager.md)\n"
         )
         self.assertEqual(self.kinds(root), [])
+
+
+@unittest.skipUnless(HAS_GIT, "git is required")
+class CodexPolicyTest(GuardCase):
+    USER_ONLY = skill("alpha").replace("skill-type:", "disable-model-invocation: true\nskill-type:")
+
+    def kinds(self, root) -> list[str]:
+        return [f"{finding.message} {finding.path}" for finding in mirror.drift(Repo(root))]
+
+    def test_user_only_skill_gets_the_policy_in_the_package_only(self):
+        root = self.gobbi({f"{SKILLS}/alpha/SKILL.md": self.USER_ONLY})
+        policy = f"{PACKAGE_SKILLS}/alpha/{mirror.CODEX_POLICY}"
+        self.assertIn(f"missing-in-package {policy}", self.kinds(root))
+        Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
+        self.assertEqual((root / policy).read_bytes(), mirror.CODEX_USER_ONLY)
+        self.assertEqual(self.kinds(root), [])
+
+    def test_policy_goes_when_the_skill_is_no_longer_user_only(self):
+        root = self.gobbi({f"{PACKAGE_SKILLS}/alpha/{mirror.CODEX_POLICY}": mirror.CODEX_USER_ONLY})
+        self.assertEqual(self.kinds(root), [f"unexpected-in-package {PACKAGE_SKILLS}/alpha/{mirror.CODEX_POLICY}"])
+
+    def test_canonical_policy_file_is_a_finding(self):
+        canonical = f"{SKILLS}/alpha/{mirror.CODEX_POLICY}"
+        root = self.gobbi(
+            {
+                f"{SKILLS}/alpha/SKILL.md": self.USER_ONLY,
+                canonical: mirror.CODEX_USER_ONLY,
+                f"{PACKAGE_SKILLS}/alpha/SKILL.md": self.USER_ONLY,
+                f"{PACKAGE_SKILLS}/alpha/{mirror.CODEX_POLICY}": mirror.CODEX_USER_ONLY,
+            }
+        )
+        self.assertEqual(
+            self.kinds(root), [f"generated-in-package: use disable-model-invocation in SKILL.md {canonical}"]
+        )
 
 
 @unittest.skipUnless(HAS_GIT, "git is required")

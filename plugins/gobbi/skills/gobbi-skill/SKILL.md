@@ -117,8 +117,10 @@ skill-type: domain|operation|tool|preference
 ```
 
 - When only the user may start the skill, such as a session entry, add `disable-model-invocation: true` to the
-  frontmatter and an `agents/openai.yaml` beside `SKILL.md` holding `policy:` / `allow_implicit_invocation: false`
-  for Codex. The model then never loads it on its own, and other skills can still link to it by path.
+  frontmatter, and for Codex an `agents/openai.yaml` beside `SKILL.md` holding `policy:` /
+  `allow_implicit_invocation: false`. In Gobbi's own repository, `guard.py sync` generates that file in the
+  package from the frontmatter, so the canonical skill holds only the frontmatter. The model then never loads
+  the skill on its own, and other skills can still link to it by path.
 
 ### Phase 3 — Review and Improve the Skill
 

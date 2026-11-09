@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from repo import CANONICAL, PACKAGE, Action, Repo
 from skill_checks.finding import Finding
 
-__all__ = ["MAPPING", "OWNED", "REWRITTEN", "drift", "plan", "rewrite_links"]
+__all__ = ["CODEX_POLICY", "CODEX_USER_ONLY", "MAPPING", "OWNED", "REWRITTEN", "drift", "plan", "rewrite_links"]
 
 # Canonical prefix -> package prefix. Claude's roles flatten into agents/, because a plugin's agents/ directory
 # is scanned recursively and a subfolder would join the agent's identifier; the other runtimes ship in runtimes/.
@@ -22,6 +22,11 @@ MAPPING = (
 OWNED = ("skills", "agents", "runtimes")
 # Canonical files whose ../../ links point into a mapped prefix, so the package copy gets the package paths.
 REWRITTEN = frozenset({"skills/gobbi/SKILL.md"})
+# Codex ignores the `disable-model-invocation` frontmatter that Claude Code, Cursor, and Grok read, and takes the
+# same policy from this file beside SKILL.md. The package copy is generated from the frontmatter, so the
+# canonical skill states it once.
+CODEX_POLICY = "agents/openai.yaml"
+CODEX_USER_ONLY = b"policy:\n  allow_implicit_invocation: false\n"
 
 _LONGEST_FIRST = sorted(MAPPING, key=lambda pair: len(pair[0]), reverse=True)
 _RELATIVE_PREFIX = re.compile(
@@ -41,9 +46,12 @@ def plan(repo: Repo) -> list[Action]:
 
 
 def drift(repo: Repo) -> Iterator[Finding]:
-    """One finding per pending projection action, named by its kind."""
+    """One finding per pending projection action, named by its kind, and one per canonical Codex policy file,
+    which sync cannot fix because it generates that file in the package."""
     for kind, action in _differences(repo):
         yield Finding("mirror", action.path, None, kind)
+    for path in _canonical_policies(repo):
+        yield Finding("mirror", path, None, "generated-in-package: use disable-model-invocation in SKILL.md")
 
 
 def _differences(repo: Repo) -> list[tuple[str, Action]]:
@@ -75,4 +83,18 @@ def _projection(repo: Repo) -> dict[str, tuple[str, bytes]]:
             if f"{canonical}/{relative}" in REWRITTEN:
                 content = rewrite_links(content.decode("utf-8")).encode("utf-8")
             projection[f"{PACKAGE}/{package}/{relative}"] = (source, content)
+    for source in repo.files(f"{CANONICAL}/skills/"):
+        if source.endswith("/SKILL.md") and _user_only(repo, source):
+            skill = source.removeprefix(f"{CANONICAL}/skills/").removesuffix("SKILL.md")
+            projection[f"{PACKAGE}/skills/{skill}{CODEX_POLICY}"] = (source, CODEX_USER_ONLY)
     return projection
+
+
+def _user_only(repo: Repo, skill: str) -> bool:
+    frontmatter = repo.document(skill).frontmatter or {}
+    return frontmatter.get("disable-model-invocation") == "true"
+
+
+def _canonical_policies(repo: Repo) -> list[str]:
+    base = f"{CANONICAL}/skills/"
+    return [path for path in repo.files(base) if path.removeprefix(base).endswith(f"/{CODEX_POLICY}")]

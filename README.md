@@ -231,6 +231,9 @@ python3 scripts/guard/guard.py check   # report every finding; exit 0 means clea
 python3 -m unittest discover -s tests/guard -t .
 ```
 
+Sync also adapts the mirror to each runtime: for a skill with `disable-model-invocation: true`, it writes the
+Codex `agents/openai.yaml` that keeps the skill user-only, so do not add that file to the canonical tree.
+
 The guard's skill checks ship in the Gobbi Skill skill, so any project can run them on its own skills (Python 3.9
 or later). By default they check every `.gobbi/projects/*/skills` directory; `--help` lists the options:
 
