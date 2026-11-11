@@ -1,15 +1,15 @@
 ---
 name: gobbi-skill
-description: "Gobbi Skill guides designing and writing Gobbi-compatible skills and skill families. Use it when you create, substantially revise, migrate, or split a skill."
+description: "Gobbi Skill guides designing and writing Gobbi-compatible skills and skill families. Use it when you create, substantially revise, migrate, split, rename, merge, or remove a skill."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Gobbi Skill
 
-Gobbi Skill guides authors when they create, substantively revise, migrate, or split a project skill. Use it to
-classify the target as domain, operation, tool, or preference, write only what a capable agent needs, and route
-the author to the matching type-writing skill.
+Gobbi Skill guides authors when they create, substantially revise, migrate, split, rename, merge, or remove a
+project skill. Use it to classify the target as domain, operation, tool, or preference, write only what a capable
+agent needs, and route the author to the matching type-writing skill.
 
 ## Principles
 
@@ -132,6 +132,9 @@ remaining line has a source, and an agent would do worse without it.
 - Reshape the skill instead of only marking problems. Remove empty, repeated, or one-use sections, merge
   sections with one owner, and split sections with mixed owners.
 - Trace every child and internal reference. Move each policy to one owner and remove copied guidance.
+- When a skill is renamed, merged, or removed, search its `name`, directory, links, settings, `agents/openai.yaml`,
+  and generated copies, and update or remove each reference. A rename changes the command that starts the skill
+  and drops its old `/skills` entry.
 
 #### 3.2 Remove unneeded constraints
 

@@ -44,8 +44,10 @@ there.
 
 #### Every line earns its place
 
-- Removing a line loses something the reader needs. Restatement, history, hedging, generic advice, and text
-  another document owns fail this check.
+- Removing a line loses something the reader needs. Restatement, history, hedging, generic advice or tone,
+  stock transitions, formulaic structure, and text another document owns fail this check.
+- A record kept as history, such as a released changelog entry or a superseded decision, is judged only on
+  accuracy.
 
 #### Claims are true now
 
@@ -59,12 +61,14 @@ there.
 - For each document, skill, and section the change adds or changes, state what it is for in one sentence, the
   facts or policy it owns, what it leaves to other documents, and what it links to and what links to it.
 - Each fact has one owner, and a reader meets a prerequisite before what depends on it. A section that does two
-  jobs, a copy of another document's policy, or a circular chain of "see X" fails this check.
+  jobs (such as steps mixed with background), a copy of another document's policy, or a circular chain of "see
+  X" fails this check.
 
 #### Shared text lives in one place and variants differ only where they must
 
 - Name what sibling documents share, such as a skill family or mirrored templates, and what really differs
   between them. Shared rules are written once and linked; parallel documents differ only in that real difference.
+- Share text only when it is identical now and must stay so; text a consumer must vary stays separate.
 - Pasted paragraphs that will drift apart, or siblings that diverge by accident, fail this check.
 
 #### Terms are defined once and used consistently
@@ -83,8 +87,9 @@ there.
 #### Links and references resolve
 
 - Every link, anchor, path, and named file or heading resolves.
-- When the change renames or removes a heading, path, or name, search the project for referrers and confirm
-  none still points at the old one.
+- When the change renames or removes a heading, path, or name, search for referrers, including generated
+  copies, loaders by name, path, or anchor, and published links, and confirm none still points at the old one.
+  A published address keeps a stub or redirect.
 
 ## References
 

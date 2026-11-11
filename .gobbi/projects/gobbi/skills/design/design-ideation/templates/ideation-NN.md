@@ -7,7 +7,8 @@
 ## Requirements
 
 {In free form: the goal and why it matters now, the problem, the outcomes each viewer should get and how anyone
-can observe them, what is in and out of scope, and the open questions with their answers or deferrals.}
+can observe them, what is in and out of scope, and the open questions with their answers or deferrals. The
+accessibility target is the user's decision: recommend `WCAG 2.2 AA`, and write no target until the user chooses.}
 
 ## Design
 
@@ -39,8 +40,8 @@ views.}
 ### Visual Language
 
 {Type, color, shape, depth, spacing, motion, and accessibility, including the shape language and how depth
-separates planes.}
+separates planes. Record the token categories and the naming scheme, not their values.}
 
 ### Components
 
-{Each component the accepted structure needs, with its variants and states.}
+{Only the components the design adds or changes, each with its variants and states.}
