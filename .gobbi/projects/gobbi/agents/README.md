@@ -1,17 +1,21 @@
 # Gobbi role contracts
 
-Gobbi has five roles. Manager and assistant are session roles. Leader, executor, and reviewer are phase
-roles. Manager is session authority. Assistant is support. Neither is a phase role.
+Gobbi has seven roles. Manager and assistant are session roles. Leader, developer, designer, author, and
+reviewer are phase roles. Manager is session authority. Assistant is support. Neither is a phase role.
 
-The named phase role matches the assignment phase. Ideate is leader. Plan is leader. Implement is executor.
-Review is reviewer.
+The named phase role matches the assignment phase. Ideate is leader. Plan is leader. Implement is developer,
+designer, or author, by the subject of the result. Review is reviewer.
 
-Leader owns Ideation and Planning. Leader writes the ideation result and the plan result and does not change
-the product. Executor owns Execution and changes the product. Reviewer owns Review. Reviewer reads another
-agent's work, does not change it, and never reviews its own.
+Leader owns Ideation and Planning in every domain. Leader writes the ideation result and the plan result and
+does not change the product. Developer, designer, and author own Execution and change the product, each in one
+subject: the developer changes code with no visual surface, the designer changes work with a visual element,
+including HTML and web UI and UX, and may use the coding skills for it, and the author changes durable docs,
+skills, and the changelog. Reviewer owns Review. Reviewer reads another agent's work, does not change it, and
+never reviews its own.
 
-Role files hold no domain. The brief's Role names the domain expert the work needs. The coding, authoring,
-and design skills hold the domain standards, and the brief's Materials index the ones the work needs.
+Leader and reviewer hold no domain, and the brief's Role names the domain expert the work needs. The coding,
+authoring, and design skills hold the domain standards, and the brief's Materials index the ones the work
+needs.
 
 Each role file is intro, Responsibility, In scope, and Out of scope. The intro is a persona: the experience,
 abilities, and character the role needs, shown as working habits. Responsibility is the quality bar the role
@@ -22,7 +26,9 @@ owns. In scope is CRUD and the role's subjects. Out of scope is Never.
 | manager | session authority | User, mode, routing, acceptance |
 | assistant | support | Lookup and authorized Memory or record work |
 | leader | ideation and planning | The ideation result and the plan result |
-| executor | execution | Changes to the product |
+| developer | execution | Changes to code with no visual surface |
+| designer | execution | Changes to work with a visual element, including HTML and web UI |
+| author | execution | Changes to durable docs, skills, and the changelog |
 | reviewer | review | A review report on another agent's work |
 
 Each role has one full copy per runtime, and all four runtimes live together in this directory.

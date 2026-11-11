@@ -125,12 +125,12 @@ Deliver the accepted design as reviewed task commits. Done when a verified `3-ex
 #### 2.2 Task discussion and work
 
 - **DISCUSSION:** Pick the next ready task, or several to run in parallel when the Task Graph allows it and they
-  change different files. Consult participants when the approach needs it, and build each `executor` brief
+  change different files. Consult participants when the approach needs it, and build each Execution brief
   through [Delegation](../delegation/SKILL.md) from the task's Goal, Context, Constraints, and Taste and
   Preference, adding the paths it may change, the protected work, and commit authority for the task's paths.
-- **WORK:** The `executor` applies the matching Execution skill:
-  [Coding Execution](../coding/coding-execution/SKILL.md),
-  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or
+- **WORK:** The role for the task's subject applies its Execution skill: the `developer` with
+  [Coding Execution](../coding/coding-execution/SKILL.md), the `author` with
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or the `designer` with
   [Design Execution](../design/design-execution/SKILL.md). Each task ends with one focused local commit, and
   commits are made one at a time.
 

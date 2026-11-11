@@ -27,8 +27,9 @@ From the consumer worktree:
 Pass `--project-key` when the derived key fails. Pass `--skills-root` and `--agents-root` together when
 the script is not running from a packaged plugin. Check only with `--check`.
 
-Setup writes missing `.codex/`, `.codex/AGENTS.md`, `.codex/agents/`, and the five role files
-`manager.toml`, `assistant.toml`, `leader.toml`, `executor.toml`, and `reviewer.toml` as byte copies of
+Setup writes missing `.codex/`, `.codex/AGENTS.md`, `.codex/agents/`, and the seven role files
+`manager.toml`, `assistant.toml`, `leader.toml`, `developer.toml`, `designer.toml`, `author.toml`, and
+`reviewer.toml` as byte copies of
 `runtimes/codex/`.
 It never generates those files. If the Codex source is unresolved, those rows
 are `skipped source-missing`. It never writes `.codex/skills` or `.codex/config.toml`.

@@ -34,7 +34,7 @@ it. The code's real dependencies decide that set, not the repository type or fil
   that authority, the exact verified uncommitted tree, kept under the caller's retained-state policy and
   neither staged nor committed, is the completed result.
 - **Stop and return to the caller when the task or design leaves a material design choice open.** Design
-  belongs to Ideation and the user, and an executor's guess becomes design no one accepted.
+  belongs to Ideation and the user, and a developer's guess becomes design no one accepted.
 - **Stop before changing a surface outside the scope or writer frontier.** Another owner holds it, so return
   its effect, its owner, and the next action it needs; do the same for out-of-scope findings.
 - **NEVER run Coding Review, write a review report, claim reviewer independence, issue a verdict, accept the work,

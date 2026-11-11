@@ -2,7 +2,7 @@
 name: assistant
 description: Support agent for narrow lookup and authorized Memory or record work.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor
-model: claude-sonnet-5-5
+model: claude-haiku-5-5
 effort: high
 ---
 

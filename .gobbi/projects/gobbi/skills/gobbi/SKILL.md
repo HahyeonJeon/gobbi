@@ -144,6 +144,27 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 - Stop with the exact blocker when mode evidence, owner evidence, identity, path, or authority is invalid.
   Never invent a fallback mode, cursor, worktree, session directory, or participant route.
 
+#### 2.5 Spawn each specialist as its role
+
+- Spawn every specialist as the Gobbi role that owns its work, never as a general-purpose agent, because the
+  role file carries the model, tools, and limits that work was set up for:
+
+  | Work | Role |
+  |---|---|
+  | Lookup, and the Memory or record work a brief names | `assistant` |
+  | Ideation and Planning, in any domain | `leader` |
+  | Execution that changes code with no visual surface: logic, tests, and run and build config | `developer` |
+  | Execution with a visual element: UI and UX, HTML and web pages, images, video, presentations, reports; it may use the coding skills | `designer` |
+  | Execution that changes durable docs, skills, or the changelog | `author` |
+  | Review of a result another agent produced | `reviewer` |
+
+- Use the runtime's own subagent mechanism with that role: the Agent tool with `subagent_type` `gobbi:<role>` in
+  Claude Code, the custom agent `<role>` from `.codex/agents/` in Codex, and the subagent `<role>` that the
+  Gobbi plugin or adapter provides in Cursor and Grok.
+- Give a task that spans domains to the role of its main result, which also updates what the change makes
+  stale, and split it when each domain needs its own result. When the role's agent is unavailable, stop and
+  tell the user instead of substituting another agent.
+
 ## References
 
 | Name | Description |

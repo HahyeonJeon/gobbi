@@ -13,11 +13,13 @@ In a Claude Code session:
 /reload-plugins
 ```
 
-Allow the five Gobbi roles in project `.claude/settings.json`.
-The roles are manager, assistant, leader, executor, and reviewer.
+Allow the seven Gobbi roles in project `.claude/settings.json`.
+The roles are manager, assistant, leader, developer, designer, author, and reviewer.
 Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
-Leader, executor, and reviewer are phase roles, and the named role must match the assignment phase.
-Leader owns Ideation and Planning, executor owns Execution, and reviewer owns Review.
+The other five are phase roles, and the named role must match the assignment phase.
+Leader owns Ideation and Planning in every domain, and reviewer owns Review.
+Developer, designer, and author own Execution: the developer changes code with no visual surface, the
+designer changes work with a visual element, including HTML and web UI, and the author changes docs and skills.
 
 ```json
 {
@@ -30,7 +32,9 @@ Leader owns Ideation and Planning, executor owns Execution, and reviewer owns Re
       "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:leader)",
-      "Agent(gobbi:executor)",
+      "Agent(gobbi:developer)",
+      "Agent(gobbi:designer)",
+      "Agent(gobbi:author)",
       "Agent(gobbi:reviewer)"
     ]
   }

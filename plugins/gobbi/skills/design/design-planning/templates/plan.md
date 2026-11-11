@@ -29,7 +29,7 @@ accepted decision, or a project rule requires it, and name that source.}
 
 #### Context
 
-{Why this task exists and what the executor cannot find alone: decisions already made and the state it starts
+{Why this task exists and what the designer cannot find alone: decisions already made and the state it starts
 from.}
 
 #### Constraints

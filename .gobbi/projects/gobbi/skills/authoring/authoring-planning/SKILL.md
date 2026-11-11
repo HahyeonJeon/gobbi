@@ -16,8 +16,8 @@ and which in order.
 
 ### Split by goal, not by step
 
-A task is one goal an executor can reach and a reviewer can judge. Describe what must be true when it is done
-and leave the method to the executor, who knows the material better once it is in it.
+A task is one goal an author can reach and a reviewer can judge. Describe what must be true when it is done
+and leave the method to the author, who knows the material better once it is in it.
 
 ### Define tasks the way you would delegate them
 
@@ -31,12 +31,12 @@ adds the Role, Materials, and Return when it builds the brief.
   in exactly one task, so nothing is lost, done twice, or done unasked.
 - **Write each task's Goal, Context, Constraints, and Taste and Preference as Delegation defines them.** The
   manager turns each task into a brief, so a Goal is an end state a reviewer can judge, Context is what the
-  executor cannot find alone, and a Constraint is a rule that must hold, with its reason.
-- **Add a constraint or taste only from a source.** Each one narrows the executor, so take it from the user,
+  author cannot find alone, and a Constraint is a rule that must hold, with its reason.
+- **Add a constraint or taste only from a source.** Each one narrows the author, so take it from the user,
   the Ideation result, a project rule, or existing docs, and leave the section out when there is none.
 - **Set a numeric target only when the user, an accepted decision, or a project rule requires it.** Name the
   source next to the number, because quality beyond the Goal is judged in Review.
-- **Leave implementation steps, file-by-file edits, and test lists out of the plan.** The executor chooses the
+- **Leave implementation steps, file-by-file edits, and test lists out of the plan.** The author chooses the
   method, and an open design choice goes back to the caller instead of being decided in the plan.
 
 ## Procedure
@@ -66,7 +66,7 @@ and task IDs are returned.
 
 #### 2.2 Split each goal into tasks
 
-- Split the goal into the fewest tasks that each reach one goal one executor can finish and a reviewer can
+- Split the goal into the fewest tasks that each reach one goal one author can finish and a reviewer can
   judge on its own. Give each task a `task-NN-slug` ID that is unique across all plan documents.
 - Write each task from the template, then draw the Task Graph: an edge `A --> B` for each task B that uses task
   A's result, with every task as a node, so the manager can tell what may run in parallel.

@@ -121,9 +121,9 @@ in the topic contract and its report has gone to the user.
 
 #### 2.4 Execution
 
-- The `executor` applies the matching Execution skill to each task:
-  [Coding Execution](../coding/coding-execution/SKILL.md),
-  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or
+- The role for the task's subject applies its Execution skill: the `developer` with
+  [Coding Execution](../coding/coding-execution/SKILL.md), the `author` with
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or the `designer` with
   [Design Execution](../design/design-execution/SKILL.md). Without Planning, assign the topic's next
   `task-NN-slug`; with Planning, build each brief from the task's Goal, Context, Constraints, and Taste and
   Preference.
@@ -145,8 +145,9 @@ each commit holds only accepted changes.
 
 #### 3.1 Commit the accepted changes
 
-- On `commit`, the `executor` commits the accepted uncommitted tracked changes: one focused commit in the normal
-  case, split into independent changes when needed. The call is the confirmation; do not show the diff first.
+- On `commit`, the `developer`, `designer`, or `author` that matches the work commits the accepted uncommitted
+  tracked changes: one focused commit in the normal case, split into independent changes when needed. The call
+  is the confirmation; do not show the diff first.
 - Verify that each commit holds only accepted changes.
 
 ### Phase 4 — Review on User Call
