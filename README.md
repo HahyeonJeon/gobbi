@@ -219,10 +219,12 @@ measured. The active runtime decides what to accept and remains the session auth
 
 ## Cleansing
 
-Run `/gobbi:cleansing` (Codex: `$cleansing`) when code or docs have grown messy. Gobbi asks how deep (module,
-class, function) and how bold (aggressive, moderate, conservative) refactoring, renaming, and removing may go,
-maps what each part is for, shows you a simpler target, and changes files only after you approve it. Behavior
-stays the same. Only you can start it.
+Run `/gobbi:cleansing` (Codex: `$cleansing`) when code, visual work, or docs have grown messy. Gobbi sends the
+subject to the child for its main result: Code Cleansing, Design Cleansing (including HTML and web UI), or
+Docs Cleansing. It asks how deep (module, class, function) and how bold (aggressive, moderate,
+conservative) refactoring, renaming, and removing may go, and whether each step may be committed. It maps what
+each part is for, shows you a simpler target, and changes files only after you approve it. What the subject does,
+shows, or tells its reader stays the same. Only you can start it.
 
 ## Socratic Method
 
