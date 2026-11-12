@@ -1,4 +1,4 @@
-"""Gobbi's skill-writing standard as checks: skill shape, links and anchors, and prose style.
+"""Gobbi's skill-writing standard as checks: skill shape, sentence limits, links and anchors, and prose style.
 
 Each check reads a SkillTree with a project's Options and yields Findings. CHECKS lists them in run order.
 """
@@ -27,10 +27,13 @@ __all__ = [
     "phases",
     "references",
     "rule_leads",
+    "sentences",
+    "sentence_count",
 ]
 
 SKILL_TYPES = ("domain", "operation", "tool", "preference")
 MAX_STEP_BULLETS = 3
+MAX_SENTENCES = 2  # in each Rule, counting its bold lead, and in each Step bullet
 REFERENCES_HEADER = "| Name | Description |"
 # Adding a word is a reviewed one-line change.
 ALLOWED_CAPS = frozenset(
@@ -62,6 +65,9 @@ _LEAD_WORD = re.compile(r"(\s*- \*\*)(?:MUST|NEVER)\b")
 _CODE_SPAN = re.compile(r"(`+).+?(?<!`)\1(?!`)")
 _LINK_TARGET = re.compile(r"\]\([^)]*\)")
 _PLACEHOLDER = re.compile(r"\{[^}]*\}")
+# A sentence ends at . ! or ?, after any closing bold, parenthesis, or quote, before space and a capital or bold.
+_SENTENCE_END = re.compile(r"[.!?][*)\"']*\s+(?=[A-Z*\[\"])")
+_ABBREVIATIONS = frozenset({"e.g.", "i.e.", "vs.", "cf."})
 
 
 @dataclass(frozen=True)
@@ -97,6 +103,51 @@ def references(tree: SkillTree, options: Options) -> Iterator[Finding]:
     for document in _skills(tree):
         if document.frontmatter is None or document.frontmatter.get("skill-type") != "domain":
             yield from _references(document)
+
+
+def sentences(tree: SkillTree, options: Options) -> Iterator[Finding]:
+    """Each Rule, counting its bold lead, and each operation Step bullet has at most two sentences."""
+    for document in _skills(tree):
+        units = [("rule", _bullets(document.section("Rules")))]
+        if document.frontmatter is not None and document.frontmatter.get("skill-type") == "operation":
+            steps = (h for h in document.headings if h.level == 4 and _STEP.fullmatch(h.title))
+            units.extend((f"step {step.title.split(' ', 1)[0]} bullet", _bullets(document.section(step.title, 4)))
+                         for step in steps)
+        for kind, bullets in units:
+            for number, text in bullets:
+                count = sentence_count(text)
+                if count > MAX_SENTENCES:
+                    message = f"{kind} has {count} sentences (max {MAX_SENTENCES})"
+                    yield Finding("sentences", document.path, number, message)
+
+
+def sentence_count(text: str) -> int:
+    """The sentences in one bullet's prose; inline code, link targets, and {…} placeholders count as words."""
+    text = _CODE_SPAN.sub("C", text)
+    text = _LINK_TARGET.sub("]", _PLACEHOLDER.sub("P", text)).strip()
+    if not text:
+        return 0
+    ends = [match for match in _SENTENCE_END.finditer(text) if not _abbreviation(text, match.start())]
+    return len(ends) + 1
+
+
+def _abbreviation(text: str, end: int) -> bool:
+    return text[: end + 1].split()[-1].lower() in _ABBREVIATIONS
+
+
+def _bullets(lines: tuple[tuple[int, str], ...]) -> list[tuple[int, str]]:
+    """Each top-level `- ` bullet with its indented continuation lines, joined; nested bullets end it."""
+    bullets: list[tuple[int, list[str]]] = []
+    current: list[str] | None = None
+    for number, line in lines:
+        if line.startswith("- "):
+            current = [line[2:]]
+            bullets.append((number, current))
+        elif current is not None and line[:1].isspace() and line.strip() and not line.lstrip().startswith("- "):
+            current.append(line.strip())
+        else:
+            current = None
+    return [(number, " ".join(parts)) for number, parts in bullets]
 
 
 def links(tree: SkillTree, options: Options) -> Iterator[Finding]:
@@ -317,6 +368,7 @@ CHECKS = (
     Check("frontmatter", frontmatter),
     Check("phases", phases),
     Check("references", references),
+    Check("sentences", sentences),
     Check("links", links),
     Check("line-length", line_length),
     Check("all-caps", all_caps),

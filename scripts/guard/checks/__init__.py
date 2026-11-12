@@ -58,6 +58,7 @@ CHECKS = (
     _skill_check("frontmatter", "SKILL.md frontmatter parses and names its skill, type, and tools", SKILLS),
     _skill_check("phases", "Operation phases and steps are numbered in order, with Done when", SKILLS),
     _skill_check("references", "Non-domain SKILL.md ends with a Name | Description References table", SKILLS),
+    _skill_check("sentences", "Each Rule and operation Step bullet has at most two sentences", SKILLS),
     _skill_check("links", "Relative links and anchors resolve", LINKS),
     Check("mirror", "The package equals the canonical projection", mirror.drift),
     Check("generated", "Generated Principles blocks equal their source", generated.drift),

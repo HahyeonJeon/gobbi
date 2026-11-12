@@ -92,6 +92,43 @@ class PhasesTest(SkillCase):
         self.assertEqual(self.phases("### Phase 2 — Wrong\n\n", "preference"), [])
 
 
+class SentencesTest(SkillCase):
+    def sentences(self, body: str, skill_type: str = "operation") -> list[str]:
+        text = skill("alpha", skill_type, body + REFERENCES)
+        return [
+            message.removeprefix(f"{ALPHA} ")
+            for message in self.messages(checks.sentences, self.project({ALPHA: text}))
+        ]
+
+    def test_clean(self):
+        self.assertEqual(self.messages(checks.sentences, self.project()), [])
+
+    def test_a_three_sentence_rule_or_step_bullet_fails(self):
+        rules = "## Rules\n\n- **Do the thing.** It matters. Agents forget it.\n\n"
+        step = PROCEDURE.replace("- two\n", "- Read it. Then write\n  it. Then check it.\n")
+        self.assertEqual(self.sentences(rules), ["rule has 3 sentences (max 2)"])
+        self.assertEqual(self.sentences(step), ["step 1.1 bullet has 3 sentences (max 2)"])
+
+    def test_two_sentences_with_a_bold_lead_pass(self):
+        rules = "## Rules\n\n- **Do the thing.** It matters, because agents\n  forget it.\n\n"
+        self.assertEqual(self.sentences(rules + PROCEDURE), [])
+
+    def test_abbreviations_code_links_and_placeholders_end_no_sentence(self):
+        rules = (
+            "## Rules\n\n- **Keep names, e.g. Alpha.** Run `make test. Then` or read\n"
+            "  [the guide](../alpha/SKILL.md#a.B) and {Value. Here} before i.e. Beta ends.\n\n"
+        )
+        self.assertEqual(self.sentences(rules), [])
+
+    def test_nested_bullets_and_other_sections_do_not_count(self):
+        rules = "## Rules\n\n- **One.** Two.\n  - Nested. Is. Separate.\n\n## Notes\n\n- One. Two. Three.\n\n"
+        self.assertEqual(self.sentences(rules), [])
+
+    def test_steps_count_only_in_operation_skills(self):
+        step = PROCEDURE.replace("- two\n", "- Read. Write. Check.\n")
+        self.assertEqual(self.sentences(step, "preference"), [])
+
+
 class ReferencesTest(SkillCase):
     def references(self, text: str) -> list[str]:
         return [
@@ -239,7 +276,7 @@ class RegistryTest(SkillCase):
         self.assertEqual([check.id for check in CHECKS if check.advisory], ["rule-leads"])
 
     def test_each_finding_carries_its_check_id_and_advisory_flag(self):
-        broken = skill("alpha").replace("name: alpha", "name: other").replace("- three\n", "- three\n- four\n")
+        broken = skill("alpha").replace("name: alpha", "name: other").replace("- three\n", "- three\n- Four. Five. Six.\n")
         notes = f"# Notes\n\n[x](missing.md) {'word ' * 30}\n\nThis is VERY loud.\n\n- **MUST hold.**\n"
         alpha = broken.replace(REFERENCES, "See [x](notes.md).\n")
         tree = SkillTree(self.project({ALPHA: alpha, NOTES: notes}), (SKILLS,))
