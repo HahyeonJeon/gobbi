@@ -9,3 +9,5 @@ or when the caller named the last question. A Web UI test stopped at 39, 93, and
 how fine the record is.
 
 **Correction:** The caller names a last question when the goal is a definition rather than a full catalog.
+
+**Seen:** 2026-10-18 (526eee31)

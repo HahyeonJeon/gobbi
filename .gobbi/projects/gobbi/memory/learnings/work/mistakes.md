@@ -12,40 +12,27 @@ topic then needed a second commit.
 command list only after confirming those paths still exist, or inspect `git status --short` and add
 the leftover paths.
 
-## Treating a teammate's idle notification as a completion signal
+**Seen:** 2026-09-14 (bbcb32b5)
 
-**Context:** Coordinating multiple teammate agents in a session and reacting to their idle or notification
-signals.
+## Passing on a claim without checking it against its owner
 
-**Mistake:** Assuming a teammate going idle means it delivered the assigned work. In one session every
-teammate went idle without delivering, and one had produced nothing at all.
+**Context:** A plan, brief, review summary, or earlier note states a count, a set, a fact list, or a command
+that later work depends on.
 
-**Correction:** Verify completion from direct evidence — the actual diff, file contents, or command output —
-before treating a teammate's work as done. Idle is a scheduling state, not a completion signal.
+**Mistake:** The claim was passed on from a summary instead of its owner. A plan stated 24 references; the
+true count was 59, and a counted file was a symlink. A brief called guides "unlinked" when only the root was,
+and gave a script with no arguments, which only printed usage. A classification sentence checked against a
+reviewer's suggestion contradicted five keys in the design's tables. A contract grouped 36 findings by theme
+and two got no disposition. Each cost a review round or more.
 
-## Accepting a reported verification instead of reproducing it
+**Correction:** Check each claim against its owner before you pass it on: re-derive a count, check every
+member of a set against its source table (or state the claim by exception), take a fact list from the design
+rather than a summary, build a disposition table from the finding IDs, grep the claimed text before a
+multi-file fix, and give each command with the arguments it needs. Otherwise state the claim with its exact
+scope.
 
-**Context:** A teammate reports that a check or test passed.
-
-**Mistake:** Trusting the claim as stated. One executor reported a markdown link check as passing when it had
-actually run the script with no arguments and gotten a usage message. The check did pass once run correctly,
-but the claim as made was hollow.
-
-**Correction:** Reproduce every verification claim independently — run the same command and confirm the
-output — before accepting it as evidence.
-
-## Trusting a count instead of re-deriving it
-
-**Context:** A plan, brief, or prior report states a count — of references, files, renames, occurrences — that
-a task's own verification depends on.
-
-**Mistake:** A plan stated 24 references to convert; the true count was 59, because the plan excluded relative
-markdown links, path-shaped citations, and everything outside its cited line ranges. The same plan stated 33
-renames across 14 files; the true count was 31 across 13, because one of the counted files was a symlink to
-another, so editing it as a regular file would have replaced a tracked symlink.
-
-**Correction:** Never let a task trust a count handed down from a plan, a brief, or a coordinating agent.
-Re-derive the inventory independently before treating the task as complete.
+**Seen:** 2026-08-02 (bb689f0d), 2026-09-25 (4670edff, two incidents), 2026-09-29 (3af9e384), 2026-11-11
+(session gobbi-skills)
 
 ## Two assignment channels for one piece of work
 
@@ -57,6 +44,8 @@ reads as two separate triggers, not one. This caused a duplicate run of the same
 **Correction:** Treat every assignment surface — a task-list owner change, a delegation message — as capable
 of triggering work on its own. Use exactly one per assignment, or make clear which one is authoritative before
 using both.
+
+**Seen:** 2026-08-02 (bb689f0d)
 
 ## Routing around a tool guard's refusal instead of reading it
 
@@ -72,6 +61,8 @@ and left it alone.
 telling you, and resolve the underlying condition before retrying — never bypass the mechanism that produced
 it.
 
+**Seen:** 2026-08-02 (bb689f0d)
+
 ## Uncommitted work in a git-ignored directory has no protection
 
 **Context:** An accepted, frozen artifact — a plan, a design — exists only inside a session's own working tree
@@ -83,6 +74,8 @@ made it durable.
 
 **Correction:** Give every artifact accepted before it can be committed an immutable copy outside the
 session's own working tree, not just an "accepted" status inside it.
+
+**Seen:** 2026-08-02 (bb689f0d)
 
 ## A coordinating role is not exempt from its own single-writer rule
 
@@ -98,6 +91,8 @@ silent overwrite.
 explicitly released — including for the agent that did the delegating. If a coordinating agent needs to take a
 file back, it must say so to the delegate first, not just start editing.
 
+**Seen:** 2026-08-02 (bb689f0d)
+
 ## Cutting CHANGELOG Unreleased without checking each carried bullet
 
 **Context:** Cutting Keep a Changelog Unreleased work into a dated version section.
@@ -111,6 +106,8 @@ Ideation change a rename of one level, but v1.3.1 had shipped a different four-l
 Drop or rewrite any sentence that is no longer true. Check each changed skill with a diff against the previous
 release tag, not against the last commit.
 
+**Seen:** 2026-08-16 (e60aa772)
+
 ## Running a Partner session write beside another session writer
 
 **Context:** Partner writes the authorized write set under the worktree.
@@ -118,43 +115,12 @@ release tag, not against the last commit.
 **Mistake:** Launching a `worktree` write while another worktree writer is also changing the tree makes the
 preimage check unusable and can collide with authorized paths.
 
-**Correction:** Launch Partner sequentially for `worktree` writes. Record the worktree preimage before the
-write. Accept the authorized write set.
+**Correction:** Partner runs write runs in one directory one at a time. Before each write run, record `HEAD`
+and save `git -C "$repo" diff --binary HEAD`, which holds staged and unstaged changes, and a copy of each
+untracked file as the preimage, with `status --porcelain` as its inventory. Compare the final tree against the
+same `HEAD`, and accept only the authorized write set.
 
-## Treating User Review Continue as merge authority
-
-**Context:** Workflow `P2 · User Review` Continue activates Wrap-up. Configuration still records
-merge and cleanup authority separately.
-
-**Mistake:** Reading Continue as a rewrite of recorded `Merge authority` or `Cleanup authority`.
-Wrap-up then either mutates without a grant or, correctly, stops while the manager treats the stop
-as a surprise.
-
-**Correction:** Continue enters Wrap-up. It does not grant Git integration. Reread Configuration
-and the latest handoff for merge and cleanup authority. An explicit user grant is required before
-Memory mutation that is followed by merge or cleanup.
-
-## Leaving leftover verify-list words after a Planning field rename
-
-**Context:** Planning renamed a dispatch field, and Workflow still lists older words in a RECORD verify
-list.
-
-**Mistake:** After Planning renamed `writer frontier`, Workflow Step 2.2 still said `contexts, writer
-boundaries`. Those leftover synonyms can look like a recipe demand even when the RECORD REVISE bar
-already uses the Planning assignment contract.
-
-**Correction:** When a Planning field is renamed, update every Workflow verify list in the same change.
-Do not treat leftover synonyms as in-contract REVISE when the RECORD bar is otherwise present.
-
-## Packing new policy into an Operation Skill second sentence instead of splitting a Step
-
-**Context:** Adding Evaluation-depth labeling policy without adding a seventh Rule or a new Phase.
-
-**Mistake:** Folding polish-Improvement and criterion-mapping policy into Evaluation Step 2.2's second
-sentence kept Gobbi Skill caps but packed extra policy into one substep.
-
-**Correction:** Prefer a Step split when new policy is more than a condition of the first sentence. A
-second sentence should only bound the first sentence, not introduce extra rules.
+**Seen:** 2026-08-16 (e60aa772)
 
 ## Matching a Breaking relabel by a distinctive phrase
 
@@ -169,6 +135,8 @@ surface under a different wording ("General discovers applicable operations").
 locked name string. Prefix each bullet whose primary disclosure is a locked surface. Keep the
 sentence. Do not recategorize it into Removed.
 
+**Seen:** 2026-09-21 (3ff600ed)
+
 ## Narrowing a consumer's load to named entries drops its Rules
 
 **Context:** A topic contract or brief narrows what a consumer skill loads, to save tokens.
@@ -179,6 +147,8 @@ every change.
 
 **Correction:** When narrowing a load, always keep the skill's entry file with its Principles and Rules.
 Narrow only the supporting docs.
+
+**Seen:** 2026-09-25 (4670edff)
 
 ## A correction brief that lists only the file being fixed
 
@@ -191,39 +161,14 @@ that layout stayed stale, and two reviews found them.
 
 **Correction:** Before sending a correction, grep the whole canonical tree (skills, agents, `memory/design/`,
 and READMEs) for the old literal, and put every file that restates the fact in the writer frontier
-(Principle 6). Principle 6 is the CRUD-and-5W1H rule. When the correction changes a count or
+(Principle 6, Leave every affected file consistent). When the correction changes a count or
 cardinality, also sweep every Rule, layout, and
 aggregation surface that assumes the old count. For coding skill wiring, include
 `memory/design/feature/coding-skill-family.md` by default. When several author groups run in series, have each
 group append the sentences that other files restate to one session file, and give that file to the final
 consistency group.
 
-## An unchecked claim in a brief
-
-**Context:** A manager writes a commit or task brief from earlier notes.
-
-**Mistake:** A brief called the old guides "unlinked". The committing author found that Ideation, Execution,
-and a template linked them at the base; only the root did not. Another brief said "run
-`bash scripts/sync-plugin-package.sh`" to regenerate `plugins/gobbi/`. With no argument that script only
-prints usage. Later briefs repeated the pattern. One told an author to fix three files that "likely" had the
-same rule. One cited design rows in an index file that were in a member file. One copied a fact list from a
-reviewer's summary; the design listed more items, and the next review blocked on the author's copy.
-
-**Correction:** Check each claim before it goes into a brief, or state it with its exact scope ("the root did
-not link them"). Grep the claimed text before a multi-file fix, and brief only the files that have it. Take a
-fact list from its owner, such as the design, not from a summary of it. Name the member file that holds cited
-rows, not its index. Give each command with the arguments it needs, for example
-`sync-plugin-package.sh --materialize` to write the package, then `--check` to verify it.
-
-## Grouping review findings by theme drops findings
-
-**Context:** Turning many review findings into a contract or a disposition list.
-
-**Mistake:** A contract summarized 36 findings by theme. Two findings fit no theme and got no disposition; the
-planner caught them.
-
-**Correction:** Build the disposition table from the finding IDs. Give every ID one row: applied, decided, or
-backlogged.
+**Seen:** 2026-09-25 (4670edff)
 
 ## Dispatching a brief before its Materials exist
 
@@ -235,22 +180,7 @@ The same mistake had happened in earlier sessions.
 **Correction:** Write every Materials file first. Then check that each listed path is readable, for example with
 `test -r`, and only then dispatch.
 
-## Checking a claim about a set against a sample
-
-**Context:** Writing or briefing a sentence that classifies a set, such as "keys X are A, keys Y are B", or a
-stated reason for merging two rules.
-
-**Mistake:** The manager checked a classification sentence against a reviewer's suggestion, not against the
-design's key tables. It contradicted five keys and left others unclassified. Three review iterations traced to
-that one sentence. Earlier, the manager merged two rules "because both are about who may change data"; one rule
-also limited read grants, so the stated reason was wrong. A release upgrade guide said every runtime's setup
-creates replacement role files; only Codex setup does. Claude and Grok get roles from the plugin, while Cursor
-project adapters need a separate update.
-
-**Correction:** Check every member of the set against its source table before you write the claim. Prefer a
-claim by exception, such as "all are A, except these". Give the reviewer the full member list so it can check
-the claim by script. Check a merge's stated reason against every case each rule covers. Check each runtime's
-setup script before promising a shared migration effect.
+**Seen:** 2026-09-29 (3af9e384)
 
 ## Offering options before confirming what the user's term means
 
@@ -262,6 +192,8 @@ meant by it. The user meant edges to other units by id, typed like parent, child
 **Correction:** First restate the term's content in one line with an example, and confirm it with the user.
 Offer storage or shape options only after that.
 
+**Seen:** 2026-09-29 (3af9e384)
+
 ## A skill-design brief without the standard's hard limits
 
 **Context:** Briefing a design that adds Rules or sections to a skill governed by a writing standard.
@@ -270,6 +202,8 @@ Offer storage or shape options only after that.
 so the conflict surfaced only during execution.
 
 **Correction:** Put the governing standard's hard limits, such as the Rule count, in every skill-design brief.
+
+**Seen:** 2026-09-29 (3af9e384)
 
 ## Project-specific examples in a general skill
 
@@ -282,12 +216,4 @@ not check for them, and the user had to correct it.
 State this in every skill-writing brief. At acceptance, grep the new skill text for the project's own names and
 paths.
 
-## Assigning the Partner wrapper to the assistant role
-
-**Context:** Cowork launches a named Partner through one local wrapper subagent.
-
-**Mistake:** The wrapper was the assistant role. That role is a narrow lookup. It sat for minutes with no tool
-call, so the Codex command never started. A second wrapper, a general agent, ran the same command.
-
-**Correction:** Spawn the wrapper as a general agent whose only job is the frozen command. Do not use
-assistant, a domain leader, or a domain executor for that launch.
+**Seen:** 2026-09-29 (3af9e384)

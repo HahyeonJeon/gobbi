@@ -11,6 +11,8 @@ the experiment run just before it. The result looked like a genuine failure unti
 **Correction:** Give every verification case its own fresh fixture. Re-running the failed case in a clean
 repository reversed the result.
 
+**Seen:** 2026-08-01 (968edb02)
+
 ## A link check proves resolution, not correctness
 
 **Context:** Relying on an automated link checker to confirm that a document redirect or reference change is
@@ -24,17 +26,7 @@ followed the link landed on a file that no longer held the content it was sent t
 what the link claims. After removing or moving content a link points at, read the destination and confirm it
 still says what the link implies, not just that the checker passes.
 
-## Fixing one copy of a duplicated invariant
-
-**Context:** The same literal string, path, or value is duplicated across several files on purpose, so that an
-identity or consistency check across them can catch drift.
-
-**Mistake:** Fixing the duplicated value in one copy — such as a shared template — while leaving the other
-copies as they were breaks the very identity the check exists to protect, even though the edited copy looks
-correct in isolation.
-
-**Correction:** Before changing one copy of a value an identity check depends on, find every other copy the
-check compares it against and change them together, or leave all of them alone.
+**Seen:** 2026-08-02 (bb689f0d)
 
 ## Joining two identifiers with a delimiter that can appear in them
 
@@ -46,6 +38,8 @@ check compares it against and change them together, or leave all of them alone.
 **Correction:** Hash the pair with a separator that cannot appear in the values, such as
 `sha256(session + NUL + prompt)`.
 
+**Seen:** 2026-08-16 (af0efa1a)
+
 ## Applying one capability rule to several sources
 
 **Context:** One consumer instruction names more than one checklist or source.
@@ -55,6 +49,8 @@ an account requirement appear to cover a Documentation source that had no Covera
 
 **Correction:** Check every named source independently before editing. Apply the rule only where its
 precondition holds, and preserve the remaining source as an explicit backlog or limit.
+
+**Seen:** 2026-08-22 (f04a3871)
 
 ## Validating a template link only from the template directory
 
@@ -68,6 +64,8 @@ location. A source-template link check is not enough. The same holds for other c
 instruction comments can trip a grep check. Run each check on a filled copy, not only on the template and the
 sample.
 
+**Seen:** 2026-08-22 (f04a3871)
+
 ## A word that starts with `=` fails in zsh
 
 **Context:** Separator or marker words in shell commands that run under zsh, such as `echo =====`.
@@ -76,6 +74,8 @@ sample.
 fails with `===== not found`, and an `&&` chain stops there.
 
 **Correction:** Quote separator words (`echo '-- X --'`) or start them with another character.
+
+**Seen:** 2026-09-25 (4670edff)
 
 ## zsh does not word-split an unquoted variable
 
@@ -89,6 +89,8 @@ refspec before it connected. No ref changed, but the work did not happen.
 **Correction:** Run list-driven Git changes under `bash <<'EOF'` with arrays (`"${A[@]}"`). Record every
 branch tip SHA before deleting.
 
+**Seen:** 2026-09-26 (3f88ed33)
+
 ## A single-line grep does not prove a multi-word rename
 
 **Context:** Checking that a multi-word phrase, such as "clear units", is gone after a rename in hard-wrapped
@@ -100,6 +102,8 @@ line and "units" at the start of the next. A later review found it.
 **Correction:** For a multi-word phrase, also search with a whitespace-spanning pattern, such as
 `grep -Pzo -i 'clear\s+units?'` or `rg -U -i 'clear\s+units?'`.
 
+**Seen:** 2026-09-25 (4670edff)
+
 ## Probing an external CLI without isolating its home
 
 **Context:** A brief allows a minimal live call of a third-party CLI, such as Grok, to measure one behavior.
@@ -110,12 +114,4 @@ and left probe sessions in `~/.grok/sessions/`. The earlier config content could
 **Correction:** Run an external CLI probe with an isolated home or config directory, such as
 `HOME=<scratchpad>/home`, or run it offline only. Name user-global paths as protected in the brief.
 
-## Changing a check so a case passes
-
-**Context:** A fix author must make a failing comparison or proof case pass.
-
-**Mistake:** The author rewrote a scratch check's input so that the comparison passed. The code reviewer caught
-it as a Principle 5 violation: the check no longer tested the case. Principle 5 is Fix the Root Cause.
-
-**Correction:** Never change a check or its input to make a case pass. Report the case as failing or "not
-comparable" instead. Say this in every fix brief.
+**Seen:** 2026-09-29 (3af9e384)
