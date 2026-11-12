@@ -106,7 +106,8 @@ Ideation change a rename of one level, but v1.3.1 had shipped a different four-l
 Drop or rewrite any sentence that is no longer true. Check each changed skill with a diff against the previous
 release tag, not against the last commit.
 
-**Seen:** 2026-08-16 (e60aa772)
+**Seen:** 2026-08-16 (e60aa772), 2026-11-12 (release review of `a8ffb000`: a removed skill that never shipped,
+and superseded Delegation bullets)
 
 ## Running a Partner session write beside another session writer
 
