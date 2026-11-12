@@ -1,6 +1,6 @@
 ---
 name: cleansing-docs
-description: "Docs Cleansing restructures, renames, and removes units of a document set so it stays simple and clearly defined. Use it when the user asks to cleanse docs, prose reports, in-repo API reference pages, skills, or a changelog."
+description: "Docs Cleansing restructures, renames, and removes Ontology units of a document set so it stays simple and clearly defined. Use it when the user asks to cleanse docs, prose reports, in-repo API reference pages, skills, or a changelog."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
@@ -8,29 +8,29 @@ skill-type: operation
 
 # Docs Cleansing
 
-Docs Cleansing turns documents that grew without a plan back into a small set of clearly defined units.
-Use it when the user asks to cleanse docs, prose reports, in-repo API reference pages, skills, or a changelog.
-The manager runs it with the user, a `leader` writes the map and change list, and the role that owns each unit
+Docs Cleansing turns documents that grew without a plan back into a small set of clearly defined Ontology units.
+Use it when the user asks to cleanse docs, prose reports, in-repo API reference pages, skills, or a changelog. The
+manager runs it with the user, a `leader` writes the map and change list, and the role that owns each Ontology unit
 applies the approved changes. Only the user starts it.
 
 ## Principles
 
 ### Define first, then restructure
 
-A unit is a Set, Document, or Passage, as the [Levels](#levels) define them. Before anything moves, each unit
-gets the six fields of [Ontology](../../ontology/SKILL.md#give-each-unit-six-fields) and the docs fields: who
-reads it, the job it serves that reader, and its kind of writing. A structure built from clear definitions
-needs little explanation; one without them decays again.
+An Ontology unit is a Set, Document, or Passage, as the [Levels](#levels) define them. Before anything moves, each
+Ontology unit gets the six fields of [Ontology](../../ontology/SKILL.md#give-each-ontology-unit-six-fields) and the
+docs fields: who reads it, the job it serves that reader, and its kind of writing. A structure built from clear
+definitions needs little explanation; one without them decays again.
 
 ### Systematic means simple
 
-Each change removes a concept, a document, a link hop, or a term, or makes a unit do what its definition says.
-Agents add far more text than they remove, so most of the work is removing.
+Each change removes a concept, a document, a link hop, or a term, or makes an Ontology unit do what its definition
+says. Agents add far more text than they remove, so most of the work is removing.
 
 ### Change the shape, keep what the reader gets
 
-Cleansing changes structure, names, and units nothing needs. What a document tells its reader, and what an agent
-does when it loads the document, stays the same.
+Cleansing changes structure, names, and Ontology units nothing needs. What a document tells its reader, and what an
+agent does when it loads the document, stays the same.
 
 ## Rules
 
@@ -43,9 +43,9 @@ does when it loads the document, stays the same.
   (`description`, `allowed-tools`, `disable-model-invocation`, `paths`), addresses, the reader's job, and output
   formats.** Agents act on what they load, so a rename can change what an agent does, and a change to one of
   these, such as merging copies that drifted apart, is a separate decision for the user.
-- **Remove a unit only with recorded evidence, and leave a stub or redirect where its address was published.**
-  A search cannot see loads that leave no link or readers outside the repository, so the evidence covers every
-  address form and loader that Step 2.2 lists.
+- **Remove an Ontology unit only with recorded evidence, and leave a stub or redirect where its address was
+  published.** A search cannot see loads that leave no link or readers outside the repository, so the evidence
+  covers every address form and loader that Step 2.2 lists.
 - **Leave records as written, except link fixes.** Released changelog entries, decision records, history files,
   session records, quoted text, and generated copies show what was true or come from a source that is edited
   instead; the changelog's Unreleased section stays live until release.
@@ -73,7 +73,7 @@ intensity, the commit authority, and the baseline are in the map.
 
 - With the runtime's structured question tool, ask the depth of restructuring, renaming, and removing (Set,
   Document, Passage, or Skip), then the intensity of each action not skipped, as the [Levels](#levels) define
-  them. A unit of another domain inside the subject, such as a script in a skill, takes the same answers.
+  them. An Ontology unit of another domain inside the subject, such as a script in a skill, takes the same answers.
 - In the same question, ask whether each applied change may be committed, limited to the paths the change list
   touches. Without that authority, a failed change is fixed in that change, or the run stops and the user
   chooses to restore or keep the changes.
@@ -84,15 +84,17 @@ intensity, the commit authority, and the baseline are in the map.
 ### Phase 2 — Define and Design
 
 Describe the subject as it is, then derive the simpler target. The manager briefs one `leader` through
-[Delegation](../../delegation/SKILL.md) to write the map and change list, and gives each area of a large subject
-to a mapping subagent whose map that `leader` merges. Done when the map has a unit record for each document,
-each larger unit within the chosen depths, and each marked Passage; each mark has a change, a Suggestion, or a
-separate decision; every document the change list touches has its pinned lists; and the user approved the list.
+[Delegation](../../delegation/SKILL.md) to write the map and change list, and gives each area of a large subject to
+a mapping subagent whose map that `leader` merges. Done when the map has an Ontology unit record for each document,
+each larger Ontology unit within the chosen depths, and each marked Passage; each mark has a change, a Suggestion,
+or a separate decision; every document the change list touches has its pinned lists; and the user approved the
+list.
 
-#### 2.1 Map the units, commonality, and vocabulary
+#### 2.1 Map the Ontology units, commonality, and vocabulary
 
-- Write a unit record for each document and each larger unit within the chosen depths, and for a Passage only
-  when it carries a mark, with the fields the map gives. Mark each unit with every [Mark](#marks) that applies.
+- Write an Ontology unit record for each document and each larger Ontology unit within the chosen depths, and for
+  a Passage only when it carries a mark, with the fields the map gives. Mark each Ontology unit with every
+  [Mark](#marks) that applies.
 - Compare each copy with its original. An exact copy is a removal candidate and a drifted copy is a separate
   decision; share text only when it is identical now and must stay so.
 - In live documents, list each concept's names and each name's concepts beside the term to use and where that
@@ -130,16 +132,16 @@ separate decision; every document the change list touches has its pinned lists; 
 
 ### Phase 3 — Apply One Checked Change at a Time
 
-Carry out the approved change list without changing what readers get. The manager gives each apply task to the
-role that owns its unit, as Gobbi Step 2.5 assigns, such as the `developer` for a script in a skill. Done when
-every approved change is applied, the baseline checks and the pinned lists match except for approved changes,
-and each touched document's reader can still do its job.
+Carry out the approved change list without changing what readers get. The manager gives each apply task to the role
+that owns its Ontology unit, as Gobbi Step 2.5 assigns, such as the `developer` for a script in a skill. Done when
+every approved change is applied, the baseline checks and the pinned lists match except for approved changes, and
+each touched document's reader can still do its job.
 
 #### 3.1 Apply
 
 - Apply removals, then restructures, then renames, so each name changes once on the final structure.
-- A change is one row of the change list, applied to its unit and to every dependent in the same change: links,
-  loaders, settings, and a generated copy through its source.
+- A change is one row of the change list, applied to its Ontology unit and to every dependent in the same change:
+  links, loaders, settings, and a generated copy through its source.
 - Commit a change only with the per-change authority from Step 1.2, on the paths the change list touches.
 
 #### 3.2 Check each change
@@ -147,8 +149,8 @@ and each touched document's reader can still do its job.
 - Find each pinned item in the changed text, item by item, not from the diff. A missing item, an instruction
   moved out of order, or a changed condition fails the change; for an approved change, update the item to the
   approved result.
-- Run the baseline checks, then check what they miss: each remaining unit is still listed from its index or
-  router, a reader meets each prerequisite first, position words such as "above" and relative paths in moved
+- Run the baseline checks, then check what they miss: each remaining Ontology unit is still listed from its index
+  or router, a reader meets each prerequisite first, position words such as "above" and relative paths in moved
   text still point right, and the commands and paths that moved text names still run and open.
 - Fix a new failure in that change; when it cannot be fixed, undo the change to the last change commit, or
   without commit authority stop the run and let the user choose to restore or keep the changes. A change the
@@ -176,11 +178,11 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 | Action | What it changes |
 |---|---|
-| Restructuring | Structure: merge, split, or move documents and sections, or replace a link with the text it points to, so each unit does one job for one reader and steps stay apart from background. |
+| Restructuring | Structure: merge, split, or move documents and sections, or replace a link with the text it points to, so each Ontology unit does one job for one reader and steps stay apart from background. |
 | Renaming | Names: terms, headings, and document and skill names, aligned to the project's and then the field's vocabulary, one term per concept. |
-| Removing | Units nothing needs: orphans, exact copies, superseded units, padding, and units with no present need. |
+| Removing | Ontology units nothing needs: orphans, exact copies, superseded Ontology units, padding, and Ontology units with no present need. |
 
-| Depth | Largest unit the action may change |
+| Depth | Largest Ontology unit the action may change |
 |---|---|
 | Set | Document families, skill families, folders, and the indexes that route them |
 | Document | Documents and sections |
@@ -191,27 +193,27 @@ any depth still updates every use of the term.
 
 | Intensity | Restructuring | Renaming | Removing |
 |---|---|---|---|
-| Conservative | Only a stated defect, such as a circular "see X" chain or a fact moved to its owner. Addresses stay. | Names that contradict their definition. Published addresses stay. | Orphans whose evidence covers every address form and loader, exact copies with their keeper named, and superseded units. Published addresses stay. |
-| Moderate | Also merges of units that do the same job for the same reader, splits of units that do two jobs, and replacing a link with its text when the text is shorter than the link. An address changes only when all its dependents are inside the subject. | Also names that differ from the chosen term. A published address changes only when all its dependents are inside the subject. | Also units with no reader job, units with no present need, and padding, such as restatement, a hedge that states no condition, generic advice, or a stock transition, when a live document keeps every instruction and fact in it. |
+| Conservative | Only a stated defect, such as a circular "see X" chain or a fact moved to its owner. Addresses stay. | Names that contradict their definition. Published addresses stay. | Orphans whose evidence covers every address form and loader, exact copies with their keeper named, and superseded Ontology units. Published addresses stay. |
+| Moderate | Also merges of Ontology units that do the same job for the same reader, splits of Ontology units that do two jobs, and replacing a link with its text when the text is shorter than the link. An address changes only when all its dependents are inside the subject. | Also names that differ from the chosen term. A published address changes only when all its dependents are inside the subject. | Also Ontology units with no reader job, Ontology units with no present need, and padding, such as restatement, a hedge that states no condition, generic advice, or a stock transition, when a live document keeps every instruction and fact in it. |
 | Aggressive | Rebuild toward the simplest structure the definitions allow, with outside dependents listed and a stub left. | Also published addresses, with an alias or an upgrade note. | Also a published address, with a stub or redirect. |
 
-A published address is a skill or role name, or any name or path that `README.md`, `CHANGELOG.md`, or a skill
-index names. A dependent is a unit, loader, or setting that relies on another unit, such as by a link to it or a
-load by its name.
+A published address is a skill or role name, or any name or path that `README.md`, `CHANGELOG.md`, or a skill index
+names. A dependent is an Ontology unit, loader, or setting that relies on another Ontology unit, such as by a link
+to it or a load by its name.
 
 ## Marks
 
-| Mark | The unit | Usual route |
+| Mark | The Ontology unit | Usual route |
 |---|---|---|
 | Two jobs | Does two jobs, such as steps mixed with background. | Restructuring |
-| Overlap | Explains, restates, or owns what another unit owns. | Restructuring or Removing |
+| Overlap | Explains, restates, or owns what another Ontology unit owns. | Restructuring or Removing |
 | See-X cycle | Sits in a circular chain of "see X" links. | Restructuring |
 | Prerequisite after use | Comes before its own prerequisite, or cannot be read without its index. | Restructuring |
 | Contradicting name | Has a name that contradicts its definition. | Renaming |
 | Orphan | Has no dependent found; a candidate until the Step 2.2 evidence covers every address form and loader. | Removing |
 | No reader job | Serves no reader's job. | Removing |
-| Superseded | Is replaced by a newer live unit. | Removing |
-| Exact copy | Matches another live unit, its keeper, word for word. | Removing |
+| Superseded | Is replaced by a newer live Ontology unit. | Removing |
+| Exact copy | Matches another live Ontology unit, its keeper, word for word. | Removing |
 | Drifted copy | Is a copy that differs from its original. | Separate Decisions |
 | Padding | Fails [Every line earns its place](../../authoring/authoring-review/SKILL.md#every-line-earns-its-place). | Removing |
 | No present need | Is a shared block with per-reader variants or conditions, a link chain deeper than one hop, or an option no reader chooses. | Restructuring or Removing |
@@ -223,11 +225,11 @@ load by its name.
 
 | Name | Description |
 |---|---|
-| [Cleansing map](templates/map.md) | The one document that holds the levels, the baseline, the unit records, the pinned lists, and the change list. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of a unit record and their tests. |
+| [Cleansing map](templates/map.md) | The one document that holds the levels, the baseline, the Ontology unit records, the pinned lists, and the change list. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of an Ontology unit record and their tests. |
 | [Authoring Review](../../authoring/authoring-review/SKILL.md) | The bar for structure, shared text, vocabulary, padding, and the cold reader. |
 | [Gobbi Skill](../../gobbi-skill/SKILL.md) | The standard and checker for skills, and what to search when a skill is renamed, merged, or removed. |
-| [Gobbi](../../gobbi/SKILL.md) | Step 2.5 assigns each unit's work to its role. |
+| [Gobbi](../../gobbi/SKILL.md) | Step 2.5 assigns each Ontology unit's work to its role. |
 | [Code Cleansing](../cleansing-code/SKILL.md) | The cleansing for a subject whose main result is code. |
 | [Design Cleansing](../cleansing-design/SKILL.md) | The cleansing for a subject whose main result is visual. |
 | [Delegation](../../delegation/SKILL.md) | Briefs for the `leader`, the mapping subagents, and the reader's-job agents. |

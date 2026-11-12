@@ -62,7 +62,7 @@ there.
   facts or policy it owns, what it leaves to other documents, and what it links to and what links to it.
 - Each fact has one owner, and a reader meets a prerequisite before what depends on it. A section that does two
   jobs (such as steps mixed with background), a copy of another document's policy, or a circular chain of "see
-  X" fails this check. The fields of a [unit definition](../../ontology/SKILL.md) are the bar.
+  X" fails this check. The fields of a [Ontology unit definition](../../ontology/SKILL.md) are the bar.
 
 #### Shared text lives in one place and variants differ only where they must
 
@@ -97,4 +97,4 @@ there.
 |---|---|
 | [Review](../../review/SKILL.md) | Owns the review procedure, stage bars, blocking rule, report, and verdict. |
 | [Gobbi Skill](../../gobbi-skill/SKILL.md) | The standard a skill under review must follow. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of a unit definition that the Structure checks test. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of an Ontology unit definition that the Structure checks test. |

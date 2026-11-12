@@ -25,13 +25,13 @@ independent subagents before you recommend a design.
 
 ### Keep the design simple
 
-The best design meets the requirements with the fewest units, and no pattern is the default. The
-[Coding Principles](../principles.md) judge which units earn their place.
+The best design meets the requirements with the fewest Ontology units, and no pattern is the default. The
+[Coding Principles](../principles.md) judge which Ontology units earn their place.
 
 ### Design at the fidelity the decision needs
 
-Conceptual Definition gives the vocabulary for Class and Function Design, and that design gives the units that
-Codebase Structure places. Go only as deep as the user's decision needs, and reopen an earlier level when a
+Conceptual Definition gives the vocabulary for Class and Function Design, and that design gives the Ontology units
+that Codebase Structure places. Go only as deep as the user's decision needs, and reopen an earlier level when a
 later finding breaks it.
 
 ## Rules
@@ -103,10 +103,9 @@ fidelity the decision needs.
 - Add a pattern, interface, or base class only for a present force, and record that force and the simpler
   form it replaces, as
   [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) asks.
-- Remove each unit that fails the [Simplicity](../principles.md#simplicity) tests and each parameter or option
-  with no current caller. Give each unit the design creates or changes its
-  [unit definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads it for
-  code.
+- Remove each Ontology unit that fails the [Simplicity](../principles.md#simplicity) tests and each parameter or
+  option with no current caller. Give each Ontology unit the design creates or changes its [Ontology unit
+  definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads it for code.
 
 ### Phase 4 — Confirm and Record
 
@@ -115,8 +114,8 @@ and its locator is returned.
 
 #### 4.1 Show the design and stop
 
-- Show the design in a form the user can judge, such as a tree of the levels, a schema of the public units, or
-  a diagram of the files, with each user-owned choice, its options, and your recommendation beside it.
+- Show the design in a form the user can judge, such as a tree of the levels, a schema of the public Ontology
+  units, or a diagram of the files, with each user-owned choice, its options, and your recommendation beside it.
 - Return this and the draft location through the caller's user-decision route, then stop. The recorded answer
   resumes the work at Step 1.1.
 
@@ -144,5 +143,5 @@ and its locator is returned.
 | [Discussion part](templates/discussion-NN.md) | Template for topics, options, and study. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP defaults and entries, loaded when a design choice turns on classes, interfaces, or patterns. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, loaded when a choice turns on them. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of the unit definition each designed unit gets. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of the Ontology unit definition each designed Ontology unit gets. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

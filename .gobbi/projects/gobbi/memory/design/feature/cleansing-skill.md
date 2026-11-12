@@ -3,8 +3,8 @@
 ## Intent
 
 [Cleansing](../../../skills/cleansing/SKILL.md) is the user's entry (`/gobbi:cleansing`) for reorganizing,
-renaming, and removing units of a subject so it stays simple and clearly defined, behavior kept. Only the user
-starts it (`disable-model-invocation`, plus the generated Codex user-only policy). It is a domain skill that
+renaming, and removing Ontology units of a subject so it stays simple and clearly defined, behavior kept. Only the
+user starts it (`disable-model-invocation`, plus the generated Codex user-only policy). It is a domain skill that
 loads the one child for the subject's main result, and that child runs the whole subject.
 
 ## Children
@@ -23,12 +23,12 @@ The children live under the entry because Claude Code registers only top-level p
   renaming, and removing, and who may checkpoint each step. A checkpoint is a commit or, for design files outside
   git, a saved version or a file copy.
 - The manager talks to the user, a `leader` writes the map and plan as the run's Ideation result from the child's
-  `templates/map.md`, and the role of each unit (developer, designer, author) applies the approved plan.
-- Behavior is kept, and every removal carries its evidence. The unit records open with
+  `templates/map.md`, and the role of each Ontology unit (developer, designer, author) applies the approved plan.
+- Behavior is kept, and every removal carries its evidence. The Ontology unit records open with
   [Ontology](ontology-skill.md)'s six fields plus the domain's own: role, exposure, render states, and flags for
   visual work; reader, job, and Diataxis kind for docs.
-- Design treats only same-role, same-value units as exact duplicates and views the work rendered. Docs pins what
-  readers get before a change and has a fresh agent do each document's job before and after.
+- Design treats only same-role, same-value Ontology units as exact duplicates and views the work rendered. Docs
+  pins what readers get before a change and has a fresh agent do each document's job before and after.
 - The designs come from a study and a Socratic analysis of each domain (see
   [Socratic Method](socratic-method-skill.md)).
 

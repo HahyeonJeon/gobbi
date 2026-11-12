@@ -1,6 +1,6 @@
 ---
 name: cleansing-design
-description: "Design Cleansing restructures, renames, and removes units of visual work, such as UI and HTML, a design system, slides, charts, images, or reports, so it stays simple and clearly defined without changing what viewers see or can do. Use it when the user asks to cleanse visual work."
+description: "Design Cleansing restructures, renames, and removes Ontology units of visual work, such as UI and HTML, a design system, slides, charts, images, or reports, so it stays simple and clearly defined without changing what viewers see or can do. Use it when the user asks to cleanse visual work."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
@@ -9,17 +9,17 @@ skill-type: operation
 # Design Cleansing
 
 Design Cleansing turns visual work that grew without a plan, such as a UI, a design system, a slide deck, a chart
-set, or brand assets built up by many agent changes, back into a small set of clearly defined units. It defines
-what exists, then restructures, renames, and removes within the levels the user chose, while a recorded baseline
-shows the experience stays the same. Only the user starts it. The manager talks to the user and launches agents,
-a `leader` writes the map and plan, and the role that matches each unit applies its changes.
+set, or brand assets built up by many agent changes, back into a small set of clearly defined Ontology units. It
+defines what exists, then restructures, renames, and removes within the levels the user chose, while a recorded
+baseline shows the experience stays the same. Only the user starts it. The manager talks to the user and launches
+agents, a `leader` writes the map and plan, and the role that matches each Ontology unit applies its changes.
 
 ## Principles
 
 ### Define first, then restructure
 
-Each unit gets an [Ontology](../../ontology/SKILL.md) unit definition, plus its role, what it exposes, and where
-it renders, before anything moves. A design built from clear roles stays consistent; a design without them
+Each Ontology unit gets an [Ontology unit definition](../../ontology/SKILL.md), plus its role, what it exposes, and
+where it renders, before anything moves. A design built from clear roles stays consistent; a design without them
 drifts again.
 
 ### Systematic means simple
@@ -80,15 +80,16 @@ location, each action's levels, and the checkpoint authority and kinds are recor
 
 ### Phase 2 — Define What Exists
 
-Describe the visual work as it is. Done when the map covers every unit from the largest chosen depth down, with
-its unit definition, its flags, its commonality and variability, and its vocabulary.
+Describe the visual work as it is. Done when the map covers every Ontology unit from the largest chosen depth down,
+with its Ontology unit definition, its flags, its commonality and variability, and its vocabulary.
 
-#### 2.1 Map the units, commonality, and vocabulary
+#### 2.1 Map the Ontology units, commonality, and vocabulary
 
 - The manager briefs one `leader` through [Delegation](../../delegation/SKILL.md), with this skill's path in
   Materials, because a user-only skill is not loaded into a subagent on its own. A large subject is mapped by area.
-- The `leader` views the subject rendered in each state, mode, and viewport it ships in, writes each unit's
-  definition with the template's fields and flags, and records which units share a role and what truly varies now.
+- The `leader` views the subject rendered in each state, mode, and viewport it ships in, writes each Ontology
+  unit's definition with the template's fields and flags, and records which Ontology units share a role and what
+  truly varies now.
 - It lists one term per concept: the project's design-system term first, then the platform's or field's. A
   disagreement goes back to the manager, who asks the user.
 
@@ -101,9 +102,9 @@ Derive the simpler structure from the map. Done when the user approves the plan.
 - The `leader` writes one change per flag within the chosen levels, and keeps it only if it makes the design
   simpler or a definition true. A change outside the levels goes to Suggestions.
 - A change a viewer would see goes to Separate Decisions.
-- Each unit group gets the check that will pin it, and a group no check can pin is listed as unverified. A unit
-  group is the units one kind of check pins together, such as tokens, rendered pages, charts, slides and
-  documents, images and brand, or motion.
+- Each Ontology unit group gets the check that will pin it, and a group no check can pin is listed as unverified.
+  An Ontology unit group is the Ontology units one kind of check pins together, such as tokens, rendered pages,
+  charts, slides and documents, images and brand, or motion.
 
 #### 3.2 Approve the plan
 
@@ -120,9 +121,9 @@ final checks match the baseline.
 
 #### 4.1 Record the baseline
 
-- The manager gives each apply task to the role of its unit, with this skill and that role's Execution skill in
-  Materials: the `designer` for a unit with a visual surface, the `developer` for code with none, and the `author`
-  for docs.
+- The manager gives each apply task to the role of its Ontology unit, with this skill and that role's Execution
+  skill in Materials: the `designer` for an Ontology unit with a visual surface, the `developer` for code with
+  none, and the `author` for docs.
 - The first apply task records one baseline of the whole subject before any edit, from the plan's pins and
   [Design Execution](../../design/design-execution/SKILL.md#12-record-the-baseline-before-the-first-edit).
   Later tasks compare with it and do not record a new one.
@@ -130,7 +131,7 @@ final checks match the baseline.
 #### 4.2 Remove, then restructure, then rename, checking each step
 
 - Apply removals first, then restructuring, then renames, so each name changes once on the final structure.
-  Update every dependent of a changed unit in the same step.
+  Update every dependent of a changed Ontology unit in the same step.
 - After each step, compare with the baseline. With checkpoint authority, checkpoint each step that matches by the
   kind the map records, and undo a failed step to the last checkpoint; without it, fix the failure or stop.
 - On a stop, the manager asks the user to restore the restore point or keep the work as it stands. A change the
@@ -152,33 +153,33 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 | Action | What it changes in visual work |
 |---|---|
-| Restructuring | Structure: merge, split, or move units so each has one role and each value has one source. |
+| Restructuring | Structure: merge, split, or move Ontology units so each has one role and each value has one source. |
 | Renaming | Internal names of components, variants, tokens, styles, assets, and files, by role, in the project's and then the field's vocabulary. A visible label is a separate decision. |
-| Removing | Units: what nothing uses, an exact duplicate, a superseded unit, or complexity with no present need. An exact duplicate has the same role and the same value in every mode, theme, viewport, and state; a unit with the same value and a different role stays or becomes an alias. |
+| Removing | Ontology units: what nothing uses, an exact duplicate, a superseded Ontology unit, or complexity with no present need. An exact duplicate has the same role and the same value in every mode, theme, viewport, and state; an Ontology unit with the same value and a different role stays or becomes an alias. |
 
-| Depth | Largest unit the action may target or create |
+| Depth | Largest Ontology unit the action may target or create |
 |---|---|
-| System | A set or system of units: a design system, token sets, a template, a page or slide family, a folder layout |
-| Component | One composed unit: a component, screen, page, slide, chart, or composition |
-| Element | One small unit: a token, style, variant, state, placeholder, asset, or chart or brand mark |
+| System | A set or system of Ontology units: a design system, token sets, a template, a page or slide family, a folder layout |
+| Component | One composed Ontology unit: a component, screen, page, slide, chart, or composition |
+| Element | One small Ontology unit: a token, style, variant, state, placeholder, asset, or chart or brand mark |
 
-Depth names a size, not a kind of unit. System depth allows Component and Element changes, Component depth allows
-Element changes, and Skip leaves the action out. A change that targets or creates a larger unit goes to
-Suggestions. A token or style sits under many components rather than inside one, so an Element change can reach
-every dependent: the plan lists each one, and the step updates them all.
+Depth names a size, not a kind of Ontology unit. System depth allows Component and Element changes, Component depth
+allows Element changes, and Skip leaves the action out. A change that targets or creates a larger Ontology unit
+goes to Suggestions. A token or style sits under many components rather than inside one, so an Element change can
+reach every dependent: the plan lists each one, and the step updates them all.
 
 | Intensity | How far the action goes |
 |---|---|
-| Conservative | Only clear defects: unused units, exact duplicates with no dependent outside the subject, and names that contradict their role. A shared unit stays. |
-| Moderate | Also the merges, splits, renames, and removals the map flags. A shared unit changes only when all its dependents are inside the subject. |
-| Aggressive | Rebuild toward the simplest structure the roles allow. A shared unit may change, and its dependents outside the subject are listed in the plan. |
+| Conservative | Only clear defects: unused Ontology units, exact duplicates with no dependent outside the subject, and names that contradict their role. A shared Ontology unit stays. |
+| Moderate | Also the merges, splits, renames, and removals the map flags. A shared Ontology unit changes only when all its dependents are inside the subject. |
+| Aggressive | Rebuild toward the simplest structure the roles allow. A shared Ontology unit may change, and its dependents outside the subject are listed in the plan. |
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Cleansing map](templates/map.md) | The run's Ideation result: levels, checkpoints, baseline, unit definitions, plan, and decisions. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of each unit definition, and the tests for commonality and naming. |
+| [Cleansing map](templates/map.md) | The run's Ideation result: levels, checkpoints, baseline, Ontology unit definitions, plan, and decisions. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of each Ontology unit definition, and the tests for commonality and naming. |
 | [Design Execution](../../design/design-execution/SKILL.md) | The baseline and check steps the `designer` applies. |
 | [Design Review](../../design/design-review/SKILL.md) | The review bar for the cleansed visual work. |
 | [Code Cleansing](../cleansing-code/SKILL.md) | The cleansing for a subject whose main result is code with no visual surface. |

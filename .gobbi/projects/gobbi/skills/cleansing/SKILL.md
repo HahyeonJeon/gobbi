@@ -8,10 +8,10 @@ skill-type: domain
 
 # Cleansing
 
-Cleansing is the user's entry for reorganizing, renaming, and removing units of a subject so it stays simple and
-clearly defined. Only the user starts it. Load the one child for the subject's main result, as
-[Gobbi Step 2.5](../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role) gives a subject that spans domains to the
-role of its main result; that child runs the whole subject.
+Cleansing is the user's entry for reorganizing, renaming, and removing Ontology units of a subject so it stays
+simple and clearly defined. Only the user starts it. Load the one child for the subject's main result, as [Gobbi
+Step 2.5](../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role) gives a subject that spans domains to the role of
+its main result; that child runs the whole subject.
 
 ## Child Skills
 

@@ -18,7 +18,7 @@ routing, and Review meaning without copying skill procedures.
 
 | Skill | Type | Current owner | Authority boundary |
 |---|---|---|---|
-| [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts Cowork or Workflow work. |
+| [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current work item. | Owns navigation only. It never conducts Cowork or Workflow work. |
 | [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) | Operation | Owns study with the OOP child and Coding Principles, discussion with independent subagents, a three-level design, and a user-confirmation stop with a draft and a resume entry, then one indexed result for an unresolved material code-design choice. | Stops before Planning or realization. |
 | [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Splits settled code work into goal-based tasks, one `plan-NN-slug.md` per major goal with a Mermaid Task Graph (an edge `A --> B` means B uses A's result). Each task has a Goal, Context, Constraints, and Taste and Preference, written as Delegation defines them; with no Ideation result, the caller's topic contract is the design. | Stops before implementation steps. Coding Execution may order work only inside one accepted task. |
 | [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, and handoff for one code task with no open material code-design choice, whether or not Coding Ideation ran. It records a baseline before the first edit, builds in small proven increments, applies Coding Principles while it writes, leaves no stale caller, mirror, generated output, or test, and follows the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
@@ -47,7 +47,7 @@ becomes a prerequisite for direct child use.
   gates, acceptance, and handoffs. They select matching children directly inside those stages.
 - Route by the productive subject and owned outcome, not by whether the repository contains code. Keep
   consistency-bound tests, configuration, schemas, generated views, documents, behavior, failures, recovery,
-  and consumers in one code-primary unit. Split independently assignable outcomes through Coding Planning.
+  and consumers in one code-primary work item. Split independently assignable outcomes through Coding Planning.
 - There is no Generic Evaluation skill. Cowork owns the user-called `review` call, and Workflow owns stage
   REVIEW. The shared Review skill owns the independent report; see [Review](../process/evaluation.md).
 - Re-entry starts at the earliest owner whose accepted input changed. The manager or mode tracks result identity
@@ -76,15 +76,16 @@ modularization, reusability, readability, naming, and intuitive public API. Each
 principle and its reason, a good example, and an anti-pattern. Each rule is a check an agent applies while
 writing:
 
-- Simplicity holds the inline test and the current-caller test, so it decides whether a unit exists. As soft
-  guidance, a class with one method and no state is usually better as a function.
-- Modularization is the code form of the [Ontology](../../../skills/ontology/SKILL.md) unit definition. Each
-  directory, file, public class, and public function can state the six fields, read for code (the responsibility is
-  the unit's secret), and a public class or function also has a caller contract. A private helper needs only a good
-  name. These are the unit's Modularization lines. They go in the design record: the Ideation design, or the
-  Execution handoff when there was no Ideation. Source code does not carry them as comments. Its directory and file
-  limits are defaults; an existing project or framework layout wins. A directory exists only when its files share
-  one conceptual definition, responsibility, and boundary; that may be a domain concept or a layer.
+- Simplicity holds the inline test and the current-caller test, so it decides whether an Ontology unit exists. As
+  soft guidance, a class with one method and no state is usually better as a function.
+- Modularization is the code form of the [Ontology](../../../skills/ontology/SKILL.md) Ontology unit definition.
+  Each directory, file, public class, and public function can state the six fields, read for code (the
+  responsibility is the Ontology unit's secret), and a public class or function also has a caller contract. A
+  private helper needs only a good name. These are the Ontology unit's Modularization lines. They go in the design
+  record: the Ideation design, or the Execution handoff when there was no Ideation. Source code does not carry them
+  as comments. Its directory and file limits are defaults; an existing project or framework layout wins. A
+  directory exists only when its files share one conceptual definition, responsibility, and boundary; that may be a
+  domain concept or a layer.
 - Naming owns vocabulary, names in context, and file and directory names. Name length is set by checks and a
   one-word file default, not by a hard word limit. Readability keeps types and flat control flow and points to
   Naming.
@@ -123,25 +124,28 @@ Coding Ideation studies the codebase and opens the child `SKILL.md` or Coding Pr
 on them. It designs three levels in order: Conceptual Definition, then Class and Function Design, then Codebase
 Structure. Conceptual Definition states what will be implemented and its vocabulary, with one preferred name and a
 one-sentence definition per term. Class and Function Design gives each new or changed public class and public
-function its unit definition and caller contract. Codebase Structure places each new or changed directory and file,
-chosen with Modularization and Naming. No pattern is the default; an added pattern records its force and the
-simpler form it replaces. The user sees a tree of the three levels, a schema of the public classes and functions,
-and a diagram of the directories and files. Unconfirmed work stays in the caller-named draft location, and Coding
-Ideation stops if the caller names none. Cowork names one under the current topic's `tmp/`, and Workflow names its
-own. The user's recorded answer resumes the work at Step 1.1. After confirmation, each decision lives only in its
-Design heading, and the Discussion topic links to that heading. The templates and the result are flat, with every
-file directly in the output root, and there is no Requirements snapshot.
+function its Ontology unit definition and caller contract. Codebase Structure places each new or changed directory
+and file, chosen with Modularization and Naming. No pattern is the default; an added pattern records its force and
+the simpler form it replaces. The user sees a tree of the three levels, a schema of the public classes and
+functions, and a diagram of the directories and files. Unconfirmed work stays in the caller-named draft location,
+and Coding Ideation stops if the caller names none. Cowork names one under the current topic's `tmp/`, and Workflow
+names its own. The user's recorded answer resumes the work at Step 1.1. After confirmation, each decision lives
+only in its Design heading, and the Discussion topic links to that heading. The templates and the result are flat,
+with every file directly in the output root, and there is no Requirements snapshot.
 
 Coding Execution applies Simplicity first, then the other Coding Principles, while it writes and simplifies code.
 It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance. With an
-Ideation design, it builds each unit to its design and caller contract, and adds no pattern the design does not
-name. With no Ideation, it designs each unit it creates with the principles and records the unit definition and
-caller contract of each new public unit, and any added abstraction's force, in its handoff. It keeps
-accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
+Ideation design, it builds each Ontology unit to its design and caller contract, and adds no pattern the design
+does not name. With no Ideation, it designs each Ontology unit it creates with the principles and records the
+Ontology unit definition and caller contract of each new public Ontology unit, and any added abstraction's force,
+in its handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a handoff
+concern. It replaces an added Ontology unit that repeats an existing Ontology unit's knowledge with a call to that
+Ontology unit, and returns a change that breaks an existing Ontology unit's definition as a design choice instead
+of working around it.
 
 Coding Review is the domain bar inside the shared Review skill. Its Structure checks test each added or changed
-unit against the Ontology unit definition as Modularization reads it, and Coding Principles and the OOP child
-are the quality bar for the critique.
+Ontology unit against the Ontology unit definition as Modularization reads it, and Coding Principles and the OOP
+child are the quality bar for the critique.
 
 ## Writing preferences
 
@@ -171,7 +175,7 @@ released changelog entries retain their point-in-time names and facts.
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
   use the same navigation-only shape with three direct operation children and a Review preference child. Coding
   adds the OOP preference child.
-- [Ontology skill](ontology-skill.md) records the unit definition that Modularization applies to code.
+- [Ontology skill](ontology-skill.md) records the Ontology unit definition that Modularization applies to code.
 - [Review](../process/evaluation.md) records live Review facts and that Generic Evaluation is gone.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
   discovery and matching-child loads.

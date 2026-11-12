@@ -20,20 +20,21 @@
 
 **Commit authority:** {whether each applied step may be committed on the plan's paths}
 
-## Units
+## Ontology units
 
-| Unit | Definition | Responsibility | Boundary | Relations | Dependencies | Properties | Caller contract | Mark |
+| Ontology unit | Definition | Responsibility | Boundary | Relations | Dependencies | Properties | Caller contract | Mark |
 |---|---|---|---|---|---|---|---|---|
-| {path or name} | {the kind of thing it is and what sets it apart from its siblings, in one sentence with no "and"} | {its secret: what only it decides or does} | {what it includes and hides, and what it leaves to other units} | {the units it uses and the units that use it} | {what it needs, and what breaks if that fails, changes, or goes away} | {the data it owns, or none} | {for a public class or function, what a caller must know; otherwise none} | {each mark from Step 2.1, or none} |
+| {path or name} | {the kind of thing it is and what sets it apart from its siblings, in one sentence with no "and"} | {its secret: what only it decides or does} | {what it includes and hides, and what it leaves to other Ontology units} | {the Ontology units it uses and the Ontology units that use it} | {what it needs, and what breaks if that fails, changes, or goes away} | {the data it owns, or none} | {for a public class or function, what a caller must know; otherwise none} | {each mark from Step 2.1, or none} |
 
-{Map every public unit within the chosen depths, and a private unit only when a tool or a read marks it. The
-first six fields are the unit definition the Ontology skill defines; the caller contract is code's own field.}
+{Map every public Ontology unit within the chosen depths, and a private Ontology unit only when a tool or a read
+marks it. The first six fields are the Ontology unit definition the Ontology skill defines; the caller contract is
+code's own field.}
 
 ## Copies and Abstractions
 
 | Pair or abstraction | Same knowledge | Same reason to change | Verdict |
 |---|---|---|---|
-| {units or abstraction} | {yes or no} | {yes or no} | {merge candidate, keep, or inline back} |
+| {Ontology units or abstraction} | {yes or no} | {yes or no} | {merge candidate, keep, or inline back} |
 
 ## Vocabulary
 

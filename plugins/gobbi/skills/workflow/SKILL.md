@@ -17,9 +17,9 @@ User Review wait after each phase.
 
 The user settles the design in Phase 1; later the manager and its participants decide inside it.
 
-### Apply one frame to every unit
+### Apply one frame to every work item
 
-Every productive unit runs `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up add `REVIEW` before
+Every productive work item runs `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up add `REVIEW` before
 RECORD, so independent judgment stays separate from the work.
 
 ### Make every phase recoverable
@@ -38,7 +38,7 @@ from that file in the same worktree and session root.
   options or asking for a Phase 1 decision.** Principle 3 of [Principles](../principles/SKILL.md) has the user
   choose among options that participants studied and critiqued.
 - **After `P1 · User Review`, rule each choice inside the accepted design yourself and ask the user nothing but
-  Continue or Stop.** The user settled the design in Phase 1, so record each ruling in the unit's receipt as
+  Continue or Stop.** The user settled the design in Phase 1, so record each ruling in the work item's receipt as
   `Ruling: <what> — <why> — <cost if wrong>`, check rather than ask a question that running something can
   answer, and stop at a Stopped `handoff.md` only for an unauthorized irreversible, security-sensitive, or
   external action or a user-owned decision.
@@ -80,16 +80,16 @@ Settle the design with the user in a recoverable session. Done when a verified `
 | Wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
-- Each unit writes its receipt at `<unit-dir>/record/iteration-N.md`. Phase handoffs are
+- Each work item writes its receipt at `<item-dir>/record/iteration-N.md`. Phase handoffs are
   `1-ideation/handoff.md`, `3-execution/handoff.md`, and `wrap-up/handoff.md`, from the
   [handoff template](templates/handoff.md).
-- A REVIEW writes one report per reviewer at `<unit-dir>/review/iteration-N/<reviewer>.md`, such as
-  `reviewer.md` or `codex.md`; the unit's receipt records the verdict.
+- A REVIEW writes one report per reviewer at `<item-dir>/review/iteration-N/<reviewer>.md`, such as
+  `reviewer.md` or `codex.md`; the work item's receipt records the verdict.
 
 #### 1.3 Review
 
-- Apply [Review](../review/SKILL.md) to the unit's frozen subject, with the task Goal or the closure plan as its
-  Goal. Record the verdict and its dropped and follow-up items in the unit's receipt.
+- Apply [Review](../review/SKILL.md) to the work item's frozen subject, with the task Goal or the closure plan as
+  its Goal. Record the verdict and its dropped and follow-up items in the work item's receipt.
 - A finding does not reopen the accepted design, and a correction needs a re-review of the fixes.
 
 #### 1.4 Ideation

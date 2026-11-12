@@ -198,7 +198,7 @@ develops the design with the user, available subagents or teammates, and the rem
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
 Recorded evidence can rebuild the active route after a context boundary. Execution and Wrap-up gates must
-accept the frozen result before those units advance. Workflow uses one isolated branch and linked worktree
+accept the frozen result before those work items advance. Workflow uses one isolated branch and linked worktree
 for the full session.
 
 ## Partner
@@ -224,7 +224,7 @@ subject to the child for its main result: Code Cleansing, Design Cleansing (incl
 Docs Cleansing. It asks how deep (code: Module, Class, Function; design: System, Component, Element; docs:
 Set, Document, Passage) and how bold (aggressive, moderate, conservative) refactoring or restructuring,
 renaming, and removing may go, and who may checkpoint each step (a commit or, for design files outside git, a
-saved version or copy). It maps what each unit is for, shows you a simpler target, and changes files only after you approve it. What the subject does,
+saved version or copy). It maps what each Ontology unit is for, shows you a simpler target, and changes files only after you approve it. What the subject does,
 shows, or tells its reader stays the same. Only you can start it.
 
 ## Socratic Method
@@ -238,7 +238,7 @@ questions, and the challenge log. Only you can start it.
 ## Ontology
 
 Agents load Ontology (`gobbi:ontology`, Codex: `$ontology`) when they create, split, merge, rename, review, or
-cleanse a unit of work, as Principle 8 requires. It defines a unit by six fields: definition, responsibility,
+cleanse an Ontology unit of work, as Principle 8 requires. It defines an Ontology unit by six fields: definition, responsibility,
 boundary, relations, dependencies, and properties. It keeps one term, one shape, and one home for each concept.
 Each domain adds its own fields in its own skill.
 

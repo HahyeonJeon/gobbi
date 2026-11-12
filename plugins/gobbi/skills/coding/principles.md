@@ -2,22 +2,22 @@
 
 This document holds six design principles that apply to procedural and object-oriented code alike: simplicity,
 modularization, reusability, readability, naming, and intuitive public API. Each entry has a description of the
-principle and its reason, a good example, and a labeled anti-pattern. Simplicity decides whether a unit exists;
-the other entries shape each unit that remains.
+principle and its reason, a good example, and a labeled anti-pattern. Simplicity decides whether an Ontology unit
+exists; the other entries shape each Ontology unit that remains.
 
 The limits below, such as nesting depth, the third use, banned names, and learning depth, are heuristics a
 reviewer applies, not laws: a departure needs a stated reason.
 
 ## Simplicity
 
-**Description.** Write the least mechanism that meets a current need. Most overengineered code should not
-exist: units that only forward calls, wrappers with one use, classes that hold one function, and options kept
-for later. Each adds a name to learn and a place to change, and none adds behavior. A class with one method and
-no state is usually better as a function. Apply two tests:
+**Description.** Write the least mechanism that meets a current need. Most overengineered code should not exist:
+Ontology units that only forward calls, wrappers with one use, classes that hold one function, and options kept for
+later. Each adds a name to learn and a place to change, and none adds behavior. A class with one method and no
+state is usually better as a function. Apply two tests:
 
-- **Inline test.** Ask of each unit: "If I inline it into its callers, do they get longer, repeat a rule, or
-  expose a secret?" A secret is what only this unit changes: one decision, or the facts about one concept. If
-  all three answers are no, inline the unit.
+- **Inline test.** Ask of each Ontology unit: "If I inline it into its callers, do they get longer, repeat a
+  rule, or expose a secret?" A secret is what only this Ontology unit changes: one decision, or the facts about one
+  concept. If all three answers are no, inline the Ontology unit.
 - **Current caller test.** Every parameter, option, hook, and variant has a caller today. Delete each one that
   has none.
 
@@ -67,48 +67,52 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 ## Modularization
 
-**Description.** Modularization gives each unit one definition, one secret, one boundary, one-way relations, and
-the data it owns. A reader then finds where a change goes from the definition alone, and the unit can change its
-private parts without breaking callers. Every directory, file, public class, and public function can state its
-[unit definition](../ontology/SKILL.md), the six fields Ontology defines, and a public class or function also
-has a caller contract. The Ideation design records them for the units it designs, and without Ideation the
-Execution handoff records them for each new public unit. Source code does not carry them as comments. If a field
-fails its test, split, merge, or move the unit. Private helpers need only a good name.
+**Description.** Modularization gives each Ontology unit one definition, one secret, one boundary, one-way
+relations, and the data it owns. A reader then finds where a change goes from the definition alone, and the
+Ontology unit can change its private parts without breaking callers. Every directory, file, public class, and
+public function can state its [Ontology unit definition](../ontology/SKILL.md), the six fields Ontology defines,
+and a public class or function also has a caller contract. The Ideation design records them for the Ontology units
+it designs, and without Ideation the Execution handoff records them for each new public Ontology unit. Source code
+does not carry them as comments. If a field fails its test, split, merge, or move the Ontology unit. Private
+helpers need only a good name.
 
 Each field keeps its Ontology test, and code adds this:
 
 - **Definition:** in domain words.
-- **Responsibility:** its secret, which is what only this unit changes: one decision, or the facts about one
-  concept.
+- **Responsibility:** its secret, which is what only this Ontology unit changes: one decision, or the facts about
+  one concept.
 - **Boundary:** what it hides, and the named neighbours it never imports. Keep the public surface small: other
-  code imports only the names the unit chooses to share.
+  code imports only the names the Ontology unit chooses to share.
 - **Relations:** what it uses and what uses it.
 - **Dependencies:** they point one way, with no cycles.
 - **Properties:** the data it owns, with types, invariants, and whether each value is stable or changing; `None`
   when it owns none.
 
 The caller contract applies to public classes and functions only. It states what a caller must know to call the
-unit, and its form depends on what the unit does:
+Ontology unit, and its form depends on what the Ontology unit does:
 
-- **A unit that computes** returns a value and changes nothing. State its inputs, its output, and the errors it
-  raises.
-- **A unit that changes state** sets a field, writes a record, or sends a message. State its parameters, the
-  checks that raise errors, the error result, the data it changes, its side effects, and its allowed callers.
+- **An Ontology unit that computes** returns a value and changes nothing. State its inputs, its output, and the
+  errors it raises.
+- **An Ontology unit that changes state** sets a field, writes a record, or sends a message. State its
+  parameters, the checks that raise errors, the error result, the data it changes, its side effects, and its
+  allowed callers.
 
-Directories and files state only the unit definition.
+Directories and files state only the Ontology unit definition.
 
-Keep computing and changing apart, so that a caller can call a computing unit anywhere and find each change to
-state in one place. A unit that computes sets no field, writes no record, and sends no message. Each change to
-state has one public entry point. It runs the checks, makes the change, sends the side effects, and returns the
-result or raises the error. When a check fails, it changes nothing, and the error names the failed check. No
-second public function makes the same change.
+Keep computing and changing apart, so that a caller can call a computing Ontology unit anywhere and find each
+change to state in one place. An Ontology unit that computes sets no field, writes no record, and sends no message.
+Each change to state has one public entry point. It runs the checks, makes the change, sends the side effects, and
+returns the result or raises the error. When a check fails, it changes nothing, and the error names the failed
+check. No second public function makes the same change.
 
-The unit definition also sets the defaults for directories and files. An existing project or framework layout wins.
+The Ontology unit definition also sets the defaults for directories and files. An existing project or framework
+layout wins.
 
 - Start flat. Make a directory only when needed: when its files share one definition, responsibility, and
   boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the package root, and make
   no directory for one file.
-- Make no `utils/`, `common/`, `helpers/`, `misc/`, or `shared/`. Move each function to the unit that uses it.
+- Make no `utils/`, `common/`, `helpers/`, `misc/`, or `shared/`. Move each function to the Ontology unit that
+  uses it.
 - A new file needs a new definition. Split a file when its definition needs "and", not when it is long.
 
 **Good example.** A flat package. Each file holds one domain object with the changes to it, or one
@@ -122,7 +126,7 @@ airline/
   connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
-The Ideation design gives this unit definition for `flight.py`. The code keeps only the Properties that
+The Ideation design gives this Ontology unit definition for `flight.py`. The code keeps only the Properties that
 `delay_flight` needs.
 
 - **Definition:** one scheduled trip of one aircraft between two airports on one date.
@@ -253,10 +257,10 @@ assert not connection_ok(arrival, datetime(2026, 3, 1, 12, 0, tzinfo=UTC))
 
 ## Reusability
 
-**Description.** A reusable unit, such as a function, a class, or a module, serves a new caller without edits.
-It does one job and takes everything it needs as explicit inputs. Reuse comes from small units with one job,
-not from one unit that knows every caller. Generalize after the third real use; a flag added for one caller is
-a sign of reuse forced too early.
+**Description.** A reusable Ontology unit, such as a function, a class, or a module, serves a new caller without
+edits. It does one job and takes everything it needs as explicit inputs. Reuse comes from small Ontology units with
+one job, not from one Ontology unit that knows every caller. Generalize after the third real use; a flag added for
+one caller is a sign of reuse forced too early.
 
 **Good example.** One small job, explicit inputs, and no knowledge of any caller.
 
@@ -311,8 +315,8 @@ assert export([{"a": "1", "b": "2"}], excel=True) == "1;2"
 
 ## Readability
 
-**Description.** A reader can tell what a unit does from its signature and shape, without tracing its calls.
-Code is read far more often than it is written, and a wrong reading leads to a wrong change. Choose names
+**Description.** A reader can tell what an Ontology unit does from its signature and shape, without tracing its
+calls. Code is read far more often than it is written, and a wrong reading leads to a wrong change. Choose names
 with [Naming](#naming), and check while writing:
 
 - Inputs and outputs carry types as far as the language in use supports, and a small typed class replaces a

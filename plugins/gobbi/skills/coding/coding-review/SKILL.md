@@ -68,23 +68,22 @@ what the run showed.
 #### Tests check the claim, not the implementation
 
 - Each test fails when the behavior it names breaks. A test that still passes with the logic stubbed out, or
-  that mocks the unit it claims to test, checks nothing.
+  that mocks the Ontology unit it claims to test, checks nothing.
 - Tests assert results a caller can observe, and cover the failure paths the change adds.
 
 ### Structure, Variation, and Vocabulary
 
-#### Each unit has one definition, responsibility, boundary, and set of relations
+#### Each Ontology unit has one definition, responsibility, boundary, and set of relations
 
 - For each module, public class, and public function the change adds or changes, state its definition in one
   sentence, the one decision it owns, what it hides, and what it depends on and what depends on it.
-- A unit whose definition needs "and", that reaches into a neighbour's internals, or that adds a dependency
-  cycle or an upward dependency fails this check. The bar is the fields of a
-  [unit definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads them
-  for code.
+- An Ontology unit whose definition needs "and", that reaches into a neighbour's internals, or that adds a
+  dependency cycle or an upward dependency fails this check. The bar is the fields of a [Ontology unit
+  definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads them for code.
 
 #### Abstraction follows commonality and variability
 
-- Name what the changed units share and what varies between them now. An interface, base class, parameter,
+- Name what the changed Ontology units share and what varies between them now. An interface, base class, parameter,
   or pattern exists only for variation present now, and code that changes together lives in one place.
 - Copies of one logic that must change together, or a variation point no current caller uses, fail this check.
 
@@ -113,5 +112,5 @@ what the run showed.
 |---|---|
 | [Review](../../review/SKILL.md) | Owns the review procedure, stage bars, blocking rule, report, and verdict. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of a unit definition that the Structure checks test. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of an Ontology unit definition that the Structure checks test. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Defaults for classes, interfaces, public APIs, SOLID, and design patterns. |

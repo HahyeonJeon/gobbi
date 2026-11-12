@@ -31,16 +31,16 @@ Review holds one stage bar each for Ideation, Planning, and Execution. The domai
 nine to twelve checks that Review applies, not procedures: [Coding
 Review](../../../skills/coding/coding-review/SKILL.md), [Authoring
 Review](../../../skills/authoring/authoring-review/SKILL.md), and [Design
-Review](../../../skills/design/design-review/SKILL.md). Each also checks structure (each unit's definition,
-responsibility, boundary, and relations), commonality and variability, and vocabulary in its own terms, using
-[Ontology](../feature/ontology-skill.md). The `review-depth` tokens, per-domain `report.md` templates, contract
-labels, quality opinions, and the `<class>/<runtime>/` review tree are removed.
+Review](../../../skills/design/design-review/SKILL.md). Each also checks structure (each Ontology unit's
+definition, responsibility, boundary, and relations), commonality and variability, and vocabulary in its own terms,
+using [Ontology](../feature/ontology-skill.md). The `review-depth` tokens, per-domain `report.md` templates,
+contract labels, quality opinions, and the `<class>/<runtime>/` review tree are removed.
 
 ## Paths
 
 - One report per reviewer from the [report template](../../../skills/review/report.md): a verdict (PASS or
   REVISE), findings, what was checked, and what was not.
-- Workflow writes `<unit-dir>/review/iteration-N/<reviewer>.md`, and the unit's receipt records the verdict.
+- Workflow writes `<item-dir>/review/iteration-N/<reviewer>.md`, and the work item's receipt records the verdict.
 - Cowork writes `tmp/review-NN/<reviewer>.md` in the current topic and records the verdict in the topic contract.
 - A Partner reviewer returns its report as its final message and the caller saves it. There is no `gate.md`.
 - The reviewer role has no edit tools and never reviews its own work. The manager accepts.

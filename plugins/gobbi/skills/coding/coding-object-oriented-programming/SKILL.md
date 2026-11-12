@@ -105,7 +105,7 @@ examples; use the equivalent form of the language in use.
   | Callers must call several low-level methods in the right order to do one task. | Is there only one caller? Then a local function may be enough. | [Abstraction](oop-principles.md#abstraction) |
   | A subclass exists only to reuse the base's code, or the tree is deeper than one level. | Can a shared function or a field hold the reused code? | [Inheritance](oop-principles.md#inheritance) |
   | New types or variants keep arriving, and each one edits the same type tests or `if` chains in several functions. | Is the set closed? Then one `match` per operation is fine. | [Polymorphism](oop-principles.md#polymorphism), [Open-Closed Principle](solid.md#open-closed-principle) |
-  | A function or class only forwards calls to one other unit, or an option has no current caller. | Would inlining it make any caller longer or expose a secret? | [Simplicity](../principles.md#simplicity) |
+  | A function or class only forwards calls to one other Ontology unit, or an option has no current caller. | Would inlining it make any caller longer or expose a secret? | [Simplicity](../principles.md#simplicity) |
   | One module mixes unrelated jobs, or every name in it is public. | Do the jobs always change together? Then keep them together. | [Modularization](../principles.md#modularization) |
   | The same code appears for the third time, or a shared function grows one flag per caller. | Are there only two copies? Then keep the duplication. | [Reusability](../principles.md#reusability) |
   | Names such as `process`, `data`, or `Manager`, or a name that repeats its owner. | Does a domain name exist for the thing? Use it. | [Naming](../principles.md#naming) |

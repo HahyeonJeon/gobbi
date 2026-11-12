@@ -21,24 +21,25 @@ user-confirmed copy for files outside git}
 
 ## Baseline
 
-| Unit group | Pin | What it covers |
+| Ontology unit group | Pin | What it covers |
 |---|---|---|
-| {the units one kind of check pins together} | {the check, and where its baseline result is kept} | {the viewports, states, modes, and units it compares} |
+| {the Ontology units one kind of check pins together} | {the check, and where its baseline result is kept} | {the viewports, states, modes, and Ontology units it compares} |
 
-**Unverified groups:** {each unit group no check can pin, or none}
+**Unverified groups:** {each Ontology unit group no check can pin, or none}
 
-## Units
+## Ontology units
 
-Write one record per unit. The first six fields are the Ontology skill's unit definition;
+Write one record per Ontology unit. The first six fields are the Ontology unit definition;
 the rest are the fields visual work adds.
 
-### {unit name}
+### {Ontology unit name}
 
-- **Definition:** {the kind of unit and what sets it apart from its siblings, in one sentence with no "and"}
+- **Definition:** {the kind of Ontology unit and what sets it apart from its siblings, in one sentence with no
+  "and"}
 - **Responsibility:** {what only it decides}
-- **Boundary:** {what it includes and hides, and what it leaves to other units}
-- **Relations:** {the units it connects to, each with a kind and a direction, such as contains, aliases, or
-  triggers}
+- **Boundary:** {what it includes and hides, and what it leaves to other Ontology units}
+- **Relations:** {the Ontology units it connects to, each with a kind and a direction, such as contains, aliases,
+  or triggers}
 - **Dependencies:** {what it needs, and what breaks if that fails, changes, or goes away}
 - **Properties:** {its attributes and values, such as the resolved value in each mode}
 - **Where seen:** {path, frame or node, slide number, or URL, with a render or thumbnail}
@@ -50,9 +51,9 @@ the rest are the fields visual work adds.
 - **Flags:** {each flag from the list below, or none}
 
 {Flags to check:
-- a definition that needs "and", or a responsibility that overlaps another unit's;
-- a leak: a unit reaching into another's internals, such as `!important`, a deep selector, a detached instance,
-  or an overridden child layer;
+- a definition that needs "and", or a responsibility that overlaps another Ontology unit's;
+- a leak: an Ontology unit reaching into another's internals, such as `!important`, a deep selector, a detached
+  instance, or an overridden child layer;
 - a wrong-way dependency: a component using a primitive token directly, or a primitive aliasing a semantic token,
   by the project's own token tiers;
 - an alias cycle: tokens that alias each other in a loop;
@@ -60,7 +61,7 @@ the rest are the fields visual work adds.
   that contradicts the role;
 - unused, superseded, or with no present need;
 - an exact duplicate, as the Removing action defines it;
-- a near-duplicate: a value or unit that differs by accident, such as `#3B82F6` beside `#3B83F6`;
+- a near-duplicate: a value or Ontology unit that differs by accident, such as `#3B82F6` beside `#3B83F6`;
 - direct formatting or a per-instance override over a style, or a text box in place of a placeholder;
 - a hard-coded value beside a token, or an off-scale value on no token and no step of the type or spacing scale;
 - mode drift: light and dark values that diverged;
@@ -68,9 +69,9 @@ the rest are the fields visual work adds.
 
 ## Commonality and Variability
 
-| Units | Exact duplicate | Varies by | Verdict |
+| Ontology units | Exact duplicate | Varies by | Verdict |
 |---|---|---|---|
-| {units} | {yes or no, by the Removing action's test} | {the variants, modes or themes, densities, or viewports that truly differ now, or none} | {merge, keep, alias, or separate decision} |
+| {Ontology units} | {yes or no, by the Removing action's test} | {the variants, modes or themes, densities, or viewports that truly differ now, or none} | {merge, keep, alias, or separate decision} |
 
 {Merge only an exact duplicate, as the Removing action defines it. The same role with a value that differs by
 accident is a separate decision, because the merge is visible.}

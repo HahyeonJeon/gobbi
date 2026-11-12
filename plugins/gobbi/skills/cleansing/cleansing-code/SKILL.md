@@ -1,6 +1,6 @@
 ---
 name: cleansing-code
-description: "Code Cleansing reorganizes, renames, and removes units of a codebase so it stays simple and clearly defined without changing what the code does. Use it when the user asks to cleanse code."
+description: "Code Cleansing reorganizes, renames, and removes Ontology units of a codebase so it stays simple and clearly defined without changing what the code does. Use it when the user asks to cleanse code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
@@ -11,22 +11,22 @@ skill-type: operation
 Code Cleansing turns code that grew without a plan back into clearly defined modules, classes, and functions.
 It maps what exists, then refactors, renames, and removes within the depth and intensity the user chose, with
 checks that show behavior stays the same. Only the user starts it: the manager talks to the user, a `leader`
-writes the map and plan, and the role of each unit applies the plan.
+writes the map and plan, and the role of each Ontology unit applies the plan.
 
 ## Principles
 
 ### Define first, then restructure
 
-Every unit gets its [unit definition](../../ontology/SKILL.md) before it moves: definition, responsibility,
-boundary, relations, dependencies, and properties, read for code as
-[Modularization](../../coding/principles.md#modularization) states. A structure built from clear definitions
-needs little explanation, and one without them decays again.
+Every Ontology unit gets its [Ontology unit definition](../../ontology/SKILL.md) before it moves: definition,
+responsibility, boundary, relations, dependencies, and properties, read for code as
+[Modularization](../../coding/principles.md#modularization) states. A structure built from clear definitions needs
+little explanation, and one without them decays again.
 
 ### Systematic means simple
 
-A change stays only if it removes a concept, file, indirection, or name, or makes a unit match its definition.
-That definition is approved in the plan or already recorded in an Ideation design, a unit definition, or a
-spec, so "simpler" never rests on taste.
+A change stays only if it removes a concept, file, indirection, or name, or makes an Ontology unit match its
+definition. That definition is approved in the plan or already recorded in an Ideation design, an Ontology unit
+definition, or a spec, so "simpler" never rests on taste.
 
 ### Change the shape, keep the behavior
 
@@ -66,7 +66,7 @@ depth and intensity, and the commit authority are recorded with the session's re
 
 - Confirm the paths, that the work in them is committed, and that their main result is code; when it is a visual
   surface or prose, use [Design Cleansing](../cleansing-design/SKILL.md) or
-  [Docs Cleansing](../cleansing-docs/SKILL.md) instead. A unit of another domain inside
+  [Docs Cleansing](../cleansing-docs/SKILL.md) instead. An Ontology unit of another domain inside
   the subject, such as in-repo API reference pages, stays in this run, and code comments and docstrings are code.
 - Read the subject's kind from its manifests (application, published library, or both) and confirm it with the
   user, because a published library has consumers no search can see.
@@ -83,12 +83,12 @@ listed from `ideation-index.md` at the Ideation output root. For a large subject
 
 #### 2.1 Map what exists
 
-- Record the roots and how each was found, then the unit definition and caller contract of each public unit
-  within the chosen depths. Map a private unit only when a tool or a read marks it.
-- Mark a unit whose definition needs "and", whose responsibility overlaps another's, whose boundary leaks, that
-  sits in a dependency cycle, or whose name contradicts its definition. Also mark one that nothing reaches, that a
-  newer unit replaces, that fails a [Coding Principles](../../coding/principles.md) limit, or that repeats
-  another's job.
+- Record the roots and how each was found, then the Ontology unit definition and caller contract of each public
+  Ontology unit within the chosen depths. Map a private Ontology unit only when a tool or a read marks it.
+- Mark an Ontology unit whose definition needs "and", whose responsibility overlaps another's, whose boundary
+  leaks, that sits in a dependency cycle, or whose name contradicts its definition. Also mark one that nothing
+  reaches, that a newer Ontology unit replaces, that fails a [Coding Principles](../../coding/principles.md) limit,
+  or that repeats another's job.
 - For each pair of copies and each abstraction, record a verdict: same knowledge and same reason to change is a
   merge candidate, same text with a different reason is kept, and a flag or parameter with one caller is inlined
   back. List each concept's names per context beside the term [Naming](../../coding/principles.md#naming)
@@ -116,10 +116,10 @@ listed from `ideation-index.md` at the Ideation output root. For a large subject
 ### Phase 3 — Apply in Small Verified Steps
 
 Carry out the approved plan without changing behavior. Done when every approved change is applied, each step's
-checks are recorded, and the final tree's checks match the baseline. The manager gives each apply task to the
-role of the unit it changes, as [Gobbi Step 2.5](../../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role)
-names: the `developer` for code under [Coding Execution](../../coding/coding-execution/SKILL.md), the
-`designer` for a visual unit, and the `author` for docs, each with its domain's Execution skill. Each brief holds
+checks are recorded, and the final tree's checks match the baseline. The manager gives each apply task to the role
+of the Ontology unit it changes, as [Gobbi Step 2.5](../../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role)
+names: the `developer` for code under [Coding Execution](../../coding/coding-execution/SKILL.md), the `designer`
+for a visual Ontology unit, and the `author` for docs, each with its domain's Execution skill. Each brief holds
 this skill and the approved map in Materials, and grants commit authority on the plan's paths only when the user
 gave it.
 
@@ -148,7 +148,7 @@ The manager reports from the handoffs. Done when the user has the report.
 
 - Report the structure before and after with its final definitions and vocabulary, the changes applied, each
   removal's evidence, the checks against the baseline, the paths no check reached, and the Suggestions. Give the
-  counts of units and files before and after from the map, with no score.
+  counts of Ontology units and files before and after from the map, with no score.
 - Leave any other commit to the user or the calling mode, and suggest an independent
   [Review](../../review/SKILL.md) against [Coding Review](../../coding/coding-review/SKILL.md).
 
@@ -156,18 +156,19 @@ The manager reports from the handoffs. Done when the user has the report.
 
 | Action | What it changes |
 |---|---|
-| Refactoring | Moves code among units so callers change: merge, split, extract, move, or inline, including a unit that only forwards. The deletion that finishes a refactoring belongs to it. |
+| Refactoring | Moves code among Ontology units so callers change: merge, split, extract, move, or inline, including an Ontology unit that only forwards. The deletion that finishes a refactoring belongs to it. |
 | Renaming | Identifiers and the text that describes them. A move with a rename is two changes. |
 | Removing | What nothing reaches: unreachable code, a copy no live caller uses, and a parameter, flag, or layer no caller passes or reaches. |
 
-| Depth | Largest unit the action may change |
+| Depth | Largest Ontology unit the action may change |
 |---|---|
 | Module | Modules, packages, and directory layout |
 | Class | Classes, interfaces, and files |
 | Function | Functions, methods, and variables |
 
-Module includes Class and Function, Class includes Function, and Skip leaves the action out. A change applies
-only to units no larger than the depth, counting the units it creates; a larger one goes to Suggestions.
+Module includes Class and Function, Class includes Function, and Skip leaves the action out. A change applies only
+to Ontology units no larger than the depth, counting the Ontology units it creates; a larger one goes to
+Suggestions.
 
 | Intensity | Refactoring | Renaming | Removing |
 |---|---|---|---|
@@ -179,22 +180,22 @@ only to units no larger than the depth, counting the units it creates; a larger 
 
 | Outcome | Files |
 |---|---|
-| Follows the unit it describes | Tests, where a dead test follows Removing; comments and docstrings, where one that contradicts its unit is fixed with Renaming and commented-out code goes at Moderate; config keys only that unit reads; manifests and entry points that name it; generated output, regenerated from its source |
+| Follows the Ontology unit it describes | Tests, where a dead test follows Removing; comments and docstrings, where one that contradicts its Ontology unit is fixed with Renaming and commented-out code goes at Moderate; config keys only that Ontology unit reads; manifests and entry points that name it; generated output, regenerated from its source |
 | Left unchanged | Persisted data and migrations, vendored and lock files, and build and continuous-integration entry points, which are roots and never removed |
-| The user decides per item | String-bound or persisted names, where a rename needs a migration; manifest dependencies and scripts; published names; units a dynamic site reaches |
+| The user decides per item | String-bound or persisted names, where a rename needs a migration; manifest dependencies and scripts; published names; Ontology units a dynamic site reaches |
 
 ## References
 
 | Name | Description |
 |---|---|
 | [Cleansing map](templates/map.md) | The map and plan the `leader` writes as the run's Ideation result. |
-| [Ontology](../../ontology/SKILL.md) | The six fields of the unit definition the map records. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of the Ontology unit definition the map records. |
 | [Coding Principles](../../coding/principles.md) | How code reads the six fields, the caller contract, the Simplicity limits, and the Naming order the map applies. |
 | [Coding Ideation](../../coding/coding-ideation/SKILL.md) | How an Ideation result is located from `ideation-index.md`. |
 | [Coding Execution](../../coding/coding-execution/SKILL.md) | The baseline, stale reach, final-tree checks, and handoff of each code apply task. |
 | [Coding Review](../../coding/coding-review/SKILL.md) | The review bar for the cleansed code. |
 | [Design Cleansing](../cleansing-design/SKILL.md) | The cleansing for a subject whose main result is a visual surface, including HTML and web UI. |
 | [Docs Cleansing](../cleansing-docs/SKILL.md) | The cleansing for a subject whose main result is prose. |
-| [Gobbi](../../gobbi/SKILL.md) | Step 2.5 names the role that applies each unit. |
+| [Gobbi](../../gobbi/SKILL.md) | Step 2.5 names the role that applies each Ontology unit. |
 | [Delegation](../../delegation/SKILL.md) | Briefs for the area `leader`s that map a large subject. |
 | [Review](../../review/SKILL.md) | The independent review suggested after cleansing. |

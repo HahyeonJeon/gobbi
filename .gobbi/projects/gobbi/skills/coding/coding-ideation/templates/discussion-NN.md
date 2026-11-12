@@ -24,7 +24,7 @@ option, its reason, trade-offs, and reopen condition; do not copy that decision 
 ### S{N} — {Question}
 
 - **Finding:** {Best-supported answer.}
-- **Sources:** {Link or path, and why it can be trusted for this question.}
+- **Sources:** {Link or path, why it can be trusted, and how its evidence applies to this question.}
 - **Limits:** {Contradictions, gaps, and searches that found nothing.}
 
 {Record each study once, and cite its ID from every topic it informs.}

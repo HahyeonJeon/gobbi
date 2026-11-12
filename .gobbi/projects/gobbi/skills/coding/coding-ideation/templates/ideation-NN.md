@@ -26,8 +26,8 @@ definition. Name no directory, file, class, or function.}
 
 ### Class and Function Design
 
-{The new or changed public classes and functions, each with its unit definition from the Ontology skill, read
-for code as Modularization in Coding Principles states, and its caller contract. For each added pattern,
+{The new or changed public classes and functions, each with its Ontology unit definition from the Ontology skill,
+read for code as Modularization in Coding Principles states, and its caller contract. For each added pattern,
 interface, or base class, name the present force it answers and the simpler form it replaces.}
 
 ### Codebase Structure
@@ -39,4 +39,4 @@ interface, or base class, name the present force it answers and the simpler form
     {file}
 ```
 
-{The new or changed directories and files with one-way `→ uses` arrows, each with its unit definition.}
+{The new or changed directories and files with one-way `→ uses` arrows, each with its Ontology unit definition.}

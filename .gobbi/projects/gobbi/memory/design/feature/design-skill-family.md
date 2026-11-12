@@ -14,7 +14,7 @@ own live procedures.
 
 | Skill | Type | Current owner | Authority boundary |
 |---|---|---|---|
-| [Design](../../../skills/design/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. |
+| [Design](../../../skills/design/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current work item. | Owns navigation only. |
 | [Design Ideation](../../../skills/design/design-ideation/SKILL.md) | Operation | Owns study, discussion, structure and direction shown as images, and one indexed ideation result. | Listed PNGs illustrate. Written Design headings govern. Stops before realization. |
 | [Design Planning](../../../skills/design/design-planning/SKILL.md) | Operation | Splits settled visual work into goal-based tasks, one `plan-NN-slug.md` per major goal with a Task Graph; each task has a Goal, Context, Constraints, and Taste and Preference, written as Delegation defines them. | Stops before implementation steps. |
 | [Design Execution](../../../skills/design/design-execution/SKILL.md) | Operation | Owns production, verification, and handoff of one settled visual task: it records a baseline before the first edit and verifies the final tree against it (resolved tokens, token lint, routes and links, accessibility tree, screenshots in one capture environment). | Gains no Review or acceptance authority. |
@@ -40,9 +40,10 @@ no Ideation `ontology.md`.
 
 ## Ontology
 
-Design Ideation gives each screen, region, or component the design creates or changes its unit definition
-from the shared [Ontology](../../../skills/ontology/SKILL.md) skill, and the Design Review Structure checks
-link that skill as their bar. Execution and Review have no `ontology.md` child, and designs give no kinds, facets, or unit ids.
+Design Ideation gives each screen, region, or component the design creates or changes its Ontology unit definition
+from the shared [Ontology](../../../skills/ontology/SKILL.md) skill, and the Design Review Structure checks link
+that skill as their bar. Execution and Review have no `ontology.md` child, and designs give no kinds, facets, or
+Ontology unit ids.
 
 ## Related designs
 

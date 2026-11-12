@@ -16,17 +16,19 @@
 
 **Map location:** {the run's Ideation output root, or the path the user named outside the subject}
 
-## Units
+## Ontology units
 
-{One record for each document, each larger unit within the chosen depths, and each marked Passage. The first
-six fields are the Ontology unit definition; Depth, Kind, Reader, Job, Dependents, and Marks are the docs fields.}
+{One record for each document, each larger Ontology unit within the chosen depths, and each marked Passage. The
+first six fields are the Ontology unit definition; Depth, Kind, Reader, Job, Dependents, and Marks are the docs
+fields.}
 
-### {Unit: path, heading, or name}
+### {Ontology unit: path, heading, or name}
 
 - **Definition:** {the kind of thing it is and what sets it apart from its siblings, in one sentence with no "and"}
 - **Responsibility:** {the facts or policy only it holds}
-- **Boundary:** {what it includes, and what it leaves to other units}
-- **Relations:** {each unit it links or routes to, outward, with the kind: prerequisite, optional link, or load}
+- **Boundary:** {what it includes, and what it leaves to other Ontology units}
+- **Relations:** {each Ontology unit it links or routes to, outward, with the kind: prerequisite, optional link,
+  or load}
 - **Dependencies:** {what it needs, such as a prerequisite, a term it uses, or the source it is generated from,
   and what breaks if that fails, changes, or goes away}
 - **Properties:** {its address forms (path, `name:`, title, anchors), its frontmatter, and its read-only reason
@@ -47,7 +49,7 @@ six fields are the Ontology unit definition; Depth, Kind, Reader, Job, Dependent
 
 | Concept | Names found | Term to use | Defined in |
 |---|---|---|---|
-| {concept} | {every name used for it in live documents} | {the project's term, then the field's} | {the one unit that defines the term} |
+| {concept} | {every name used for it in live documents} | {the project's term, then the field's} | {the one Ontology unit that defines the term} |
 
 ## Change List
 

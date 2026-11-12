@@ -20,8 +20,8 @@ increments from the foundation up, so each failure points at the last change.
 
 ### Apply the principles to real code
 
-The [Coding Principles](../principles.md) judge real units, parameters, and callers, so apply them as code is
-written and simplified. Simplicity comes first: the task adds only mechanism that a current caller needs.
+The [Coding Principles](../principles.md) judge real Ontology units, parameters, and callers, so apply them as code
+is written and simplified. Simplicity comes first: the task adds only mechanism that a current caller needs.
 
 ### Leave no stale reach
 
@@ -74,18 +74,22 @@ added fails the Simplicity tests, and no affected surface is stale.
 
 - Build each increment from its lowest dependency to its caller-visible result, and prove it before starting
   the next. For a testable defect, add a regression check that fails before the fix and passes after it.
-- With an Ideation design, build each unit to its design and caller contract and add no pattern it does not
-  name. Without one, record in the handoff the unit definition and caller contract of each new public unit, per
-  [Modularization](../principles.md#modularization), and the force behind each added abstraction.
+- With an Ideation design, build each Ontology unit to its design and caller contract and add no pattern it does
+  not name. Without one, record in the handoff the Ontology unit definition and caller contract of each new public
+  Ontology unit, per [Modularization](../principles.md#modularization), and the force behind each added
+  abstraction.
 - Regenerate generated output from its canonical source instead of editing it, because the next generation
   overwrites a hand edit.
 
 #### 2.2 Simplify and reconcile before verifying
 
-- Remove each unit, parameter, option, and hook the task added that fails the
+- Remove each Ontology unit, parameter, option, and hook the task added that fails the
   [Simplicity](../principles.md#simplicity) tests, and every placeholder, temporary diagnostic, and stale path.
   When mechanism the accepted design requires fails them, keep it and record a concern.
 - Account for every affected surface as changed or unchanged for a stated reason.
+- Replace each Ontology unit the task added that repeats knowledge an existing Ontology unit holds with a call to
+  that Ontology unit. When the change breaks an existing Ontology unit's definition, stop and return the
+  restructure as a design choice instead of working around it.
 
 ### Phase 3 — Verify and Deliver
 
