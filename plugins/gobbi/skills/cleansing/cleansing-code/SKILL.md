@@ -46,8 +46,8 @@ observable behavior, so what a consumer outside the subject sees stays the same.
   formats, exported names, and CLI and config keys, and a change to it, a merge of live copies, or a change to a
   string-bound, dynamically reached, or published name goes to the user per item, because a search cannot see
   outside consumers and identical text is not always the same knowledge.
-- **Remove only code that nothing reaches from the roots, such as entry points, registrations, framework
-  conventions, names that config refers to, the public interface, and the tests the user keeps.** Record a name
+- **Remove only code that nothing reaches from the roots: entry points, registrations, framework conventions,
+  names that config refers to, the public interface, and the tests the user keeps.** Record a name
   search over every file type plus a tool where one exists, with the roots checked and the tool's confidence,
   beside each removal, because one search misses config, dynamic, and entry-point uses.
 - **Accept no claim that behavior is kept without a check that fails when the behavior changes.** Pin code no

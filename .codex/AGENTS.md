@@ -84,8 +84,7 @@ reach that result is the agent's judgment.
 - *Define a unit before you change its shape:* When you create, split, merge, rename, or move the boundary of
   a unit, first state its definition, responsibility, boundary, relations, dependencies, and properties, so a
   reader can predict what it holds from its name and definition. A unit used only inside its parent, such as a
-  private helper, needs only a clear name. The Ontology skill
-  defines each field.
+  private helper, needs only a clear name. The Ontology skill defines each field.
 - *Share once, name once:* Give what units really share one owner, and add a variation only for a difference that
   exists now. Use one term and one shape per concept, so the simplest structure the definitions allow wins.
   Keeping every copy in step is Principle 6.

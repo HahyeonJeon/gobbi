@@ -13,17 +13,12 @@ Cowork wrap-up uses the same Memory extraction. It does not load the Wrap-up ski
 | Design changes and intended behaviors | `design/` |
 | Decisions | The design file they shape |
 | Standing project preferences | `design/process/`, or the named feature or architecture file they constrain |
-| A unit change an accepted Ideation or Execution handoff names | `ontology/<area>.yaml`, listed in `ontology/README.md` |
 | Repeatable tips and mistakes | `learnings/` |
 | Deferred leftovers | `backlogs/` |
 | Work account | `reports/note/YYYY-MM-DD-<title>.md` |
 | Net session change | `history/`, only when the project changed |
 
 Update or merge an existing home first. Create a file only when that content is missing.
-
-Closure updates `ontology/` from an accepted handoff. There is no session ontology directory. A unit change
-that no handoff names, or a file that fails the Ontology checks, stops the update. The Memory skill owns these
-rules.
 
 ## What stays out
 

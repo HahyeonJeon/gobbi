@@ -116,12 +116,28 @@ class SentencesTest(SkillCase):
     def test_abbreviations_code_links_and_placeholders_end_no_sentence(self):
         rules = (
             "## Rules\n\n- **Keep names, e.g. Alpha.** Run `make test. Then` or read\n"
-            "  [the guide](../alpha/SKILL.md#a.B) and {Value. Here} before i.e. Beta ends.\n\n"
+            "  [the guide](../alpha/SKILL.md#a.B) and {Value. Here} before i.e. Beta ends.\n"
+            "- **Keep names (e.g. Alpha) in Step 3.2.** Ask Dr. Smith or J. R. Smith, then stop.\n\n"
         )
         self.assertEqual(self.sentences(rules), [])
 
-    def test_nested_bullets_and_other_sections_do_not_count(self):
-        rules = "## Rules\n\n- **One.** Two.\n  - Nested. Is. Separate.\n\n## Notes\n\n- One. Two. Three.\n\n"
+    def test_any_sentence_start_and_markdown_wrapper_counts(self):
+        for second in ("pytest runs it.", "3 checks pass.", "(Keep its order.)", "\u201cReady?\u201d",
+                       "[Apply it.](guide.md)", "_Apply it._"):
+            with self.subTest(second):
+                rules = f"## Rules\n\n- **Read the plan.** {second} Report failures.\n\n"
+                self.assertEqual(self.sentences(rules), ["rule has 3 sentences (max 2)"])
+
+    def test_continuations_and_nested_items_count(self):
+        rules = "## Rules\n\n- **Read the plan.**\n\n  Apply it. Check it.\n\n"
+        nested = PROCEDURE.replace("- two\n", "- two\n  - Apply it. Check it. Report it.\n")
+        table = PROCEDURE.replace("- two\n", "- Read it.\n\n  | A | B. C. D. |\n  |---|---|\n")
+        self.assertEqual(self.sentences(rules), ["rule has 3 sentences (max 2)"])
+        self.assertEqual(self.sentences(nested), ["step 1.1 bullet has 3 sentences (max 2)"])
+        self.assertEqual(self.sentences(table), [])
+
+    def test_other_sections_do_not_count(self):
+        rules = "## Rules\n\n- **One.** Two.\n\n## Notes\n\n- One. Two. Three.\n\n"
         self.assertEqual(self.sentences(rules), [])
 
     def test_steps_count_only_in_operation_skills(self):

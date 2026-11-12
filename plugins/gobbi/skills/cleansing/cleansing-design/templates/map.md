@@ -68,9 +68,9 @@ the rest are the fields visual work adds.
 
 ## Commonality and Variability
 
-| Units | Same role | Same value in every mode, theme, viewport, and state | Varies by | Verdict |
-|---|---|---|---|---|
-| {units} | {yes or no} | {yes or no} | {the variants, modes or themes, densities, or viewports that truly differ now, or none} | {merge, keep, alias, or separate decision} |
+| Units | Exact duplicate | Varies by | Verdict |
+|---|---|---|---|
+| {units} | {yes or no, by the Removing action's test} | {the variants, modes or themes, densities, or viewports that truly differ now, or none} | {merge, keep, alias, or separate decision} |
 
 {Merge only an exact duplicate, as the Removing action defines it. The same role with a value that differs by
 accident is a separate decision, because the merge is visible.}

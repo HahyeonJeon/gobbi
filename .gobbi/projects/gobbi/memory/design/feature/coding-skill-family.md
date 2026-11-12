@@ -141,8 +141,8 @@ Coding Execution applies Simplicity first, then the other Coding Principles, whi
 It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance. With an
 Ideation design, it builds each class and function to the Class and Function Design and its caller contract, reads
 only the entries that design names, and adds no pattern the design does not name. With no Ideation, it designs each
-unit it creates with the principles and records the Modularization lines and any added abstraction's force in its
-handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
+unit it creates with the principles and records the unit definition and caller contract of each new public unit,
+and any added abstraction's force, in its handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
 
 Coding Review is the domain bar inside the shared Review skill. Its Structure checks test each added or changed
 unit against the Ontology unit definition as Modularization reads it, and Coding Principles and the OOP child

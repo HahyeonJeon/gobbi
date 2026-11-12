@@ -65,9 +65,12 @@ _LEAD_WORD = re.compile(r"(\s*- \*\*)(?:MUST|NEVER)\b")
 _CODE_SPAN = re.compile(r"(`+).+?(?<!`)\1(?!`)")
 _LINK_TARGET = re.compile(r"\]\([^)]*\)")
 _PLACEHOLDER = re.compile(r"\{[^}]*\}")
-# A sentence ends at . ! or ?, after any closing bold, parenthesis, or quote, before space and a capital or bold.
-_SENTENCE_END = re.compile(r"[.!?][*)\"']*\s+(?=[A-Z*\[\"])")
-_ABBREVIATIONS = frozenset({"e.g.", "i.e.", "vs.", "cf."})
+# A sentence ends at . ! or ?, after any closing quote, parenthesis, or bracket, before space and more text.
+_SENTENCE_END = re.compile(r"[.!?][\"')\]]*\s+(?=\S)")
+_ABBREVIATIONS = frozenset({"etc.", "vs.", "cf.", "dr.", "mr.", "mrs.", "ms.", "no.", "st.", "fig.", "approx."})
+_INITIALS = re.compile(r"[A-Z]\.|(?:[A-Za-z]\.){2,}")  # J. or e.g., i.e., U.S.
+_LINK_TEXT = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
+_ITEM = re.compile(r"(\s*)- ")
 
 
 @dataclass(frozen=True)
@@ -122,9 +125,11 @@ def sentences(tree: SkillTree, options: Options) -> Iterator[Finding]:
 
 
 def sentence_count(text: str) -> int:
-    """The sentences in one bullet's prose; inline code, link targets, and {…} placeholders count as words."""
-    text = _CODE_SPAN.sub("C", text)
-    text = _LINK_TARGET.sub("]", _PLACEHOLDER.sub("P", text)).strip()
+    """The sentences in one list item's prose. Inline code and {…} placeholders count as words, a link as its
+    text, and Markdown emphasis and curly quotes are ignored; abbreviations and initials end no sentence."""
+    text = _PLACEHOLDER.sub("P", _CODE_SPAN.sub("C", text))
+    text = _LINK_TEXT.sub(r"\1", text).replace("*", "").replace("_", "")
+    text = text.translate(str.maketrans("\u201c\u201d\u2018\u2019", "\"\"''")).strip()
     if not text:
         return 0
     ends = [match for match in _SENTENCE_END.finditer(text) if not _abbreviation(text, match.start())]
@@ -132,22 +137,31 @@ def sentence_count(text: str) -> int:
 
 
 def _abbreviation(text: str, end: int) -> bool:
-    return text[: end + 1].split()[-1].lower() in _ABBREVIATIONS
+    token = text[: end + 1].split()[-1].lstrip("(\"'[")
+    return token.lower() in _ABBREVIATIONS or _INITIALS.fullmatch(token) is not None
 
 
 def _bullets(lines: tuple[tuple[int, str], ...]) -> list[tuple[int, str]]:
-    """Each top-level `- ` bullet with its indented continuation lines, joined; nested bullets end it."""
-    bullets: list[tuple[int, list[str]]] = []
-    current: list[str] | None = None
+    """Each `- ` list item at any depth with its continuation lines, joined. A continuation is indented to the
+    item's text, even after a blank line; a nested item is its own entry."""
+    items: list[tuple[int, list[str]]] = []
+    open_items: list[tuple[int, list[str]]] = []  # (text indent, parts), outermost first
     for number, line in lines:
-        if line.startswith("- "):
-            current = [line[2:]]
-            bullets.append((number, current))
-        elif current is not None and line[:1].isspace() and line.strip() and not line.lstrip().startswith("- "):
-            current.append(line.strip())
-        else:
-            current = None
-    return [(number, " ".join(parts)) for number, parts in bullets]
+        if not line.strip() or line.lstrip().startswith("|"):
+            continue  # a blank line or a table row inside an item is not its prose
+        indent = len(line) - len(line.lstrip())
+        match = _ITEM.match(line)
+        while open_items and open_items[-1][0] > indent:
+            open_items.pop()
+        if match is not None:
+            if open_items and open_items[-1][0] == indent:
+                open_items.pop()  # a sibling closes the item before it
+            parts = [line[match.end() :]]
+            items.append((number, parts))
+            open_items.append((match.end(), parts))
+        elif open_items:
+            open_items[-1][1].append(line.strip())
+    return [(number, " ".join(parts)) for number, parts in items]
 
 
 def links(tree: SkillTree, options: Options) -> Iterator[Finding]:

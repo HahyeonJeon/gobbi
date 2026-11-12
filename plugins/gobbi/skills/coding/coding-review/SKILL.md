@@ -75,8 +75,8 @@ what the run showed.
 
 #### Each unit has one definition, responsibility, boundary, and set of relations
 
-- For each module, class, and function the change adds or changes, state its definition in one sentence, the
-  one decision it owns, what it hides, and what it depends on and what depends on it.
+- For each module, public class, and public function the change adds or changes, state its definition in one
+  sentence, the one decision it owns, what it hides, and what it depends on and what depends on it.
 - A unit whose definition needs "and", that reaches into a neighbour's internals, or that adds a dependency
   cycle or an upward dependency fails this check. The bar is the fields of a
   [unit definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads them
