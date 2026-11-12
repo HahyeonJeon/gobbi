@@ -37,7 +37,7 @@ agreement.
 
 Canonical sources are `.gobbi/projects/gobbi/skills/python/` and the Python row in the Gobbi language map.
 `plugins/gobbi/skills/python/` is the materialized package projection. Claude and agent discovery resolve to the
-canonical source. The repository sync script is the only projection writer; repair source first, then reconcile
+canonical source. `scripts/guard/guard.py sync` is the only projection writer; repair source first, then reconcile
 and verify the projections.
 
 Only three local passages were safely compacted: toolchain observation interpretation, the

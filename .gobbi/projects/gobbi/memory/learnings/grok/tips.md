@@ -22,9 +22,9 @@ capture files are read. This host cap is not Grok's Partner
 `hookSpecificOutput.additionalContext` only. The hook file names the runtime. The script does not probe for a
 host. SessionStart fires once per session and cannot inject text on a later user turn.
 
-**Application:** Grok SessionStart prints nothing. Store one settings report there. The next eligible Stop
-shows it once and then deletes it. Do not use a per-turn lock. See
-[Session hooks](../../design/feature/stop-reminder.md).
+**Application:** Grok SessionStart prints nothing. Store one settings report there. The next eligible Stop shows it
+once and then deletes it. Do not use a per-turn lock. See [Session hooks](../../design/feature/stop-reminder.md).
+The Gobbi hooks were removed in 2026-11 pending reimplementation; the mechanics here still describe the runtime.
 
 ## Grok roles load from the plugin
 

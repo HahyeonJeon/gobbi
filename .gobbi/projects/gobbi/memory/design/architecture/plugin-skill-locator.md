@@ -37,12 +37,13 @@ Four steps, run once at the Gobbi entry:
 **Divergence rule.** The resolved pair is fixed for the whole session — "one session runs against exactly one
 pair" — re-derived at every entry and compared against the recorded pair.
 
-**Root-pair invariant:** the two roots are one pair, never one value. Gobbi 1.1 still owns manager entry
-resolution in this document. Delegation owns the specialist protocol, including the four failure tokens
-`partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`, and `location-underivable`. Role contracts are
-now [identity-and-load maps](../process/identity-and-load-role-contracts.md): specialists load Delegation and
-validate the supplied or derived pair; they do not restate the protocol. Either the brief supplies both roots
-or supplies neither. A specialist derives both from its own contract's location only in the neither case. A
+**Root-pair invariant:** the two roots are one pair, never one value. Gobbi owns both manager entry resolution
+(Step 1.1) and the specialist protocol (Step 1.2): a brief supplies both roots as absolute expanded paths or
+neither, a specialist checks the pair it holds against the three sentinels before resolving any path from it,
+and a missing, relative, or unresolvable root is reported as Blocked with the observed value. The earlier
+Delegation-owned tokens (`partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`, `location-underivable`)
+and `NO_GOBBI_ROOT` are removed with Delegation's Metadata section. Role contracts are
+[identity-and-load maps](../process/identity-and-load-role-contracts.md) and do not restate the protocol. A
 supplied root is never trusted unvalidated.
 
 ### Verified topology trace
@@ -70,8 +71,8 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
   `gobbi:principles`, `gobbi:gobbi` — never the bare form. 28 skills and 5 agent types observed, all prefixed,
   on both Claude Code and Codex CLI. The entry's configuration gate recommends the prefixed form for a
   consumer and the bare form for this repository, with the reason stated rather than a both-spellings hedge.
-- **A spawned specialist (leader, executor, evaluator, assistant) has no `Skill` tool** unless its role's
-  `tools:` frontmatter grants one, so it cannot itself read the "Base directory" report. It receives the
+- **A spawned specialist (at measurement time: leader, executor, evaluator, assistant) has no `Skill` tool** unless
+  its role's `tools:` frontmatter grants one, so it cannot itself read the "Base directory" report. It receives the
   resolved pair from its brief instead; the root-pair invariant above is what makes that safe.
 - **Grok entry uses the `.agents` pair, not `.grok/skills`.** This Workflow entered on Grok 1.0.4 with
   `{gobbi-skills-root}` `.agents/skills` and `{gobbi-agents-root}` `.agents/agents`. The
@@ -93,6 +94,6 @@ plugin installed via a real marketplace), not by reasoning about either runtime'
 ## References
 
 - `gobbi/SKILL.md` Procedure Step 1.1 — the locator contract
-- [Delegation](../../../skills/delegation/SKILL.md) — specialist root-pair protocol and `NO_GOBBI_ROOT`
+- [Gobbi](../../../skills/gobbi/SKILL.md) Steps 1.1 and 1.2 — manager and specialist root-pair protocol
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) — current role-file shape
 - [`reports/review/2026-08-02-locator-partner-agentteams-review.md`](../../reports/review/2026-08-02-locator-partner-agentteams-review.md) — evaluation and probe evidence

@@ -52,6 +52,9 @@ own top level is the branch.
 
 ## Locked decisions
 
+Status: the setup scripts and the SessionStart hook were removed on 2026-11-06 for reimplementation;
+statements here about them describe the removed design.
+
 The user locked these layout decisions in the 2026-08-01 fix and the later standalone `gobbi-setup` topic:
 
 - **Nested layout, not flat.** `.gobbi/projects/<project>/...` stays; a flat top-level form was considered
@@ -95,6 +98,9 @@ only tracked write Gobbi makes outside a session worktree, and it covers only th
 ignore file — nothing else.
 
 ## Settings check and layout stops
+
+Status: the setup scripts and the SessionStart hook were removed on 2026-11-06 for reimplementation;
+statements here about them describe the removed design.
 
 Gobbi Step 1.3 does not probe layout, stop on layout, or run setup `--check`. The SessionStart hook runs that
 runtime's setup `--check` and reports the result. A passing `--check` exits before the setup writer. See

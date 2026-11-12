@@ -176,3 +176,13 @@ WebFetch summaries of some pages came from the sidebar, not the page body.
 `curl` and read its full text when a claim matters. When the question is "does this follow Palantir's
 standard", include the Ontology REST API reference, which has the machine-readable field names, not only the
 concept pages.
+
+## Run a new check over the whole tree before estimating its fix
+
+**Context:** A review or session adds a check, such as the two-sentence limit on Rules and Step bullets, and
+sizes the fix from the violations a reviewer listed.
+
+**Tip:** The new check found 11 pre-existing violations where a review had listed 4. A reviewer's list
+is a sample, not the whole set.
+
+**Application:** Run the check over every file it covers, then size and schedule the fix from that count.

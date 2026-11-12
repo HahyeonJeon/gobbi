@@ -75,7 +75,7 @@ fails with `===== not found`, and an `&&` chain stops there.
 
 **Correction:** Quote separator words (`echo '-- X --'`) or start them with another character.
 
-**Seen:** 2026-09-25 (4670edff)
+**Seen:** 2026-09-25 (4670edff), 2026-11-11 (session gobbi-skills)
 
 ## zsh does not word-split an unquoted variable
 

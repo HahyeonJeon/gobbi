@@ -55,8 +55,9 @@ a stable public mechanism — it could disappear without notice.
 `hookEventName` `SessionStart` or `UserPromptSubmit`. The hook file names the runtime. The script does not
 probe stdin for a host.
 
-**Application:** Do not register a repository `.claude` Stop hook beside the plugin, and do not detect Claude
-by the absence of `GROK_HOOK_EVENT`. See [Session hooks](../../design/feature/stop-reminder.md).
+**Application:** Do not register a repository `.claude` Stop hook beside the plugin, and do not detect Claude by
+the absence of `GROK_HOOK_EVENT`. See [Session hooks](../../design/feature/stop-reminder.md). The Gobbi hooks were
+removed in 2026-11 pending reimplementation; the mechanics here still describe the runtime.
 
 ## `/plugin marketplace add` creates a full git clone
 
@@ -77,8 +78,8 @@ a reviewer's report write succeeded while a second reviewer's was refused.
 
 **Application:** Run Review through the registered reviewer role types; new role types register only after a
 session restart. Ask every Claude Code reviewer to return its full report in its Handoff, capped at about 40 KB.
-The [Review](../../design/process/evaluation.md#ownership) design treats a write denial as `BLOCKED` and forbids
-a manager scribe. Save a report verbatim, marked manager-saved, only when the user allows it. See
+The [Review](../../design/process/evaluation.md#paths) design has no fallback for a refused write. Save a
+report verbatim, marked manager-saved, only when the user allows it. See
 [Review report persistence](../../backlogs/evaluation.md#review-report-persistence-when-claude-code-refuses-the-report-write).
 
 ## A full model id works in Claude agent frontmatter
@@ -91,3 +92,13 @@ pin took effect.
 
 **Application:** Use that `modelUsage` key to verify a pin after changing a Claude role contract. The
 current pins are in [Role model pins](../../design/process/role-model-pins.md).
+
+## A Claude subagent's shell may start in the main checkout
+
+**Context:** A brief sends a Claude Code subagent into a session worktree, and the work reads or writes files by
+relative path.
+
+**Tip:** The subagent's shell may start in the main checkout, whose files are stale, not in the session worktree.
+The harness may also refuse the subagent's report-file write (see the entry above).
+
+**Application:** Give every brief absolute worktree paths. Ask for the report as the subagent's final message.

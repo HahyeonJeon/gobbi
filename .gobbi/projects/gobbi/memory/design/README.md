@@ -6,17 +6,20 @@ Recursive navigation across design memory, grouped by category.
 
 - [Consumer project bootstrap and layout](architecture/consumer-project-bootstrap.md)
 - [Plugin skill and agent locator](architecture/plugin-skill-locator.md)
+- [Repository guard and skill checker](architecture/repository-guard.md)
 
 ## Feature
 
 - [Authoring skill family](feature/authoring-skill-family.md)
 - [CLI skill family](feature/cli-skill-family.md)
+- [Cleansing skill](feature/cleansing-skill.md)
 - [Coding skill family](feature/coding-skill-family.md)
 - [Design skill family](feature/design-skill-family.md)
 - [Ontology skill](feature/ontology-skill.md)
 - [Partner](feature/partner.md)
 - [Python skill family](feature/python-skill-family.md)
-- [Session hooks](feature/stop-reminder.md)
+- [Session hooks (removed)](feature/stop-reminder.md)
+- [Socratic Method skill](feature/socratic-method-skill.md)
 
 ## Process
 
@@ -25,6 +28,7 @@ Recursive navigation across design memory, grouped by category.
 - [Discussion](process/discussion.md)
 - [Review](process/evaluation.md)
 - [Identity-and-load role contracts](process/identity-and-load-role-contracts.md)
+- [Lesson loop](process/lesson-loop.md)
 - [React skill family](process/react-skill-family.md)
 - [Role model pins](process/role-model-pins.md)
 - [Wrap-up memory](process/wrap-up.md)

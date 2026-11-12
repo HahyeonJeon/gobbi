@@ -3,75 +3,74 @@
 ## Intent
 
 Each Gobbi role file is a load map, not a second procedure owner. Skills own shared procedure. Role files
-keep who the role is, how it behaves, what it loads, what it never does, and which status it returns.
+keep who the role is, what it owns, what it may change, and what it never does. The roles are classified by
+phase and subject, not by domain.
 
 ## File set
 
-- Canonical source: 56 contracts, fourteen roles in each of four runtimes, under
-  `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`.
-- Plugin package: fourteen Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
+- Canonical source: 28 contracts, seven roles in each of four runtimes, under
+  `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`. [`agents/README.md`](../../../agents/README.md)
+  holds the role table and the per-runtime load paths.
+- Plugin package: seven Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
   `agents/claude/`, plus the other runtimes at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`. The
   package cannot nest Claude agents under subfolders of `agents/`, because a plugin's `agents/` directory is
   scanned recursively and each subfolder becomes part of the agent's scoped identifier.
-- This checkout loads Claude, Codex, and Grok from `plugins/gobbi`. Cursor agents stay as symlinks in
-  `.cursor/agents` until a Cursor plugin load is proven. `.cursor/skills` is not a second skill tree, and this
-  checkout does not keep it.
-- Claude has no `.claude/agents` or `.claude/skills`. Codex skills and hooks come from the plugin. Codex role
-  files stay in `.codex/agents`, because Codex does not load plugin agents. The Codex checker does not require
-  `.codex/config.toml`. Grok uses `.grok/plugins/gobbi` and does not keep `.grok/agents`, `.grok/skills`, or
-  `.grok/hooks`. There is no `.agents/agents` follow surface.
+- `scripts/guard/guard.py sync` writes the package copies and `guard.py check` reports drift; the role bodies
+  must stay identical across the four runtimes. See [Repository guard](../architecture/repository-guard.md).
+- Claude has no `.claude/agents` or `.claude/skills`. Codex role files stay in `.codex/agents`, because Codex
+  does not load plugin agents. Grok uses `.grok/plugins/gobbi`. Cursor agents stay as symlinks in
+  `.cursor/agents` until a Cursor plugin load is proven.
 
-The fourteen roles are manager, assistant, and, for coding, authoring, and design, a leader, a planner, an
-executor, and a reviewer. Developer, designer, author, code-reviewer, and docs-reviewer are not live roles.
-`design-reviewer` is the design-domain review role. A role change reaches all four runtime contracts, the
-plugin package, the Cursor and Codex role copies this checkout still keeps, setup, and docs. Do not create a
-role skill.
+## The seven roles
+
+The roles are manager, assistant, leader, developer, designer, author, and reviewer. The twelve domain phase
+roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, and the planner are removed. Leader owns
+Ideation and Planning in every domain. Execution is split by subject: the developer changes code with no
+visual surface, the designer changes work with a visual element (including HTML and web UI and UX) and may use
+the coding skills for it, and the author changes durable docs, skills, and the changelog. The reviewer reads
+another agent's work, never changes it, and never reviews its own.
+
+Leader and reviewer hold no domain. The brief's Role names the domain expert, and the Coding, Authoring, and
+Design skills hold the domain standards that the brief's Materials index. A role change reaches all four
+runtime contracts, the plugin package, the Cursor and Codex role copies this checkout keeps, setup, and docs.
+Do not create a role skill.
 
 ## Role-file shape
 
-Order: runtime frontmatter; H1 with the role name and a short title; one identity paragraph;
-`## Responsibility`; `## In scope`; `## Out of scope`. No Lifecycle, Before You Start protocol, Continuation,
-Red Flags, Quality Expectations, Decision Discipline, or TypeScript / Codebase Constraints section.
+Order: runtime frontmatter; H1 with the role name and a short title; a persona paragraph (the experience,
+abilities, and character the role needs, shown as working habits); `## Responsibility` (the quality bar the
+role owns); `## In scope` (CRUD and the role's subjects); `## Out of scope` (the Nevers). Role files carry no
+backstory or method lines, no status-token vocabulary, and no `NO_GOBBI_ROOT` protocol.
 
-Specialists load Delegation first and validate the supplied or derived root pair. Manager is never briefed.
-Manager roots come from Gobbi 1.1. Specialist Codex wrappers name Delegation. `codex/manager.toml` keeps
-Gobbi 1.1 and does not run `NO_GOBBI_ROOT`.
+The manager reads the manager contract through [Gobbi](../../../skills/gobbi/SKILL.md). A specialist receives
+the root pair in its brief and checks it against the sentinels that Gobbi Step 1.2 names. The manager spawns each
+specialist as its role by [Gobbi Step 2.5](../../../skills/gobbi/SKILL.md#25-spawn-each-specialist-as-its-role).
 
-Status stays role-owned: manager `PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`; other
-roles `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. A reviewer adds `VERDICT` on complete work.
+## Domain loads
 
-## Conditional domain load map
-
-The named role matches the subject domain and the phase. Software is coding. Durable writing is authoring.
-Visual work is design. Ideate is leader. Plan is planner. Implement is executor. Review is reviewer.
-
-| Role | Conditional load | Boundary |
+| Role | Standards it applies | Boundary |
 |---|---|---|
-| Manager | Load the matching domain root — [Coding](../../../skills/coding/SKILL.md), [Authoring](../../../skills/authoring/SKILL.md), or [Design](../../../skills/design/SKILL.md) — when any direct child may apply to the current bounded unit, and use the root only to discover every matching child. In Cowork or Workflow, keep the mode primary and select matching children inside existing stages. | The root owns no sequence, state, or conduct. Each mode retains its paths, gates, policies, and handoff. |
-| Leader | `coding-leader`, `authoring-leader`, or `design-leader` loads the matching domain ideation skill for an unresolved material design choice: [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md), [Authoring Ideation](../../../skills/authoring/authoring-ideation/SKILL.md), or [Design Ideation](../../../skills/design/design-ideation/SKILL.md). | The leader writes the ideation result and does not change the product or review it. |
-| Planner | `coding-planner`, `authoring-planner`, or `design-planner` loads the matching domain planning skill: [Coding Planning](../../../skills/coding/coding-planning/SKILL.md), [Authoring Planning](../../../skills/authoring/authoring-planning/SKILL.md), or [Design Planning](../../../skills/design/design-planning/SKILL.md). | The planner writes the plan and does not change the product. |
-| Executor | `coding-executor`, `authoring-executor`, or `design-executor` loads the matching domain execution skill: [Coding Execution](../../../skills/coding/coding-execution/SKILL.md), [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md), or [Design Execution](../../../skills/design/design-execution/SKILL.md). | The executor changes the product. In-stage self-review stays with that work. Independent review is a reviewer. |
-| Reviewer | `coding-reviewer` loads [Coding Review](../../../skills/coding/coding-review/SKILL.md), `authoring-reviewer` loads [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), and `design-reviewer` loads [Design Review](../../../skills/design/design-review/SKILL.md). | The reviewer reads another agent's work in that domain and does not change it. Domain Review writes `report.md`. Cowork owns the user-called `review` call. Workflow owns stage REVIEW. |
-| Assistant | No domain-family load change. | Narrow lookup and authorized Memory assistance do not become lifecycle implementation or review. |
+| Manager | Loads a domain root only to discover matching children; the mode keeps its own paths and gates. | Session authority: user, mode, routing, assignment, acceptance. |
+| Leader | The matching Ideation and Planning skill of [Coding](../../../skills/coding/SKILL.md), [Authoring](../../../skills/authoring/SKILL.md), or [Design](../../../skills/design/SKILL.md). | Writes the ideation result and the plan result; never changes the product or reviews. |
+| Developer | [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Changes code with no visual surface. |
+| Designer | [Design Execution](../../../skills/design/design-execution/SKILL.md), and coding skills for the code behind it. | Changes work with a visual element. |
+| Author | [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md) | Changes durable docs, skills, and the changelog. |
+| Reviewer | [Review](../../../skills/review/SKILL.md) and the domain bar the brief names. | Reads another agent's work and writes one report; never edits it. |
+| Assistant | None. | Lookup and Memory or record work a brief names. |
 
-The phase reviewer owns independent review, and no reviewer reviews work it produced. The manager accepts.
-See the [Coding skill family](../feature/coding-skill-family.md), [Authoring skill family](../feature/authoring-skill-family.md),
-and [Design skill family](../feature/design-skill-family.md).
-
-Former evaluator loads of Generic Evaluation and both evaluation templates are gone. Cowork still
-names `review`, `report.md`, and `review-depth`. Domain Review is the
-independent-review writer, not a second mode owner.
+The developer, designer, and author self-check but never formally review their own work. See the
+[Coding](../feature/coding-skill-family.md), [Authoring](../feature/authoring-skill-family.md), and
+[Design](../feature/design-skill-family.md) skill families, and [Review](evaluation.md).
 
 ## Ownership
 
 | Subject | Owner |
 |---|---|
-| Manager entry and manager root resolution | [Gobbi](../../../skills/gobbi/SKILL.md) 1.1 |
-| Specialist root-pair protocol and `NO_GOBBI_ROOT` | [Delegation](../../../skills/delegation/SKILL.md) |
-| Continuation write-safety | [Git](../../../skills/git/SKILL.md) |
+| Manager entry, root resolution, role to spawn | [Gobbi](../../../skills/gobbi/SKILL.md) |
+| Brief and handoff shape | [Delegation](../../../skills/delegation/SKILL.md) |
 | Locator acquire/derive/validate at entry | [Plugin skill and agent locator](../architecture/plugin-skill-locator.md) |
+| Model and effort per role | [Role model pins](role-model-pins.md) |
 
 ## References
 
-- Canonical Delegation and Git skills, and their plugin copies, hold the moved protocol.
 - [2026-08-16 session history](../../history/2026-08-16-gobbi-v1-2-0.md)

@@ -19,36 +19,6 @@ contract did not include them.
 Principles](../../skills/coding/principles.md) Simplicity. Every example must stay typed Python 3.12 and pass
 `mypy --strict --python-version 3.12`. See the [Coding skill family design](../design/feature/coding-skill-family.md).
 
-## Coding Planning repeats leaf text and invariant checks
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Decide whether Coding Planning should stop copying each leaf's title, work, boundary, and output
-from the task hierarchy into the plan's task group, and whether Step 3.4 should stop repeating the six
-invariant checks that Step 3.3 already ran.
-
-**Why backlogged:** The 2026-09-25 coding review raised both as an extra note. The user did not decide them,
-so the topic contract excluded them.
-
-**Context:** [Coding Planning](../../skills/coding/coding-planning/SKILL.md) Step 3.2 says "Copy or
-restate every combined leaf's title, work, boundary, and output into the group" so each group reads without
-its task paths. Step 3.4 repeats the six checks "against the final bytes" before the freeze. Removing either
-changes what a task-group reader must open and what the freeze proves.
-
-## Coding Review report records the review depth
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Add a header field for the bound `review-depth` token to the Coding Review report template, so a
-reader can check which in-contract bar the review applied.
-
-**Why backlogged:** The 2026-09-25 review asked for this field together with the `review-depth` definitions.
-The accepted work defined the tokens in Coding Review Step 1.1 and left `report.md` unchanged.
-
-**Context:** The [report template](../../skills/coding/coding-review/report.md) header names target,
-reviewer, independence, and criteria only. Cowork and Workflow send a `review-depth` token with every Coding
-Review call; see [Review](../design/process/evaluation.md#review-depth).
-
 ## OOP child repeats public API and no-pattern policy
 
 **Backlogged at:** 2026-09-25T15:10:31Z
@@ -144,3 +114,16 @@ deferred it.
 **Context:** [Workflow](../../skills/workflow/SKILL.md) Step 1.5 passes a "caller-named draft location
 under `{session-root}/tmp/`". [Coding Ideation](../../skills/coding/coding-ideation/SKILL.md) stops when no
 draft location is named. See the [Coding skill family design](../design/feature/coding-skill-family.md).
+
+## Coding Ideation subagent step versus the leader's authority
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Reconcile Coding Ideation Step 2.2, which tells the agent to get suggestions and critique from
+independent subagents, with the `leader` role, which may not spawn agents.
+
+**Why backlogged:** The Pstack comparison found the conflict. The Step falls back to the caller's participant
+policy when no subagent can launch, so the work is not blocked, but the two texts disagree.
+
+**Context:** See [Coding Ideation](../../skills/coding/coding-ideation/SKILL.md) Step 2.2 and the
+[leader role](../../agents/claude/leader.md), whose Out of scope says never to spawn agents.

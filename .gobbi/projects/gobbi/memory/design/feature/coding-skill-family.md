@@ -3,12 +3,13 @@
 ## Intent
 
 The [Coding root](../../../skills/coding/SKILL.md) is a navigation-only domain skill for code design,
-planning, implementation, independent review, and object-oriented design preferences. It routes every
+planning, implementation, the review bar, and object-oriented design preferences. It routes every
 applicable direct child and owns no lifecycle procedure, sequence, state, gate, recovery policy, or child
 judgment.
 
-The family has five direct children. The four operations are `coding-ideation`, `coding-planning`,
-`coding-execution`, and `coding-review`. The one preference is `coding-object-oriented-programming`. The
+The family has five direct children. The three operations are `coding-ideation`, `coding-planning`, and
+`coding-execution`. The two preferences are `coding-object-oriented-programming` and `coding-review`, the code
+bar that the shared [Review](../../../skills/review/SKILL.md) skill applies. The
 canonical skills own their live procedures and preferences. Top-level Ideation, Planning, Study, Execution,
 and Evaluation skills are gone without an alias. This design records the current family shape, ownership,
 routing, and Review meaning without copying skill procedures.
@@ -19,9 +20,9 @@ routing, and Review meaning without copying skill procedures.
 |---|---|---|---|
 | [Coding](../../../skills/coding/SKILL.md) | Domain | Discovers every direct child whose applicability contract matches the current bounded unit. | Owns navigation only. It never conducts Cowork or Workflow work. |
 | [Coding Ideation](../../../skills/coding/coding-ideation/SKILL.md) | Operation | Owns study with the OOP child and Coding Principles, discussion with independent subagents, a three-level design, and a user-confirmation stop with a draft and a resume entry, then one indexed result for an unresolved material code-design choice. | Stops before Planning or realization. |
-| [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Owns decomposition, grouping, order, and dispatch for defined code work. It takes leaves and writer frontiers from the accepted design; with no Ideation result, the caller's topic contract is the design. | Stops before implementation recipes. Coding Execution may order work only inside one accepted task. |
-| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, repair, one principles self-review, and handoff for one code task with no open material code-design choice, whether or not Coding Ideation ran. It also owns code-specialist selection, affected-code reach, one local thinking guide, and the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
-| [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Operation | Reviews one exact frozen code subject independently and writes `report.md`. | Derives a contract-gate verdict that Cowork and Workflow gate on. No target-mutation right, `gate.md` write, correction, or acceptance authority. |
+| [Coding Planning](../../../skills/coding/coding-planning/SKILL.md) | Operation | Splits settled code work into goal-based tasks, one `plan-NN-slug.md` per major goal with a Mermaid Task Graph (an edge `A --> B` means B uses A's result). Each task has a Goal, Context, Constraints, and Taste and Preference, written as Delegation defines them; with no Ideation result, the caller's topic contract is the design. | Stops before implementation steps. Coding Execution may order work only inside one accepted task. |
+| [Coding Execution](../../../skills/coding/coding-execution/SKILL.md) | Operation | Owns implementation, verification, and handoff for one code task with no open material code-design choice, whether or not Coding Ideation ran. It records a baseline before the first edit, builds in small proven increments, applies Coding Principles while it writes, leaves no stale caller, mirror, generated output, or test, and follows the caller's commit-or-retain policy. | Gains no Review or acceptance authority. |
+| [Coding Review](../../../skills/coding/coding-review/SKILL.md) | Preference | The domain bar of nine to twelve checks, including structure, commonality and variability, and vocabulary, that Review applies to software source, tests, run or build config, and code design. | Owns no procedure, report, or verdict. |
 | [Coding Object-Oriented Programming](../../../skills/coding/coding-object-oriented-programming/SKILL.md) | Preference | Owns the defaults for classes, interfaces, and inheritance, and the OOP principle, SOLID, and design pattern entries. | Owns no procedure, stage, or design decision. Accepted designs and project conventions come before its defaults. |
 
 Language, framework, platform, tool, and product-domain skills retain their specialist judgments
@@ -48,31 +49,25 @@ becomes a prerequisite for direct child use.
   consistency-bound tests, configuration, schemas, generated views, documents, behavior, failures, recovery,
   and consumers in one code-primary unit. Split independently assignable outcomes through Coding Planning.
 - There is no Generic Evaluation skill. Cowork owns the user-called `review` call, and Workflow owns stage
-  REVIEW. Coding Review writes the independent report; see [Review](../process/evaluation.md).
+  REVIEW. The shared Review skill owns the independent report; see [Review](../process/evaluation.md).
 - Re-entry starts at the earliest owner whose accepted input changed. The manager or mode tracks result identity
   and freshness; the Coding root does not.
 
 ## Review
 
-Coding Review is independent: the caller assigns a fresh `coding-reviewer` that did not design, author, or
-implement the target. It keeps the target, criteria, acceptance state, and workflow state read-only. It writes
-only files the review creates, such as `report.md` and check output.
-
-Coding Review labels each Problem and Improvement `in-contract` or `out-of-contract`. It derives a contract-gate
-verdict only from in-contract Problems, sufficient evidence, and caller-supplied criteria. Cowork aggregates
-these verdicts from complete reports, and Workflow writes `gate.md` from them. The quality opinion
-(`meets-design`, `mixed`, `does-not-meet`, or `not-available`) never changes the verdict.
-
-A bound `review-depth` token sets the in-contract bar: `ideation-design`, `planning-decomposition`,
-`execution-implementation`, or `by-owning-stage` for each artifact's owning stage. Durable Reports Memory
-requires a separate authorized Memory action.
+Review is independent: the caller assigns a fresh `reviewer` that did not design, author, or implement the target,
+and the reviewer never edits it. The shared [Review](../../../skills/review/SKILL.md) skill owns the procedure,
+the blocking rule, the report, and the verdict; see [Review](../process/evaluation.md). Coding Review supplies
+only the code bar: short checks for correctness, structure, commonality and variability, and vocabulary. The
+`review-depth` tokens, contract labels, quality opinions, and the `report.md` template of the earlier Coding
+Review are removed.
 
 ## Shared code-quality bar
 
 [Coding Principles](../../../skills/coding/principles.md) and, for object-oriented code, the OOP child are the
-quality bar Coding Review loads before its critique. Coding Execution applies the same principles while it
-writes and again when it reviews the verified change. Coding Execution records the self-review result in its
-handoff and writes no Review report.
+quality bar Coding Review applies. Coding Principles are heuristics a reviewer applies. Coding Execution applies
+the same principles while it writes and simplifies code, writes no Review report, and gives no formal verdict on
+its own work.
 
 ## Shared coding principles
 
@@ -132,17 +127,17 @@ function its unit definition and caller contract. Codebase Structure places each
 chosen with Modularization and Naming. No pattern is the default; an added pattern records its force and the
 simpler form it replaces. The user sees a tree of the three levels, a schema of the public classes and functions,
 and a diagram of the directories and files. Unconfirmed work stays in the caller-named draft location, and Coding
-Ideation stops if the caller names none. Cowork and Workflow each name one under `{session-root}/tmp/`. The user's
-recorded answer resumes the work at Step 1.1. After confirmation, each decision lives only in its Design heading,
-and the Discussion topic links to that heading. The templates and the result are flat, with every file directly in
-the output root, and there is no Requirements snapshot.
+Ideation stops if the caller names none. Cowork names one under the current topic's `tmp/`, and Workflow names its
+own. The user's recorded answer resumes the work at Step 1.1. After confirmation, each decision lives only in its
+Design heading, and the Discussion topic links to that heading. The templates and the result are flat, with every
+file directly in the output root, and there is no Requirements snapshot.
 
 Coding Execution applies Simplicity first, then the other Coding Principles, while it writes and simplifies code.
 It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance. With an
-Ideation design, it builds each class and function to the Class and Function Design and its caller contract, reads
-only the entries that design names, and adds no pattern the design does not name. With no Ideation, it designs each
-unit it creates with the principles and records the unit definition and caller contract of each new public unit,
-and any added abstraction's force, in its handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
+Ideation design, it builds each unit to its design and caller contract, and adds no pattern the design does not
+name. With no Ideation, it designs each unit it creates with the principles and records the unit definition and
+caller contract of each new public unit, and any added abstraction's force, in its handoff. It keeps
+accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
 
 Coding Review is the domain bar inside the shared Review skill. Its Structure checks test each added or changed
 unit against the Ontology unit definition as Modularization reads it, and Coding Principles and the OOP child
@@ -174,7 +169,8 @@ released changelog entries retain their point-in-time names and facts.
 ## Related designs
 
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
-  use the same navigation-only shape with four direct operation children. Coding adds one preference child.
+  use the same navigation-only shape with three direct operation children and a Review preference child. Coding
+  adds the OOP preference child.
 - [Ontology skill](ontology-skill.md) records the unit definition that Modularization applies to code.
 - [Review](../process/evaluation.md) records live Review facts and that Generic Evaluation is gone.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
