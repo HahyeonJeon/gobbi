@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.3-blue" alt="Version 1.3.3"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.0-blue" alt="Version 1.4.0"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -29,8 +29,8 @@ Run these commands in a Claude Code session:
 ```
 
 This checkout enables `gobbi@gobbi` in `.claude/settings.json`. It does not keep `.claude/agents`,
-`.claude/skills`, or a settings `hooks` object. Claude loads agents, skills, and `hooks/hooks.json` from
-`plugins/gobbi`.
+`.claude/skills`, or a settings `hooks` object. Claude loads agents and skills from `plugins/gobbi`. The
+package has no hooks and no settings check in this release.
 
 Allow the seven Gobbi roles in your project `.claude/settings.json`.
 The roles are manager, assistant, leader, developer, designer, author, and reviewer.
@@ -70,9 +70,10 @@ codex plugin marketplace add HahyeonJeon/gobbi
 codex plugin add gobbi@gobbi-workspace
 ```
 
-Codex needs no Claude Code permission configuration. This checkout loads Codex skills and the reminder
-hook from `plugins/gobbi` through `.agents/plugins/marketplace.json`. Role files stay in `.codex/agents`,
-because Codex does not load plugin agents. Do not add `.codex/hooks.json`. That file would register a second hook.
+Codex needs no Claude Code permission configuration. This checkout loads Codex skills from `plugins/gobbi`
+through `.agents/plugins/marketplace.json`. Role files stay in `.codex/agents`, because Codex does not load
+plugin agents; copy them by hand as described under Create the project layout below. The package declares no
+hooks, so do not add `.codex/hooks.json`.
 
 ### Grok
 
@@ -97,13 +98,8 @@ Then install Gobbi from the Marketplace tab with trust, or from the command line
 grok plugin install gobbi --trust
 ```
 
-Do not use Claude `/plugin` as the Grok install path. An enabled, trusted Grok install runs the reminder hook
-from the package itself: `.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json`, which registers a
-`Stop` handler running `hooks/remind.sh` with `grok` as its argument. No copy into `~/.grok/hooks/` is needed.
-
-Prove the hook with `grok inspect --json`: an entry whose `source.type` is `plugin`, whose `source.plugin_name`
-is `gobbi`, and whose `target` ends in `hooks/grok-hooks.json`. Grok reports that entry's `event` as
-`(plugin)` and does not resolve the inner `Stop` there. Start a new Grok session in the consumer project.
+Do not use Claude `/plugin` as the Grok install path. The package declares no hooks in this release, so there
+is no hook to trust or inspect. Start a new Grok session in the consumer project.
 
 A repository checkout already exposes the package through `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove
 that load with `grok inspect --json`: the `plugins` list contains `name` `gobbi`, `scope` `project`,
@@ -116,39 +112,65 @@ does not keep `.grok/agents`, `.grok/skills`, or `.grok/hooks`.
 
 This checkout keeps `.cursor/agents` because a Cursor plugin load is not proven. Those files are symlinks
 to the canonical Cursor contracts. It does not keep `.cursor/skills`, because Grok scans that directory and
-would load the same skills beside `plugins/gobbi`. The package contains a Cursor manifest and
-`hooks/cursor-hooks.json` for an installed plugin. This checkout does not load that plugin. Start the parent
+would load the same skills beside `plugins/gobbi`. The package contains a Cursor manifest for an
+installed plugin, with no hooks. This checkout does not load that plugin. Start the parent
 session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare `agent`. Official help
 names it `agent`.
 
 Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
-After install, create missing layout with the matching runtime guide and script under `skills/gobbi/setup/`:
-[claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md),
-[codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md),
-[cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md), or
-[grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md). Setup is not a skill. Gobbi entry does not run it.
+### Create the project layout
 
-## Upgrade to 1.3.3
+The setup scripts and the settings check are removed from 1.4.0 and are planned to return in a later release.
+Until then, create the layout by hand after install. From your project's worktree, run the shell block in
+[Create the project layout by hand](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md#create-the-project-layout-by-hand);
+it makes `.gobbi/.gitignore` and the `.gobbi/projects/<project>/` tree with its six Memory categories, and it
+is safe to run again. Commit `.gobbi/` before your first session.
 
-Version 1.3.3 includes new features and removes the old specialist role names. The patch version is a
-project decision and an exception to Semantic Versioning. Update existing role calls and Claude `Agent(...)`
-permissions using the domain and phase:
+Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does not run it.
 
-| Old role | New role family |
+- Claude Code: allow the seven roles in `.claude/settings.json` as shown above. See
+  [claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md).
+- Codex: copy the seven role files from the plugin's `runtimes/codex/` into `.codex/agents/` byte for byte. See
+  [codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md).
+- Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
+- Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
+
+## Upgrade to 1.4.0
+
+Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is an
+exception to Semantic Versioning, as 1.3.3 was. The breaking changes are the removed skills, the five phase
+roles that replace the twelve domain phase roles (manager and assistant stay), the removed setup scripts and hooks,
+and the renamed terms.
+
+Gobbi now has seven roles: manager, assistant, leader, developer, designer, author, and reviewer. Replace each
+old role call by its phase:
+
+| Old role | New role |
 |---|---|
-| `developer` | `coding-*` |
-| `author` | `authoring-*` |
-| `designer` | `design-*` |
+| `coding-leader`, `coding-planner`, `authoring-leader`, `authoring-planner`, `design-leader`, `design-planner` | `leader` |
+| `coding-executor` | `developer` |
+| `design-executor` | `designer` |
+| `authoring-executor` | `author` |
+| `coding-reviewer`, `authoring-reviewer`, `design-reviewer` | `reviewer` |
 
-Choose `leader` for ideation, `planner` for planning, `executor` for execution, and `reviewer` for review.
-For example, implementation formerly assigned to `developer` now uses `coding-executor`.
+Work with a visual element, including HTML and web UI, goes to `designer`. Put the domain expert in the brief's
+Role instead of the role name.
 
-Rerun the matching runtime setup script linked above. Codex setup adds the new `.codex/agents` role files.
-Claude Code and Grok load roles from the updated plugin. Cursor projects using
-`.cursor/agents` must update those files from the [Cursor role contracts](plugins/gobbi/runtimes/cursor/).
-Setup leaves existing `.claude/settings.json` and old project role files untouched. Update those permissions
-and remove obsolete role files after migrating their callers.
+Then update each runtime by hand, because the setup scripts no longer exist:
+
+- Claude Code: in `.claude/settings.json`, replace the twelve old `Agent(gobbi:...)` phase-role entries with
+  `Agent(gobbi:leader)`, `Agent(gobbi:developer)`, `Agent(gobbi:designer)`, `Agent(gobbi:author)`, and
+  `Agent(gobbi:reviewer)`. The plugin supplies the roles.
+- Codex: replace all seven role files in `.codex/agents/` with the plugin's `runtimes/codex/` copies, including
+  `manager.toml` and `assistant.toml`, whose 1.3.3 copies still route to the removed roles. Delete the twelve old
+  role files after you migrate their callers.
+- Cursor: update projects that use `.cursor/agents` from the [Cursor role contracts](plugins/gobbi/runtimes/cursor/).
+- Grok: the plugin supplies the roles. If you installed a Gobbi Grok hook earlier, remove its copy from
+  `~/.grok/hooks/`.
+
+The setup scripts and the settings check are planned to return in a later release. Until then, no hook checks
+your settings, and nothing edits an existing `.claude/settings.json` or deletes old role files for you.
 
 ## Start your first session
 

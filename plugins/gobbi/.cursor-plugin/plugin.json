@@ -1,7 +1,7 @@
 {
   "name": "gobbi",
-  "version": "1.3.3",
-  "description": "Gobbi workflow skills, plugin agents, and session reminder for Cursor.",
+  "version": "1.4.0",
+  "description": "Gobbi workflow skills and plugin agents for Cursor.",
   "author": { "name": "HahyeonJeon", "email": "jeonhh0061@gmail.com" },
   "keywords": ["gobbi", "workflow", "cursor"],
   "agents": "./runtimes/cursor"

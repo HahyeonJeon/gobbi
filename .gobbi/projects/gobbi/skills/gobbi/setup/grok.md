@@ -18,53 +18,37 @@ Then install with trust:
 grok plugin install gobbi --trust
 ```
 
-Do not use Claude `/plugin`. An enabled, trusted install runs the package hooks.
-`.grok-plugin/plugin.json` points Grok at `hooks/grok-hooks.json`. `SessionStart` runs
-`check-settings.sh grok`, which prints nothing and stores one report, because Grok SessionStart
-text is not visible to the model. The next `Stop` runs `remind.sh grok`, which appends that report
-once and then deletes it. Do not copy that hook into `~/.grok/hooks/`.
+Do not use Claude `/plugin`. The package declares no hooks in this release, so there is no hook to trust or
+inspect.
 
 A repository checkout already exposes `.grok/plugins/gobbi` → `../../plugins/gobbi`. Prove load with
 `grok inspect --json`: `plugins` contains `name` `gobbi`, `scope` `project`, `enabled` true.
 This checkout invokes Gobbi as `/gobbi:gobbi`. It does not keep `.grok/agents`, `.grok/skills`, or
 `.grok/hooks`.
 
-## Create missing project layout
+## Create the project layout by hand
 
-The layout is in [Claude Code setup](claude.md#project-layout); every runtime uses the same tree.
+The setup scripts are removed and planned to return in a later release. The layout is in
+[Claude Code setup](claude.md#project-layout); every runtime uses the same tree. From the consumer worktree,
+create it with the shell block in [Create the project layout by hand](claude.md#create-the-project-layout-by-hand).
 
-From the consumer worktree, run the checker, then the writer. Neither script writes under `.grok/`.
-
-```bash
-<path-to-plugin>/skills/gobbi/setup/scripts/grok.sh --check
-<path-to-plugin>/skills/gobbi/setup/scripts/grok.sh
-```
-
-Pass `--project-key` when the derived key fails. Pass `--skills-root` and `--agents-root` together when
-the script is not running from a packaged plugin. Check only with `--check`.
-
-Setup creates missing `.gobbi/` layout, Memory directories, `.claude/` placeholders, and Codex role copies
-when those paths are absent. It never creates `.grok/skills`, `.grok/agents`, or a Grok hook registration.
+Do not create `.grok/skills`, `.grok/agents`, or a Grok hook registration by hand.
 
 ## After setup
 
 - Start a new Grok session in the consumer project.
-- Prove the hook with `grok inspect --json`: `source.type` is `plugin`, `source.plugin_name` is `gobbi`,
-  and `target` ends in `hooks/grok-hooks.json`. Grok reports that entry's `event` as `(plugin)`.
-- If `~/.grok/hooks/hooks.json` exists, it duplicates the plugin hook. Remove it:
+- If you installed an earlier Gobbi version that registered a Grok hook, check that `~/.grok/hooks/hooks.json`
+  is Gobbi's and not another tool's hook, then remove it so it does not run:
 
   ```bash
   rm -f ~/.grok/hooks/hooks.json
   ```
-
 - Grok participants come from the plugin `runtimes/grok` roles plus official Grok subagents.
   The checkout entry is `/gobbi:gobbi`.
-- The `Stop` hook fires at turn end and costs one extra model round.
 
-## Scripts
+## Setup scripts and settings check
 
-| Script | Path |
-|---|---|
-| Writer and checker | `scripts/grok.sh` (being reimplemented; not in this release) |
+The Grok setup script and the SessionStart settings check are not in this release. Both are planned to return
+in a later release. Until then, the manual steps above replace the script.
 
 Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Cursor](cursor.md).

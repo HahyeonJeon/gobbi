@@ -9,41 +9,30 @@ This checkout keeps `.cursor/agents` because a Cursor plugin load is not proven.
 to the canonical Cursor contracts. It does not keep `.cursor/skills`. Grok scans that directory, so Gobbi
 skill links there register `local:gobbi` beside the plugin's `gobbi:gobbi`.
 
-The package still has `.cursor-plugin/plugin.json`, `runtimes/cursor`, and `hooks/cursor-hooks.json` for an
-installed plugin. This checkout does not load that plugin. There is no repo-root
-`.cursor-plugin/marketplace.json`.
+The package still has `.cursor-plugin/plugin.json` and `runtimes/cursor` for an installed plugin. This checkout
+does not load that plugin. There is no repo-root `.cursor-plugin/marketplace.json`, and the package declares no
+hooks in this release.
 
 Start the parent session as `grok-4.7[effort=high]`. The required binary is `cursor-agent`, never bare
 `agent`. Official help names it `agent`.
 
-## Create missing project layout
+## Create the project layout by hand
 
-The layout is in [Claude Code setup](claude.md#project-layout); every runtime uses the same tree.
+The setup scripts are removed and planned to return in a later release. The layout is in
+[Claude Code setup](claude.md#project-layout); every runtime uses the same tree. From the consumer worktree,
+create it with the shell block in [Create the project layout by hand](claude.md#create-the-project-layout-by-hand).
 
-From the consumer worktree:
-
-```bash
-<path-to-plugin>/skills/gobbi/setup/scripts/cursor.sh --check
-<path-to-plugin>/skills/gobbi/setup/scripts/cursor.sh
-```
-
-Pass `--project-key` when the derived key fails. Pass `--skills-root` and `--agents-root` together when
-the script is not running from a packaged plugin. Check only with `--check`.
-
-Setup never writes under `.cursor/`, and it never creates `.cursor/agents` or `.cursor/skills`. This
-checkout's Cursor agents are the local adapter. Cursor plugin load is not the checkout path.
+Do not create `.cursor/agents` or `.cursor/skills` by hand. This checkout's Cursor agents are the local
+adapter, symlinks to the canonical Cursor contracts, and Cursor plugin load is not the checkout path.
 
 ## After setup
 
-- For an installed Cursor plugin, `hooks/cursor-hooks.json` runs `check-settings.sh cursor` on
-  `sessionStart` before `remind.sh`, and the check prints JSON `additional_context`. This checkout does
-  not load that plugin, and there is no `.cursor/hooks.json`, so that hook does not run here.
+- There is no `.cursor/hooks.json` and no hook to run in this release.
 - Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
-## Scripts
+## Setup scripts and settings check
 
-| Script | Path |
-|---|---|
-| Writer and checker | `scripts/cursor.sh` (being reimplemented; not in this release) |
+The Cursor setup script and the SessionStart settings check are not in this release. Both are planned to return
+in a later release. Until then, the manual steps above replace the script.
 
 Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Grok](grok.md).

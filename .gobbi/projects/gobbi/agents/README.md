@@ -57,10 +57,10 @@ Checkout load paths. Each runtime reads the package, or the one local adapter th
 It does not read both.
 
 - Claude Code reads `plugins/gobbi`. This checkout enables `gobbi@gobbi` and does not register
-  `.claude/agents`, `.claude/skills`, or a settings hook.
+  `.claude/agents`, `.claude/skills`, or a settings `hooks` object.
 - Grok reads `plugins/gobbi` through `.grok/plugins/gobbi`. This checkout does not register `.grok/agents`,
   `.grok/skills`, or `.grok/hooks`. The entry is `/gobbi:gobbi`.
-- Codex skills and hooks read `plugins/gobbi`. Codex roles stay at `.codex/agents/{role}.toml` →
+- Codex skills read `plugins/gobbi`. Codex roles stay at `.codex/agents/{role}.toml` →
   `codex/{role}.toml`, because Codex does not load plugin agents. This checkout does not register
   `.codex/hooks.json`.
 - Cursor stays a project adapter until a Cursor plugin load is proven. `.cursor/agents/{role}.md` →
@@ -75,7 +75,7 @@ unlimited depth, and a subfolder becomes part of the agent's scoped identifier �
 `agents/review/security.md` in plugin `p` registers as `p:review:security`. Documented for Claude Code at
 `docs/en/sub-agents`, and measured: same-basename files in different subdirectories do **not** collide, so
 shipping `agents/claude/manager.md` would register `gobbi:claude:manager` instead of `gobbi:manager`, and the
-cursor and grok copies would add ten more live agents with identical leaf names. `claude plugin validate
+cursor and grok copies would add fourteen more live agents with identical leaf names. `claude plugin validate
 --strict` reports no warning about any of it.
 
 So the package flattens Claude's contracts into `agents/` and ships the other three in a `runtimes/` sibling,

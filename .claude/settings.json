@@ -1,8 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
-  },
   "teammateMode": "in-process",
   "permissions": {
     "allow": [
@@ -19,6 +15,9 @@
       "Skill(gobbi:authoring-planning)",
       "Skill(gobbi:authoring-review)",
       "Skill(gobbi:cleansing)",
+      "Skill(gobbi:cleansing-code)",
+      "Skill(gobbi:cleansing-design)",
+      "Skill(gobbi:cleansing-docs)",
       "Skill(gobbi:coding)",
       "Skill(gobbi:coding-execution)",
       "Skill(gobbi:coding-ideation)",

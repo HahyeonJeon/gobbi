@@ -43,7 +43,7 @@ ALLOWED_CAPS = frozenset(
         "UI", "URL", "UTC", "UUID", "WCAG",
         # File names
         "README",
-        # Workflow Ontology unit tokens
+        # Workflow work-item tokens
         "DISCUSSION", "RECORD", "REVIEW", "WORK",
         # Gate tokens
         "FAIL", "PASS", "REVISE",

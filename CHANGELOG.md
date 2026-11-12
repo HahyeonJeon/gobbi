@@ -7,17 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-**Upgrade:** Gobbi now has seven roles: manager, assistant, leader, developer, designer, author, and
-reviewer. Replace each old `coding-*`, `authoring-*`, or `design-*` role call by its phase. A `*-leader` or
-`*-planner` call becomes `leader`, and a `*-reviewer` call becomes `reviewer`. A `coding-executor` call becomes
-`developer`, a `design-executor` call becomes `designer`, and an `authoring-executor` call becomes `author`;
-work with a visual element, including HTML and web UI, goes to `designer`. Put the domain expert in the brief's
-Role instead of the role name. In Claude `.claude/settings.json`, replace the twelve old `Agent(gobbi:...)`
-phase-role entries with `Agent(gobbi:leader)`, `Agent(gobbi:developer)`, `Agent(gobbi:designer)`,
-`Agent(gobbi:author)`, and `Agent(gobbi:reviewer)`. Rerun the matching runtime setup script; Codex setup adds
-the five new `.codex/agents` role files. Claude Code and Grok load the roles from the updated plugin. Update Cursor project
-adapters from the new Cursor role contracts. Setup does not edit an existing `.claude/settings.json` and does
-not delete old role files; remove those after you migrate their callers.
+## 1.4.0 - 2026-11-12
+
+**Upgrade:** Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is
+an exception to Semantic Versioning, as 1.3.3 was. The breaking changes are the removed skills, the five phase
+roles that replace the twelve domain phase roles (manager and assistant stay), the removed setup scripts and hooks,
+and the renamed terms. Gobbi
+now has seven roles: manager, assistant, leader, developer, designer, author, and reviewer. Replace each old
+`coding-*`, `authoring-*`, or `design-*` role call by its phase. A `*-leader` or `*-planner` call becomes
+`leader`, and a `*-reviewer` call becomes `reviewer`. A `coding-executor` call becomes `developer`, a
+`design-executor` call becomes `designer`, and an `authoring-executor` call becomes `author`; work with a visual
+element, including HTML and web UI, goes to `designer`. Put the domain expert in the brief's Role instead of the
+role name. Update each runtime by hand, because the setup scripts no longer exist. In Claude
+`.claude/settings.json`, replace the twelve old `Agent(gobbi:...)` phase-role entries with
+`Agent(gobbi:leader)`, `Agent(gobbi:developer)`, `Agent(gobbi:designer)`, `Agent(gobbi:author)`, and
+`Agent(gobbi:reviewer)`. For Codex, replace all seven role files in `.codex/agents/` with the plugin's `runtimes/codex/` copies,
+including `manager.toml` and `assistant.toml`, whose 1.3.3 copies still route to the removed roles. Claude Code and Grok load the roles from the updated plugin. Update Cursor project adapters from
+the new Cursor role contracts. Remove old role files after you migrate their callers; nothing deletes them for
+you. A new project creates its layout by hand with the steps in the README. The setup scripts and the settings
+check are planned to return in a later release.
 
 ### Added
 
@@ -31,11 +39,11 @@ not delete old role files; remove those after you migrate their callers.
 
 ### Removed
 
-- Removed every script and hook, to be reimplemented: the SessionStart settings check, the per-prompt and Stop reminder, the setup scripts for each runtime, `scripts/sync-plugin-package.sh`, `scripts/prove-gobbi-setup.sh`, and `link-project-skills.sh`. The Codex, Cursor, and Grok manifests no longer declare `hooks`. Until reimplementation, the setup guides and the README install steps that name these scripts or hooks are out of date; `scripts/guard/guard.py sync` (see Added) now keeps the package in step with canonical.
+- Removed every plugin script and hook, to be reimplemented: the SessionStart settings check, the per-prompt and Stop reminder, the setup scripts for each runtime, `scripts/sync-plugin-package.sh`, `scripts/prove-gobbi-setup.sh`, and `link-project-skills.sh`. The Codex, Cursor, and Grok manifests no longer declare `hooks`. Until they return in a later release, the setup guides and the README give manual steps in their place, and `scripts/guard/guard.py sync` (see Added) keeps the package in step with canonical.
 - **Breaking:** Removed the twelve domain phase roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, in every runtime. Removed the planner role; leader now owns Planning.
 - Removed the Checklist skill and every reusable checklist under Gobbi skills. Review writes one report per reviewer from the Review report template. Workflow, Cowork, and Partner no longer require a sibling `checklist.md`.
 - Removed the Domain Skill naming standard. Child names stay `{domain}-{capability}`.
-- Removed the Ontology skill and the Recursive Exploration skill.
+- Removed the data-model Ontology skill; the new Ontology preference skill under Added replaces it.
 - Removed the `ontology.md` children of Authoring and Design Execution and Review, and every Ontology step in Coding, Authoring, and Design Ideation, Execution, and Review. Designs no longer give kinds, facets, or Ontology unit ids, and the review Structure checks link the Ontology skill instead of loading it as a step.
 - Removed the Memory `ontology/` home. Setup no longer creates or checks `memory/ontology/README.md`, and Closure in Wrap-up and Cowork no longer updates `memory/ontology/`.
 - Removed Cursor as a partner because its print mode failed with `Error: Authentication required`. The Partner policy set is now `{claude-code, codex, grok}`, with valid values `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`, `claude-code,grok`, and `codex,grok`. A recovered policy that names `cursor` is outside the grammar and stops. Cursor stays a supported runtime.
@@ -55,7 +63,7 @@ not delete old role files; remove those after you migrate their callers.
 - Gobbi Skill covers renaming, merging, and removing a skill, and says what to search first.
 - The `leader` role no longer refuses to question another agent's work; it only does not write the formal review or accept its own result, so a leader can act as the Socratic Method Questioner.
 - The operation skill shape allows one section of reference tables that Steps point to, such as Review's stage bars or Cleansing's levels, between Procedure and References.
-- Coding, Authoring, and Design Review are short domain bars (preference skills of nine to twelve checks) that the Review skill applies. Each domain now also reviews structure (each Ontology unit's definition, responsibility, boundary, and relations), commonality and variability (shared parts in one place, variation only where it is real), and vocabulary (one term per concept), in its own terms; their procedures, `report.md` templates, `review-depth` tokens, contract labels, and quality opinions are gone. Workflow, Cowork, Gobbi's finding gate, and the reviewer and manager roles point to the Review skill; reviews write one report per reviewer and record the verdict in the Ontology unit's receipt or the topic contract. The reviewer role no longer has edit tools.
+- Coding, Authoring, and Design Review are short domain bars (preference skills of nine to twelve checks) that the Review skill applies. Each domain now also reviews structure (each Ontology unit's definition, responsibility, boundary, and relations), commonality and variability (shared parts in one place, variation only where it is real), and vocabulary (one term per concept), in its own terms; their procedures, `report.md` templates, `review-depth` tokens, contract labels, and quality opinions are gone. Workflow, Cowork, Gobbi's finding gate, and the reviewer and manager roles point to the Review skill; reviews write one report per reviewer and record the verdict in the work item's receipt or the topic contract. The reviewer role no longer has edit tools.
 - A References section is required only when a skill links internal documents.
 - Gobbi Skill now tells authors to state the goal and the evidence of done and leave the method to the agent, to earn every line with an observed failure, review finding, requirement, or user boundary, and to improve results through review rather than up-front rules. Every Rule, constraint, and ordered Step needs a source and a one-line reason; section limits are ceilings; Phase 3 adds a step that removes unneeded constraints with Delegation's sort table. Operation skills are goal-led Phases with evidence of done and ordered Steps only where order matters; preference, tool, and domain skills follow the same direction.
 - Rules across all skills and role agents are a plain bold lead followed by a reason. `MUST` and `NEVER` remain only for safety, authority, and irreversible boundaries, and ALL-CAPS emphasis is gone, following Anthropic's guidance that emphasis makes agents over-apply rules.
@@ -81,9 +89,9 @@ not delete old role files; remove those after you migrate their callers.
 - Every role intro is now a persona: the experience, abilities, and character the role needs, shown as working habits. No role file uses the "world-best" frame.
 - Claude pins: manager `claude-sonnet-5-5` at `high`, assistant `claude-haiku-5-5` at `high`, leader `claude-opus-5-5` at `high`, developer `claude-sonnet-5-5` at `high`, designer `claude-opus-5-5` at `xhigh`, author `claude-sonnet-5-5` at `medium`, and reviewer `claude-sonnet-5-5` at `xhigh`. Codex keeps `gpt-6.1-sol` at `high` for manager, assistant, leader, and reviewer, and the developer, designer, and author take the former executor's `gpt-6-astra` at `high`. Grok is `grok-4.7` at `xhigh` for every role. Cursor manager and assistant stay `grok-4.7[effort=xhigh]`, and the other Cursor roles use their Claude model and effort in the bracket.
 - The manager's specialist pick is now leader for ideate and plan, developer, designer, or author for implement by the result's subject, and reviewer for review. Cowork, Workflow, and the Review skill assign these roles. Gobbi entry Step 2.5 tells the manager to spawn every specialist as its Gobbi role through the runtime's subagent mechanism, never as a general-purpose agent, with a table of which work goes to which role.
-- Setup installs and allows seven roles. The minimum Claude allow list, the Claude and Codex setup guides, the project README, and this checkout's `.claude/settings.json`, `.codex/agents/`, and `.cursor/agents/` name the seven roles.
-- Delegation is now a general skill for writing a brief that hands work to another agent, in any project or field, with no Gobbi content. A brief has, in order, Role, Goal, Context, Constraints, Taste and Preference, Materials, and Return. Role describes the experience, abilities, and character of a real expert through the habits they work by. Goal is free-form: it states concretely what must be true when the work is done, who uses the result, how to tell it is done, and what a strong result looks like. Constraints hold only rules that must hold, each with a reason, and end with "Choose the approach within these boundaries." Taste and Preference states known leanings, or one default line when none is known. Materials is one `Name | Path | Description` table. The Handoff opens with `Done` or `Blocked` unless the caller names its own status.
-- Gobbi entry now has each specialist brief write a Role for the named specialist, name its phase in Context, put the skills and docs indexes in Materials, and tell the specialist to load an index row only when it cannot proceed without it. Cowork and Workflow review briefs now also name the review skill's report template.
+- The setup guides name and allow seven roles. The minimum Claude allow list, the Claude and Codex setup guides, the project README, and this checkout's `.claude/settings.json`, `.codex/agents/`, and `.cursor/agents/` name the seven roles.
+- Delegation is now a general skill for writing a brief that hands work to another agent, in any project or field, with no Gobbi content. Materials is one `Name | Path | Description` table, and the handoff opens with `Done` or `Blocked` unless the caller names its own status.
+- Gobbi entry now has each specialist brief write a Role for the named specialist, name its phase in Context, put the skills and docs indexes in Materials, and tell the specialist to load an index row when it bears on the Goal. Cowork and Workflow review briefs now also name the review skill's report template.
 - Memory decides when to write project memory or a session record. Every `memory/` directory is in `memory.md`. `record.md` covers `sessions/` only.
 - Sessions no longer keep an ontology directory. The session `README.md` holds only the common matters every agent must read.
 - Partner is now a short manual for a manager agent. The manager launches a Codex, Claude Code, or Grok CLI itself as a background process, learns when the run ends, reads its final message and changed files, and follows up by resuming the run's session. It documents three access levels with each runtime's flags: read-only, workspace-write, and full-access, which needs user authorization. The read-only, workspace-write, and resume commands were measured on codex-cli 0.167.0, Claude Code 2.1.319, and grok 1.0.70.

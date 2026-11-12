@@ -42,8 +42,8 @@ designer changes work with a visual element, including HTML and web UI, and the 
 ```
 
 Gobbi reports any additional skill permissions needed by the selected mode. Approve those loads when prompted,
-or add their exact `Skill(gobbi:...)` entries to the same allow list. Do not add a setup skill permission.
-Setup is not a skill.
+or add their exact `Skill(gobbi:...)` entries to the same allow list, such as `Skill(gobbi:cowork)` or
+`Skill(gobbi:workflow)`. Do not add a setup skill permission. Setup is not a skill.
 
 ## Project layout
 
@@ -76,8 +76,8 @@ Every runtime uses this layout. The project key is the repository directory name
     │   │   ├── docs/
     │   │   └── data/
     │   └── backlogs/README.md    tracked, 0-byte
-    ├── sessions/                ignored, not created by setup
-    └── worktrees/               ignored, not created by setup
+    ├── sessions/                ignored, created by the session modes
+    └── worktrees/               ignored, created by the session modes
 ```
 
 `.gobbi/.gitignore` holds these runtime-state entries:
@@ -88,39 +88,49 @@ projects/*/sessions/
 projects/*/worktrees/
 ```
 
-Setup creates no `sessions/`, `worktrees/`, marker, or `rules/` path; the session modes create what they need.
+Create no `sessions/`, `worktrees/`, marker, or `rules/` path; the session modes create what they need.
 
-## Create missing project layout
+## Create the project layout by hand
 
-From the consumer worktree:
+The setup scripts are removed and planned to return in a later release, so create the layout yourself. From
+the consumer worktree, in a shell, run:
 
 ```bash
-<path-to-plugin>/skills/gobbi/setup/scripts/claude.sh --check
-<path-to-plugin>/skills/gobbi/setup/scripts/claude.sh
+project=$(basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")")
+root=.gobbi/projects/$project
+mkdir -p "$root"/agents "$root"/skills "$root"/memory/{design/{architecture,feature,process,roadmap},learnings}
+mkdir -p "$root"/memory/{reports/{note,review,analysis},history,backlogs,materials/{references,assets,docs,data}}
+for d in agents skills memory/design memory/reports memory/history memory/materials memory/backlogs; do
+  touch "$root/$d/README.md"
+done
+[ -e .gobbi/.gitignore ] || printf '%s\n' \
+  '# Gobbi runtime state. Session evidence and linked worktrees are never tracked.' \
+  'projects/*/sessions/' 'projects/*/worktrees/' > .gobbi/.gitignore
 ```
 
-Pass `--project-key` when the derived key fails. Pass `--skills-root` and `--agents-root` together when
-the script is not running from a packaged plugin. Check only with `--check`.
+Re-running it is safe: `mkdir -p` and `touch` change nothing that exists, and the `.gobbi/.gitignore` line
+writes only when that file is absent. The project key must be at most 64 lowercase letters, digits, and inner
+hyphens. Set `project` by hand when the directory name does not fit. Commit `.gobbi/` before you start a
+session. Git does not track empty directories, so `learnings/` and the leaf subject directories reappear
+after a clone only once a file lands in them.
 
-When `.claude/settings.json` is absent, setup writes the minimum namespaced allow list above. It never
-overwrites an existing settings file, `CLAUDE.md`, or role contract. It never creates `.claude/skills` or
-`.claude/agents`; the plugin supplies those.
+If `.claude/settings.json` is absent, create it with the allow list above. Never overwrite an existing
+settings file, `CLAUDE.md`, or role contract. Do not create `.claude/agents` or `.claude/skills`; the plugin
+supplies them.
 
 ## After setup
 
 - This checkout enables `gobbi@gobbi` and does not keep a settings `hooks` object, `.claude/agents`, or
-  `.claude/skills`. Claude loads agents, skills, and hooks from `plugins/gobbi`.
-- `hooks/hooks.json`, found by default discovery, runs `check-settings.sh claude` on `SessionStart` and
-  `remind.sh` on `UserPromptSubmit`. SessionStart emits `hookSpecificOutput` with `hookEventName`
-  `SessionStart`. Do not add a `hooks` key to `.claude-plugin/plugin.json`.
+  `.claude/skills`. Claude loads agents and skills from `plugins/gobbi`. The package has no hooks in this
+  release.
 - Role contracts come from the plugin's flat `agents/`.
 - If the existing `.claude/settings.json` is missing a permission, add the exact `Agent(gobbi:...)` or
-  `Skill(gobbi:...)` entry. Setup does not edit a present settings file.
+  `Skill(gobbi:...)` entry by hand.
 
-## Scripts
+## Setup scripts and settings check
 
-| Script | Path |
-|---|---|
-| Writer and checker | `scripts/claude.sh` (being reimplemented; not in this release) |
+The per-runtime setup scripts and the SessionStart settings check are not in this release. Both are planned to
+return in a later release. Until then, no hook checks your settings, and the manual steps above replace the
+scripts.
 
 Other runtimes: [Codex](codex.md), [Cursor](cursor.md), [Grok](grok.md).
