@@ -1,0 +1,16 @@
+#!/bin/sh
+# Gobbi pre-commit hook: run the repository guard and block the commit on any finding.
+# Opt in once per clone with: git config core.hooksPath .githooks
+#
+# The guard checks the working tree, not the index. A partly staged commit is checked as the working
+# tree stands, so it can pass while the staged content alone would fail, or fail on an unstaged edit.
+# This is accepted: CI checks the committed tree and is the authority, and reading the index would need
+# a second checkout of it or a stash, and the stash stack is shared across worktrees.
+#
+# The guard's JSON envelope goes to /dev/null. Its stderr summary is shown without the advisory NOTE lines,
+# which never block, so a commit prints only what must be fixed.
+cd "$(git rev-parse --show-toplevel)" || exit 2
+summary=$(python3 scripts/guard/guard.py check 2>&1 >/dev/null)
+status=$?
+printf '%s\n' "$summary" | grep -v '^NOTE ' >&2
+exit "$status"

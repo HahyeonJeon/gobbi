@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document role | Canonical ignored Workflow configuration and recovery record |
-| Authority | Records identity, locations, settings, and creation evidence; current TODO, handoff.md, Git state, and accepted user authority remain controlling |
+| Authority | Records identity, locations, settings, and creation evidence; handoff.md, Git state, and accepted user authority remain controlling |
 | Recorded at | {exact UTC timestamp} |
 
 ## Identity
@@ -58,7 +58,6 @@
 | Entry contract | {mode, slug, partner policy, and source} |
 | Mode settings | {accepted settings and authority} |
 | Gobbi root pair | {validation observations} |
-| Required layout | {paths, states, and exact checks} |
 | Repository and immutable base | {repository and revision observations} |
 | Worktree registration | {command and observed registration} |
 | Session identity and containment | {path and identity checks} |

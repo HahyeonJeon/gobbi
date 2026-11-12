@@ -1,145 +1,112 @@
 ---
 name: operation-skill
-description: "Operation Skill is guidance for writing a straightforward standard operating procedure with structured phases and steps."
+description: "Operation Skill guides writing repeatable work as goal-led phases with evidence of done. Use it after Gobbi Skill classifies a target as `operation`."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Operation Skill
 
-Operation Skill defines how to author or substantively revise a skill whose core is a standard operating
-procedure (SOP). Use it after Gobbi Skill classifies the target as `operation` and the reader needs direct,
-ordered instructions arranged as simple phases and steps.
+Operation Skill defines how to author or substantively revise a skill for repeatable end-to-end work. Use it
+after Gobbi Skill classifies the target as `operation`.
 
 ## Principles
 
-### Make the SOP the core
+### Make stages and their evidence the core
 
-An operation skill exists to tell a reader how to perform repeatable work. Put the SOP in Procedure, and keep
-Principles, Rules, tool facts, and references subordinate to the instructions the reader follows.
+An operation skill tells the reader which stages the work passes through, what each stage must produce, and how
+to tell it is done. The agent chooses how to do each stage, because a capable agent finds better methods than
+an author can script in advance.
 
-### Use phases for stages and steps for actions
+### Order only what must be ordered
 
-A Phase groups one necessary stage of the SOP, while a Step gives one direct action or decision in execution
-order. Keep this hierarchy stable so the reader always knows where they are and what comes next.
-
-### Keep the path straightforward
-
-The SOP should give the reader the shortest correct path through the work. Present the normal path first, add
-only necessary branches beside their conditions, and remove needless nesting, detours, and repeated context.
+A Step exists for an action whose order, authority, or interface matters: a gate, an approval, an irreversible
+or external action, a state change, or a handoff another agent reads. Everything else stays inside the Phase
+goal.
 
 ### Write instructions, not narrative
 
-A Procedure should tell the reader what to do, under which condition, and what confirms the Step. Use direct
-action bullets and short supporting sentences instead of background stories, long transitions, or essay-style
-explanation.
+Tell the reader what must be true, under which condition, and what confirms it. Keep one short reason beside
+each constraint so the agent can judge cases the author did not foresee, and cut background stories and
+transitions.
 
 ## Rules
 
-- **MUST produce the exact operation target shape.** Use Frontmatter → Intro → Principles → Rules → Procedure
-  → References; inside Procedure, use numbered Phase headings, decimal Step headings, and bulleted step
-  bodies; keep Procedure dominant and add no top-level Manual.
-- **MUST make the target Procedure own the complete SOP.** State actor, trigger, preconditions, authority,
-  inputs, ordered actions and decisions, conditions and branches, failures, recovery, completion evidence,
-  non-goals, and handoff boundaries when they apply.
-- **MUST keep every Phase and Step direct and necessary.** Give each Phase one stage and each Step one primary
-  action or decision; present the normal path first, place branches beside their conditions, and remove
-  narrative, needless nesting, and repeated context.
-- **MUST keep each Step to at most three substeps.** Treat each bullet directly under a Step as one substep
-  and split the Step when it needs more.
-- **MUST keep every substep to one or two sentences.** Put the direct instruction first, and use a second
-  sentence only for a condition, branch, or confirmation needed to perform it.
+- **Use the operation shape.** Frontmatter → Intro → Principles → Rules → Procedure → optional reference tables
+  that Steps point to → References, with numbered Phases and decimal Steps, so every operation reads the same way.
+- **Give each Phase a goal and the evidence that it is done.** A reviewer judges the work against that
+  evidence, so a Phase without it cannot be reviewed.
+- **State authority boundaries, stop conditions, and handoffs where the reader meets them.** These are the
+  points where a wrong guess cannot be undone or another agent depends on the result.
+- **Keep each Step to at most three bullets of one or two sentences.** When a Step needs more, first remove
+  method the agent can choose; split it only when what remains is still too long.
 
 ## Procedure
 
-### Phase 1 — Design the SOP
+### Phase 1 — Design the Operation
 
-#### 1.1 Define the SOP boundary
+Find the operation's boundary and stages. Done when the boundary is recorded and each stage has a distinct
+goal and a done-check, with only order-bound actions marked as Steps.
 
-- Use the approved design to state the reader or actor, trigger, starting state, and evidence that shows the
-  SOP is complete.
-- Record the preconditions, authority, inputs and trust boundaries, outputs and side effects, non-goals, and
-  handoff boundaries.
-- Return to parent Phase 1 when the target does not need a repeatable ordered procedure or combines separate
-  procedures that should be classified independently.
+#### 1.1 Define the boundary
 
-#### 1.2 Structure the direct path
+- From the approved design, state the actor, the trigger, the starting state, and the evidence that the whole
+  operation is done.
+- Record the authority, inputs, outputs and side effects, non-goals, and handoffs.
+- Return to the parent Phase 1 when the target has no repeatable stages or combines separate operations.
 
-- List the required actions and decisions in the shortest correct order, then group them into Phases and Steps.
-- Create a new Phase only when a group of Steps has a distinct prerequisite, responsibility, or state
-  transition; otherwise keep those Steps in one Phase.
-- Give each Step one primary action or decision and arrange the Steps in execution order within their Phase.
+#### 1.2 Find the stages
+
+- Group the work into the fewest stages that each have a distinct goal, owner, or state change, and give each
+  a done-check a reviewer can apply.
+- Mark the actions whose order, authority, or interface matters. Only those become Steps.
 
 ### Phase 2 — Write the Operation Skill
 
-#### 2.1 Start with the Procedure structure
+Write the operation shape. Done when the Procedure follows the pattern and Principles, Rules, Intro, and
+References are complete, with no new policy in the Intro.
 
-- Use the parent skill to write the frontmatter and top-level sections, then write Procedure first. Use this
-  minimal pattern for the SOP:
+#### 2.1 Write the Procedure
+
+- Write Procedure first with this pattern, repeating Phases and Steps only as the work requires:
 
 ```markdown
 ## Procedure
 
 ### Phase 1 — {Stage}
 
-#### 1.1 {Direct action or decision}
+{The stage's goal.} Done when {the evidence a reviewer can check}.
 
-- {State one direct instruction.}
-- {Take the required branch when its condition applies.}
-- {Confirm the result, then continue or stop as required.}
+#### 1.1 {Action or decision whose order matters}
+
+- {What must be true or happen, with its condition.}
+- {The stop, approval, or handoff the reader meets here.}
+- {The evidence that confirms the result.}
 ```
 
-- Repeat Phases and Steps only as the SOP requires. Use no more than three substeps under each Step.
+- Present the normal path first. Add failure, retry, recovery, and stop paths only where they occur.
+- Keep compact tool facts beside the Step that uses them, and route larger material to a tool skill.
 
-#### 2.2 Write direct Phases and Steps
+#### 2.2 Complete the remaining sections
 
-- Arrange Phases in execution order and name each for its stage. Arrange Steps within each Phase in the order
-  the reader performs them.
-- Start each Step with a direct action or decision, then give it no more than three substeps.
-- Keep each substep to one or two sentences. Put its instruction first and add only a needed condition, branch,
-  or confirmation.
-
-#### 2.3 Add conditions and boundaries
-
-- Present the normal path first. Add alternatives, failure, retry, rollback, recovery, and stop paths only
-  where their conditions occur.
-- State authority boundaries, irreversible or externally visible actions, side effects, completion evidence,
-  and handoffs where the reader encounters them.
-- Include access boundaries and output paths when the operation writes session or durable state.
-
-#### 2.4 Remove narrative and extra detail
-
-- Remove narrative setup, chronological retelling, conversational transitions, repeated rationale, and
-  explanation that does not change an action or decision.
-- Keep compact tool facts beside the consuming Step. Route larger setup, syntax, capability, or troubleshooting
-  material to an owned internal document or tool skill.
-
-#### 2.5 Complete the remaining sections
-
-- Write Principles for the durable operating model and Rules for distinct binding invariants; keep ordered
-  work in Procedure and apply the parent limits and normative expressions.
-- Write the Intro from the completed body, orienting the reader to the actor, trigger, SOP, and boundary
-  without adding new policy.
-- Use the parent's fixed `Name | Description` table in References. Include only relevant internal parent,
-  type, or supporting documents; cite external owners beside their claims.
+- Write Principles for the durable operating model and Rules for distinct binding boundaries, each with its
+  source and reason.
+- Write the Intro from the completed body without adding new policy, and use the parent's References table.
 
 ### Phase 3 — Review and Improve the Operation Skill
 
-#### 3.1 Improve structure, sentences, and vocabulary
+Leave only stages and their evidence. Done when every Phase has a goal and a done-check, every Step has a
+reason its order matters, and every fact matches its owner.
 
-- Apply parent Phase 3, then reshape the SOP instead of only marking problems. Remove, merge, split, or reorder
-  Phases and Steps until Procedure is the core, each Phase owns one necessary stage, and each Step owns one
-  primary action or decision in execution order.
-- Split every Step with more than three substeps, and rewrite each substep as one or two direct sentences.
-  Remove narrative, needless nesting, detours, repeated rationale, long transitions, and details that do not
-  change an action or decision.
-- Replace vague, inflated, uncommon, or inconsistent words with plain, precise, stable terms. Verify required
-  conditions, authority, recovery, completion, handoffs, commands, paths, schemas, permissions, and
-  version-sensitive claims, then apply the parent stopping condition.
+#### 3.1 Remove method and check the stages
+
+- Apply parent Phase 3. Delete Steps and bullets that only choose a method, and merge Phases that share one
+  goal.
+- Confirm every Phase has a goal and a done-check, and every Step has a reason its order matters.
+- Verify the conditions, authority, recovery, handoffs, commands, paths, and permissions against their owners.
 
 ## References
 
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for classifying the target and applying shared skill-writing rules. |
-| [Operation Skill checklist](checklist.md) | Reusable source for evaluating SOP boundaries, structure, execution paths, operational coverage, and supporting guidance. |

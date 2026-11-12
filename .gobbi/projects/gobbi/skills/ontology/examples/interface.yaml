@@ -1,3 +1,0 @@
-# Flight sample: the Interfaces of the flight-operations area. See area.yaml.
-# No two Object types share a shape yet, so the area has no Interface.
-interfaceTypes: null

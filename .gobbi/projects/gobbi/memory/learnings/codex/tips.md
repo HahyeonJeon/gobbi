@@ -62,12 +62,23 @@ runtime identity. Keep source and fixture checks aligned with the same selection
 
 **Context:** Registering or evaluating the Codex Gobbi hook.
 
-**Tip:** This checkout loads Codex skills and hooks from `plugins/gobbi`. `hooks/codex-hooks.json` runs the
-settings check on SessionStart for matcher `startup` or `resume`, and the reminder on UserPromptSubmit. Both
-emit `hookSpecificOutput`. The checker does not require `.codex/config.toml`. Codex reads
-`$CODEX_HOME/config.toml`. Do not add `.codex/hooks.json`. A Codex Stop `{decision: "block", reason}` payload
-is not this checkout's hook.
+**Tip:** Until the 2026-11 hook removal, this checkout loaded Codex skills and hooks from `plugins/gobbi`.
+`hooks/codex-hooks.json` runs the settings check on SessionStart for matcher `startup` or `resume`, and the
+reminder on UserPromptSubmit. Both emit `hookSpecificOutput`. The checker does not require `.codex/config.toml`.
+Codex reads `$CODEX_HOME/config.toml`. Do not add `.codex/hooks.json`. A Codex Stop `{decision: "block", reason}`
+payload is not this checkout's hook.
 
-**Application:** Do not detect Codex by `turn_id`, and do not treat `.codex/hooks.json` as the registration.
-See [Session hooks](../../design/feature/stop-reminder.md) and
-[`.codex/config.toml` is inert](#codexconfigtoml-at-a-repository-root-is-inert).
+**Application:** Do not detect Codex by `turn_id`, and do not treat `.codex/hooks.json` as the registration. See
+[Session hooks](../../design/feature/stop-reminder.md) and [`.codex/config.toml` is
+inert](#codexconfigtoml-at-a-repository-root-is-inert). The Gobbi hooks were removed in 2026-11 pending
+reimplementation; the mechanics here still describe the runtime.
+
+## The read-only Codex sandbox cannot create a temp directory
+
+**Context:** A Codex reviewer or proposer runs `unittest` or another test runner that creates a temp directory,
+under `--sandbox read-only`.
+
+**Tip:** The read-only sandbox cannot create a temp directory, so those runs come back inconclusive, not failed.
+
+**Application:** Count such a run as inconclusive in the review report. The manager or another reviewer reruns
+the tests outside the sandbox before a verdict relies on them.

@@ -133,85 +133,6 @@ and assigning bootstrap to the selected Cowork or Workflow owner instead, withou
 deletion is the root cause analyzed in
 [`reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md`](../reports/analysis/2026-08-01-consumer-project-bootstrap-gap.md).
 
-## Authoring and Design Execution handoff placeholders
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Replace the placeholder `handoff.md` in Authoring Execution and Design Execution. Coding Execution
-deleted its copy and returns the Delegation Handoff with a short list of Execution fields.
-
-**Why backlogged:** The 2026-09-25 coding review found the same defect in the sibling families. The topic
-contract kept Authoring and Design out of scope.
-
-**Context:** Both files read "This file is a placeholder. The handoff fields are not written yet." See
-[Authoring Execution](../../skills/authoring/authoring-execution/SKILL.md), [Design
-Execution](../../skills/design/design-execution/SKILL.md), and [Coding
-Execution](../../skills/coding/coding-execution/SKILL.md) Step 5.1 for the Coding form.
-
-## Authoring and Design Planning templates
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Decide whether Authoring and Design Planning should match Coding Planning's flat templates.
-
-**Why backlogged:** Authoring and Design Ideation now use Coding Ideation's four flat templates. Planning was
-not part of that change, so the Planning deferral remains.
-
-**Context:** Authoring and Design Planning keep nested `templates/planning/` with `tasks/tasks-index.md` and
-`tasks/tasks-NN.md`. Ideation no longer keeps nested `templates/ideation/` or an Ideation `ontology.md`. The
-shared Ontology skill is the facet source, and the domain headings stay. See the [Authoring skill
-family](../design/feature/authoring-skill-family.md) and [Design skill
-family](../design/feature/design-skill-family.md).
-
-## Review gating wording outside Coding
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Replace "non-gating" Review wording outside Coding with the live contract: a domain Review derives a
-contract-gate verdict, and Cowork and Workflow gate on it. Reconcile the self-review wording at the same time.
-
-**Why backlogged:** The Coding root and Coding family design were corrected on 2026-09-25. The topic contract
-kept the Authoring and Design families and process memory out of scope.
-
-**Context:** "Non-gating" remains in the [Authoring](../../skills/authoring/SKILL.md) and
-[Design](../../skills/design/SKILL.md) root Intros, in the [Authoring skill
-family](../design/feature/authoring-skill-family.md) and [Design skill
-family](../design/feature/design-skill-family.md) designs, and in [Identity-and-load role
-contracts](../design/process/identity-and-load-role-contracts.md), which also allows caller-permitted disclosed
-self-review. Coding Review requires a reviewer who did not design, author, or implement the target. See
-[Review](../design/process/evaluation.md).
-
-## Stale draft lines in Authoring and Design skills
-
-**Backlogged at:** 2026-09-25T15:10:31Z
-
-**What:** Remove the "This skill is a draft adapted from …" line from Authoring Planning, Authoring Review,
-Design Planning, and Design Review. In the two Review skills, also replace "prompts 3 and 4" with the prompt
-names.
-
-**Why backlogged:** Coding Planning and Coding Review dropped these lines on 2026-09-25. The topic contract
-kept Authoring and Design out of scope.
-
-**Context:** The line tells a cold reader the skill may not bind, and it names retired Planning and Evaluation
-skills. The Review prompt table has named rows, not numbers. See [Authoring
-Review](../../skills/authoring/authoring-review/SKILL.md) and [Design
-Review](../../skills/design/design-review/SKILL.md).
-
-## Review depth wording drift in process memory
-
-**Backlogged at:** 2026-09-25T15:24:58Z
-
-**What:** Align the Review depth section of the [Review](../design/process/evaluation.md#review-depth) process
-design with the live Coding Review table. Add "indexed integrity" to the `planning-decomposition` row. Replace
-"Execution documentation checklist", which no skill defines. Name the Coding Ideation and Coding Planning
-checklists where the text says "its own checklist".
-
-**Why backlogged:** The 2026-09-25 coding review found the drift. The topic contract kept process memory out of
-scope.
-
-**Context:** The live bar and baseline checklist for each `review-depth` token are in the [Coding
-Review](../../skills/coding/coding-review/SKILL.md) review-depth table.
-
 ## Manifest descriptions omit Cursor plugin agents
 
 **Backlogged at:** 2026-09-25T18:00:36Z
@@ -226,53 +147,6 @@ Code and Grok. The Cursor plugin manifest also declares agents.
 (`:4`). The Grok and Cursor manifests declare `./runtimes/grok` and `./runtimes/cursor`; see
 `.gobbi/projects/gobbi/agents/README.md`.
 
-## Naming-standard scope for sibling references and preference words
-
-**Backlogged at:** 2026-09-25T18:00:36Z
-
-**What:** Clarify two points in the [naming standard](../../skills/gobbi-skill/domain-skill/naming-standard.md).
-Say whether the "refer to a sibling child by its backticked slug" rule covers prose mentions. About 37
-title-case names, such as "Coding Ideation", remain in the Coding skills. Also say that the free word
-`object-oriented-programming` names a preference child, not a `design` operation.
-
-**Why backlogged:** The v1.3.2 release reviews raised both as out-of-contract improvements (review-02 I4,
-review-01 I8). The user deferred them.
-
-**Context:** The sibling-reference row and the free-word list are in the naming standard. The Coding family
-names are in the [Coding skill family design](../design/feature/coding-skill-family.md).
-
-## Setup Skill allow list differs between docs and script
-
-**Backlogged at:** 2026-09-29T08:19:28Z
-
-**What:** Align the minimum Claude settings. `README.md` (`:41-42`) and `skills/gobbi/setup/claude.md`
-(`:25-26`) list two Skill entries, `Skill(gobbi:gobbi)` and `Skill(gobbi:principles)`. The minimum settings in
-`skills/gobbi/setup/scripts/common.sh` allow four; they add `Skill(gobbi:discussion)` and
-`Skill(gobbi:delegation)`.
-
-**Why backlogged:** The 2026-09-26 reviewer-roles topic found it. It predates that topic and was outside its
-contract.
-
-**Context:** `scripts/prove-gobbi-setup.sh` proves that the settings `claude.sh` creates allow every permission
-skill in `common.sh`. It does not compare the README or the setup guide.
-
-## Identity-and-load role contracts beyond the four-part role files
-
-**Backlogged at:** 2026-09-29T08:19:28Z
-
-**What:** Re-check the [Identity-and-load role contracts](../design/process/identity-and-load-role-contracts.md)
-design against the role files. Its Intent and Role-file shape still say role files hold skill loads, status
-tokens, Delegation-first loading, and root-pair text. The four-part role files under
-`.gobbi/projects/gobbi/agents/` hold none of these. Move each fact to its current owner, or remove it. Also
-review the Executor boundary sentence "The executor implements and never runs Review; in-stage self-review
-stays."
-
-**Why backlogged:** The reviewer-roles topic kept the section out of scope. The Executor sentence came from its
-last correction and had no review after it.
-
-**Context:** The section order and the role list in that design were updated on 2026-09-29. The other lines
-were not checked against their possible new owners.
-
 ## Grok probe side effects in the user's home
 
 **Backlogged at:** 2026-09-29T08:19:28Z
@@ -284,8 +158,8 @@ were not checked against their possible new owners.
 `~/.grok/config.toml` on its first `grok agent stdio` start and left 13 sessions in two probe-repo folders. The
 prior config content is unknown.
 
-**Context:** The rewritten file parses. See
-[Probing an external CLI without isolating its home](../learnings/dev/mistakes.md#probing-an-external-cli-without-isolating-its-home).
+**Context:** The rewritten file parses. See [Probing an external CLI without isolating its
+home](../learnings/dev/mistakes.md#probing-an-external-cli-without-isolating-its-home).
 
 ## Grok silent fallback for an unknown agent name
 
@@ -312,3 +186,155 @@ offline, so this is unconfirmed.
 **Context:** The sync copies every canonical skill file and excludes only exact paths. `.gitignore` has no
 `__pycache__` rule. An import of `ontology.py` from the canonical skill put `.pyc` files into the package once;
 they were removed. `scripts/prove-ontology-cli.py` sets `sys.dont_write_bytecode` to avoid it.
+
+## Blinded skill eval
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Add an evaluation of a skill in which the evaluating agent does not know which version it is judging.
+
+**Why backlogged:** The Pstack comparison named it as a gap; no accepted topic took it.
+
+**Context:** Raised by the Pstack comparison. Review today judges one result against its Goal and does not compare
+skill versions blind. See [Review](../design/process/evaluation.md).
+
+## Debugging method
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether Gobbi needs a debugging method, and where it lives.
+
+**Why backlogged:** The Pstack comparison named it as a gap; the root-cause principle covers the goal but no
+method.
+
+**Context:** Raised by the Pstack comparison. Candidate homes are a Coding preference or Review, and the choice
+needs a discussion.
+
+## Recurring brief templates
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether to ship named brief templates for recurring delegations such as a study, a review, or a
+fix.
+
+**Why backlogged:** The Pstack comparison raised it; Delegation holds one general template, and a second template
+layer has not been justified.
+
+**Context:** Raised by the Pstack comparison. See [Delegation](../../skills/delegation/SKILL.md).
+
+## Narrower ask threshold in Discussion
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether Discussion should ask in fewer cases than it does now.
+
+**Why backlogged:** The Pstack comparison raised it; the current rule asks only where a wrong guess is costly, and
+no evidence shows it still asks too often.
+
+**Context:** Raised by the Pstack comparison. See [Discussion](../../skills/discussion/SKILL.md) Rule 1.
+
+## Name the principle in rulings
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether a `Ruling:` line should name the principle that decided it.
+
+**Why backlogged:** The Pstack comparison raised it; rulings record what, why, and cost if wrong, and the benefit
+of a principle name is unmeasured.
+
+**Context:** Raised by the Pstack comparison. See the Rulings rule in [Cowork](../../skills/cowork/SKILL.md) and
+[Workflow](../../skills/workflow/SKILL.md).
+
+## Unattended liveness of long runs
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide how a manager learns that a long background run, such as a Partner or a subagent, is stuck while
+no one is watching.
+
+**Why backlogged:** The Pstack comparison raised it; Partner relies on the exit report and `timeout`, which show an
+ended run but not a silent hang inside the timeout.
+
+**Context:** Raised by the Pstack comparison. See [Partner](../../skills/partner/SKILL.md) Run lifecycle.
+
+## Generate the four role copies from one source
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Generate the four runtime copies of each role from one source, so the shared body is written once.
+
+**Why backlogged:** The guard only checks that the role bodies are identical across runtimes; it does not generate
+them, and seven roles in four runtimes is 28 files to keep in step.
+
+**Context:** The `roles` check in [Repository guard](../design/architecture/repository-guard.md) reports drift.
+Generation would extend `guard.py sync`.
+
+## Stale hooks and scripts text in setup guides and README
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Rewrite the setup guides and README install steps that name the removed scripts and hooks, after the
+scripts and hooks are reimplemented.
+
+**Why backlogged:** Every script and hook was removed for reimplementation, so the text cannot be corrected until
+the replacement exists.
+
+**Context:** `skills/gobbi/setup/claude.md` lines 113-115 name removed hooks, and the CHANGELOG Removed entry
+records the gap. See [Session hooks](../design/feature/stop-reminder.md).
+
+## Step versus change wording
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Settle one term for a unit of work in skill prose: "step" or "change".
+
+**Why backlogged:** Both terms appear for the same idea, and the session did not choose between them.
+
+**Context:** Found while editing skills in the 2026-11 refactor. Ontology's one-term-per-concept test applies. See
+[Ontology](../../skills/ontology/SKILL.md).
+
+## `AA` in `ALLOWED_CAPS`
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether `AA` (as in WCAG 2.2 AA) stays in the allowed ALL-CAPS list of the skill checker.
+
+**Why backlogged:** It is in `ALLOWED_CAPS` for one design-skill phrase, and an allow list that grows per phrase
+weakens the check.
+
+**Context:** See `ALLOWED_CAPS` in `skills/gobbi-skill/scripts/skill_checks/checks.py` and [Repository
+guard](../design/architecture/repository-guard.md).
+
+## Inert nested `Skill(...)` entries in `.claude/settings.json`
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Remove the nested `Skill(...)` permission entries in `.claude/settings.json` that grant nothing.
+
+**Why backlogged:** They are inert, so they only mislead a reader of the settings file.
+
+**Context:** Found while checking the Claude setup during the 2026-11 refactor.
+
+## Socratic Method Phase 4 Status check
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Decide whether Socratic Method Phase 4 should check each element's Status field before the final pass.
+
+**Why backlogged:** A review noted that the final pass does not confirm every element carries a Status; the
+accepted work did not include it.
+
+**Context:** See [Socratic Method](../../skills/socratic-method/SKILL.md) Phase 4 and [the
+design](../design/feature/socratic-method-skill.md).
+
+## Treat an ellipsis as no sentence end in the `sentences` check
+
+**Backlogged at:** 2026-11-12T12:30:00Z
+
+**What:** Make the `sentences` check treat `...` as a pause, not a sentence end.
+
+**Why backlogged:** Review 04 found that an ellipsis can split one sentence into two and flag a bullet that has at
+most two sentences.
+
+**Context:** See the `sentences` check in [Repository guard](../design/architecture/repository-guard.md) and
+`skill_checks/checks.py`.

@@ -1,355 +1,186 @@
 ---
 name: workflow
-description: "Workflow is a durable Gobbi work mode for one isolated, checkpointed session."
+description: "Workflow is a durable Gobbi work mode that runs one session through checkpointed phases. Use it after the user selects Workflow in Gobbi."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Workflow
 
-Workflow runs one isolated session through Configuration and Ideation, Planning and Execution, then Wrap-up
-and Note. Use it when work needs a user-approved design, durable phase handoffs, User Review waits, and
-recovery in the same worktree and session directory.
+Workflow runs one isolated session through three phases: Configuration and Ideation, Planning and Execution,
+then Wrap-up. Use it when work needs a user-approved design, phase handoffs that survive a lost context, and a
+User Review wait after each phase.
 
 ## Principles
 
-### Route through one native TODO
+### Design with the user, then deliver on your own
 
-The native TODO list selects the current phase and stage. Session evidence identifies the active task and
-iteration and proves transitions, but it never becomes another route.
+The user settles the design in Phase 1; later the manager and its participants decide inside it.
 
-### Wait, design, then deliver inside later frames
+### Apply one frame to every work item
 
-After Configuration, idle-wait until the user delivers the work. Design with the user in Phase 1, wait at each
-User Review TODO, and stay autonomous inside later frames.
+Every productive work item runs `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up add `REVIEW` before
+RECORD, so independent judgment stays separate from the work.
 
-### Apply one frame in every phase
+### Make every phase recoverable
 
-Every productive unit uses `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up insert `REVIEW`
-between WORK and RECORD so independent judgment stays separate; Ideation and Planning skip it, and User
-Review stays outside the frame.
-
-### Make every phase handoff recoverable
-
-Each phase ends with one verified `handoff.md` for either completion or a safe terminal stop. Recover only in
-the worktree and session root recorded by Configuration and the latest handoff.
+Each phase ends with one verified `handoff.md`, whether it completed or stopped safely. A lost context resumes
+from that file in the same worktree and session root.
 
 ## Rules
 
-- **MUST use the native TODO list to select the current phase and stage.** Use only `pending`, `in_progress`, and
-  `completed`, with at most one item `in_progress`; keep task, iteration, and decision data in session evidence.
-- **MUST apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
-  project/work options or asking for a required Phase 1 user decision.** The manager selects available subagents
-  or teammates and each launchable remaining Partner, routes any needed focused follow-up to an addressable
-  subagent or teammate, and after completed `P1 · User Review` asks only Continue or Stop.
-- **MUST run `DISCUSSION → WORK → RECORD` for every productive unit, and insert `REVIEW` between WORK and
-  RECORD only for Execution tasks and Wrap-up.** Planning and each Execution task complete that unit before
-  dependent work starts.
-- **MUST apply the recorded participant policy through one ordered writer chain.** One active-runtime writer
-  self-reviews; independent local and remaining Partner inputs stay separate until synthesis; REVIEW, when
-  the unit includes it, uses, for each artifact class the unit contains, one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and one attempted invocation per
-  remaining runtime.
-- **MUST write and verify `handoff.md` after every completed phase or safe terminal stop.** Recover only in its
-  recorded worktree and session root; never create a replacement for the same Workflow identity.
-- **NEVER accept a report, idle signal, TODO status, handoff, gate, receipt, or summary as completion evidence
-  by itself.** Reread the promised result or commit and reproduce its verification.
+- **MUST work only in the session's registered worktree and session root, and never create a replacement for
+  the same session.** Recovery and every handoff depend on that one recorded location.
+- **MUST start work only after the user delivers it.** The user decides what work happens: delivered work
+  states an outcome or request, and mode, slug, partner policy, "continue", "ok", "looks good", or repository
+  state does not.
+- **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
+  options or asking for a Phase 1 decision.** Principle 3 of [Principles](../principles/SKILL.md) has the user
+  choose among options that participants studied and critiqued.
+- **After `P1 · User Review`, rule each choice inside the accepted design yourself and ask the user nothing but
+  Continue or Stop.** The user settled the design in Phase 1, so record each ruling in the work item's receipt as
+  `Ruling: <what> — <why> — <cost if wrong>`, check rather than ask a question that running something can
+  answer, and stop at a Stopped `handoff.md` only for an unauthorized irreversible, security-sensitive, or
+  external action or a user-owned decision.
+- **MUST wait at User Review after each phase's `handoff.md` and set `configuration.md` `Latest handoff` to it.**
+  Only the user's Continue on a shown Complete handoff starts the next phase, never silence; a Stopped handoff
+  records the first unproved action and opens no User Review.
+- **Accept a result only after rereading it or its commit and reproducing its verification.** A report,
+  handoff, review report, receipt, or summary is a claim, not evidence.
 
 ## Procedure
 
 ### Phase 1 — Configure and Ideate
 
-Phase 1 uses `DISCUSSION → WORK → RECORD` to study the project with the user and participants, produce
-Ideation, and lock the contract. It idle-waits after Configuration until delivered work exists, then waits at
-`P1 · User Review` after a Complete `handoff.md`.
+Settle the design with the user in a recoverable session. Done when a verified `1-ideation/handoff.md` is the
+`Latest handoff` and, when it is Complete, waits at `P1 · User Review`.
 
-#### 1.1 Initialize or recover the route
+#### 1.1 Create or recover the session
 
-- Enter from Gobbi with `mode: Workflow`, the normalized slug, partner policy, runtime, and validated Gobbi root
-  pair. Load [Discussion](../discussion/SKILL.md), [Delegation](../delegation/SKILL.md), [Git](../git/SKILL.md),
-  and [Memory](../memory/SKILL.md), then inspect the repository, worktrees, TODO, configuration, handoffs, and
-  unfinished evidence before mutation.
-- Publish this complete fixed TODO on fresh entry. Start only Configuration and keep dynamic identifiers in
-  session evidence:
+- Load [Discussion](../discussion/SKILL.md), [Delegation](../delegation/SKILL.md), [Git](../git/SKILL.md), and
+  [Memory](../memory/SKILL.md). For a fresh session, record the start checkout's current branch as
+  `Base branch` without asking which branch is the base, and stop if it is empty or the checkout is dirty.
+- Resolve the participants, publication intent, merge and cleanup authority, protected work, and the
+  current-project Memory root, then generate one lowercase UUID, create the work branch and worktree with Git,
+  and name the worktree and session leaves `<YYYY-MM-DD>-<slug>-<uuid>`. In the session root,
+  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, write `configuration.md` from the
+  [configuration template](templates/configuration.md) and `README.md` as ignored session records, changing
+  `configuration.md` later only to set `Latest handoff`, then wait for delivered work.
+- On recovery, require the recorded identity, branch, worktree, session root, and latest handoff to match, and
+  stop if they do not. Wait at User Review for a Complete handoff, and resume a Stopped one at its first
+  unproved action.
 
-```text
-P1 · Configuration
-P1 · Ideation
-P1 · User Review
-P2 · Planning
-P2 · Execution
-P2 · User Review
-P3 · Wrap-up
-P3 · User Review
-P3 · Note
-```
+#### 1.2 Session layout
 
-- On recovery, require the recorded identity, branch, registered worktree, absolute worktree, session root,
-  configuration, latest handoff, and later valid records to agree, and stop instead of creating or selecting a
-  replacement worktree or session directory. Reconstruct the idle wait when Configuration is complete and
-  delivered work is absent; otherwise reconstruct the first unproved TODO, keep a Complete `handoff.md` at its
-  User Review until Continue, and resume a Stopped `handoff.md` at the first unproved productive TODO.
-
-#### 1.2 Create the worktree and configuration
-
-- On the start checkout Gobbi started in, run `git branch --show-current` before creating the worktree, and
-  record that name as `Base branch` and that checkout as `Base checkout`. If the name is empty, or the
-  checkout is dirty or unusable, stop; do not ask which branch is the base, and never use the worktree
-  branch as the base.
-- Resolve the participants, systems and waivers, immutable base, publication intent, merge and cleanup
-  authority, protected work, and exact current-project Memory root. For a fresh session, capture the original
-  UTC start date, generate one lowercase hyphenated UUID, apply Git preferences from the recorded
-  `Base branch` without asking which branch is the base, give the worktree and session leaves the byte-equal
-  name `<YYYY-MM-DD>-<slug>-<full-uuid>`, set the session root to
-  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, and render the
-  [configuration template](templates/configuration.md) directly below it as an ignored session record under
-  Memory preferences.
-- Verify identity, settings, roots, observed `Base branch`, registration, containment, ignored state, tracked
-  tree, base checkout, and the rendered configuration. Do not activate `P1 · Ideation`.
-
-#### 1.3 Establish phase and session locations
-
-| Productive work | Record directory |
+| Content | Path below the session root |
 |---|---|
 | Ideation | `1-ideation/` |
 | Planning | `2-planning/` |
-| Execution | `3-execution/task-NN-slug/` |
-| Session ontology | `ontology/` |
+| Execution, per task | `3-execution/task-NN-slug/` |
 | Wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
-```text
-<record-directory>/review/iteration-N/
-  gate.md
-  <class>/
-    <runtime>/
-      report.md
-      checklist.md
-```
+- Each work item writes its receipt at `<item-dir>/record/iteration-N.md`. Phase handoffs are
+  `1-ideation/handoff.md`, `3-execution/handoff.md`, and `wrap-up/handoff.md`, from the
+  [handoff template](templates/handoff.md).
+- A REVIEW writes one report per reviewer at `<item-dir>/review/iteration-N/<reviewer>.md`, such as
+  `reviewer.md` or `codex.md`; the work item's receipt records the verdict.
 
-- Use that review layout only for Execution tasks and Wrap-up, with one class directory per artifact class
-  the unit contains, so a single-class unit has one. Use class tokens `code`, `docs`, and `design`, and
-  runtime tokens `claude-code`, `codex`, `cursor`, and `grok`; do not use `claude` or alias historical names
-  such as `codex.md`. Place the receipt at `<record-directory>/record/iteration-N.md` for every productive
-  unit, including Ideation and Planning. Accepted results remain at their owner-defined paths, and later
-  directories are created only when their first result needs them.
-- Name the session ontology directory, `{session-root}/ontology/`, in every Ideation, Execution, and Review
-  assignment. Wrap-up Step 2.1 promotes each session area file at `{session-root}/ontology/<area>.yaml` into
-  Memory `ontology/` under Memory Closure.
-- Use these fixed phase handoffs: Phase 1 at `1-ideation/handoff.md`, Phase 2 at
-  `3-execution/handoff.md`, and Phase 3 at `wrap-up/handoff.md`, and write each of those paths as an ignored
-  session record under Memory preferences. Do not update `configuration.md` after the Configuration write except when
-  writing a phase `handoff.md`, and then set only `Latest handoff` to that path.
-- Complete `P1 · Configuration` as an idle wait after those location rules are recorded. Leave every later
-  item `pending` with no item `in_progress`, and do not run 1.4 or activate `P1 · Ideation`.
+#### 1.3 Review
 
-#### 1.4 Discuss and lock project/work design
+- Apply [Review](../review/SKILL.md) to the work item's frozen subject, with the task Goal or the closure plan as
+  its Goal. Record the verdict and its dropped and follow-up items in the work item's receipt.
+- A finding does not reopen the accepted design, and a correction needs a re-review of the fixes.
 
-- Enter only when Configuration is complete and delivered work exists: a user statement of the outcome, topic,
-  or request, not mode, slug, partner policy, "continue", "ok", "looks good", or repository state. Use a concrete
-  outcome already in the session after Configuration; otherwise idle-wait with no item `in_progress` and allow
-  only a request for the user to state the work.
-- Activate `P1 · Ideation` and define project/work design and decisions as choices whose viable answers can
-  change the project/work goal, requirements, scope or boundary, observable behavior, policy, strategy,
-  algorithm, pattern or design direction, safety or privacy risk, authority, cost, dependency or reversibility,
-  or acceptance.
-- Apply [Discussion](../discussion/SKILL.md) under the Phase 1 collaboration Rule and recorded participant policy,
-  and record any unavailable required participant. Present its final synthesized project/work options and
-  recommendation, then record every required user decision.
+#### 1.4 Ideation
 
-#### 1.5 Produce and record Ideation
-
-- **WORK:** Select [Coding Ideation](../coding/coding-ideation/SKILL.md) when the productive design subject has an
-  unresolved material code-design choice, [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) when it
-  has an unresolved material writing-design choice, or [Design Ideation](../design/design-ideation/SKILL.md)
-  when it has an unresolved material visual-design choice. Apply the selected operation
-  through Delegation to the matching domain leader (coding-leader, authoring-leader, or design-leader)
-  with that skill's complete caller contract plus Workflow's project/work scope,
-  recorded participant discussion records,
-  fixed output root `{session-root}/1-ideation/outputs/ideation/`, exact locator
-  `{session-root}/1-ideation/outputs/ideation/ideation-index.md`, caller-named draft location under
-  `{session-root}/tmp/`, and recovery boundary. Route a returned decision package to Step 1.4, then resume that
-  leader only from the recorded answer.
-- **RECORD:** Reread the indexed result, reproduce membership, order, path, hash, and tracked-tree checks, and
-  write the receipt without reports, checklists, or `gate.md`. Return to Step 1.4 only for missing or
-  contradictory project/work design, required participant discussion, or a required user decision, and return
-  to WORK when the indexed result is incomplete.
-
-#### 1.6 Write the Phase 1 handoff and wait at User Review
-
-- Render the [handoff template](templates/handoff.md) at `1-ideation/handoff.md` for Complete or Stopped. Record
-  the exact identity, worktree, session root, branch, result and hashes, checks, decisions, authority, findings,
-  first unproved action, and recovery command.
-- For Complete, record `Next TODO: P1 · User Review`, set `configuration.md` `Latest handoff` to
-  `1-ideation/handoff.md`, activate `P1 · User Review`, display the file, and use [Discussion](../discussion/SKILL.md) with
-  the runtime ask tool for Continue or Stop only. For Stopped, keep the current
-  first unproved productive TODO and do not activate User Review as a next-phase gate.
-- Do not activate Planning from the file, from silence, or from the absence of an interrupt. Continue
-  completes `P1 · User Review` and then activates `P2 · Planning`; Stop leaves User Review `in_progress` or
-  records a stop and does not activate Planning or rewrite the Complete file into a failed phase.
+- **DISCUSSION:** Apply Discussion to settle the design with the user and participants, and record every user
+  decision.
+- **WORK:** The `leader` applies the matching Ideation skill:
+  [Coding Ideation](../coding/coding-ideation/SKILL.md),
+  [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), or
+  [Design Ideation](../design/design-ideation/SKILL.md). Give it the scope, the participant discussion, and the
+  output root `1-ideation/outputs/ideation/`, and take any returned decision back to DISCUSSION.
+- **RECORD:** Reread the index and its members, record their paths and hashes, and write the receipt, returning
+  to DISCUSSION for a missing decision and to WORK for an incomplete result. Then end Phase 1 at
+  `1-ideation/handoff.md` and wait at `P1 · User Review`.
 
 ### Phase 2 — Plan and Execute
 
-Phase 2 applies `DISCUSSION → WORK → RECORD` to Planning, then `DISCUSSION → WORK → REVIEW → RECORD` to
-every Execution task. Enter only from completed `P1 · User Review`; the manager, subagents or teammates, and
-remaining Partner runtimes make later in-frame decisions from the locked Phase 1 design, then wait at
-`P2 · User Review`. Prefer re-delegating coherent follow-up to a context-ready teammate after revalidating its
-role, evidence, addressability, and write boundary and issuing a complete new Delegation brief.
+Deliver the accepted design as reviewed task commits. Done when a verified `3-execution/handoff.md` is the
+`Latest handoff`, Complete only after every task has passed review.
 
-#### 2.1 Run the Planning DISCUSSION and WORK
+#### 2.1 Planning
 
-- **DISCUSSION:** Enter only from completed `P1 · User Review`. The manager uses independent local and remaining
-  Partner input to decide the planning approach, criteria, paths, and task boundaries within the accepted
-  design; an unresolvable authority or contract conflict stops without a design question.
-- **WORK:** Select [Coding Planning](../coding/coding-planning/SKILL.md) when the productive work is code
-  work, [Authoring Planning](../authoring/authoring-planning/SKILL.md) when it is writing work, or
-  [Design Planning](../design/design-planning/SKILL.md) when it is visual work. Apply the selected
-  operation through Delegation with absolute output root
-  `{session-root}/2-planning/outputs/planning/` and exact locator
-  `{session-root}/2-planning/outputs/planning/plan-index.md`. One matching domain planner (coding-planner, authoring-planner, or design-planner) writes and self-reviews the indexed plan
-  while preserving Ideation members and locked decisions.
+- **DISCUSSION:** Give the `leader` the accepted goal, the Ideation result, and participant input. The leader
+  chooses the major goals and the task split.
+- **WORK:** The `leader` applies the matching Planning skill:
+  [Coding Planning](../coding/coding-planning/SKILL.md),
+  [Authoring Planning](../authoring/authoring-planning/SKILL.md), or
+  [Design Planning](../design/design-planning/SKILL.md), with output directory `2-planning/`.
+- **RECORD:** Reread every plan document, record their paths and hashes, and write the receipt. Return to WORK
+  when tasks miss or overlap part of the work, a Goal cannot be judged, an item lacks a source, or the Task Graph
+  has a cycle.
 
-#### 2.2 Record Planning
+#### 2.2 Task discussion and work
 
-- **RECORD:** Reread the indexed plan, reproduce membership, order, path, hash, and tracked-tree checks, and
-  write the receipt without reports, checklists, or `gate.md`. Return to Step 2.1 only for missing or
-  contradictory decomposition, grouping, order, assignment-contract field, authority, or indexed integrity,
-  then verify obligation coverage, stable task IDs, dependencies, writer frontier, indexed membership and
-  hashes, and unchanged tracked state before activating Execution.
+- **DISCUSSION:** Pick the next ready task, or several to run in parallel when the Task Graph allows it and they
+  change different files. Consult participants when the approach needs it, and build each Execution brief
+  through [Delegation](../delegation/SKILL.md) from the task's Goal, Context, Constraints, and Taste and
+  Preference, adding the paths it may change, the protected work, and commit authority for the task's paths.
+- **WORK:** The role for the task's subject applies its Execution skill: the `developer` with
+  [Coding Execution](../coding/coding-execution/SKILL.md), the `author` with
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or the `designer` with
+  [Design Execution](../design/design-execution/SKILL.md). Each task ends with one focused local commit, and
+  commits are made one at a time.
 
-#### 2.3 Run each Execution task
+#### 2.3 Task review and record
 
-- **DISCUSSION:** Select the first unproved dependency-ready `task-NN-slug` in plan order. The manager consults
-  available subagents or teammates and remaining Partner runtimes to settle the in-contract approach, then
-  gives one matching domain executor (coding-executor, authoring-executor, or design-executor) exact inputs, paths, authority, criteria, checks, and protected work.
-- **WORK:** Apply the matching domain execution skill:
-  [Coding Execution](../coding/coding-execution/SKILL.md) when the writer frontier includes code,
-  [Authoring Execution](../authoring/authoring-execution/SKILL.md) when it includes durable prose, or
-  [Design Execution](../design/design-execution/SKILL.md) when it includes visual work.
-  Keep one active writer, read-only helpers, self-review, fresh verification, and one
-  focused local commit. An in-stage self-review cannot replace stage REVIEW.
-- **REVIEW:** Freeze the commit and result and name `review-depth` `execution-implementation`. For each
-  artifact class the task contains, apply the matching domain review skill through one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer,
-  and launch remaining runtimes from the recorded set minus the active runtime with write set
-  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, and a missing write
-  set is `writing-path-only` and cannot complete REVIEW. A `<class>/<runtime>/` directory that holds only one
-  of `report.md` and `checklist.md` is incomplete and never PASS input.
-- **RECORD:** Write `gate.md` from contract-gate verdicts only, across every class directory. PASS means every
-  class meets its criteria with no correction pending; a class passes only when every complete pair in its
-  directory passes, and a class with no complete pair does not pass. REVISE means an authorized correction
-  remains; return to this task's WORK with a new `iteration-N`. FAIL means a safe correction is unavailable;
-  stop and do not start the next task. Write and verify the receipt at `<record-directory>/record/iteration-N.md`.
-  Quality `does-not-meet` with contract-gate PASS is not REVISE, and after completed `P1 · User Review`
-  out-of-contract opinions do not reopen design. Any tracked correction makes prior coverage stale and repeats
-  WORK and REVIEW. After PASS, reread the commit, diff, checks, reports, findings, and dispositions before the
-  next task and amend only pending plan work when an in-contract plan defect appears.
+- **REVIEW:** Apply Review with the Execution stage bar and the task's domain bar.
+- **RECORD:** Write the receipt with the verdict; REVISE returns to WORK as the next iteration, and FAIL stops
+  the phase. After PASS, reread the commit and checks before starting a task that needs it, and amend only
+  pending plan work when a plan defect inside the accepted design appears.
+- When every task has passed, end Phase 2 at `3-execution/handoff.md` and wait at `P2 · User Review`.
 
-#### 2.4 Write the Phase 2 handoff and wait at User Review
+### Phase 3 — Wrap Up
 
-- After every planned task earns PASS, render the handoff template at `3-execution/handoff.md` with the plan,
-  task commits, checks, reviews, decisions, dispositions, exact worktree and session root, and
-  `Next TODO: P2 · User Review`.
-- On a safe terminal stop, render the same path with `Status: Stopped`, the current first unproved Planning or
-  Execution action, retained evidence, and no User Review activation as a next-phase gate. For Complete, set
-  `configuration.md` `Latest handoff` to `3-execution/handoff.md`, verify the handoff against all named evidence,
-  activate `P2 · User Review`, display the file, and use Discussion with the runtime ask tool for Continue or
-  Stop only.
-- Do not activate Wrap-up from the file, from silence, or from the absence of an interrupt. Continue completes
-  `P2 · User Review` and then activates `P3 · Wrap-up`; Stop leaves User Review `in_progress` or records a stop
-  and does not activate Wrap-up; recovery returns to the first unproved action without replacing accepted
-  history or asking a design question.
+Carry the accepted work into Memory and the base branch. Done when a verified `wrap-up/handoff.md` is the
+`Latest handoff` and, after Continue, the Note is returned from the verified Git state.
 
-### Phase 3 — Wrap Up and Report
+#### 3.1 Closure discussion and work
 
-Phase 3 applies `DISCUSSION → WORK → REVIEW → RECORD` to the actual closure. It then integrates only the
-reviewed tree, writes the terminal `handoff.md`, waits at `P3 · User Review`, and returns the Git/recovery
-Note after Continue.
+- **DISCUSSION:** Load [Wrap-up](../wrap-up/SKILL.md), list the accepted results, commits, checks, decisions,
+  risks, and open items, and have participants check the closure and merge plan. Stop when authority or safety
+  does not support one route.
+- **WORK:** Apply Wrap-up Phase 2: brief one assistant to apply [Memory](../memory/SKILL.md) with the session
+  root, the current-project Memory root, and the protected work. The assistant self-reviews its Memory changes,
+  and the manager checks the full worktree diff.
 
-#### 3.1 Run closure DISCUSSION
+#### 3.2 Closure review, merge, and handoff
 
-- Enter only from completed `P2 · User Review` in the configured worktree and session root. Load
-  [Wrap-up](../wrap-up/SKILL.md) and inventory accepted results, commits, checks, findings, decisions, exclusions,
-  risks, Memory, Git state, authority, and open items.
-- Use available subagents or teammates and remaining Partner runtimes to review the closure route, merge plan,
-  risks, and recovery choices. The manager resolves every in-contract choice from the accepted design and
-  stops without a design question when authority, safety, or the locked contract cannot support one route.
-- Freeze the closure subject, criteria, participant assignments, exact Memory and session roots, temporary and
-  final paths, per-class, per-runtime `report.md` and working `checklist.md` paths, `gate.md` and receipt paths,
-  checks, merge authority, and protected state.
-
-#### 3.2 Run closure WORK
-
-- Give one assistant the complete session root, exact current-project Memory root, accepted evidence, allowed
-  and protected paths, and checks through Delegation. Apply Wrap-up Phase 2 and [Memory](../memory/SKILL.md),
-  then self-review the Memory CRUD, durable `reports/note/`, retained paths, indexes, links, and complete
-  worktree diff.
-- Verify the actual pre-Git tree, including the durable Note when Memory ran, task commits, checks, heads,
-  merge plan, authority, risks, and recovery state. Keep the response-only Git/recovery Note outside the review
-  subject.
-- Stop at the exact recoverable state when any promised closure result, containment check, authority, or
-  verification is missing; do not ask a design question or invent a replacement route.
-
-#### 3.3 Run closure REVIEW
-
-- Freeze the actual closure tree, name `review-depth` `by-owning-stage`, and review it with the Memory
-  diff, durable `reports/note/` when present, accepted commits, checks, merge plan, authority, exclusions,
-  risks, and recovery paths. For each artifact class the closure contains, use one fresh matching reviewer
-  (coding-reviewer, authoring-reviewer, or design-reviewer), not the producer, and
-  one Partner wrapper per remaining runtime, each at
-  `wrap-up/review/iteration-N/<class>/<runtime>/{report.md,checklist.md}`, with write set
-  `runtime-directory` bound to that class directory; if that set is empty, launch nothing, a missing write set is
-  `writing-path-only` and cannot complete REVIEW, and an Unavailable attempt produces Unavailable evidence,
-  not a Partner Handoff.
-- Apply the Workflow gate from contract-gate verdicts only, across every class directory: PASS when every
-  class meets its criteria with no correction pending, REVISE when an authorized correction remains and then
-  return to Phase 3 DISCUSSION and repeat the changed WORK, and FAIL when a safe correction is unavailable. A
-  class passes only when every complete pair in its directory passes, and a class with no complete pair does
-  not pass. A `<class>/<runtime>/` directory that holds only one of
-  `report.md` and `checklist.md` is incomplete and never PASS input; quality `does-not-meet` with contract-gate
-  PASS is not REVISE, and after completed `P1 · User Review` out-of-contract opinions do not reopen design.
-- Any tracked correction makes prior coverage stale and repeats WORK and REVIEW. Retry a bounded agent or
-  Partner operation only when its prior effect is absent or safely reusable.
-
-#### 3.4 Run closure RECORD and return the Note
-
-- For PASS, write and verify the closure gate and receipt, then reread the reviewed tree, branches, checks,
-  authority, and active Wrap-up TODO. Apply Wrap-up's Git procedure and [Git](../git/SKILL.md) preferences to
-  commit remaining closure changes and merge the exact accepted work head into the configured base branch.
-- Prove the resulting base tree equals the reviewed tree. Render `wrap-up/handoff.md` for accepted integration
-  or any safe terminal stop, set `configuration.md` `Latest handoff` to that path, and record exact Git states,
-  retained objects, first unproved action, and recovery command in the handoff; for Complete record
-  `Next TODO: P3 · User Review`, and a Stopped handoff never claims Phase 3 completion or opens User Review as a
-  next-phase gate.
-- For Complete, activate `P3 · User Review`, display the file, and use Discussion with the runtime ask tool for
-  Continue or Stop only; do not start `P3 · Note` from the file or from the absence
-  of an interrupt. Continue completes `P3 · User Review`, then render Wrap-up's response-only
-  [Note template](../wrap-up/templates/note.md) from the verified Git and recovery state, citing the durable
-  Note path or `None`, and complete `P3 · Note` only when it agrees with the handoff and result; publication
-  and cleanup remain separate authorized actions.
+- **REVIEW:** Apply Review with the Execution stage bar to the closure tree, with the Memory diff, the durable
+  note, commits, checks, and merge plan. REVISE returns to DISCUSSION.
+- **RECORD:** After PASS, write the receipt with the verdict, then apply Wrap-up's Git procedure and
+  [Git](../git/SKILL.md) to commit the closure changes and merge the accepted head into `Base branch`, rerunning
+  the accepted checks on a temporary merge first when the base moved.
+- End Phase 3 at `wrap-up/handoff.md` and wait at `P3 · User Review`. After Continue, return Wrap-up's
+  [Note](../wrap-up/templates/note.md) from the verified Git state; publication and cleanup need another request.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Configuration template](templates/configuration.md) | Defines the ignored Workflow configuration and its fixed worktree and session identity. |
-| [Handoff template](templates/handoff.md) | Defines each ignored phase-completion and recovery checkpoint. |
-| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns entry, the finding-gate switch after completed `P1 · User Review`, and the session-wide finding gate. |
-| [Delegation](../delegation/SKILL.md) | Owns the base specialist brief, skills and docs indexes, and final assignment handoff. |
-| [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, deciding with the user, and User Review Continue / Stop asks. |
-| [Coding Planning](../coding/coding-planning/SKILL.md) | Owns Phase 2 code-work decomposition and its indexed result. |
-| [Authoring Planning](../authoring/authoring-planning/SKILL.md) | Owns Phase 2 writing-work decomposition and its indexed result. |
-| [Design Planning](../design/design-planning/SKILL.md) | Owns Phase 2 visual-work decomposition and its indexed result. |
-| [Coding Ideation](../coding/coding-ideation/SKILL.md) | Owns Phase 1 code design and its indexed result. |
-| [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns Phase 1 writing design and its indexed result. |
-| [Design Ideation](../design/design-ideation/SKILL.md) | Owns Phase 1 visual design and its indexed result. |
-| [Coding Execution](../coding/coding-execution/SKILL.md) | Owns code-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
-| [Authoring Execution](../authoring/authoring-execution/SKILL.md) | Owns writing-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
-| [Design Execution](../design/design-execution/SKILL.md) | Owns visual-task implementation, verification, and the commit-or-retain handoff inside a matching Execution WORK stage. |
-| [Coding Review](../coding/coding-review/SKILL.md) | Owns independent code assessment and each complete `report.md` plus working `checklist.md`. |
-| [Authoring Review](../authoring/authoring-review/SKILL.md) | Owns independent writing assessment and each complete `report.md` plus working `checklist.md`. |
-| [Design Review](../design/design-review/SKILL.md) | Owns independent visual assessment and each complete `report.md` plus working `checklist.md`. |
-| [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable work Note, commit, merge, Git/recovery Note delivery, and recovery. |
-| [Memory](../memory/SKILL.md) | Defines the memory tree, directory conventions, and session-versus-durable split. |
-| [Git](../git/SKILL.md) | Supplies branch, worktree, commit, integration, and recovery preferences. |
-| [Partner](../gobbi/partner/SKILL.md) | Defines each named-runtime invocation, worktree write root, and final Handoff. |
+| [Configuration template](templates/configuration.md) | Defines the ignored Workflow configuration and session identity. |
+| [Handoff template](templates/handoff.md) | Defines each phase handoff and recovery checkpoint. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry and the session-wide finding gate. |
+| [Principles](../principles/SKILL.md) | Defines the behavioral disciplines; Principle 3 has the user choose among studied options. |
+| [Discussion](../discussion/SKILL.md) | Owns understanding the task, studying options with participants, deciding with the user, and the Continue or Stop ask. |
+| [Delegation](../delegation/SKILL.md) | Defines the brief for work handed to another agent. |
+| [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI and reads its output. |
+| [Wrap-up](../wrap-up/SKILL.md) | Owns Memory extraction, the durable note, commit, merge, and the Git and recovery Note. |
+| [Git](../git/SKILL.md) | Supplies branch, commit, and merge conventions and the shared Git safety rules. |
+| [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md), [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), [Design Ideation](../design/design-ideation/SKILL.md) | Own code, writing, and visual design. |
+| [Coding Planning](../coding/coding-planning/SKILL.md), [Authoring Planning](../authoring/authoring-planning/SKILL.md), [Design Planning](../design/design-planning/SKILL.md) | Own code, writing, and visual planning. |
+| [Coding Execution](../coding/coding-execution/SKILL.md), [Authoring Execution](../authoring/authoring-execution/SKILL.md), [Design Execution](../design/design-execution/SKILL.md) | Own code, writing, and visual implementation and verification. |
+| [Review](../review/SKILL.md) | Owns independent review: the reviewers, the report, the verdict, and fix rounds. |

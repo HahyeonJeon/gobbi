@@ -4,6 +4,8 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Note
 
+- [Gobbi skills refactor](note/2026-11-12-gobbi-skills-refactor.md)
+- [Recursive exploration and the six-kind ontology](note/2026-10-18-recursive-exploration.md)
 - [Gobbi v1.3.3 publication](note/2026-10-01-gobbi-v1-3-3-publication.md)
 - [Gobbi v1.3.3 release preparation](note/2026-10-01-gobbi-v1-3-3-release.md)
 - [Gobbi-dev session](note/2026-10-01-gobbi-dev.md)

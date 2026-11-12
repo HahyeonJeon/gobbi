@@ -8,6 +8,8 @@
 
 **Correction:** Change only the named phase. Confirm that boundary before editing another phase, a checklist, or another skill.
 
+**Seen:** 2026-09-25 (7b18c929)
+
 ## Writing a guard as the negation of one case, not the full state space
 
 **Context:** Writing a condition that gates behavior on a specific input state, such as "when the brief
@@ -21,6 +23,8 @@ review before an independent evaluator caught it.
 **Correction:** When a guard's condition is the negation of a single case, enumerate the full input state
 space before accepting it, not just the one case the author had in mind.
 
+**Seen:** 2026-08-02 (bb689f0d)
+
 ## Prose that names no operation reads as an instruction
 
 **Context:** Writing a procedure step for an agent to follow.
@@ -32,6 +36,8 @@ noticing it names no concrete mechanism. Grammatically it reads as a step; opera
 **Correction:** For every procedure step, confirm it names a concrete operation — a tool call, a check, a
 comparison — not just a verb phrase shaped like one.
 
+**Seen:** 2026-08-02 (bb689f0d)
+
 ## Participant wording and preferences replaced the user's design
 
 **Context:** Synthesizing a design from several participants' proposals after the user named the terms.
@@ -42,6 +48,8 @@ over layer grouping, into a rule the user did not ask for. The user reversed bot
 
 **Correction:** Keep the user's exact terms. Offer a participant preference to the user as an option, not as a
 rule. Add a rule only when the user asks for it or names the failure it prevents.
+
+**Seen:** 2026-09-25 (4670edff)
 
 ## Patching a teaching example one gap at a time after a global rule
 
@@ -55,3 +63,5 @@ rule widened what it had to cover. The loop took three review iterations.
 **Correction:** When a new global rule lands, sweep every unit it now governs, not only the units the design
 touched. Prefer a rule that keeps the example small, such as "a read on the first side covers its link", over
 adding one grant per gap.
+
+**Seen:** 2026-09-29 (3af9e384)

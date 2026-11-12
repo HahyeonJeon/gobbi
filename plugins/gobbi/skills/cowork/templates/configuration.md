@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document role | Canonical ignored Cowork configuration and recovery record |
-| Authority | Records identity, locations, settings, and creation evidence; current TODO, topic records, Git state, and user authority remain controlling |
+| Authority | Records identity, locations, settings, and creation evidence; topic records, Git state, and user authority remain controlling |
 | Recorded at | {exact UTC timestamp} |
 
 ## Identity
@@ -50,7 +50,6 @@
 | Entry contract | {mode, slug, partner policy, and source} |
 | Mode settings | {accepted settings and authority} |
 | Gobbi root pair | {validation observations} |
-| Required layout | {paths, states, and exact checks} |
 | Repository and immutable base | {repository and revision observations} |
 | Worktree registration | {command and observed registration} |
 | Session identity and containment | {path and identity checks} |
@@ -66,6 +65,6 @@
 | Identity source | {fresh observations or prior configuration path and hash} |
 | Recovery owner | Cowork |
 | Recovery binding | Continue only in the Absolute worktree and Session root above; never create a replacement for this UUID |
-| Accepted topics | {each topic-NN-slug and record path, newest last, or None} |
+| Accepted topics | {each topic-NN-slug and its topic contract path, added at its first PASS, newest last, or None} |
 | First safe recovery command | {exact command to re-enter the Absolute worktree} |
 | Recovery limits | {exact ambiguity or blocked action, or None} |

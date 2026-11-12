@@ -1,182 +1,123 @@
 ---
 name: coding-execution
-description: "Coding Execution is an operation for implementing and verifying one accepted code task."
+description: "Coding Execution implements and verifies one accepted code task. Use it when a task with a settled code design changes code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Coding Execution
 
-Coding Execution implements, verifies, and hands off one accepted code task.
-Use it when the task leaves no material code-design choice open and its writer frontier includes code, whether or
-not `coding-ideation` ran. It grants no Review authority.
+Coding Execution implements, verifies, and hands off one accepted code task. Use it when the task leaves no
+material code-design choice open and its writer frontier includes code, whether or not `coding-ideation` ran.
+It grants no Review authority.
 
 ## Principles
 
-### Own the implementation lifecycle
+### Deliver proven code, not a plan
 
-Coding Execution owns project study, bottom-up construction, verification, repair, and handoff for one accepted
-task. Its result is proven code, not a plan or a new design.
+The result is code that reaches the task Goal, with the evidence that it does. Grow it in small working
+increments from the foundation up, so each failure points at the last change.
 
-### Write code at a world-best standard
+### Apply the principles to real code
 
-Write code as a world-best code designer and programmer. Before and while coding, use the question “How would a
-world-best programmer design and implement this?” to guide code craft inside the accepted design and task.
+The [Coding Principles](../principles.md) judge real Ontology units, parameters, and callers, so apply them as code
+is written and simplified. Simplicity comes first: the task adds only mechanism that a current caller needs.
 
-### Apply the principles while writing code
+### Leave no stale reach
 
-The coding principles judge real units, parameters, and callers, so apply them as code is written and simplified,
-not before it exists. Simplicity comes first: the task adds only mechanism that a current caller needs.
-
-### Trace the actual code reach
-
-Definitions, callers, dependencies, tests, supporting surfaces, failures, recovery, and consumers determine the
-affected set. Repository type or file extension alone does not.
+A change is complete when every caller, mirror, generated output, test, and document it affects agrees with
+it. The code's real dependencies decide that set, not the repository type or file extension.
 
 ## Rules
 
-- **MUST complete study, implementation, verification, repair, and the checklist pass in this operation.** Bind
-  the full direct task contract; do not delegate the lifecycle to another execution skill.
-- **MUST commit when the caller grants commit authority, and use the caller’s retained-state policy
-  when authority is none.** Under no authority, the exact verified uncommitted tree is a completed Coding
-  Execution result; do not stage or commit it.
-- **MUST map affected reach before writing the thinking guide, then keep that map current through handoff.** When
-  generated material applies, name its canonical source, generator owner, regeneration path, and consistency
-  check instead of treating generated output as an ordinary edit target.
-- **MUST bind each smallest complete slice to accepted behavior, affected surfaces, proof, and a stop condition
-  within one short local thinking guide.** This guide is not Planning or Coding Ideation; when the accepted task
-  or design leaves a material design choice open, stop and return to the caller without loading or following
-  either operation.
-- **MUST load each applicable language, framework, platform, tool, and domain owner before making its code
-  choices.** Keep one selected lifecycle operation primary and do not copy specialist procedures.
-- **NEVER run Coding Review, write its report, claim reviewer independence, create a review working
-  checklist, issue a verdict, accept the work, or change mode state.** Preserve out-of-scope findings and return
-  them to their owner without implementing them.
+- **MUST commit only when the caller grants commit authority.** Commits are the caller's to grant; without
+  that authority, the exact verified uncommitted tree, kept under the caller's retained-state policy and
+  neither staged nor committed, is the completed result.
+- **Stop and return to the caller when the task or design leaves a material design choice open.** Design
+  belongs to Ideation and the user, and a developer's guess becomes design no one accepted.
+- **Stop before changing a surface outside the scope or writer frontier.** Another owner holds it, so return
+  its effect, its owner, and the next action it needs; do the same for out-of-scope findings.
+- **NEVER run Coding Review, write a review report, claim reviewer independence, issue a verdict, accept the work,
+  or change mode state.** Review needs a reviewer that did not produce the work, and acceptance belongs to the
+  caller.
 
 ## Procedure
 
-### Phase 1 — Define the Code Task
+### Phase 1 — Define the Task
 
-#### 1.1 Bind the direct task contract
+Know the contract and the state the code starts from. Done when the contract is bound and the baseline is
+recorded.
 
-- Bind the complete task contract, accepted design, exact worktree, scope, writer frontier, commit authority,
-  retained-state policy, acceptance evidence, verification requirements, and handoff.
-- Identify the design record: the Ideation design, or this operation’s handoff when there was no Ideation. With
-  no Ideation, the task contract is the accepted design, and Step 3.1 records the units you create.
-- Stop and return to the caller when the accepted task or design leaves a material design choice open, or when
-  writer isolation, authority, or proof is incomplete. A missing Ideation design or missing commit authority
-  alone is not a stop.
+#### 1.1 Bind the task contract
 
-#### 1.2 Establish the pre-edit baseline
+- Read the task's Goal, accepted design, worktree, scope, writer frontier, commit authority, retained-state
+  policy, acceptance evidence, and handoff. Without Ideation, the task contract is the accepted design.
+- Stop when writer isolation, authority, or a way to prove the Goal is missing. A missing Ideation design or
+  missing commit authority alone is not a stop.
+- Load each language, framework, platform, tool, and domain skill that governs the code, and
+  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the change
+  creates or changes classes, interfaces, or inheritance.
 
-- Inspect the current repository state before production edits. For a defect, reproduce the original symptom;
-  for a feature or refactor, characterize the relevant caller-visible behavior and run the narrow existing checks
-  that distinguish pre-existing failures.
-- When direct reproduction is unavailable, record why and use only a caller-accepted diagnostic baseline.
-  Otherwise stop rather than guess about the original behavior or cause.
-- Preserve the baseline subject, command or observation, environment, result, and limit so later failures can be
-  compared with the state that existed before this task.
+#### 1.2 Record the baseline before the first edit
 
-#### 1.3 Map affected reach and select owners
+- A baseline taken after editing cannot separate this task's failures from earlier ones, so take it first.
+- For a defect, reproduce the original symptom. When you cannot, record why and use a diagnostic baseline the
+  caller accepts, or stop rather than guess the cause.
+- For any other change, run the relevant existing checks and record which already fail.
 
-- Trace definitions, callers, dependencies, public contracts, state and schemas, configuration, tests, documents,
-  build and consumer paths, observable failures, recovery, and consumers that can change the result or evidence.
-- Mark canonical and generated ownership where it applies, and classify each surface as in-scope, justified
-  no-op, or an owned stop. Load each specialist owner the map exposes, including
-  [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) when the change creates
-  or changes classes, interfaces, or inheritance.
-- Stop before changing an out-of-scope or unowned surface, and return its effect, owner, and required next action.
+### Phase 2 — Implement the Change
 
-### Phase 2 — Make a Short Local Thinking Guide
+Reach the task Goal in small working increments. Done when every scope item has a result, nothing the task
+added fails the Simplicity tests, and no affected surface is stale.
 
-#### 2.1 Order the implementation and proof slices
+#### 2.1 Build and prove each increment
 
-- After the reach map is current, write the thinking guide that Rule 4 defines, with one entry per smallest
-  complete slice.
-- Order the minimum foundation first, then caller-visible slices from their lowest dependency through consumers.
-- Stop per Step 1.1 when the accepted inputs cannot determine a slice or its proof.
+- Build each increment from its lowest dependency to its caller-visible result, and prove it before starting
+  the next. For a testable defect, add a regression check that fails before the fix and passes after it.
+- With an Ideation design, build each Ontology unit to its design and caller contract and add no pattern it does
+  not name. Without one, record in the handoff the Ontology unit definition and caller contract of each new public
+  Ontology unit, per [Modularization](../principles.md#modularization), and the force behind each added
+  abstraction.
+- Regenerate generated output from its canonical source instead of editing it, because the next generation
+  overwrites a hand edit.
 
-### Phase 3 — Implement and Reconcile the Code Reach
+#### 2.2 Simplify and reconcile before verifying
 
-#### 3.1 Write each slice to the design and principles
+- Remove each Ontology unit, parameter, option, and hook the task added that fails the
+  [Simplicity](../principles.md#simplicity) tests, and every placeholder, temporary diagnostic, and stale path.
+  When mechanism the accepted design requires fails them, keep it and record a concern.
+- Account for every affected surface as changed or unchanged for a stated reason.
+- Replace each Ontology unit the task added that repeats knowledge an existing Ontology unit holds with a call to
+  that Ontology unit. When the change breaks an existing Ontology unit's definition, stop and return the
+  restructure as a design choice instead of working around it.
 
-- Write each slice from its lowest dependency through its caller-visible result, including consistency-bound tests
-  and supporting surfaces. As you write each unit, apply the [Simplicity](../principles.md#simplicity) inline test
-  and current-caller test first, then the other [Coding Principles](../principles.md).
-- With an Ideation design, build each class and function to its Class and Function Design and caller contract,
-  read only the `coding-object-oriented-programming` entries it names, and add no other pattern. Without one,
-  apply the entries that Step 1.3 loaded, and record each new directory’s, file’s, public class’s, and public
-  function’s [Modularization](../principles.md#modularization) lines and any added abstraction’s force in the
-  handoff before you create it.
-- When a built unit adds or changes a domain unit, such as a new Property, update the session area file as
-  Ontology [Storage](../../ontology/SKILL.md#storage) states, and name the unit id in the handoff. Stop and
-  return to the caller when that change contradicts the accepted design.
+### Phase 3 — Verify and Deliver
 
-#### 3.2 Prove each slice
+Hand off the exact tree that passed. Done when the final tree's checks are recorded and the handoff is
+returned.
 
-- Run the slice’s narrow and downstream proof before you start the next slice.
-- For a testable defect, preserve or add a regression check that fails for the original reason before the fix and
-  passes afterward. A feature check may be written before or with its slice.
-- When a discovery adds reach, update the map and regenerate generated output from its canonical owner. Stop
-  before unplanned reach expands the accepted scope or writer frontier.
+#### 3.1 Verify the final tree
 
-#### 3.3 Reconcile and simplify the implementation
+- Run checks on the exact tree after the last edit: focused checks, then the affected or project checks the
+  task requires, then the original reproducer when one exists.
+- Compare each failure with the baseline, and repair only a cause this task introduced, then rerun what the
+  repair touches. Stop after repeated unexplained failure, missing authority, or unsafe scope growth.
+- Record each check's command or observation, environment, result, skips, and limits.
 
-- Apply the Simplicity inline test and current-caller test again to every unit, parameter, option, and hook this
-  task added, and remove each one that fails. Also remove task-introduced placeholders, temporary diagnostics, and
-  stale paths.
-- When accepted-design mechanism fails those tests, keep it as designed and record it as a handoff concern.
-- Map every scope item to a completed result and every affected surface to a change or justified no-op, and
-  resolve any unexplained entry. Recheck canonical and generated consistency, caller and consumer paths, failures,
-  recovery, and the accepted contract against the completed implementation.
+#### 3.2 Deliver and return the handoff
 
-### Phase 4 — Verify and Repair the Final Identity
-
-#### 4.1 Verify the final identity
-
-- Verify the exact tree after the last edit: focused checks first, then required affected or project checks, and
-  the original reproducer last when one exists.
-- Record each verification command or observation, configuration and environment, subject identity, result,
-  skips or unavailable checks, and claim limits.
-
-#### 4.2 Run the checklist pass
-
-- Select the [Coding Review checklist](../coding-review/checklist.md) categories whose subject the change
-  touches, and answer their items against the verified identity under the checklist’s Context conditions.
-- Record, for the handoff, the categories answered and each item whose problem is present or that the evidence
-  cannot decide, with its evidence.
-- Treat each in-scope present problem as a task-introduced failure in Step 4.3. Record an out-of-scope one as a
-  handoff concern for its owner.
-
-#### 4.3 Classify failures and repair causes
-
-- Classify each failure against the baseline as task-introduced, pre-existing, flaky, or out-of-scope. Do not
-  repair a pre-existing, flaky, or out-of-scope result as though this task caused it.
-- Repair only an in-scope cause, then rerun the exposing check, affected downstream checks, Step 4.1, and the
-  Step 4.2 categories the repair touches. When a premise of the thinking guide fails, return to Step 2.1, and stop
-  per Step 1.1 if a material design choice opens.
-- Stop on missing authority, unsafe scope expansion, or repeated unexplained failure, and return the stop handoff
-  in Step 5.1.
-
-### Phase 5 — Deliver the Verified Identity
-
-#### 5.1 Deliver and return the handoff
-
-- When the caller grants commit authority, commit the exact verified result. When authority is none, do not stage
-  or commit, and retain the exact verified tree under the caller’s retained-state policy.
-- Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with these Execution fields: commit or
-  retained-tree identity and caller policy, verification record, reach account, checklist-pass result, principles
-  and `coding-object-oriented-programming` entries applied, and, when there was no Ideation, the design record.
-  Put the Step 3.3 and Step 4.2 concerns in its concerns.
-- On any stop, preserve the exact worktree identity and return the earliest owner, first failed obligation and
-  its evidence, safe retained state, prohibited next action, and resume condition.
+- Commit the verified tree when the caller grants commit authority; otherwise retain it under the caller's
+  retained-state policy.
+- Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with the commit or retained-tree
+  identity, the verification record, the reach account, and, without Ideation, the design record from Step
+  2.1. Put accepted-design concerns and out-of-scope findings in its concerns.
+- On a stop, keep the worktree as it is and return the owner, the failed obligation and its evidence, the safe
+  retained state, what not to do next, and the condition to resume.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Rules and entries for code that creates or changes classes, interfaces, or inheritance. |
+| [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Defaults and entries for code that creates or changes classes, interfaces, or inheritance. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, applied while code is written and simplified. |
-| [Ontology](../../ontology/SKILL.md) | Kinds and facets that Step 3.1 records as Modularization lines when there was no Ideation, and the session storage that Step 3.1 updates. |
-| [Coding Review checklist](../coding-review/checklist.md) | Baseline for the Step 4.2 checklist pass. |
-| [Delegation](../../delegation/SKILL.md) | Handoff Content that Step 5.1 returns with the Execution fields. |
+| [Delegation](../../delegation/SKILL.md) | Handoff Content that Step 3.2 returns. |

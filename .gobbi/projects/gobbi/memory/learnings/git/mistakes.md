@@ -10,6 +10,8 @@ file option is never applied.
 **Correction:** Put the message option before the path separator:
 `git commit -F - -- paths`.
 
+**Seen:** 2026-08-16 (b29057ab)
+
 ## Reusing a squash-merged branch can reopen old history
 
 **Context:** Publishing a focused follow-up from a retained branch after that branch's earlier work was
@@ -24,6 +26,8 @@ work, leave the retained session branch unchanged. Create a clean non-session br
 apply the focused correction there, verify the exact delta, and publish that branch. Do not force-rewrite the
 retained session branch to make the comparison look smaller.
 
+**Seen:** 2026-08-03 (53456945)
+
 ## Updating a branch that another worktree has checked out
 
 **Context:** Fast-forwarding `develop` with `git update-ref` from a session worktree while the start
@@ -36,6 +40,8 @@ old tree, so `git status` shows the new commit's files as modified or deleted.
 Do not restore, reset, or check out files there from the session. Leave it until a separately
 authorized tidy of that checkout.
 
+**Seen:** 2026-09-21 (3ff600ed)
+
 ## A relative delete from the worktree can hit the base checkout
 
 **Context:** A specialist edits a linked worktree whose skills are reached by relative symlinks, while the
@@ -47,3 +53,5 @@ restored those paths from `HEAD`. The base checkout was clean afterward, and the
 **Correction:** Name every write and delete as an absolute path under the session worktree. After the
 specialist returns, run `git status` on the base checkout and confirm the files that must stay there still
 exist.
+
+**Seen:** 2026-10-01 (01949a0a)

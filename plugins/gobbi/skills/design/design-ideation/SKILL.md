@@ -1,6 +1,6 @@
 ---
 name: design-ideation
-description: "Design Ideation is an operation for developing an evidence-backed visual design from a problem and its requirements."
+description: "Design Ideation develops an evidence-backed visual design with the user, shown through images. Use it when visual work has an open design choice, such as its layout, direction, or visual language."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,135 +8,101 @@ skill-type: operation
 # Design Ideation
 
 Design Ideation develops one evidence-backed visual design from a problem and its requirements. Use it when a
-bounded topic has an unresolved material visual-design choice. It writes one indexed result, including listed
-illustration images, and stops before realization.
+bounded topic has an unresolved material visual-design choice. It writes one result located by
+`ideation-index.md`, with the illustration images it links, and stops before production.
 
 ## Principles
 
-### Question through the caller until the idea is complete
+### Cover the design choices the visual work needs
 
-An incomplete idea is a set of open topics, not permission to assume. Return evidence-backed questions until
-every material gap is answered, deferred, or removed from scope.
+Materials, structure, direction, visual language, and components each matter wherever they change the work.
+Take them in the order the work needs, and decide a choice only after the choices it depends on, such as
+component variants after the visual direction.
 
-### Study and discuss with other agents, then ask the user
+### Let the user decide from images
 
-Study project evidence and visual references first, then trustworthy external prior art when it can change a
-choice. Get separate supported suggestions and critique from available agents, compare options, recommend one,
-and ask the user before treating a design choice as decided.
+The user compares structure and direction options as images, not prose alone. The written Design governs, so a
+property visible only in an image is not a commitment.
 
-### Discuss the design from images, not prose alone
+### Keep each decision in one place
 
-Show structure options as greybox wireframe PNGs and direction options as styled example PNGs. The user decides
-from those images; the written Design headings remain the authority.
-
-### Decide structure before direction
-
-Close layout and a component inventory from the structure pass, then concept, aesthetics, and visual language
-from the direction pass. Write component variants only after the visual direction is accepted.
+Each decision lives under its Design heading with the chosen option, why it won, its trade-offs, and what would
+reopen it. Discussion links to that heading instead of copying the decision, so the two cannot disagree.
 
 ## Rules
 
-- **MUST preserve caller and user authority.** The user decides each required in-scope success, direction,
-  risk, destructive implication, external dependency, and load-bearing assumption.
-- **MUST write one closed indexed result at the caller-supplied output root, located by `ideation-index.md`.**
-  Write markdown result files in that root and illustration PNGs in `images/`, list every file once from
-  `ideation-index.md` or `discussion-index.md`, and keep each decision in its Design heading.
-- **MUST finish agent discussion before synthesizing options, then resume only from the recorded user
-  decision.** Do not force consensus or repeat without new evidence.
-- **MUST stop at the design boundary.** Listed illustration PNGs are subordinate evidence, not production.
-  Production files, shipped assets, exact token or measurement values, and realization recipes stay out.
-- **MUST run two image passes without merging them: structure, then direction on the accepted structure.**
-  Write the six Design headings in document order after those decisions.
-- **NEVER change an accepted contract silently.** Reopen the earliest affected decision and obtain any
-  required user choice.
+- **MUST let the user decide each material choice.** The user owns success, direction, risk, destructive
+  effects, external dependencies, and load-bearing assumptions, so the agent recommends and returns the choice.
+- **Get independent suggestions or critique before recommending a consequential choice.** One agent misses
+  alternatives, and Principle 3 asks for this on choices that are hard to reverse or that the user owns.
+- **Ask the user before continuing text-only when no image route works.** The user decides from images, so
+  dropping them changes how the user decides.
+- **Write the result at the caller's output root, located by `ideation-index.md`, with images in `images/`.**
+  Cowork and Workflow pass that root and read the result from that file.
+- **Stop at the design boundary.** Production files, shipped assets, exact token or measurement values, and
+  realization recipes belong to Execution, which works from the accepted design.
+- **NEVER change an accepted decision silently.** Planning and Execution build on it, so reopen the earliest
+  affected decision and get the user's choice.
 
 ## Procedure
 
-### Phase 1 — Understand the Problem and Requirements
+### Phase 1 — Understand the Problem
 
-#### 1.1 Establish the contract
+Done when the requirements state the goal and why it matters, the problem, the outcomes viewers should get, what
+is in and out of scope, and the open questions, and an image route works.
 
-- Read the request, governing materials, problem, outcome, requirements, and caller-supplied design and
-  decision scope, output root, user-decision route, and image route. Stop and return missing, contradictory,
-  or unclear input; revise an existing target only with caller authority.
-- Bind the image route as the runtime image tool or a local SVG or HTML-to-PNG converter. If neither works,
-  stop and ask whether to pause or continue text-only; do not fall back silently.
-- Require the participant-discussion contract only when agents will be asked for suggestions or critique.
+#### 1.1 Read the inputs and write the requirements
 
-#### 1.2 Define the problem, outcome, and scope
+- Read the request, the participant discussion, the governing materials, and the output root. Return missing or
+  contradictory input to the caller, and revise an existing result only with the caller's authority.
+- Write the requirements from the [part template](templates/ideation-NN.md), separating facts from hypotheses.
+- Confirm an image route: the runtime image tool, or a local SVG or HTML-to-PNG converter.
 
-- State the current situation, desired outcome, viewers, unchanged behavior, and Included, Excluded, Deferred,
-  or Rejected scope. Distinguish facts from hypotheses.
-- Write Requirements only in the authoritative part, from the [part template](templates/ideation-NN.md).
-- Return each unresolved in-scope choice through the caller's user-decision route.
+### Phase 2 — Study and Decide from Images
 
-### Phase 2 — Study and Discuss
+Done when every material choice has a user decision, a deferral, or a scope exclusion, backed by recorded study
+and, for structure and direction, by the images the user compared.
 
-#### 2.1 Study applicable evidence
+#### 2.1 Study the evidence
 
-- Frame the question and what evidence would change the answer. Inspect the closest internal surfaces and
-  design system first; use external prior art only when it can improve an in-scope choice.
-- Compare, challenge, and recommend. Write each study as an `S{N}` block under `## Study` in the Discussion
-  view, cite reference images by link, and write Materials from that study.
-- Record where the independent suggestions and critique agreed or differed in that group's `### Discussion`.
-  Do not copy study assessments or findings.
+- Study the closest internal surfaces and design system first, and external prior art only when it can change
+  an in-scope choice. Cite reference images by link, and copy one into the result only when the project may
+  keep it.
+- Record each study once from the [discussion part template](templates/discussion-NN.md), and cite its ID from
+  the topics it informs.
 
-#### 2.2 Decide structure from wireframes
+#### 2.2 Ask the user and record the decision
 
-- Create two greybox wireframe PNGs at `images/structure-{a|b}.png`. Hold view, content, and canvas identical;
-  vary only layout.
-- Get separate supported suggestions and critique, show both images, and ask once. Write the topic tree in
-  decision order from the [discussion templates](templates/discussion-index.md), and link each **Decision** to
-  its Design heading.
-- Write the chosen option, why it won, the trade-offs, and the reopen condition under Layout and Hierarchy,
-  and record the component inventory for Components. Do not copy the decision into Discussion.
+- Show each structure or direction option as an image in `images/`. When layout and style are both open, show
+  layout options apart from style options so each choice is judged on its own.
+- For each user-owned choice, return the question, the images, the options recommended first with Pros and
+  Cons, and what would change the recommendation, then stop work that depends on it. The option order is the
+  user's standing preference.
+- Record each decision under its Design heading, and reopen the earliest affected decision when new evidence
+  changes it.
 
-#### 2.3 Decide direction from styled examples
+### Phase 3 — Write the Result
 
-- Create two or three styled example PNGs at `images/direction-{a|b|c}.png` on the accepted structure. Vary
-  only visual direction.
-- Get separate supported suggestions and critique, show the images, and ask once.
-- Write the chosen option, why it won, the trade-offs, and the reopen condition under Concept and Idea,
-  Aesthetics, and Visual Language. Do not copy the decision into Discussion.
+Done when a cold reader can plan and execute from the result without opening an image, and the caller has its
+locator.
 
-### Phase 3 — Design
+#### 3.1 Write and return the result
 
-#### 3.1 Write the Design headings
-
-- Write Materials, Concept and Idea, Aesthetics, Layout and Hierarchy, Visual Language, and Components in
-  that document order, including each heading's recorded decision. Start each heading with
-  `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and write the design only under
-  `Material change`.
-- Components are artifacts under Components, and named visual-language terms are artifacts under Visual
-  Language. Give each domain concept one [kind](../../ontology/SKILL.md#kinds) and a session unit id, and use
-  [Ontology](../../ontology/SKILL.md) for facets, vocabulary, and storage.
-- Link the accepted structure image under Layout and Hierarchy and the accepted direction image under Concept
-  and Idea. Assemble the headings so planning and execution can follow the idea without opening an image, and
-  reopen the earliest defect before realization.
-
-#### 3.2 Write the indexed result
-
-- Create `ideation-index.md`, the required Discussion view, at least one authoritative part, and the Images
-  table from the [ideation index](templates/ideation-index.md) and
-  [discussion index](templates/discussion-index.md) templates.
-- Keep discussion parts as complete topic groups and `S{N}` entries. Keep authoritative parts as the work
-  definition and the idea, and list every PNG once.
-- List every file from the root index. Add no unlisted file.
-
-#### 3.3 Review and freeze
-
-- Read the result once in index order and fix in-scope defects at the earliest step.
-- Freeze the listed membership and bytes. Independent review belongs to the caller.
-- Return the `ideation-index.md` locator and a short outcome summary through the caller's handoff.
+- Write the Design headings that apply and omit the rest, linking each accepted image where it illustrates a
+  decision, and link a decision inherited from earlier work instead of restating it. Give each screen, region, or
+  component the design creates or changes its [Ontology unit definition](../../ontology/SKILL.md).
+- Write `ideation-index.md` from the [index template](templates/ideation-index.md), listing the images the
+  result keeps. Keep the whole result in it unless its size demands parts, and then list every part from it.
+- Read the result once as a cold reader, fix what fails, and return the `ideation-index.md` locator and a short
+  summary.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Design Ideation checklist](checklist.md) | Evaluation source for Design Ideation work and indexed results. |
-| [Design Ideation index](templates/ideation-index.md) | Root template for the work definition, idea, Discussion view, and listed images. |
+| [Design Ideation index](templates/ideation-index.md) | Locator template that holds the whole result or lists its parts, plus its images. |
 | [Design Ideation part](templates/ideation-NN.md) | Template for the requirements and the six Design headings. |
-| [Discussion index](templates/discussion-index.md) | Template for the list of discussion parts. |
-| [Discussion part](templates/discussion-NN.md) | Repeatable template for topics, options, study, and option images. |
-| [Ontology](../../ontology/SKILL.md) | Facets, kinds, vocabulary, and storage that Step 3.1 applies. |
+| [Discussion index](templates/discussion-index.md) | Template for listing discussion parts when the Discussion is split. |
+| [Discussion part](templates/discussion-NN.md) | Template for topics, option images, and study. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of the Ontology unit definition each designed Ontology unit gets. |
 | [Design](../SKILL.md) | Routes unresolved material visual-design work to this operation. |

@@ -2,89 +2,64 @@
 
 ## Intent
 
-The independent agent pass is Review. Cowork owns the user-called `review` call. Workflow owns stage
-REVIEW on Execution tasks and Wrap-up. Domain Review skills write `report.md` and working `checklist.md`.
-The Generic Evaluation skill and `skills/evaluation/` are gone. Do not restore that skill.
-
-Coverage Accounts are not required on domain child checklists. The Checklist skill template still owns the
-account.
+The independent agent pass is [Review](../../../skills/review/SKILL.md): one shared operation skill that checks
+a finished result against its Goal with a reviewer that did not make it, and turns the findings into one
+verdict. Workflow runs it as REVIEW on Execution tasks and Wrap-up. Cowork runs it only on the user's `review`
+call. The Generic Evaluation skill, `skills/evaluation/`, and the Checklist skill with every reusable checklist
+are gone. Do not restore them.
 
 This file records live Review facts for Memory readers. Do not copy a live SOP here.
 
-## Dual record
+## Model
 
-- One `VERDICT:` line from in-contract Problems, sufficient evidence, and caller-supplied criteria.
-- Quality opinion uses `meets-design`, `mixed`, `does-not-meet`, or `not-available` and never changes the gate.
-- Out-of-contract Problems escalate. After completed `P1 · User Review` they do not reopen design.
-- A `<class>/<runtime>/` directory that holds only one of `report.md` and `checklist.md` is incomplete evidence
-  and never PASS input.
-- Do not alias historical names such as `codex.md`. Runtime tokens are `claude-code`, `codex`, `cursor`, and
-  `grok`.
+- One fresh `reviewer` reviews by default. A read-only [Partner](../feature/partner.md) from another model family
+  joins only when the Partner policy allows one and the change adds user-facing behavior, changes a public
+  interface or a skill's Rules or Principles, touches security or data, or closes a session. A change that only
+  rewords or reformats and passes its checks needs no review.
+- Every finding carries evidence: a `path:line` quote, a walked scenario, or a command and its output. Only a
+  defect the change introduced, or a part of the Goal that no passed check shows, blocks. An inconclusive or
+  unrun check is no evidence. Everything else is a follow-up.
+- The caller reproduces each blocking finding and records PASS, REVISE, or FAIL with the dropped and follow-up
+  items. A fix round re-reviews only the fixes and stops after two failing rounds.
+- A finding that repeats an earlier one becomes a check (Review Step 3.2): the smallest change that prevents or
+  detects both occurrences. Closure then removes the held mistake. See [Lesson loop](lesson-loop.md).
+- Check outcomes are passed, failed, or inconclusive, and the report's Checked list gives each one.
 
-## Review depth
+## Stage bars and domain bars
 
-Bind any caller-supplied `review-depth` in the review call. Cowork `review` and Workflow units that include
-REVIEW require the field in reviewer briefs. Workflow Ideation and Planning skip REVIEW.
+Review holds one stage bar each for Ideation, Planning, and Execution. The domain bars are preference skills of
+nine to twelve checks that Review applies, not procedures: [Coding
+Review](../../../skills/coding/coding-review/SKILL.md), [Authoring
+Review](../../../skills/authoring/authoring-review/SKILL.md), and [Design
+Review](../../../skills/design/design-review/SKILL.md). Each also checks structure (each Ontology unit's
+definition, responsibility, boundary, and relations), commonality and variability, and vocabulary in its own terms,
+using [Ontology](../feature/ontology-skill.md). The `review-depth` tokens, per-domain `report.md` templates,
+contract labels, quality opinions, and the `<class>/<runtime>/` review tree are removed.
 
-| Token | In-contract bar |
-|---|---|
-| `ideation-design` | Goal, decisions, boundaries, constraints, work strategy, indexed integrity, required discussion and user decisions. Not implementation completeness or document polish. |
-| `planning-decomposition` | Hierarchy coverage, grouping coherence, dependency-valid order, assignment contract. Not implementation recipes. |
-| `execution-implementation` | Implementation, applicable Coding Review baseline and Execution documentation checklist, task verification. |
-| `by-owning-stage` | Mixed subject: each artifact uses its owning stage's token. Cowork whole-branch `review` uses this. |
+## Paths
 
-A current indexed Ideation or Planning result at `ideation-design` or `planning-decomposition` uses its
-own checklist, not the Execution documentation checklist. Mixed work under `by-owning-stage` applies each
-matching baseline to the artifact class it owns. Implementation recipes belong to Execution.
-
-## Paths and writers
-
-Workflow:
-
-```text
-<record-directory>/review/iteration-N/
-  gate.md
-  <class>/
-    <runtime>/
-      report.md
-      checklist.md
-```
-
-Each review has one class directory per artifact class the subject contains. Class tokens are `code`,
-`docs`, and `design`. Each class gets one fresh matching reviewer and one Partner wrapper per remaining
-runtime. The aggregate gate passes only when every class passes. A class passes only when every complete
-pair in its directory passes. A class with no complete pair does not pass.
-
-`<record-directory>` for this layout is `3-execution/task-NN-slug/` or `wrap-up/`. Ideation and
-Planning write a receipt only and do not create this review tree. Receipt stays
-`<record-directory>/record/iteration-N.md`. The manager writes `gate.md` when REVIEW ran. The
-reviewer does not.
-
-Cowork has no `gate.md` and no Workflow iteration tree. One unique caller-named directory below
-`tmp/` is the aggregation parent, with the same `<class>/<runtime>/` children and every-class gate.
-
-Remaining-runtime reviewer briefs name write set `runtime-directory` and `writing-path` as the
-absolute `report.md`. Missing write set still means `writing-path-only` and cannot complete the
-assignment. Wrapper capture stays outside the session and is not the review tree.
+- One report per reviewer from the [report template](../../../skills/review/report.md): a verdict (PASS or
+  REVISE), findings, what was checked, and what was not.
+- Workflow writes `<item-dir>/review/iteration-N/<reviewer>.md`, and the work item's receipt records the verdict.
+- Cowork writes `tmp/review-NN/<reviewer>.md` in the current topic and records the verdict in the topic contract.
+- A Partner reviewer returns its report as its final message and the caller saves it. There is no `gate.md`.
+- The reviewer role has no edit tools and never reviews its own work. The manager accepts.
 
 ## Ownership
 
 | Concern | Owner |
 |---|---|
-| Former Evaluation SOP | Removed. `skills/evaluation/` is gone. |
-| Reusable sources and Coverage Account template | [Checklist](../../../skills/checklist/SKILL.md) |
-| Domain child checklists | Matching domain Review skill. No Coverage Account required. |
-| Independent review report | [Coding Review](../../../skills/coding/coding-review/SKILL.md), [Authoring Review](../../../skills/authoring/authoring-review/SKILL.md), or [Design Review](../../../skills/design/design-review/SKILL.md) |
-| Write surface `runtime-directory` | [Partner](../../../skills/gobbi/partner/SKILL.md) and [Partner design](../feature/partner.md) |
-| Workflow path bind, RECORD, `gate.md` | [Workflow](../../../skills/workflow/SKILL.md) |
-| Cowork `review` call, one-parent layout, and aggregation | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork implementation commits](cowork.md) |
-| Reviewer craft row | [Delegation](../../../skills/delegation/SKILL.md) |
-| Role load maps | [Identity-and-load role contracts](identity-and-load-role-contracts.md) |
-
-Cursor as active runtime writes both files. Cursor as Partner stays Unavailable. A Write or Edit
-denial is `BLOCKED` with the denial. The manager does not scribe review files.
+| Review SOP, report, verdict, fix rounds | [Review](../../../skills/review/SKILL.md) |
+| Domain bars | Coding, Authoring, and Design Review preference skills |
+| Workflow REVIEW placement | [Workflow](../../../skills/workflow/SKILL.md) |
+| Cowork `review` call | [Cowork](../../../skills/cowork/SKILL.md) and [Cowork commits](cowork.md) |
+| Brief, handoff, and check outcomes | [Delegation](../../../skills/delegation/SKILL.md) |
+| Finding gate | [Gobbi](../../../skills/gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) |
+| Role contract | [Identity-and-load role contracts](identity-and-load-role-contracts.md) |
 
 ## History
 
-Generic Evaluation and `skills/evaluation/` were removed. Callers that still load `skills/evaluation/`
-will fail. See remaining items in [Evaluation backlog](../../backlogs/evaluation.md).
+Generic Evaluation and `skills/evaluation/` were removed earlier; the Checklist skill, `review-depth`, and the
+per-domain Review procedures were removed with the shared Review skill (see the
+[2026-11-12 history](../../history/2026-11-12-gobbi-skills-refactor.md)). Callers that still load those skills
+fail. See remaining items in [Evaluation backlog](../../backlogs/evaluation.md).

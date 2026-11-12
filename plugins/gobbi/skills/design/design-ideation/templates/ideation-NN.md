@@ -1,83 +1,49 @@
 # {Idea or Problem Name} — Design Ideation Part {NN}
 
-> **Index:** [Design Ideation](ideation-index.md)<br>
-> **Covers:** {One coherent work-definition or idea group.}
+> **Index:** [Design Ideation](ideation-index.md)
 
-{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table, or recovery contract across parts.}
-
-## Summary
-
-{State the final problem, desired outcome, selected direction, decisive evidence, major trade-offs, and scope. Keep the summary in one part only.}
+{A part holds the sections the index moved into it. Keep each section whole within one part.}
 
 ## Requirements
 
-### Goal
-
-> **Target:** {Final result and desired change.}<br>
-> **Purpose:** {Why the result is needed.}<br>
-> **Why now:** {Trigger and reason action matters now.}
-
-### Problem
-
-{State the supported current situation, evidence, uncertainty, problem or opportunity, impact, and no-change context.}
-
-### Result
-
-| Viewer | Need | Outcome |
-|---|---|---|
-| `{viewer}` | `{need}` | `{desired observable outcome}` |
-
-{State the intended form, capabilities, observable behavior, inputs, outputs, integration boundary, and unchanged behavior. Keep viewer need and outcome in this section.}
-
-### Required Outcomes
-
-#### {Requirement}
-
-> **Statement:** {Solution-neutral required outcome.}<br>
-> **Affected actors:** {Actors or outcomes served.}<br>
-> **Basis:** {Reason, source, or user decision.}<br>
-> **Observable result:** {How a reader recognizes success.}
-
-### Scope
-
-| Item | Status | Reason |
-|---|---|---|
-| `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
-
-### Questions
-
-| Question | Resolution | Effect |
-|---|---|---|
-| `{material question}` | `{answer or explicit deferral}` | `{effect on the design}` |
+{In free form: the goal and why it matters now, the problem, the outcomes each viewer should get and how anyone
+can observe them, what is in and out of scope, and the open questions with their answers or deferrals. The
+accessibility target is the user's decision: recommend `WCAG 2.2 AA`, and write no target until the user chooses.}
 
 ## Design
 
-{Keep the six headings in this document order. Discussion decides structure from images before direction from images. Start each heading with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and give the design only under `Material change`. Never leave a heading empty. For each Discussion topic that links to a heading, state the chosen option, why it won, its trade-offs, and the evidence that would reopen it. Linked images illustrate; this text governs. A property visible only in an image is not a commitment.}
+{Write only the headings that apply, in this order. Link a decision inherited from earlier work instead of
+restating it. For each decision, state the chosen option, why it won, its trade-offs, and what would reopen it.
+Give each screen, region, or component the design creates or changes its Ontology unit definition: the six fields
+the Ontology skill defines.}
 
 ### Materials
 
-{In-scope visual materials the design commits to: current surfaces, design or brand system, asset classes, and material constraints.}
+{In-scope visual materials the design commits to: current surfaces, design or brand system, asset classes, and
+material constraints.}
 
 ### Concept and Idea
 
 {The selected visual direction, the core idea, and what stays out of the work.}
 
-> **Illustration:** [direction-{accepted}](images/direction-{a|b|c}.png)
+> **Illustration:** [{accepted direction}](images/{topic}-{option}.png)
 
 ### Aesthetics
 
-{Mood, style, tone, beauty criteria, and the felt quality the viewer should experience. Exclude exact assets and production recipes.}
+{Mood, style, tone, beauty criteria, and the felt quality the viewer should experience.}
 
 ### Layout and Hierarchy
 
-{Grouping, composition, spatial relationships, emphasis, viewing order, and alternative, failure, and recovery views. Keep these above production detail.}
+{Grouping, composition, spatial relationships, emphasis, viewing order, and alternative, failure, and recovery
+views.}
 
-> **Illustration:** [structure-{accepted}](images/structure-{a|b}.png)
+> **Illustration:** [{accepted structure}](images/{topic}-{option}.png)
 
 ### Visual Language
 
-{Type, color, shape, depth, spacing, motion, and accessibility. State the shape language and how depth separates planes. Named visual-language terms are artifacts: state each one's five facets here. Exclude production files, exact assets, radius, shadow, and realization recipes.}
+{Type, color, shape, depth, spacing, motion, and accessibility, including the shape language and how depth
+separates planes. Record the token categories and the naming scheme, not their values.}
 
 ### Components
 
-{The inventory the accepted wireframe reveals, defined after the accepted direction. Components are artifacts: state each one's five facets here, with variants and states as properties. Name the Object type each component presents and the Action type each control triggers. For a domain concept, give one kind and its session unit id. List the session ontology unit ids this design adds, changes, or removes. Exclude production files, exact assets, and implementation recipes.}
+{Only the components the design adds or changes, each with its variants and states.}

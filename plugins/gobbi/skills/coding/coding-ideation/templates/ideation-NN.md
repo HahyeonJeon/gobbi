@@ -1,70 +1,34 @@
 # {Idea or Problem Name} — Coding Ideation Part {NN}
 
-> **Index:** [Coding Ideation](ideation-index.md)<br>
-> **Covers:** {One coherent work-definition or idea group.}
+Index: [Coding Ideation](ideation-index.md)
 
-{Keep only the applicable complete content groups below. Do not split a paragraph, requirement block, design heading, table, or recovery contract across parts.}
+{Omit any section or heading that does not apply, and link an inherited decision instead of restating it.}
 
 ## Summary
 
-{State the final problem, desired outcome, selected direction, decisive evidence, major trade-offs, and scope. Keep the summary in one part only.}
+{The problem, desired outcome, selected direction, decisive evidence, major trade-offs, and scope.}
 
 ## Requirements
 
-### Goal
-
-> **Target:** {Final result and desired change.}<br>
-> **Purpose:** {Why the result is needed.}<br>
-> **Why now:** {Trigger and reason action matters now.}
-
-### Problem
-
-{State the supported current situation, evidence, uncertainty, problem or opportunity, impact, and no-change context.}
-
-### Result
-
-| Actor | Need | Outcome |
-|---|---|---|
-| `{actor}` | `{need}` | `{desired observable outcome}` |
-
-{State the intended form, capabilities, observable behavior, inputs, outputs, integration boundary, and unchanged behavior.}
-
-### Required Outcomes
-
-#### {Requirement}
-
-> **Statement:** {Solution-neutral required outcome.}<br>
-> **Affected actors:** {Actors or outcomes served.}<br>
-> **Basis:** {Reason, source, or user decision.}<br>
-> **Observable result:** {How a reader recognizes success.}
-
-### Scope
-
-| Item | Status | Reason |
-|---|---|---|
-| `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
-
-### Questions
-
-| Question | Resolution | Effect |
-|---|---|---|
-| `{material question}` | `{answer or explicit deferral}` | `{effect on the design}` |
+{Write freely, covering: the goal and why it matters now; the problem as it stands; the outcomes each actor
+needs and how success is recognized; what is in and out of scope; and the open questions with their effect on
+the design.}
 
 ## Design
 
-{Keep the three headings in this order. Start each one with `Inherited — {pointer}`, `Not applicable — {reason}`, or `Material change`, and give the design only under `Material change`. Never leave a heading empty. For each Discussion topic that links to a heading, state the chosen option, why it won, its trade-offs, and the evidence that would reopen it.}
+{For each Discussion topic that links here, state the chosen option, why it won, its trade-offs, and the
+evidence that would reopen it.}
 
 ### Conceptual Definition
 
-{What will be implemented, and the vocabulary for it: give each term one preferred name, a one-sentence definition, and, for a domain concept, its Ontology kind. List the session ontology unit ids this design adds, changes, or removes. Name no directory, file, class, or function.}
+{What will be implemented, and its vocabulary: each term with one preferred name and a one-sentence
+definition. Name no directory, file, class, or function.}
 
 ### Class and Function Design
 
-| Unit | Conceptual definition | Responsibility | Boundary | Relationship | Properties | Caller contract |
-|---|---|---|---|---|---|---|
-| `{public class or function}` | `{one sentence in domain words, with no "and"}` | `{what only it changes: one decision, or the facts about one concept}` | `{what it hides and the neighbours it never imports}` | `{what it uses, what uses it, and the Ontology units it realizes}` | `{the data it owns, with types, invariants, and stability; or None}` | `{for a realized Function, or when it realizes neither kind: inputs, output, and errors; for a realized Action type: parameters, checks that raise errors, the data it changes, side effects, and allowed callers}` |
-
-{Add one row per new or changed public class and public function. Private helpers get no row. No pattern is the default: for each added pattern, interface, or base class, name the present force it answers and the simpler form it replaces.}
+{The new or changed public classes and functions, each with its Ontology unit definition from the Ontology skill,
+read for code as Modularization in Coding Principles states, and its caller contract. For each added pattern,
+interface, or base class, name the present force it answers and the simpler form it replaces.}
 
 ### Codebase Structure
 
@@ -75,8 +39,4 @@
     {file}
 ```
 
-| Unit | Conceptual definition | Responsibility | Boundary | Relationship | Properties |
-|---|---|---|---|---|---|
-| `{directory or file}` | `{one sentence in domain words, with no "and"}` | `{what only it changes: one decision, or the facts about one concept}` | `{what it hides and the neighbours it never imports}` | `{what it uses, what uses it, and the Ontology units it realizes}` | `{the module-level data it owns, with types and stability; or None}` |
-
-{Draw the new or changed directories and files with one-way `→ uses` arrows, then add one row for each of them.}
+{The new or changed directories and files with one-way `→ uses` arrows, each with its Ontology unit definition.}

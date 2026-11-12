@@ -54,7 +54,7 @@ checklists are reusable source conditions. They were not executed or scored agai
 
 Canonical sources live in `.gobbi/projects/gobbi/skills/cli/`, with the CLI inventory entry in the canonical
 Gobbi skill. `plugins/gobbi/skills/cli/` contains regular materialized package projections. Claude and agent
-discovery links resolve to the canonical source. The repository sync script is the only projection writer:
+discovery links resolve to the canonical source. `scripts/guard/guard.py sync` is the only projection writer:
 repair canonical source first, then reconcile and verify the generated views.
 
 ## Decisions to preserve

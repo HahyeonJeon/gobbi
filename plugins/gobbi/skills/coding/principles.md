@@ -2,19 +2,22 @@
 
 This document holds six design principles that apply to procedural and object-oriented code alike: simplicity,
 modularization, reusability, readability, naming, and intuitive public API. Each entry has a description of the
-principle and its reason, a good example, and a labeled anti-pattern. Simplicity decides whether a unit exists;
-the other entries shape each unit that remains.
+principle and its reason, a good example, and a labeled anti-pattern. Simplicity decides whether an Ontology unit
+exists; the other entries shape each Ontology unit that remains.
+
+The limits below, such as nesting depth, the third use, banned names, and learning depth, are heuristics a
+reviewer applies, not laws: a departure needs a stated reason.
 
 ## Simplicity
 
-**Description.** Write the least mechanism that meets a current need. Most overengineered code should not
-exist: units that only forward calls, wrappers with one use, classes that hold one function, and options kept
-for later. Each adds a name to learn and a place to change, and none adds behavior. A class with one method and
-no state is usually better as a function. Apply two tests:
+**Description.** Write the least mechanism that meets a current need. Most overengineered code should not exist:
+Ontology units that only forward calls, wrappers with one use, classes that hold one function, and options kept for
+later. Each adds a name to learn and a place to change, and none adds behavior. A class with one method and no
+state is usually better as a function. Apply two tests:
 
-- **Inline test.** Ask of each unit: "If I inline it into its callers, do they get longer, repeat a rule, or
-  expose a secret?" A secret is what only this unit changes: one decision, or the facts about one concept. If
-  all three answers are no, inline the unit.
+- **Inline test.** Ask of each Ontology unit: "If I inline it into its callers, do they get longer, repeat a
+  rule, or expose a secret?" A secret is what only this Ontology unit changes: one decision, or the facts about one
+  concept. If all three answers are no, inline the Ontology unit.
 - **Current caller test.** Every parameter, option, hook, and variant has a caller today. Delete each one that
   has none.
 
@@ -64,68 +67,56 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 ## Modularization
 
-**Description.** Modularization applies the [Ontology](../ontology/SKILL.md) facets and kinds to code. It gives
-each unit one conceptual definition, one secret, one boundary, one-way relationships, and the data it owns. A
-reader then finds where a change goes from the definition alone, and the unit can change its private parts
-without breaking callers. Before you create a directory, file, public class, or public function, write its five
-facet lines in the design record: the Ideation design, or the Execution handoff when there was no Ideation. A
-public class or function also gets a caller contract. Together these are the unit's Modularization lines.
-Source code does not carry them as comments. If a line fails, split, merge, or move the unit. Private helpers
-need only a good name.
+**Description.** Modularization gives each Ontology unit one definition, one secret, one boundary, one-way
+relations, and the data it owns. A reader then finds where a change goes from the definition alone, and the
+Ontology unit can change its private parts without breaking callers. Every directory, file, public class, and
+public function can state its [Ontology unit definition](../ontology/SKILL.md), the six fields Ontology defines,
+and a public class or function also has a caller contract. The Ideation design records them for the Ontology units
+it designs, and without Ideation the Execution handoff records them for each new public Ontology unit. Source code
+does not carry them as comments. If a field fails its test, split, merge, or move the Ontology unit. Private
+helpers need only a good name.
 
-- **Conceptual definition** (the Definition facet): one sentence in domain words, with no "and".
-- **Responsibility:** its secret, which is what only this unit changes: one decision, or the facts about one
-  concept.
+Each field keeps its Ontology test, and code adds this:
+
+- **Definition:** in domain words.
+- **Responsibility:** its secret, which is what only this Ontology unit changes: one decision, or the facts about
+  one concept.
 - **Boundary:** what it hides, and the named neighbours it never imports. Keep the public surface small: other
-  code imports only the names the unit chooses to share.
-- **Relationship:** what it uses, what uses it, and the Ontology units it realizes. Dependencies point one way,
-  with no cycles.
+  code imports only the names the Ontology unit chooses to share.
+- **Relations:** what it uses and what uses it.
+- **Dependencies:** they point one way, with no cycles.
 - **Properties:** the data it owns, with types, invariants, and whether each value is stable or changing; `None`
   when it owns none.
-- **Caller contract** (public classes and functions only): the code form of the Function or Action type that the
-  unit realizes. For a Function, state its inputs, its output, and the errors it raises; it changes nothing. For
-  an Action type, state its parameters, the checks that raise errors, the data it changes, its side effects, and
-  its allowed callers. A public class or function that realizes neither states inputs, output, and errors, as
-  for a Function.
 
-"Caller contract" is coding's name for the fields that each kind block of the
-[Ontology Record](../ontology/SKILL.md#record) keeps under Palantir names. Each part maps to one field:
+The caller contract applies to public classes and functions only. It states what a caller must know to call the
+Ontology unit, and its form depends on what the Ontology unit does:
 
-| Caller contract part | Record field |
-|---|---|
-| Function inputs | Function `parameters` |
-| Function output (the return value) | Function `output` |
-| Function errors | None; only the caller contract states them |
-| Action type parameters | Action type `parameters` |
-| Checks that raise errors | Action type `submissionCriteria` |
-| The error result | None; the record gives every Action type one failure result: nothing changes, and the failed criterion is named |
-| The data it changes | Action type `operations` |
-| Side effects | Action type `sideEffects` |
-| Allowed callers | The `RUN` grants of each Security policy that targets the Action type; a `PROPOSE` grant adds a proposer, not a caller |
+- **An Ontology unit that computes** returns a value and changes nothing. State its inputs, its output, and the
+  errors it raises.
+- **An Ontology unit that changes state** sets a field, writes a record, or sends a message. State its
+  parameters, the checks that raise errors, the error result, the data it changes, its side effects, and its
+  allowed callers.
 
-A Function's `relationship` links, the units it reads, belong in the Relationship line. Directories and files
-state only the five facet lines.
+Directories and files state only the Ontology unit definition.
 
-Record ids are lowerCamelCase, and Action type ids are kebab-case; code uses its language's case, so the Action
-type `delay-flight` is the Python function `delay_flight`.
+Keep computing and changing apart, so that a caller can call a computing Ontology unit anywhere and find each
+change to state in one place. An Ontology unit that computes sets no field, writes no record, and sends no message.
+Each change to state has one public entry point. It runs the checks, makes the change, sends the side effects, and
+returns the result or raises the error. When a check fails, it changes nothing, and the error names the failed
+check. No second public function makes the same change.
 
-Keep computing and changing apart, because Functions return results and only Action types commit changes
-([Ontology Rules](../ontology/SKILL.md#rules)). A function that realizes a Function returns a value and changes
-nothing: it sets no field, writes no record, and sends no message. Each Action type has one public entry point.
-It checks the submission criteria, applies its operations, sends the side effects, and returns the result or
-raises the error. No second public function makes the same change.
+The Ontology unit definition also sets the defaults for directories and files. An existing project or framework
+layout wins.
 
-The same terms set the defaults for directories and files. An existing project or framework layout wins.
+- Start flat. Make a directory only when needed: when its files share one definition, responsibility, and
+  boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the package root, and make
+  no directory for one file.
+- Make no `utils/`, `common/`, `helpers/`, `misc/`, or `shared/`. Move each function to the Ontology unit that
+  uses it.
+- A new file needs a new definition. Split a file when its definition needs "and", not when it is long.
 
-- Start flat. Make a directory only when needed: when its files share one conceptual definition,
-  responsibility, and boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the
-  package root, and make no directory for one file.
-- Make no `utils/`, `common/`, `helpers/`, `misc/`, or `shared/`. Move each function to the unit that uses it.
-- A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
-  long.
-
-**Good example.** A flat package for the [Flight sample](../ontology/examples/area.yaml). Each file
-realizes one Object type, with its Action types, or one Function.
+**Good example.** A flat package. Each file holds one domain object with the changes to it, or one
+computation.
 
 ```text
 airline/
@@ -135,20 +126,22 @@ airline/
   connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
-The design record gives these lines for `flight.py`. The code keeps only the Properties that Delay flight needs.
+The Ideation design gives this Ontology unit definition for `flight.py`. The code keeps only the Properties that
+`delay_flight` needs.
 
-- **Conceptual definition:** one scheduled trip of one aircraft between two airports on one date.
+- **Definition:** one scheduled trip of one aircraft between two airports on one date.
 - **Responsibility:** which schedule changes a flight may take.
 - **Boundary:** hides `_DELAYABLE`; shares `Flight`, `FlightState`, `InvalidDelay`, and `delay_flight`; never
   imports `booking`.
-- **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`; realizes the Object type
-  Flight (`flight`) and the Action type Delay flight (`delay-flight`).
+- **Relations:** uses nothing in `airline`; `booking` and `connection` use `Flight`.
+- **Dependencies:** only the standard library, so no change elsewhere in `airline` can break it.
 - **Properties:** `flight_id: str`, `number: str`, and `departure_date: date`, stable; `state: FlightState`,
   `estimated_departure: datetime`, `estimated_arrival: datetime`, and `delay_reason: str`, changing. Both
   estimated times are in UTC, with `tzinfo=UTC`. The estimated arrival is later than the estimated departure;
   `Flight` raises `ValueError` otherwise.
 
-The public function `delay_flight` also gets its caller contract, from the Delay flight fields:
+The public function `delay_flight` changes state, so its caller contract states its checks, error result,
+changes, side effects, and allowed callers:
 
 - **Caller contract:**
   `delay_flight(flight, new_estimated_departure, new_estimated_arrival, reason, *, notify) -> Flight`, where
@@ -156,9 +149,8 @@ The public function `delay_flight` also gets its caller contract, from the Delay
   `scheduled`, the new estimated departure is later than the current one, and the new estimated arrival is
   later than the new estimated departure. Error result: the flight is unchanged, no one is notified, and the
   error names the failed check. Changes: both estimated times and the reason are set. Side effects: notifies
-  each booked passenger, by calling `notify` once with the delayed flight after the change. `notify` is the
-  sender that the caller passes in, not a Delay flight parameter. Allowed callers: operations-control code, as
-  the Ops-control policy grant to run `delay-flight` states.
+  each booked passenger, by calling the caller's `notify` once with the delayed flight after the change.
+  Allowed callers: operations-control code only.
 
 ```python
 # airline/flight.py
@@ -240,10 +232,9 @@ assert sent == [late]
 ```
 
 **Anti-pattern: a one-file dump directory, and a rule hard-coded in code.** Its definition needs "and" (dates
-and connection times), so both kinds of change edit it. `MIN_CONNECTION` hard-codes a rule that belongs to Airport
-data: each airport sets its own minimum connection time, and people must be able to review it
-([Ontology Rules](../ontology/SKILL.md#rules)). `connection_ok` also drops the name
-`meets_minimum_connection_time`, the Python form of `meetsMinimumConnectionTime`.
+and connection times), so both kinds of change edit it. `MIN_CONNECTION` hard-codes a rule that belongs to airport
+data: each airport sets its own minimum connection time, and people must be able to review it there.
+`connection_ok` also drops the domain's name for the rule, `meets_minimum_connection_time`.
 
 ```python
 # airline/utils/helpers.py, the only file in utils/.
@@ -266,10 +257,10 @@ assert not connection_ok(arrival, datetime(2026, 3, 1, 12, 0, tzinfo=UTC))
 
 ## Reusability
 
-**Description.** A reusable unit, such as a function, a class, or a module, serves a new caller without edits.
-It does one job and takes everything it needs as explicit inputs. Reuse comes from small units with one job,
-not from one unit that knows every caller. Generalize after the third real use; a flag added for one caller is
-a sign of reuse forced too early.
+**Description.** A reusable Ontology unit, such as a function, a class, or a module, serves a new caller without
+edits. It does one job and takes everything it needs as explicit inputs. Reuse comes from small Ontology units with
+one job, not from one Ontology unit that knows every caller. Generalize after the third real use; a flag added for
+one caller is a sign of reuse forced too early.
 
 **Good example.** One small job, explicit inputs, and no knowledge of any caller.
 
@@ -324,11 +315,12 @@ assert export([{"a": "1", "b": "2"}], excel=True) == "1;2"
 
 ## Readability
 
-**Description.** A reader can tell what a unit does from its signature and shape, without tracing its calls.
-Code is read far more often than it is written, and a wrong reading leads to a wrong change. Choose names
+**Description.** A reader can tell what an Ontology unit does from its signature and shape, without tracing its
+calls. Code is read far more often than it is written, and a wrong reading leads to a wrong change. Choose names
 with [Naming](#naming), and check while writing:
 
-- Every input and output has a type, and a small typed class replaces a `dict` with known keys.
+- Inputs and outputs carry types as far as the language in use supports, and a small typed class replaces a
+  `dict` with known keys.
 - No boolean or integer flag argument chooses between two behaviors.
 - Control flow stays flat: one condition states one rule, and an early return replaces a nested `else`.
 

@@ -1,164 +1,88 @@
 ---
 name: design-planning
-description: "Design Planning is an operation for turning defined visual work into a traceable task hierarchy, a dependency-valid execution plan, and the assignment contract those require."
+description: "Design Planning splits settled visual work into goal-based tasks, one plan document per major goal. Use it when the visual work is too large for one task."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Design Planning
 
-Design Planning turns accepted visual work into a fine-grained task hierarchy, a flat,
-dependency-valid execution plan, and the assignment contract those require.
-Use it when scope and direction are defined for visual work but that work still needs decomposition, grouping, order, and dispatch.
-It records both views as one indexed result and stops before implementation recipes,
-repository study dumps, file-level edit recipes, and verification methods.
-
-This skill is a draft adapted from Planning.
+Design Planning splits accepted visual work into tasks, each defined by the goal it reaches. Use it when
+the goal and design of visual work are settled but the work is too large for one task. It writes one plan
+document per major goal and stops before implementation steps; the manager decides which tasks run in parallel
+and which in order.
 
 ## Principles
 
-### Separate task hierarchy from execution order
+### Split by goal, not by step
 
-The task hierarchy explains how broad work divides into decomposable groups and leaf tasks, while execution
-order explains how combined task groups build on one another through `Requires` and which independent groups
-may run in parallel. Keeping these views separate prevents parent-child structure from being mistaken for
-dependency order and exposes safe parallel work.
+A task is one goal a designer can reach and a reviewer can judge. Describe what must be true when it is done
+and leave the method to the designer, who knows the work better once it is in it.
 
-### Plan only the visual writer frontier
+### Define tasks the way you would delegate them
 
-Default each visual-work task group to the Designer role, a writer frontier that includes visual
-work, and Design Execution among its compatible skills. A leaf whose writer frontier is not visual
-work is out-of-frontier work for this operation.
-
-### Bound each task group by the assignment contract
-
-Each combined task group is complete when it records the assignment contract for one accountable agent:
-`task-NN-slug` IDs, `Requires`, role, writer frontier, leaf work, boundary, and output, handoffs, group
-outcome, why the leaves combine, the group's stop, constraints and authority, a pointer to accepted design,
-and compatible skills. If that contract is missing or completion needs hidden coordination, the group is too
-broad or the recorded contract is incomplete.
+Each task becomes a [Delegation](../../delegation/SKILL.md) brief. A sharp Goal and enough Context let a capable
+agent do its best work; every extra constraint, taste, or number takes some of that freedom away. The manager
+adds the Role, Materials, and Return when it builds the brief.
 
 ## Rules
 
-- **MUST preserve exact scope and leaf-to-group coverage.** Every accepted work item traces into the hierarchy;
-  every leaf maps to exactly one task group, every task group combines at least one leaf, and a leaf that
-  needs several task groups is split in the task hierarchy first.
-- **MUST combine only context-coherent decomposed tasks.** Combined tasks share one accountable agent role and
-  compatible skills, compatible inputs, one coherent outcome, one writer frontier, and one dependency
-  frontier; fixed-size batches and one-group-per-leaf defaults are invalid.
-- **NEVER combine incompatible work.** Keep separate any leaves divided by roles, unresolved material
-  decisions, destructive or external authority, conflicting dependencies, or incoherent writer frontiers or
-  commit boundaries.
-- **MUST make execution order dependency-valid.** Stable IDs use `task-NN-slug`; explicit `Requires` edges
-  are acyclic and authoritative, while shared order numbers only mark safe parallelism.
-- **MUST record the assignment contract for each task group.** Include its `task-NN-slug` ID and title, exact
-  combined leaf paths, `Requires`, one accountable role, writer frontier, each combined leaf's work, boundary,
-  and output, handoffs, group outcome, why the leaves combine, the group's stop, constraints and authority, a
-  pointer to accepted design, and compatible skills; repository study dumps, implementation strategy,
-  file-level edit recipes presented as the work, and verification methods, commands, or test lists are out of
-  scope.
-- **MUST plan only visual-work leaves into Designer-owned groups whose compatible skills include
-  Design Execution and whose writer frontier includes visual work.** Return a leaf whose writer
-  frontier is not visual work to the caller as out-of-frontier work; do not combine it into a
-  visual-work group.
-- **MUST keep one closed indexed result and freeze it only after complete validation passes.** Use one
-  caller-supplied absolute output root and its `plan-index.md` as the exact result locator; list the required
-  task index and every plan part in the root index, and every task part in the task index.
+- **Cover the whole accepted work, with no added scope.** Every part of the goal and the Ideation result falls
+  in exactly one task, so nothing is lost, done twice, or done unasked.
+- **Write each task's Goal, Context, Constraints, and Taste and Preference as Delegation defines them.** The
+  manager turns each task into a brief, so a Goal is an end state a reviewer can judge, Context is what the
+  designer cannot find alone, and a Constraint is a rule that must hold, with its reason.
+- **Add a constraint or taste only from a source.** Each one narrows the designer, so take it from the user,
+  the Ideation result, a project rule, or existing designs, and leave the section out when there is none.
+- **Set a numeric target only when the user, an accepted decision, or a project rule requires it.** Name the
+  source next to the number, because quality beyond the Goal is judged in Review.
+- **Leave implementation steps, file-by-file edits, and test lists out of the plan.** The designer chooses the
+  method, and an open design choice goes back to the caller instead of being decided in the plan.
 
 ## Procedure
 
-### Phase 1 — Understand the Defined Work
+### Phase 1 — Understand the Work
 
-#### 1.1 Establish the planning inputs
+Know what to plan and where it goes. Done when the inputs are read and any missing input, user-owned decision,
+or evidence against the accepted design has gone back to the caller.
 
-- Read the visual work, purpose, scope, output, accepted visual design, evidence, required skills,
-  authority boundaries, and repository and execution metadata. Bind the caller-supplied absolute
-  output root, its absolute
-  `plan-index.md` locator, and the allowed write boundary.
-- Separate supported facts and routine planning choices from missing required input, user-owned decisions, and
-  evidence that challenges the accepted direction. Return the exact evidence and question to the caller rather
-  than inventing an answer.
-- Continue only when the scope, output, constraints, decision owners, output root, and write boundary are clear.
+#### 1.1 Read the inputs
 
-### Phase 2 — Decompose the Work
+- Read the work goal, the Ideation result or the caller's topic contract when Ideation did not run, project
+  rules, and the caller's output directory.
+- Return missing input, a user-owned decision, or evidence against the accepted design to the caller with the
+  exact question. Do not invent an answer.
 
-#### 2.1 Decompose the task hierarchy
+### Phase 2 — Write the Plan
 
-- Choose top-level groups by coherent decomposition boundaries, not one group per work item. Preserve each
-  accepted work item's traceability to its hierarchy paths.
-- Recursively decompose every group until each leaf states one bounded outcome, boundary, and output. Split
-  distinct responsibilities, capabilities, writer frontiers, dependencies, or outputs.
-- Keep the hierarchy independently readable. Do not assign agents or encode execution order in it.
+Turn the work into goal-based tasks. Done when every plan document passes the Step 2.3 checks and their paths
+and task IDs are returned.
 
-#### 2.2 Write the indexed task view
+#### 2.1 Choose the plan documents
 
-- Within the bound output root, create `plan-index.md` from the
-  [plan index template](templates/planning/plan-index.md), then create
-  `tasks/tasks-index.md` from the [task index template](templates/planning/tasks/tasks-index.md) and at least one
-  numbered task file from the [task part template](templates/planning/tasks/tasks-NN.md). Keep every file inside
-  the write boundary, the root index as the result locator, and the task index as its required source view.
-- Name task parts `tasks-01.md`, `tasks-02.md`, and so on; assign the next unused number, never rename or reuse a
-  part, and let the task index define reading order. Record the work summary once and the complete hierarchy in
-  depth-first order.
-- Keep coherent branches together when practical, and split only between complete work-item blocks, group
-  nodes, leaf tasks, or table rows. Return to Phase 1 if writing exposes missing input or a material decision.
+- Name the major goals in the work, and write one plan document per major goal from the
+  [plan template](templates/plan.md), named `plan-NN-slug.md` in the caller's output directory. One goal means
+  one document.
 
-### Phase 3 — Plan the Execution
+#### 2.2 Split each goal into tasks
 
-#### 3.1 Combine decomposed tasks
+- Split the goal into the fewest tasks that each reach one goal one designer can finish and a reviewer can
+  judge on its own. Give each task a `task-NN-slug` ID that is unique across all plan documents.
+- Write each task from the template, then draw the Task Graph: an edge `A --> B` for each task B that uses task
+  A's result, with every task as a node, so the manager can tell what may run in parallel.
 
-- Read every task part in indexed order. Combine one or more compatible leaves into each task group, prefer the
-  fewest safe coherent groups, and use neither fixed batch sizes nor an automatic one-group-per-leaf mapping.
-- Return to Step 2.1 when one leaf crosses several roles, outcomes, writer frontiers, or dependency frontiers.
-  Split the leaf before combining it.
-- Give each task group its final `task-NN-slug`, title, exact combined leaf paths, one accountable agent role,
-  `Requires` edges, and order number.
+#### 2.3 Check and return the plan
 
-#### 3.2 Write the indexed plan
-
-- Within the bound output root, complete `plan-index.md` and create at least one numbered file from the
-  [plan part template](templates/planning/plan-NN.md). Name parts `plan-01.md`,
-  `plan-02.md`, and so on; assign the next unused number, never rename or reuse a part, and let the index define
-  reading order.
-- Copy or restate every combined leaf's title, work, boundary, and output into the group. Record the group's
-  assignment contract from the plan-part template; do not add repository study dumps, implementation
-  strategy, file-level edit recipes, or verification methods.
-- Keep the plan flat and every group understandable from its assignment contract without private discussion
-  or reconstructing it from task paths. Record shared assignment-local pointers once, and split parts only
-  between complete task groups or table rows.
-
-#### 3.3 Review and improve the result
-
-- Check six invariants: **coverage** traces every accepted work item through all applicable hierarchy paths and
-  maps every leaf to exactly one task group; **acyclicity** validates `Requires` and order; **factual metadata**
-  is supported or explicitly nonblocking; **separation** keeps hierarchy out of execution order and the plan
-  flat; **accountability** gives every group one role and the assignment contract; and **independent consistency**
-  keeps both views aligned and independently readable.
-- Improve the section structure, reading order, sentences, vocabulary, part boundaries, links, and assignment
-  contract directly. Remove repetition and complexity that do not improve execution, traceability, or safety.
-- Return input, authority, decision, or direction failures to Phase 1; hierarchy failures to Phase 2; and
-  combination, dependency, or order failures to Step 3.1. Return written context, metadata, structure, or link
-  failures to Step 3.2; repair the owning step, then repeat this review.
-
-#### 3.4 Validate and freeze the result
-
-- Read the absolute `plan-index.md` locator, the task index, every task part, and every plan part in declared
-  order. Confirm that each listed path resolves inside the output root and that every file below the root is
-  reached exactly once through the two indexes.
-- Repeat the six invariant checks against the final bytes. If any check fails, return to Step 3.3 and repair
-  the owning step before validating again.
-- Freeze only the validated result. Return the absolute `plan-index.md` locator and every indexed member in
-  declared order; any later path, membership, order, or byte change invalidates the freeze.
+- Reread every plan document. Check that the tasks cover the whole work without overlap, that each Goal can be
+  judged without asking the planner, that the Task Graph shows every task and has no cycle, and that every
+  constraint, taste, and number has its source.
+- Fix what fails, then return the path of every plan document and its task IDs.
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Design Planning checklist](checklist.md) | Reusable unchecked source for evaluating Design Planning work and complete current indexed results. |
-| [Task index](templates/planning/tasks/tasks-index.md) | Index template for the numbered task-hierarchy output. |
-| [Task part](templates/planning/tasks/tasks-NN.md) | Repeatable template for coherent task-hierarchy content. |
-| [Plan index](templates/planning/plan-index.md) | Root template for result authority, task source, and plan-part order. |
-| [Plan part](templates/planning/plan-NN.md) | Repeatable template for ordered task groups and their assignment contracts. |
-| [Design](../SKILL.md) | Routes defined visual work that still needs decomposition to this operation. |
-| [Design Ideation](../design-ideation/SKILL.md) | Prior owner that settled material visual-design choices this plan must follow. |
-| [Design Execution](../design-execution/SKILL.md) | Later owner of each dependency-ready visual-work task group. |
+| [Plan template](templates/plan.md) | One plan document per major goal, with its Task Graph and tasks. |
+| [Delegation](../../delegation/SKILL.md) | Defines each task's Goal, Context, Constraints, and Taste and Preference. |
+| [Design Ideation](../design-ideation/SKILL.md) | Prior owner of the visual design this plan follows. |
+| [Design Execution](../design-execution/SKILL.md) | Later owner of each task. |

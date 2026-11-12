@@ -1,6 +1,6 @@
 ---
 name: preference-skill
-description: "Preference Skill is guidance for writing rules, conventions, preferred styles, and defaults that keep agent results consistent."
+description: "Preference Skill guides writing the few defaults and conventions that keep agent results consistent. Use it after Gobbi Skill classifies a target as `preference`."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -13,10 +13,10 @@ Skill classifies the target as `preference` and consistent results matter withou
 
 ## Principles
 
-### Make equivalent cases converge
+### Make equivalent cases converge on the choices you standardize
 
-Equivalent choices under the same authority and context should lead agents to the same result. Differences
-should follow a named condition instead of taste, habit, or chance.
+For the choices this skill covers, equivalent cases under the same authority and context should lead agents to
+the same result. Every other choice stays the agent's.
 
 ### Let project authority lead
 
@@ -28,33 +28,33 @@ skill guidance only for recurring choices those owners leave open.
 Rules define non-negotiable requirements and required conventions. Preferences define preferred conventions,
 styles, and defaults; an exception may change a Preference but never a Rule.
 
-### Standardize only useful consistency
+### Standardize only costly variation
 
-Standardize a result when arbitrary variation makes work harder to read, compare, combine, review, or maintain.
-Preserve meaningful variation when context, evidence, accessibility, safety, or user need changes the result.
+Standardize a result only when variation has made work harder to read, compare, combine, review, or maintain.
+Preserve variation when context, evidence, accessibility, safety, or user need changes the result.
 
 ## Rules
 
-- **MUST produce the exact preference target shape.** Use Frontmatter → Title → Intro → Principles → Rules →
-  Preferences → References, keep consistency guidance dominant, and add no Procedure or Manual.
-- **MUST make Preferences own at least one recurring consistency choice.** State a concrete convention,
-  preferred style, or default for an agent result instead of generic advice or an ordered task.
-- **MUST keep non-negotiable requirements and required conventions in Rules, and guidance that admits valid
-  variation in Preferences.** Every Rule overrides every conflicting preferred convention, style, or default.
-- **MUST make each Preference concrete and applicable.** State the expected or recommended result first, name
-  its context, and add an exception or decision criterion only when valid variation exists.
-- **MUST use the Preference hierarchy.** Use a `###` category title for one consistency area, a `####`
-  consistency-choice subtitle for one recurring choice, and at most three one-or-two-sentence detail bullets
-  under each subtitle.
+- **Use the preference shape.** Frontmatter → Title → Intro → Principles → Rules → Preferences → References,
+  with no Procedure or Manual, so every preference skill reads the same way.
+- **Write the fewest Preferences that remove a costly divergence.** Each names the recurring choice, its default,
+  and the source that shows the variation cost something; generic advice and ordered tasks do not belong.
+- **Put required conventions in Rules and defaults that admit variation in Preferences.** A Rule wins over any
+  conflicting Preference.
+- **Use the Preference hierarchy.** A `###` category title for one consistency area, a `####` subtitle for one
+  recurring choice, and at most three one-or-two-sentence detail bullets under each subtitle.
 
 ## Procedure
 
 ### Phase 1 — Design the Consistency Guidance
 
+Know which recurring choices need consistency and who controls them. Done when each retained claim has a
+class and a controlling source and the representative cases are defined.
+
 #### 1.1 Identify the consistency need
 
-- Name the agents or other consumers, the recurring decision or artifact, and the context in which results
-  should be consistent. Use this non-exhaustive list as prompts, and include only subjects that recur:
+- Name the consumers, the recurring decision or artifact, and the context in which results should be
+  consistent. Use this list only as prompts, and include a subject only where variation has caused a real cost:
   - **Rules and constraints:** Define required boundaries, prohibited results, authority, and precedence.
   - **Naming and terminology conventions:** Standardize identifiers, filenames, headings, fields, and shared
     vocabulary.
@@ -80,6 +80,9 @@ Preserve meaningful variation when context, evidence, accessibility, safety, or 
   writing the guidance.
 
 ### Phase 2 — Write the Preference Skill
+
+Write guidance that makes each recurring choice repeatable. Done when every section is written and a cold
+agent can produce a consistent result for each recurring choice without private author context.
 
 #### 2.1 Start with the Preferences structure
 
@@ -130,6 +133,9 @@ Preserve meaningful variation when context, evidence, accessibility, safety, or 
 
 ### Phase 3 — Review and Improve the Preference Skill
 
+Make equivalent cases agree. Done when equivalent cases produce the same result, valid differences remain
+possible, and the parent stopping condition holds.
+
 #### 3.1 Improve structure, sentences, and vocabulary
 
 - Apply parent Phase 3, then reshape Principles, Rules, and Preferences instead of only marking judgment
@@ -147,4 +153,3 @@ Preserve meaningful variation when context, evidence, accessibility, safety, or 
 | Name | Description |
 |---|---|
 | [`Gobbi Skill`](../SKILL.md) | Parent guidance for type classification and shared skill-writing rules. |
-| [Preference Skill checklist](checklist.md) | Reusable source for evaluating consistency boundaries, authority, guidance classes, preferences, and valid variation. |

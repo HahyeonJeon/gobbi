@@ -1,0 +1,43 @@
+name: guard
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Guard (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Repository guard
+        run: python3 scripts/guard/guard.py check
+      - name: Guard tests
+        run: python3 -m unittest discover -s tests/guard -t .
+
+  skill_checks:
+    name: Skill checks (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Skill checks
+        run: python3 .gobbi/projects/gobbi/skills/gobbi-skill/scripts/check_skills.py
+      - name: Skill check tests
+        run: python3 -m unittest discover -s tests/skill_checks -t .

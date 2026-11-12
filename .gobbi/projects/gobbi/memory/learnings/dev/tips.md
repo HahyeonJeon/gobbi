@@ -24,3 +24,15 @@ edge case the rule doesn't obviously cover.
 
 **Application:** When a downstream step depends on a generated identifier, prove the identifier at the point
 it is created by running the real consuming tool, not by reasoning about the generation rule alone.
+
+## In zsh, send each stream to its own file
+
+**Context:** Capturing or hiding one stream of a command in the Claude Code Bash tool, whose shell is zsh.
+
+**Tip:** `cmd 2>&1 >/dev/null | ...` still shows stdout in zsh pipelines. Redirect each stream to its own file
+(`cmd >out.txt 2>err.txt`) and read the file you need. Print a separator with `printf`, not `echo ====x`, which
+fails on `=` expansion (see [A word that starts with `=` fails in
+zsh](mistakes.md#a-word-that-starts-with--fails-in-zsh)).
+
+**Application:** Write a checker's JSON stdout and human stderr to two files, then show whichever the next step
+needs.

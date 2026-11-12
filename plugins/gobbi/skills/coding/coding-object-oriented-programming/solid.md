@@ -6,13 +6,13 @@ anti-pattern that shows the violation.
 
 ## Single Responsibility Principle
 
-**Description.** A class, module, or function answers to one actor: one person, team, or role whose requests
-change it. An actor is one source of change, and a unit's secret, as
-[Modularization](../principles.md#modularization) defines it, belongs to one actor. When one unit serves two
-actors, a change for one actor can break behavior the other relies on. Move each actor's part into its own unit;
-the part that serves another actor is often a plain function, not a new class. The over-applied form is a class
-per method or per verb, or split parts that always change together: several methods that serve the same actor
-belong in one unit.
+**Description.** A class, module, or function answers to one actor: one person, team, or role whose requests change
+it. An actor is one source of change, and an Ontology unit's secret, as
+[Modularization](../principles.md#modularization) defines it, belongs to one actor. When one Ontology unit serves
+two actors, a change for one actor can break behavior the other relies on. Move each actor's part into its own
+Ontology unit; the part that serves another actor is often a plain function, not a new class. The over-applied form
+is a class per method or per verb, or split parts that always change together: several methods that serve the same
+actor belong in one Ontology unit.
 
 **Good example.** `Invoice` keeps finance's rule, and the layout is a function that the web team owns.
 

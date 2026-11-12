@@ -2,51 +2,40 @@
 
 ## Intent
 
-Gobbi treats every choice of structure, meaning, or contract as design work. This includes architecture,
-strategy, naming, vocabulary, functions, classes, interfaces, data shapes, and small local choices. Cowork
-uses Fast only when no design or decomposition choice remains; Light applies Ideation and Planning to bounded
-remaining choices. Workflow applies the same definition to every design-bearing productive step.
+Gobbi treats every choice of structure, meaning, or contract as design work: architecture, strategy, naming,
+vocabulary, functions, classes, interfaces, data shapes, and small local choices. The user decides a
+consequential choice among options that independent participants studied and critiqued (Principle 3).
+[Discussion](../../../skills/discussion/SKILL.md) owns that procedure, and Cowork and Workflow apply it in their
+Ideation and Planning stages. Cowork has no Fast or Light depth; it runs Ideation when a request has an open
+design choice and Planning when the work is too large for one task.
 
 ## Design participation
 
-- Map every design choice to bounded, independent, read-only local evidence, alternatives, or critique from
-  available active-runtime participants.
-- Batch related minor choices only in a named assignment that lists every included choice.
-- Keep one local creator as the sole writer and synthesizer. That creator receives the selected inputs,
-  produces and self-reviews the draft, and completes the synthesis.
-- When the session policy is enabled, obtain at least one independent Partner draft and one Partner
-  cross-review over frozen input before synthesis. Each Partner prompt names the required worktree, the exact session directory, and
-  one exact writing path for its result; when the policy is disabled, invoke no external runtime.
+- Gather separate suggestions and critique from independent subagents, and from a read-only
+  [Partner](../feature/partner.md) when the session policy allows one, scaled to the stakes of the choice.
+- Keep one local creator as the sole writer and synthesizer of the design result.
+- Resolve a gap before dependent work only when a wrong guess is costly to undo; otherwise state the
+  assumption and continue. A user-owned decision goes through the runtime's structured-input tool, and a
+  delegated agent sends it to the user-facing manager.
+- After the user's design review in Workflow, and for a minor choice in Cowork, the manager rules each choice
+  inside the accepted design itself and records `Ruling: <what> - <why> - <cost if wrong>`.
 
-## Delegated result contract
+## Delegated work
 
-Every specialist brief names one authoritative result, exact locator or response subject, and acceptance proof.
-The owning operation defines whether the result is a durable file, commit, or response without a result-kind
-field. Durable design and Partner results use exact caller-named absolute paths with containment and
-rereading checks. Review results are the per-runtime pair `report.md` and working `checklist.md`
-under write set `runtime-directory`; see [Review](evaluation.md). A printed Handoff references
-but never replaces a durable result.
+- [Delegation](../../../skills/delegation/SKILL.md) is a general briefing skill for any project or field. A
+  brief requires only a Goal and a Return; Role (one optional line), Context, Constraints, Taste and Preference,
+  and Materials appear only when they have content. A Goal is an end state a reader can check, each Constraint
+  carries a short reason, each taste names its source, and a brief is one self-contained task that points to
+  paths instead of pasting history. New work goes to a fresh agent.
+- The Handoff carries the evidence the caller needs. The caller accepts it only after reading the named result
+  and rerunning the checks it relies on. Delegation defines the check outcomes passed, failed, and inconclusive,
+  the measured-difference rule, and the Finding, Sources, and Limits return of a study result.
+- Callers add their own required fields. Gobbi entry, Cowork, Workflow, the review skills, and the manager role
+  hold role and phase choice, the skills and docs indexes in Materials, review independence, and report paths.
+- Do not rely on conversation history or inherited skill loads.
 
-## Delegation brief
+## Ownership
 
-The base brief order is Metadata, Role, Context, Task, Instructions, Materials, Return.
-
-- Role sits above Context. It grants persona and expertise so the agent thinks how it will act.
-- Context sits above Task. It holds working state and accepted decisions only.
-- Task states the goal, a world-best quality bar with a concrete measure, and the minimum result.
-- Materials is required and replaces Resources. It lists required skills-to-load with exact paths and read
-  order, remaining sources, purpose, and conflict precedence. The listed skills are required, not exclusive.
-  Also load any other skill the work needs.
-- The Partner prompt template uses the same section names.
-
-Do not rely on conversation history or inherited skill loads. The canonical
-[Delegation](../../../skills/delegation/SKILL.md) and
-[Partner](../../../skills/gobbi/partner/SKILL.md) skills own these section names.
-
-## Ownership and protection
-
-The canonical [Cowork](../../../skills/cowork/SKILL.md),
-[Workflow](../../../skills/workflow/SKILL.md), and
-[Delegation](../../../skills/delegation/SKILL.md) skills own these semantics. Workflow Phase 1 is now a section
-of the main Workflow skill. Generated plugin skills are projections of the canonical sources and must remain
-byte-equal.
+The canonical [Cowork](../../../skills/cowork/SKILL.md), [Workflow](../../../skills/workflow/SKILL.md),
+[Discussion](../../../skills/discussion/SKILL.md), and [Delegation](../../../skills/delegation/SKILL.md) skills
+own these semantics. Generated plugin skills are projections of the canonical sources and must remain byte-equal.

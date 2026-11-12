@@ -1,6 +1,6 @@
 ---
 name: coding-object-oriented-programming
-description: "Coding Object-Oriented Programming defines preferences for designing classes, interfaces, and public APIs with OOP principles, SOLID, and design patterns."
+description: "Coding Object-Oriented Programming sets defaults for classes, interfaces, and public APIs, with OOP, SOLID, and design-pattern entries. Use it when designing, writing, or reviewing classes, interfaces, or public APIs."
 allowed-tools: Read
 skill-type: preference
 ---
@@ -34,24 +34,21 @@ Internal structure may change freely as long as that first call stays easy.
 ### Prefer the language's own form
 
 Many patterns shrink to a language feature, such as a function argument, a generator, a module-level object,
-or a `match`. Use that form when it states the same design with less code.
+or a `match`. Use that form when it states the same design with less code. The forms named below are Python
+examples; use the equivalent form of the language in use.
 
 ---
 
 ## Rules
 
-- **MUST state the present force that each added interface, base class, or pattern answers, and the simpler
-  form it replaces, in the design record, not in source comments.** The design record is the Ideation design,
-  or the Execution handoff when there was no Ideation; a guessed future need is not a force.
-- **MUST keep the learning depth of every public API at 2 or less.** Learning depth is the longest chain of
-  project types a first-time caller must learn for the first successful call; count it as
-  [Intuitive Public API](../principles.md#intuitive-public-api) defines.
-- **NEVER subclass only to reuse code.** A subclass must keep every promise of its base and be used through the
-  base; otherwise call a shared function or hold the other object in a field.
-- **MUST name a chosen pattern by its exact entry heading, including the word `Pattern`.** For example, write
-  `Strategy Pattern`, not `strategy` or `policy object`.
-- **MUST follow the accepted design and the project's conventions before this skill's defaults.** When a
-  default here conflicts with them, keep the accepted design and report the conflict.
+- **Record the present force each added interface, base class, or pattern answers, and the simpler form it
+  replaces.** A reviewer judges the abstraction against that force, so it goes in the Ideation design, or the
+  Execution handoff without Ideation, not in source comments; a guessed future need is not a force.
+- **Subclass only when the subclass keeps every promise of its base and is used through the base.** A subclass
+  made only to reuse code claims a substitution it does not keep; call a shared function or hold the object in
+  a field instead.
+- **Follow the accepted design and the project's conventions before this skill's defaults.** They hold
+  decisions this skill cannot see, so when a default conflicts with them, keep them and report the conflict.
 
 ---
 
@@ -61,7 +58,7 @@ or a `match`. Use that form when it states the same design with less code.
 
 #### Pick the simplest form that holds the design
 
-- Use, in this order: a function, plain data such as a `dataclass`, a module of functions, a class, then an
+- Use, in this order: a function, plain data such as a Python `dataclass`, a module of functions, a class, then an
   interface or a pattern. Take the next form only when the current one cannot hold the needed state, rule, or
   variation.
 - Use a class when data and the rules that keep it valid belong together, as
@@ -71,10 +68,10 @@ or a `match`. Use that form when it states the same design with less code.
 
 #### Declare an interface where it is used
 
-- Declare an interface next to the code that calls it, with only the methods that code calls. In Python, use
-  `typing.Protocol`, and use `abc.ABC` only when implementations share base code.
-- For one operation, a `Callable` type is usually simpler than a one-method interface. A one-method `Protocol`
-  also fits, for example when callers pass objects that already have that method.
+- Declare an interface next to the code that calls it, with only the methods that code calls. In Python, for
+  example, that is a `typing.Protocol`, with `abc.ABC` only when implementations share base code.
+- For one operation, a function type, such as Python's `Callable`, is usually simpler than a one-method
+  interface. A one-method interface fits when callers pass objects that already have that method.
 
 #### Keep inheritance shallow
 
@@ -84,8 +81,10 @@ or a `match`. Use that form when it states the same design with less code.
 
 #### Make the first call work with built-in values
 
+- Keep the learning depth of a public API at 2 or less, counted as
+  [Intuitive Public API](../principles.md#intuitive-public-api) defines; a deeper chain needs a stated reason.
 - Prefer keyword arguments with defaults to option objects. When an option object is needed, make it one flat
-  `dataclass` of built-in values, so learning depth stays at 2.
+  record of built-in values, such as a `dataclass`, so learning depth stays at 2.
 - Return built-in types or one result type, not an object the caller must study to reach the value.
 
 #### Name by the caller's task
@@ -106,7 +105,7 @@ or a `match`. Use that form when it states the same design with less code.
   | Callers must call several low-level methods in the right order to do one task. | Is there only one caller? Then a local function may be enough. | [Abstraction](oop-principles.md#abstraction) |
   | A subclass exists only to reuse the base's code, or the tree is deeper than one level. | Can a shared function or a field hold the reused code? | [Inheritance](oop-principles.md#inheritance) |
   | New types or variants keep arriving, and each one edits the same type tests or `if` chains in several functions. | Is the set closed? Then one `match` per operation is fine. | [Polymorphism](oop-principles.md#polymorphism), [Open-Closed Principle](solid.md#open-closed-principle) |
-  | A function or class only forwards calls to one other unit, or an option has no current caller. | Would inlining it make any caller longer or expose a secret? | [Simplicity](../principles.md#simplicity) |
+  | A function or class only forwards calls to one other Ontology unit, or an option has no current caller. | Would inlining it make any caller longer or expose a secret? | [Simplicity](../principles.md#simplicity) |
   | One module mixes unrelated jobs, or every name in it is public. | Do the jobs always change together? Then keep them together. | [Modularization](../principles.md#modularization) |
   | The same code appears for the third time, or a shared function grows one flag per caller. | Are there only two copies? Then keep the duplication. | [Reusability](../principles.md#reusability) |
   | Names such as `process`, `data`, or `Manager`, or a name that repeats its owner. | Does a domain name exist for the thing? Use it. | [Naming](../principles.md#naming) |
@@ -121,6 +120,7 @@ or a `match`. Use that form when it states the same design with less code.
 
 - Choose a pattern from what the code shows, not from a word in the request. Use the "Check first" form when it
   solves the problem, and consider the pattern only when it does not.
+- Call a chosen pattern by its standard name, such as `Strategy Pattern`, so readers find its entry.
 
   | You see | Check first | Consider |
   |---|---|---|

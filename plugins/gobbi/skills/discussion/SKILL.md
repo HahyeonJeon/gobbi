@@ -1,6 +1,6 @@
 ---
 name: discussion
-description: "Discussion is the operation that makes a task concrete, studies options with subagents, and decides with the user."
+description: "Discussion makes a task concrete, studies options with participants, and records the user's decision. Use it when intent or context is unclear or the user must choose a direction."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch, AskUserQuestion
 skill-type: operation
 ---
@@ -18,104 +18,88 @@ The agent recommends. The user decides.
 Understand the result the user is trying to achieve and the project context that shapes it. Use Who, What,
 When, Where, Why, and How until the task is concrete enough to study.
 
-### Study with independent participants
+### Study with independent participants when it matters
 
-One agent misses alternatives. For a consequential design or decision, gather separate supported suggestions
-and critique, then synthesize before asking the user.
+One agent misses alternatives. For a decision that is hard to reverse or that the user owns, gather separate
+supported suggestions and critique, scaled to the stakes, then synthesize before asking the user.
 
 ### Help the user see the choice
 
-Present only meaningful options. Recommend one. Explain the choice with a schema, diagram, or generated image
-when that makes the difference easier to see than text alone.
+Present only real options. Recommend one. Prefer a schema, diagram, or generated image when it makes the
+difference easier to see than text alone.
 
 ## Rules
 
-- **MUST make every gap in intent or project context that could change the result concrete before dependent
-  work.** Use Who, What, When, Where, Why, and How only as far as the work needs, and leave unresolved points
-  explicit.
-- **MUST use the active owner's participant contract to discuss a consequential design or decision before
-  presenting options.** Seek separate supported suggestions and critique; skip this loop for documentation-only
-  work with no project or work design decision.
-- **MUST route every user-owned decision that could change result, scope, approach, risk, cost, or acceptance
-  through the runtime structured-input tool.** Use `AskUserQuestion` in Claude Code, `request_user_input` in
-  Codex, the official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok. A
-  delegated agent sends the question and options to the user-facing manager instead of calling those tools.
-- **MUST explain a structural or visual choice with a schema, diagram, or generated image when text alone
-  makes the options hard to compare.** Use the runtime's image-generation tool when a picture helps; use a
-  compact schema or diagram when that is clearer. Skip decoration.
-- **MUST preserve the user's accepted direction until the user explicitly changes it.** Contrary evidence may
-  reopen the decision; it does not change the task by itself.
-- **NEVER use empty praise or soft agreement instead of a position.** State the conclusion and reason, or name
-  the exact dependency that prevents one.
+- **Resolve a gap in intent or context before dependent work only when a wrong guess is costly to undo.**
+  Otherwise state the assumption and continue, because review and the user catch what is wrong.
+- **Route every user-owned decision that could change the result, scope, risk, cost, or acceptance through the
+  runtime structured-input tool.** Use `AskUserQuestion` in Claude Code, `request_user_input` in Codex, the
+  official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok, and a delegated
+  agent, which has no user channel, sends the question and options to the user-facing manager.
+- **Keep the user's accepted direction until the user explicitly changes it.** The direction is the user's;
+  contrary evidence may reopen the decision but does not change the task by itself.
 
 ## Procedure
 
 ### Phase 1 — Understand the task
 
-#### 1.1 Restate the intended result
+Know the result the user is after. Done when the task is concrete enough to form options, with accepted
+decisions, assumptions, and open points kept apart.
 
-- State the current understanding of the user's intended result and the relevant vision, roadmap, design,
-  architecture, and current state.
-- Distinguish the literal request from the intended result.
+#### 1.1 Make the task concrete
 
-#### 1.2 Close gaps that could change the result
-
-- Use Who, What, When, Where, Why, and How to name missing, ambiguous, or conflicting context.
-- Ask only about gaps that could change the result, scope, approach, or acceptance.
-
-#### 1.3 Confirm the task is ready to study
-
-- Turn accepted answers into a concrete task: intended result, scope, constraints, approach, and completion
-  evidence.
-- Keep accepted decisions, assumptions, and unresolved points distinct. Continue to Phase 2 when the task is
-  concrete enough to form options.
+- Restate the intended result, as distinct from the literal request, with its scope, constraints, and
+  completion evidence.
+- Ask only about gaps where a wrong guess is costly to undo, and state the assumption for the rest.
 
 ### Phase 2 — Study and form options
 
+Find the real options. Done when each real choice has feasible, mutually exclusive options and a
+recommendation that names what would change it, or the evidence shows no real choice exists.
+
 #### 2.1 Study the evidence
 
-- Study the request, current work, affected people, relevant evidence, prior decisions, constraints, and
-  proven approaches.
-- Load the matching domain ideation skill when this is an unresolved material design choice. Otherwise compare
-  options from the available evidence.
+- Study the current work, prior decisions, constraints, and proven approaches. When running a command, test,
+  or prototype can answer a question, run it instead of asking the user.
+- Load the matching domain ideation skill when this is an unresolved material design choice.
 
 #### 2.2 Discuss with independent participants
 
-- Treat a choice as consequential when a different answer could change scope, architecture, interfaces,
-  safety, cost, reversibility, acceptance, or a user-visible result.
-- Ask the active owner to give available subagents or teammates separate bounded prompts for supported
-  suggestions and critique. Each remaining launchable Partner may provide an initial suggestion or critique;
-  an Unavailable attempt is evidence, not a silent skip.
+- For a decision that is hard to reverse or that the user owns, ask the active owner to give available
+  subagents, teammates, or launchable Partners separate bounded prompts for supported suggestions and
+  critique. Match the number of participants to the stakes.
 - Compare reasoning, send one focused follow-up when a disagreement could change the recommendation, then
-  synthesize. Do not force consensus. When no eligible participant is available, state the evidence limit.
+  synthesize without forcing consensus. Keep each claim's stated or inferred mark and every participant's
+  Limits, because participants that agree can share one inference.
+- Report an Unavailable Partner attempt as evidence, and state the evidence limit when no participant was
+  available.
 
-#### 2.3 Prepare two or three options and a recommendation
+#### 2.3 Prepare the options and a recommendation
 
-- Offer two or three mutually exclusive options only when a real choice exists. Make each feasible under the
-  known evidence.
-- Name each option by its direction, describe its main effect in one sentence, put the recommended option
-  first, and name what would change the recommendation.
+- Offer the real options, usually two or three, only when a real choice exists. Make them mutually exclusive
+  and feasible under the known evidence.
+- Name each option by its direction, recommend one, and name what would change the recommendation.
 
 ### Phase 3 — Decide with the user
 
-#### 3.1 Explain so the user can see the choice
+Get the user's decision. Done when the user's choice is recorded as the accepted direction.
+
+#### 3.1 Show the choice
 
 - Show the evidence or design material needed to decide immediately above the question.
-- When the choice is a structure, flow, layout, or relationship, add a schema, diagram, or generated image
-  that makes the options comparable. Skip this when the choice is a short yes/no, a name, or a wording-only
-  decision.
+- Prefer a schema, diagram, or generated image when the choice is a structure, flow, layout, or relationship
+  that text makes hard to compare.
 
 #### 3.2 Ask with the runtime tool
 
-- Call the required runtime structured-input tool with one question, the recommended option first, and each
-  alternative as a compact label plus what it means, its benefit, and its cost. Ask a direct question when no
-  meaningful options exist. The tool is the ask.
+- Ask one question with the recommended option first and `(Recommended)` after its label, and give each
+  option what it means plus explicit `Pros:` and `Cons:`. This is the card format the user set.
+- Ask a direct question when no real options exist.
 
 #### 3.3 Record the decision
 
-- Record the user's choice as the accepted direction. Do not change it until the user explicitly changes it.
-- Discussion consumes evidence and records the decision. It does not replace domain ideation's design-evidence
-  study or decide for the user.
+- Record the user's choice as the accepted direction.
+- Discussion records the decision; domain ideation owns the design-evidence study.
 
 ## References
 
@@ -127,4 +111,4 @@ when that makes the difference easier to see than text alone.
 | [Authoring Ideation](../authoring/authoring-ideation/SKILL.md) | Owns bounded writing-design study during ideation. |
 | [Design Ideation](../design/design-ideation/SKILL.md) | Owns bounded visual-design study during ideation. |
 | [Delegation](../delegation/SKILL.md) | Prompt and handoff guidance for bounded subagent assignments. |
-| [Partner](../gobbi/partner/SKILL.md) | Write-bounded external-runtime invocation and final Handoff contract. |
+| [Partner](../partner/SKILL.md) | How the manager launches a partner CLI in the background, reads its output, and follows up. |

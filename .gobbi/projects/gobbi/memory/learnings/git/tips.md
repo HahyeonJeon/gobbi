@@ -82,3 +82,14 @@ index together, so no stale index is left. Build the `main` merge without a chec
 **Application:** Fetch again and confirm that the origin branches did not move right before pushing. Moving
 `develop` with `update-ref` instead leaves the stale index described in
 [Updating a branch that another worktree has checked out](mistakes.md#updating-a-branch-that-another-worktree-has-checked-out).
+
+## Date a Memory entry by the first commit that added its heading
+
+**Context:** A Memory entry needs the date it was added, such as a `Seen` occurrence or a `Backlogged at` value.
+
+**Tip:** Use the first commit of
+`git log --all --reverse --format='%ad (%h)' --date=short -S"## <heading>" -- <file>`. `git log -L` also counts
+commits where the entry was only diff context, and inflates the dates.
+
+**Application:** Take the first line of the `-S` output as the entry's date and commit, and read the other lines
+only to see later edits.
