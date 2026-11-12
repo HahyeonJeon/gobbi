@@ -13,7 +13,9 @@ accessibility target is the user's decision: recommend `WCAG 2.2 AA`, and write 
 ## Design
 
 {Write only the headings that apply, in this order. Link a decision inherited from earlier work instead of
-restating it. For each decision, state the chosen option, why it won, its trade-offs, and what would reopen it.}
+restating it. For each decision, state the chosen option, why it won, its trade-offs, and what would reopen it.
+Give each screen, region, or component the design creates or changes its unit definition: the six fields the
+Ontology skill defines.}
 
 ### Materials
 

@@ -34,8 +34,8 @@ difference easier to see than text alone.
   Otherwise state the assumption and continue, because review and the user catch what is wrong.
 - **Route every user-owned decision that could change the result, scope, risk, cost, or acceptance through the
   runtime structured-input tool.** Use `AskUserQuestion` in Claude Code, `request_user_input` in Codex, the
-  official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok. A delegated agent
-  has no user channel, so it sends the question and options to the user-facing manager.
+  official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok, and a delegated
+  agent, which has no user channel, sends the question and options to the user-facing manager.
 - **Keep the user's accepted direction until the user explicitly changes it.** The direction is the user's;
   contrary evidence may reopen the decision but does not change the task by itself.
 
@@ -69,7 +69,8 @@ recommendation that names what would change it, or the evidence shows no real ch
   subagents, teammates, or launchable Partners separate bounded prompts for supported suggestions and
   critique. Match the number of participants to the stakes.
 - Compare reasoning, send one focused follow-up when a disagreement could change the recommendation, then
-  synthesize without forcing consensus.
+  synthesize without forcing consensus. Keep each claim's stated or inferred mark and every participant's
+  Limits, because participants that agree can share one inference.
 - Report an Unavailable Partner attempt as evidence, and state the evidence limit when no participant was
   available.
 

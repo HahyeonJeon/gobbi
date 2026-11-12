@@ -1,6 +1,6 @@
 ---
 name: cleansing-design
-description: "Design Cleansing reorganizes, renames, and removes parts of visual work, such as UI and HTML, a design system, or slides, so it stays simple and clearly defined without changing what users see or can do. Use it when the user asks to cleanse visual work."
+description: "Design Cleansing restructures, renames, and removes units of visual work, such as UI and HTML, a design system, slides, charts, images, or reports, so it stays simple and clearly defined without changing what viewers see or can do. Use it when the user asks to cleanse visual work."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
@@ -8,18 +8,19 @@ skill-type: operation
 
 # Design Cleansing
 
-Design Cleansing turns visual work that grew without a plan, such as a UI, a design system, or a slide deck built
-up by many agent changes, back into a small set of clearly defined units. It defines what exists, then refactors,
-renames, and removes within the levels the user chose, while a recorded baseline shows the experience stays the
-same. Only the user starts it. The manager talks to the user and launches agents, a `leader` writes the map and
-plan, and the role of each part applies the plan.
+Design Cleansing turns visual work that grew without a plan, such as a UI, a design system, a slide deck, a chart
+set, or brand assets built up by many agent changes, back into a small set of clearly defined units. It defines
+what exists, then restructures, renames, and removes within the levels the user chose, while a recorded baseline
+shows the experience stays the same. Only the user starts it. The manager talks to the user and launches agents,
+a `leader` writes the map and plan, and the role that matches each unit applies its changes.
 
 ## Principles
 
 ### Define first, then restructure
 
-Each unit gets a definition, a responsibility, a boundary, its relations, and its dependencies before anything
-moves. A design built from clear roles stays consistent; a design without them drifts again.
+Each unit gets an [Ontology](../../ontology/SKILL.md) unit definition, plus its role, what it exposes, and where
+it renders, before anything moves. A design built from clear roles stays consistent; a design without them
+drifts again.
 
 ### Systematic means simple
 
@@ -28,7 +29,7 @@ true, and a variant or token stays only for a difference that exists now.
 
 ### Change the shape, keep the experience
 
-What users see, can do, and can perceive, including contrast, focus, and reading order, stays the same. A
+What viewers see, can do, and can perceive, including contrast, focus, and reading order, stays the same. A
 baseline recorded before the first edit shows that it did.
 
 ## Rules
@@ -39,19 +40,23 @@ baseline recorded before the first edit shows that it did.
   of the user's work, and a wrong plan is costly to undo.
 - **Stay within the chosen levels.** A change deeper or bolder than the user allowed goes to Suggestions, not into
   the work.
-- **Keep the experience exactly.** Resolved token values stay identical, and any change users could see, such as
-  merging two near-identical colors or changing a label's text, is a separate decision for the user. No tolerance
-  is set, because a screenshot tolerance can hide a one-step color change.
-- **Remove only with evidence.** Record the evidence and the search scope beside each removal, and count a
-  dynamic, external, or unreached-state reference as a use until it is ruled out, because a plain search misses
-  them. A public token, route, or asset URL goes only with a deprecation or redirect kept for its outside users.
+- **Keep the experience exactly, with no tolerance set by an agent.** Resolved token values stay identical, and
+  any change a viewer could see, such as merging two near-identical colors or changing a label's text, is a
+  separate decision for the user, because a screenshot tolerance can hide a one-step color change.
+- **Remove only with usage evidence, and remove a public token, route, or asset URL only with a deprecation or
+  redirect kept for its outside dependents, such as other files, products, exports, emails, or social cards.**
+  Record each check and its scope beside each removal (a search for code and content, an in-use or instance check
+  for design files, decks, and documents, and the outside references), and count a dynamic or external
+  reference, or an unreached state, viewport, theme, locale, or print format, as a use until it is ruled out,
+  because each check misses some uses.
 
 ## Procedure
 
 ### Phase 1 — Set the Subject and Levels
 
 Agree what is cleansed, how far, and how a failed step is undone. Done when the subject, the restore point, the map
-location, each action's levels, and the commit authority are recorded in the [cleansing map](templates/map.md).
+location, each action's levels, and the checkpoint authority and kinds are recorded in the
+[cleansing map](templates/map.md).
 
 #### 1.1 Confirm the subject
 
@@ -59,30 +64,31 @@ location, each action's levels, and the commit authority are recorded in the [cl
   subject, as in [Gobbi Step 2.5](../../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role): when the main
   result is not visual, name [Code Cleansing](../cleansing-code/SKILL.md) or
   [Docs Cleansing](../cleansing-docs/SKILL.md) and stop.
-- Start from committed work, or from a copy the user confirms for files git cannot diff, and record it as the
-  restore point.
+- Record the restore point by file kind: committed work for git-tracked files, and a named saved version or a
+  copy the user confirms for files outside git.
 - The map and plan are the run's Ideation result: in a Gobbi session, at the mode's Ideation output root;
   otherwise at a path the user names outside the subject.
 
-#### 1.2 Ask the levels and the commit authority
+#### 1.2 Ask the levels and the checkpoint authority
 
-- With the runtime's structured question tool, ask the depth of refactoring, renaming, and removing, then the
-  intensity of each action not skipped. The [Levels](#levels) define each.
-- Ask whether each apply step that passes its checks may be committed, on the plan's paths only, because that
-  commit is what lets a later failed step be undone.
-- Record the answers in the map.
+- With the runtime's structured question tool, ask the depth of restructuring, renaming, and removing (System,
+  Component, Element, or Skip), then the intensity of each action not skipped. The [Levels](#levels) define each.
+- Ask whether each apply step that passes its checks may be checkpointed on the plan's paths: a commit for
+  git-tracked files, and a named saved version or a file copy for others. A checkpoint lets a later failed step
+  be undone.
+- Record the answers and the checkpoint kind of each file kind in the map.
 
 ### Phase 2 — Define What Exists
 
 Describe the visual work as it is. Done when the map covers every unit from the largest chosen depth down, with
-its marks, its commonality and variability, and its vocabulary.
+its unit definition, its flags, its commonality and variability, and its vocabulary.
 
 #### 2.1 Map the units, commonality, and vocabulary
 
 - The manager briefs one `leader` through [Delegation](../../delegation/SKILL.md), with this skill's path in
   Materials, because a user-only skill is not loaded into a subagent on its own. A large subject is mapped by area.
-- The `leader` fills a unit card for each unit with the template's fields and marks, and records what units share
-  and what truly varies between them now.
+- The `leader` views the subject rendered in each state, mode, and viewport it ships in, writes each unit's
+  definition with the template's fields and flags, and records which units share a role and what truly varies now.
 - It lists one term per concept: the project's design-system term first, then the platform's or field's. A
   disagreement goes back to the manager, who asks the user.
 
@@ -92,15 +98,18 @@ Derive the simpler structure from the map. Done when the user approves the plan.
 
 #### 3.1 Derive the changes
 
-- The `leader` writes one change per mark within the chosen levels, and keeps it only if it makes the design
+- The `leader` writes one change per flag within the chosen levels, and keeps it only if it makes the design
   simpler or a definition true. A change outside the levels goes to Suggestions.
-- A change users would see goes to Separate Decisions. Each unit group gets the check that will pin it, and a
-  group no check can pin is listed as unverified.
+- A change a viewer would see goes to Separate Decisions.
+- Each unit group gets the check that will pin it, and a group no check can pin is listed as unverified. A unit
+  group is the units one kind of check pins together, such as tokens, rendered pages, charts, slides and
+  documents, images and brand, or motion.
 
 #### 3.2 Approve the plan
 
-- The manager shows the user the current structure beside the target, the changes in order, each removal with its
-  evidence, the consumers outside the subject, the separate decisions, and the unverified groups.
+- The manager shows the user the current structure beside the target, with the map's renders beside each change,
+  the changes in order, each removal with its evidence, the dependents outside the subject, the separate
+  decisions, and the unverified groups.
 - Apply the user's edits by returning the `leader` to the earliest affected Step, then ask for approval with the
   runtime's structured question tool.
 
@@ -111,21 +120,21 @@ final checks match the baseline.
 
 #### 4.1 Record the baseline
 
-- The manager gives each apply task to the role of its part, with this skill and that role's Execution skill in
-  Materials: the `designer` for a part with a visual surface, the `developer` for code with none, and the `author`
+- The manager gives each apply task to the role of its unit, with this skill and that role's Execution skill in
+  Materials: the `designer` for a unit with a visual surface, the `developer` for code with none, and the `author`
   for docs.
 - The first apply task records one baseline of the whole subject before any edit, from the plan's pins and
   [Design Execution](../../design/design-execution/SKILL.md#12-record-the-baseline-before-the-first-edit).
   Later tasks compare with it and do not record a new one.
 
-#### 4.2 Remove, then refactor, then rename, checking each step
+#### 4.2 Remove, then restructure, then rename, checking each step
 
-- Apply removals first, then structure changes, then renames, so each name changes once on the final structure.
-  Update every user of a changed unit in the same step.
-- After each step, compare with the baseline. With commit authority, commit each step that matches, and undo a
-  failed step to the last step commit; without it, fix the failure in that step or stop the run.
-- On a stop, the manager asks the user to restore the restore point or keep the tree. A change the plan lacks goes
-  to Suggestions instead of the work.
+- Apply removals first, then restructuring, then renames, so each name changes once on the final structure.
+  Update every dependent of a changed unit in the same step.
+- After each step, compare with the baseline. With checkpoint authority, checkpoint each step that matches by the
+  kind the map records, and undo a failed step to the last checkpoint; without it, fix the failure or stop.
+- On a stop, the manager asks the user to restore the restore point or keep the work as it stands. A change the
+  plan lacks goes to Suggestions instead of the work.
 
 ### Phase 5 — Report the Result
 
@@ -135,7 +144,7 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 - From the returned handoffs, the manager reports the structure before and after, the changes applied, each
   removal with its evidence, the checks against the baseline, the unverified groups, and the Suggestions.
-- Leave any commit beyond the granted step commits to the user or the mode, and suggest an independent
+- Leave any commit beyond the granted step checkpoints to the user or the mode, and suggest an independent
   [Review](../../review/SKILL.md) against [Design Review](../../design/design-review/SKILL.md), with the
   approved plan and baseline as its Goal.
 
@@ -143,29 +152,33 @@ Tell the user what changed and what remains. Done when the user has the report.
 
 | Action | What it changes in visual work |
 |---|---|
-| Refactoring | Structure: merge, split, or move units so each has one role and each value has one source. |
+| Restructuring | Structure: merge, split, or move units so each has one role and each value has one source. |
 | Renaming | Internal names of components, variants, tokens, styles, assets, and files, by role, in the project's and then the field's vocabulary. A visible label is a separate decision. |
-| Removing | Parts: what nothing uses, an exact duplicate, a superseded part, or complexity with no present need. |
+| Removing | Units: what nothing uses, an exact duplicate, a superseded unit, or complexity with no present need. An exact duplicate has the same role and the same value in every mode, theme, viewport, and state; a unit with the same value and a different role stays or becomes an alias. |
 
-| Depth | Largest unit the action may change |
+| Depth | Largest unit the action may target or create |
 |---|---|
-| Module | A set or system of units: a design system, token sets, a template, a page or slide family, a folder layout |
-| Class | One composed unit: a component, screen, page, slide, chart, or composition |
-| Function | One part: a token, style, variant, state, placeholder, asset, or mark |
+| System | A set or system of units: a design system, token sets, a template, a page or slide family, a folder layout |
+| Component | One composed unit: a component, screen, page, slide, chart, or composition |
+| Element | One small unit: a token, style, variant, state, placeholder, asset, or chart or brand mark |
 
-Module includes Class and Function, Class includes Function, and Skip leaves the action out.
+Depth names a size, not a kind of unit. System depth allows Component and Element changes, Component depth allows
+Element changes, and Skip leaves the action out. A change that targets or creates a larger unit goes to
+Suggestions. A token or style sits under many components rather than inside one, so an Element change can reach
+every dependent: the plan lists each one, and the step updates them all.
 
 | Intensity | How far the action goes |
 |---|---|
-| Conservative | Only clear defects: unused parts, exact duplicates with no consumer outside the subject, and names that contradict their role. Shared components and tokens stay. |
-| Moderate | Also the merges, splits, collapses, renames, and removals the map marks. A shared part changes only when all its consumers are inside the subject. |
-| Aggressive | Rebuild toward the simplest structure the roles allow. A shared part may change, and its consumers outside the subject are listed in the plan. |
+| Conservative | Only clear defects: unused units, exact duplicates with no dependent outside the subject, and names that contradict their role. A shared unit stays. |
+| Moderate | Also the merges, splits, renames, and removals the map flags. A shared unit changes only when all its dependents are inside the subject. |
+| Aggressive | Rebuild toward the simplest structure the roles allow. A shared unit may change, and its dependents outside the subject are listed in the plan. |
 
 ## References
 
 | Name | Description |
 |---|---|
-| [Cleansing map](templates/map.md) | The run's Ideation result: levels, baseline, unit map, plan, and decisions. |
+| [Cleansing map](templates/map.md) | The run's Ideation result: levels, checkpoints, baseline, unit definitions, plan, and decisions. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of each unit definition, and the tests for commonality and naming. |
 | [Design Execution](../../design/design-execution/SKILL.md) | The baseline and check steps the `designer` applies. |
 | [Design Review](../../design/design-review/SKILL.md) | The review bar for the cleansed visual work. |
 | [Code Cleansing](../cleansing-code/SKILL.md) | The cleansing for a subject whose main result is code with no visual surface. |

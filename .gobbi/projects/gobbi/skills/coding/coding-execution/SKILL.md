@@ -75,8 +75,8 @@ added fails the Simplicity tests, and no affected surface is stale.
 - Build each increment from its lowest dependency to its caller-visible result, and prove it before starting
   the next. For a testable defect, add a regression check that fails before the fix and passes after it.
 - With an Ideation design, build each unit to its design and caller contract and add no pattern it does not
-  name. Without one, record in the handoff the [Modularization](../principles.md#modularization) lines of each
-  new public unit and the force behind each added abstraction.
+  name. Without one, record in the handoff the unit definition and caller contract of each new public unit, per
+  [Modularization](../principles.md#modularization), and the force behind each added abstraction.
 - Regenerate generated output from its canonical source instead of editing it, because the next generation
   overwrites a hand edit.
 

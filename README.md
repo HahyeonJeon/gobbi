@@ -221,9 +221,10 @@ measured. The active runtime decides what to accept and remains the session auth
 
 Run `/gobbi:cleansing` (Codex: `$cleansing`) when code, visual work, or docs have grown messy. Gobbi sends the
 subject to the child for its main result: Code Cleansing, Design Cleansing (including HTML and web UI), or
-Docs Cleansing. It asks how deep (module, class, function) and how bold (aggressive, moderate,
-conservative) refactoring, renaming, and removing may go, and whether each step may be committed. It maps what
-each part is for, shows you a simpler target, and changes files only after you approve it. What the subject does,
+Docs Cleansing. It asks how deep (code: Module, Class, Function; design: System, Component, Element; docs:
+Set, Document, Passage) and how bold (aggressive, moderate, conservative) refactoring or restructuring,
+renaming, and removing may go, and who may checkpoint each step (a commit or, for design files outside git, a
+saved version or copy). It maps what each unit is for, shows you a simpler target, and changes files only after you approve it. What the subject does,
 shows, or tells its reader stays the same. Only you can start it.
 
 ## Socratic Method
@@ -233,6 +234,13 @@ conceptual. Gobbi asks the subject and where to write the result, then two agent
 the subject and breaks it into defined components, actions, and relations; the other challenges that
 understanding until no real gap is left. The result is one document from a template, with sources, open
 questions, and the challenge log. Only you can start it.
+
+## Ontology
+
+Agents load Ontology (`gobbi:ontology`, Codex: `$ontology`) when they create, split, merge, rename, review, or
+cleanse a unit of work, as Principle 8 requires. It defines a unit by six fields: definition, responsibility,
+boundary, relations, dependencies, and properties. It keeps one term, one shape, and one home for each concept.
+Each domain adds its own fields in its own skill.
 
 ## Develop Gobbi
 

@@ -42,7 +42,7 @@ from that file in the same worktree and session root.
   `Ruling: <what> — <why> — <cost if wrong>`, check rather than ask a question that running something can
   answer, and stop at a Stopped `handoff.md` only for an unauthorized irreversible, security-sensitive, or
   external action or a user-owned decision.
-- **MUST wait at User Review after each phase's `handoff.md`.** Set `configuration.md` `Latest handoff` to it.
+- **MUST wait at User Review after each phase's `handoff.md`, recorded as `configuration.md` `Latest handoff`.**
   Only the user's Continue on a shown Complete handoff starts the next phase, never silence; a Stopped handoff
   records the first unproved action and opens no User Review.
 - **Accept a result only after rereading it or its commit and reproducing its verification.** A report,

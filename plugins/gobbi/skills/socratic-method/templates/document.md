@@ -28,6 +28,9 @@
 
 ## Components
 
+{Each component is a unit definition. Its first six fields are the ones the Ontology skill defines; Actions,
+Sources, and Status are this document's own.}
+
 ### {ID} — {Name}
 
 - **Definition:** {The kind of thing it is, and what sets it apart from its siblings.}
@@ -43,6 +46,9 @@
 {Repeat for each component, in decomposition order.}
 
 ## Actions
+
+{Each action is a unit definition with the six fields the Ontology skill defines; Steps, Triggers and results,
+Sources, and Status are this document's own.}
 
 ### {ID} — {Name}
 

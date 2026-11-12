@@ -60,7 +60,7 @@ and task IDs are returned.
 
 #### 2.1 Choose the plan documents
 
-- Name the major goals in the work. Write one plan document per major goal from the
+- Name the major goals in the work, and write one plan document per major goal from the
   [plan template](templates/plan.md), named `plan-NN-slug.md` in the caller's output directory. One goal means
   one document.
 

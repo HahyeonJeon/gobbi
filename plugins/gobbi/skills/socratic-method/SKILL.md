@@ -81,8 +81,9 @@ marked open, each with its source.
 
 - The Analyst studies the subject broadly and deeply, then decomposes it recursively into components and actions,
   splitting an element further only while one of the document's questions needs it.
-- For each element, the Analyst fills its card from the template, each field with its source, adds each relation
-  to the relation table, and returns the IDs of the elements it wrote or changed.
+- For each element, the Analyst fills its [unit definition](../ontology/SKILL.md) from the template, each field
+  with its source, adds each relation to the relation table, and returns the IDs of the elements it wrote or
+  changed.
 
 ### Phase 3 — Question and Answer
 
@@ -161,4 +162,5 @@ Make sure the document holds together, then hand it over. Done when the user has
 |---|---|
 | [Document template](templates/document.md) | The one document the Analyst fills and the Questioner challenges. |
 | [Delegation](../delegation/SKILL.md) | Briefs for the Analyst and the Questioner. |
+| [Ontology](../ontology/SKILL.md) | The six fields of the unit definition each element fills. |
 | [Review](../review/SKILL.md) | The independent review suggested for a document that will guide other work. |

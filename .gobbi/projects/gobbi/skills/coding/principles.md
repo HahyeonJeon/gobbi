@@ -67,22 +67,23 @@ assert TaxService(TaxCalculator()).compute_tax(Decimal("25.00")) == Decimal("2.5
 
 ## Modularization
 
-**Description.** Modularization gives each unit one conceptual definition, one secret, one boundary, one-way
-relationships, and the data it owns. A reader then finds where a change goes from the definition alone, and the
-unit can change its private parts without breaking callers. Every directory, file, public class, and public
-function can state its five unit lines, and a public class or function also has a caller contract; together
-these are the unit's Modularization lines. The Ideation design records them for the units it designs, and
-without Ideation the Execution handoff records them for each new public unit. Source code does not carry them
-as comments. If a line fails, split, merge, or move the unit. Private helpers need only a good name.
+**Description.** Modularization gives each unit one definition, one secret, one boundary, one-way relations, and
+the data it owns. A reader then finds where a change goes from the definition alone, and the unit can change its
+private parts without breaking callers. Every directory, file, public class, and public function can state its
+[unit definition](../ontology/SKILL.md), the six fields Ontology defines, and a public class or function also
+has a caller contract. The Ideation design records them for the units it designs, and without Ideation the
+Execution handoff records them for each new public unit. Source code does not carry them as comments. If a field
+fails its test, split, merge, or move the unit. Private helpers need only a good name.
 
-The five unit lines are:
+Each field keeps its Ontology test, and code adds this:
 
-- **Conceptual definition:** one sentence in domain words, with no "and".
+- **Definition:** in domain words.
 - **Responsibility:** its secret, which is what only this unit changes: one decision, or the facts about one
   concept.
 - **Boundary:** what it hides, and the named neighbours it never imports. Keep the public surface small: other
   code imports only the names the unit chooses to share.
-- **Relationship:** what it uses and what uses it. Dependencies point one way, with no cycles.
+- **Relations:** what it uses and what uses it.
+- **Dependencies:** they point one way, with no cycles.
 - **Properties:** the data it owns, with types, invariants, and whether each value is stable or changing; `None`
   when it owns none.
 
@@ -94,7 +95,7 @@ unit, and its form depends on what the unit does:
 - **A unit that changes state** sets a field, writes a record, or sends a message. State its parameters, the
   checks that raise errors, the error result, the data it changes, its side effects, and its allowed callers.
 
-Directories and files state only the five unit lines.
+Directories and files state only the unit definition.
 
 Keep computing and changing apart, so that a caller can call a computing unit anywhere and find each change to
 state in one place. A unit that computes sets no field, writes no record, and sends no message. Each change to
@@ -102,14 +103,13 @@ state has one public entry point. It runs the checks, makes the change, sends th
 result or raises the error. When a check fails, it changes nothing, and the error names the failed check. No
 second public function makes the same change.
 
-The unit lines also set the defaults for directories and files. An existing project or framework layout wins.
+The unit definition also sets the defaults for directories and files. An existing project or framework layout wins.
 
-- Start flat. Make a directory only when needed: when its files share one conceptual definition,
-  responsibility, and boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the
-  package root, and make no directory for one file.
+- Start flat. Make a directory only when needed: when its files share one definition, responsibility, and
+  boundary, whether that is a domain concept or a layer. Nest at most 2 levels under the package root, and make
+  no directory for one file.
 - Make no `utils/`, `common/`, `helpers/`, `misc/`, or `shared/`. Move each function to the unit that uses it.
-- A new file needs a new conceptual definition. Split a file when its definition needs "and", not when it is
-  long.
+- A new file needs a new definition. Split a file when its definition needs "and", not when it is long.
 
 **Good example.** A flat package. Each file holds one domain object with the changes to it, or one
 computation.
@@ -122,14 +122,15 @@ airline/
   connection.py   # whether two bookings connect; uses booking, flight, and airport
 ```
 
-The Ideation design gives these lines for `flight.py`. The code keeps only the Properties that `delay_flight`
-needs.
+The Ideation design gives this unit definition for `flight.py`. The code keeps only the Properties that
+`delay_flight` needs.
 
-- **Conceptual definition:** one scheduled trip of one aircraft between two airports on one date.
+- **Definition:** one scheduled trip of one aircraft between two airports on one date.
 - **Responsibility:** which schedule changes a flight may take.
 - **Boundary:** hides `_DELAYABLE`; shares `Flight`, `FlightState`, `InvalidDelay`, and `delay_flight`; never
   imports `booking`.
-- **Relationship:** uses nothing in `airline`; `booking` and `connection` use `Flight`.
+- **Relations:** uses nothing in `airline`; `booking` and `connection` use `Flight`.
+- **Dependencies:** only the standard library, so no change elsewhere in `airline` can break it.
 - **Properties:** `flight_id: str`, `number: str`, and `departure_date: date`, stable; `state: FlightState`,
   `estimated_departure: datetime`, `estimated_arrival: datetime`, and `delay_reason: str`, changing. Both
   estimated times are in UTC, with `tzinfo=UTC`. The estimated arrival is later than the estimated departure;

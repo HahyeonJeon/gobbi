@@ -78,8 +78,9 @@ what the run showed.
 - For each module, class, and function the change adds or changes, state its definition in one sentence, the
   one decision it owns, what it hides, and what it depends on and what depends on it.
 - A unit whose definition needs "and", that reaches into a neighbour's internals, or that adds a dependency
-  cycle or an upward dependency fails this check. The [Modularization](../principles.md#modularization) lines
-  are the bar.
+  cycle or an upward dependency fails this check. The bar is the fields of a
+  [unit definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads them
+  for code.
 
 #### Abstraction follows commonality and variability
 
@@ -112,4 +113,5 @@ what the run showed.
 |---|---|
 | [Review](../../review/SKILL.md) | Owns the review procedure, stage bars, blocking rule, report, and verdict. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of a unit definition that the Structure checks test. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | Defaults for classes, interfaces, public APIs, SOLID, and design patterns. |

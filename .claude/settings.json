@@ -42,6 +42,7 @@
       "Skill(gobbi:preference-skill)",
       "Skill(gobbi:tool-skill)",
       "Skill(gobbi:memory)",
+      "Skill(gobbi:ontology)",
       "Skill(gobbi:principles)",
       "Skill(gobbi:review)",
       "Skill(gobbi:socratic-method)",

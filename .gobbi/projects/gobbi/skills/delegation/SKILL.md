@@ -101,6 +101,9 @@ handoff must carry the evidence you need to accept the result.
   list, or both, whatever states it most clearly.
 - Say what separates a strong result from one that only meets the minimum. This raises the bar and never adds
   scope.
+- Pass the user's request as intent, not as fixed wording: mark what the user decided apart from the terms and
+  examples they used, and ask the agent to report a better design that conflicts with the request, with its
+  evidence, because a quoted word otherwise becomes a constraint no one chose.
 
 #### Sort each line before you write it
 
@@ -151,9 +154,27 @@ handoff must carry the evidence you need to accept the result.
 #### Give the result and its evidence
 
 - Give the result itself, or its exact path or revision. Do not copy a saved result into the handoff.
-- List each check that was run and its result, and each check that was not run and why.
+- List each check that was run with its outcome, **passed**, **failed**, or **inconclusive**, and each check
+  that was not run and why.
 - List the choices and assumptions made, including any departure from Taste and Preference, then the concerns
   and any extras noticed but not done.
+
+#### Mark what a check could not show
+
+- Call a check inconclusive when it did not exercise what the Goal names, measured a stand-in for it, or could
+  not tell success from failure. An inconclusive check shows nothing about the Goal.
+- Treat a measured difference, such as a speedup, as inconclusive unless both sides did the same correct work
+  under the same settings, repeated alternating runs differ by more than their spread, and the gain is no
+  larger than the time the changed part took. Report the number with its run count and spread.
+
+#### Give a study result its sources and limits
+
+- When the result is an answer rather than a change, return it as Finding, Sources, and Limits, so the caller
+  can judge how far each claim holds.
+- In Finding, mark each claim **stated**, with the source that states it, or **inferred**, with the reasoning.
+  What a thing does is not evidence of why it was made.
+- In Sources, list what was read and each search run. In Limits, list searches that found nothing, sources that
+  could not be reached, and contradictions.
 
 #### Say what is needed to resume
 

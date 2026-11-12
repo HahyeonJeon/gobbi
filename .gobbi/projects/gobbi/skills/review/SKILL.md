@@ -22,10 +22,11 @@ on, because an author checks what it meant to build, not what it built.
 One fresh reviewer covers most work. A second reviewer from another model family pays off only where a missed
 defect is expensive, so add it by risk, not by habit.
 
-### Block only what this change broke
+### Block only what this change broke or left unshown
 
 A reviewer asked to find problems always finds some, and fixing all of them adds loops and abstraction. Only a
-shown defect this change introduced holds the work back; everything else is a follow-up.
+shown defect this change introduced, or missing evidence that the Goal is met, holds the work back; everything
+else is a follow-up.
 
 ## Rules
 
@@ -33,8 +34,9 @@ shown defect this change introduced holds the work back; everything else is a fo
   judges, can no longer tell the caller what was delivered.
 - **Give every finding its evidence.** Use a `path:line` quote, a step-by-step scenario that reaches a wrong
   outcome, or a command and its output; a finding with none of these is an opinion and never blocks.
-- **Block only a defect this change introduced that breaks the Goal or the contract.** Taste, pre-existing
-  problems, and improvements go to follow-ups, so review does not grow the scope.
+- **Block only a defect this change introduced that breaks the Goal or the contract, or a part of the Goal that
+  no passed check shows, because an inconclusive or unrun check is no evidence.** Taste, pre-existing problems,
+  and improvements go to follow-ups, so review does not grow the scope.
 - **Stop after two fix rounds that still fail.** The premise is likely wrong, so rethink it or ask the user
   instead of a third round.
 
@@ -87,10 +89,19 @@ results.
   and record each dropped or follow-up item with a one-line reason.
 - Record PASS when nothing blocks, REVISE with the blocking findings when a safe fix exists, or FAIL when none
   does. Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) to each fix.
-- When a kind of finding appears a second time, propose a project check that catches it, such as a test or a
-  lint, so the next review does not have to.
+- When a finding repeats a recorded mistake or an earlier finding, apply Step 3.2.
 
-#### 3.2 Run a fix round
+#### 3.2 Turn a repeated mistake into a check
+
+- Cite two distinct occurrences of the same failure, then choose the smallest change that prevents or detects
+  both: remove the failure path first, otherwise a tool limit, type, lint, or test. A lesson that needs
+  judgment and cannot be enforced stays in its entry, with the reason.
+- When the change fits the accepted Goal and authority, apply the finding gate and send it to the caller's
+  writer with the past failing case and the corrected case. Otherwise add it to the project backlog.
+- Accept the check only after fresh review shows it rejects the past mistake, accepts the correction, and runs
+  on the path future work takes. Closure then removes the mistake entry.
+
+#### 3.3 Run a fix round
 
 - Send the blocking findings to the writer the caller names for the fix. Re-review only the fixes and the lines
   they touched, with one reviewer who confirms each blocking finding is resolved.
@@ -102,7 +113,7 @@ results.
 |---|---|
 | Ideation | The goal, decisions, boundaries, and constraints are clear, and every user-owned choice was asked and recorded. Not implementation detail or polish. |
 | Planning | The tasks cover the whole work without overlap, each Goal can be judged, every constraint has a source, and the Task Graph has no cycle. Not implementation steps. |
-| Execution | The Goal is met and shown by the checks, nothing the change reaches is left stale, and the change adds nothing unasked. |
+| Execution | The Goal is met and shown by checks that **passed**, nothing the change reaches is left stale, and the change adds nothing unasked. |
 
 ## References
 
@@ -112,6 +123,7 @@ results.
 | [Coding Review](../coding/coding-review/SKILL.md) | The domain bar for code and code design. |
 | [Authoring Review](../authoring/authoring-review/SKILL.md) | The domain bar for docs, skills, and other durable prose. |
 | [Design Review](../design/design-review/SKILL.md) | The domain bar for visual work. |
-| [Delegation](../delegation/SKILL.md) | Defines each reviewer's brief and handoff. |
+| [Delegation](../delegation/SKILL.md) | Defines each reviewer's brief and handoff, and the check outcomes passed, failed, and inconclusive. |
+| [Memory](../memory/SKILL.md) | Holds the recorded mistakes that Step 3.2 turns into checks. |
 | [Partner](../partner/SKILL.md) | Runs the second reviewer from another model family. |
 | [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns the finding gate that decides which fixes run without the user. |

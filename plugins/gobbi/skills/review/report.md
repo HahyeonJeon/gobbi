@@ -17,7 +17,7 @@
 
 ## Checked
 
-- {What was checked or rerun, and the result.}
+- {What was checked or rerun, and its outcome: passed, failed, or inconclusive and why.}
 
 ## Not checked
 

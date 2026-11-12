@@ -165,6 +165,14 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
   stale, and split it when each domain needs its own result. When the role's agent is unavailable, stop and
   tell the user instead of substituting another agent.
 
+#### 2.6 Pass recorded lessons into each brief
+
+- Before the first brief of a Goal, scan the `##` headings of the project's `memory/learnings/*/*.md` and check
+  each matching entry against its current owner, because a lesson can describe superseded work.
+- Copy each matching mistake's Correction into Constraints and each matching tip into Context, citing its path
+  and heading.
+- Follow the entries that match your own actions.
+
 ## References
 
 | Name | Description |

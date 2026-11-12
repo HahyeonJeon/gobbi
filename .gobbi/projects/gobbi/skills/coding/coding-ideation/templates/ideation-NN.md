@@ -26,9 +26,9 @@ definition. Name no directory, file, class, or function.}
 
 ### Class and Function Design
 
-{The new or changed public classes and functions, with their caller contracts. When a decision turns on a
-unit's boundary, give its Modularization lines from Coding Principles. For each added pattern, interface, or
-base class, name the present force it answers and the simpler form it replaces.}
+{The new or changed public classes and functions, each with its unit definition from the Ontology skill, read
+for code as Modularization in Coding Principles states, and its caller contract. For each added pattern,
+interface, or base class, name the present force it answers and the simpler form it replaces.}
 
 ### Codebase Structure
 
@@ -39,4 +39,4 @@ base class, name the present force it answers and the simpler form it replaces.}
     {file}
 ```
 
-{The new or changed directories and files with one-way `→ uses` arrows, and what each one holds.}
+{The new or changed directories and files with one-way `→ uses` arrows, each with its unit definition.}

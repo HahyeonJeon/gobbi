@@ -83,14 +83,13 @@ writing:
 
 - Simplicity holds the inline test and the current-caller test, so it decides whether a unit exists. As soft
   guidance, a class with one method and no state is usually better as a function.
-- Modularization is the code form of the [Ontology](../../../skills/ontology/SKILL.md) facets and kinds. Before
-  a new directory, file, public class, or public function, it writes five facet lines: conceptual definition,
-  responsibility, boundary, relationship, and properties. A public class or function also gets a caller
-  contract, coding's name for the Ontology Function and Action type fields. These are the unit's Modularization
-  lines. They go in the design record: the Ideation design, or the Execution handoff when there was no Ideation.
-  Source code does not carry them as comments. Its directory and file limits are defaults; an existing project
-  or framework layout wins. A directory exists only when its files share one conceptual definition,
-  responsibility, and boundary; that may be a domain concept or a layer.
+- Modularization is the code form of the [Ontology](../../../skills/ontology/SKILL.md) unit definition. Each
+  directory, file, public class, and public function can state the six fields, read for code (the responsibility is
+  the unit's secret), and a public class or function also has a caller contract. A private helper needs only a good
+  name. These are the unit's Modularization lines. They go in the design record: the Ideation design, or the
+  Execution handoff when there was no Ideation. Source code does not carry them as comments. Its directory and file
+  limits are defaults; an existing project or framework layout wins. A directory exists only when its files share
+  one conceptual definition, responsibility, and boundary; that may be a domain concept or a layer.
 - Naming owns vocabulary, names in context, and file and directory names. Name length is set by checks and a
   one-word file default, not by a hard word limit. Readability keeps types and flat control flow and points to
   Naming.
@@ -105,13 +104,13 @@ OOP child link it directly. Learning curve has no separate entry, because Intuit
 ## Object-oriented design
 
 [Coding Object-Oriented Programming](../../../skills/coding/coding-object-oriented-programming/SKILL.md) is the
-direct `preference` child that owns object-oriented design guidance for the family. The root routes to it like
-any other child. Its `SKILL.md` holds the defaults and a selection index that maps what the code shows to a
-check and an entry. The defaults start from no pattern and keep the learning depth of every public API at 2 or
-less, counted as Intuitive Public API defines. An added interface, base class, or pattern states its present
-force and the simpler form it replaces in the design record, not in source comments. Two defaults are soft guidance,
-not strict tests: an interface with one implementation is usually not worth its cost, and for one operation a
-`Callable` is usually simpler than a one-method interface. Three supporting docs hold the entries:
+direct `preference` child that owns object-oriented design guidance for the family. The root routes to it like any
+other child. Its `SKILL.md` holds the defaults and a selection index that maps what the code shows to a check and
+an entry. The defaults start from no pattern and keep the learning depth of every public API at 2 or less, counted
+as Intuitive Public API defines. An added interface, base class, or pattern states its present force and the
+simpler form it replaces in the design record, not in source comments. Two defaults are soft guidance, not strict
+tests: an interface with one implementation is usually not worth its cost, and for one operation a `Callable` is
+usually simpler than a one-method interface. Three supporting docs hold the entries:
 
 | File | Entries |
 |---|---|
@@ -125,32 +124,29 @@ pattern lives in the problem-sign table of the child `SKILL.md`, whose "Check fi
 form. Composition over inheritance, cohesion and coupling, Tell-Don't-Ask, the Law of Demeter, and
 Value Object have no separate entry. Examples are short, typed Python 3.12.
 
-Coding Ideation studies the child `SKILL.md`, Coding Principles, and Ontology, then opens only the supporting
-docs a choice needs. It designs three levels in order: Conceptual Definition, then Class and Function Design,
-then Codebase Structure. Conceptual Definition states what will be implemented and its vocabulary, gives each
-domain concept its Ontology kind, and names its unit id in the design. Class and Function Design
-gives each new or changed public class and public function its Modularization lines, including its caller
-contract. Codebase Structure places each new or changed directory and file with its five facet lines, chosen
-with Modularization and Naming. No pattern is the default; an added pattern records its force and the simpler
-form it replaces. The user sees a tree of the three levels, a schema of the public classes and functions, and a
-diagram of the directories and files. Unconfirmed work stays in the caller-named draft location, and Coding
-Ideation stops if the caller names none. Cowork and Workflow each name one under `{session-root}/tmp/`. The
-user's recorded answer resumes the work at Step 1.1. After confirmation, each decision lives only in its Design
-heading, and the Discussion topic links to that heading. The templates and the result are flat, with every file
-directly in the output root, and there is no Requirements snapshot.
+Coding Ideation studies the codebase and opens the child `SKILL.md` or Coding Principles only when a choice turns
+on them. It designs three levels in order: Conceptual Definition, then Class and Function Design, then Codebase
+Structure. Conceptual Definition states what will be implemented and its vocabulary, with one preferred name and a
+one-sentence definition per term. Class and Function Design gives each new or changed public class and public
+function its unit definition and caller contract. Codebase Structure places each new or changed directory and file,
+chosen with Modularization and Naming. No pattern is the default; an added pattern records its force and the
+simpler form it replaces. The user sees a tree of the three levels, a schema of the public classes and functions,
+and a diagram of the directories and files. Unconfirmed work stays in the caller-named draft location, and Coding
+Ideation stops if the caller names none. Cowork and Workflow each name one under `{session-root}/tmp/`. The user's
+recorded answer resumes the work at Step 1.1. After confirmation, each decision lives only in its Design heading,
+and the Discussion topic links to that heading. The templates and the result are flat, with every file directly in
+the output root, and there is no Requirements snapshot.
 
-Coding Execution applies Simplicity first, then the other Coding Principles, while it writes and simplifies
-code. It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance. With
-an Ideation design, it builds each class and function to the Class and Function Design and its caller contract,
-reads only the entries that design names, and adds no pattern the design does not name. With no Ideation, it
-designs each unit it creates with the principles and records the Modularization lines and any added
-abstraction's force in its handoff. When a built unit adds or changes a domain unit, it names the unit id in
-the handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a
-handoff concern.
+Coding Execution applies Simplicity first, then the other Coding Principles, while it writes and simplifies code.
+It loads the child `SKILL.md` when the change creates or changes classes, interfaces, or inheritance. With an
+Ideation design, it builds each class and function to the Class and Function Design and its caller contract, reads
+only the entries that design names, and adds no pattern the design does not name. With no Ideation, it designs each
+unit it creates with the principles and records the Modularization lines and any added abstraction's force in its
+handoff. It keeps accepted-design mechanism that fails the Simplicity tests and records it as a handoff concern.
 
-Coding Review loads the session README and `memory/ontology/`, then Coding Principles with
-Ontology, before its critique. It loads the child `SKILL.md` when the target defines or changes classes,
-interfaces, or inheritance. Coding Principles and the OOP child are the quality bar for that critique.
+Coding Review is the domain bar inside the shared Review skill. Its Structure checks test each added or changed
+unit against the Ontology unit definition as Modularization reads it, and Coding Principles and the OOP child
+are the quality bar for the critique.
 
 ## Writing preferences
 
@@ -161,8 +157,8 @@ The user set these preferences for later edits to Coding Principles and the OOP 
   user asks.
 - Prefer soft guidance, such as a short default or an example, over a new strict (MUST) rule. Add a binding
   rule only for a failure the user names. Remove conflicting strict wording instead of adding stricter wording.
-- Use the user's own design terms: conceptual definition, responsibility, boundary, and relationship. The
-  Ontology skill adds properties as the fifth facet. Name a principle with an established term that Coding
+- Use the user's own design terms, which the Ontology skill now holds as six fields: definition, responsibility,
+  boundary, relations, dependencies, and properties. Name a principle with an established term that Coding
   Principles already uses, such as Modularization, instead of coining a new heading.
 
 ## Public ownership and migration
@@ -179,7 +175,7 @@ released changelog entries retain their point-in-time names and facts.
 
 - [Authoring skill family](authoring-skill-family.md) and [Design skill family](design-skill-family.md)
   use the same navigation-only shape with four direct operation children. Coding adds one preference child.
-- [Ontology skill](ontology-skill.md) records the facets and kinds that Modularization applies to code.
+- [Ontology skill](ontology-skill.md) records the unit definition that Modularization applies to code.
 - [Review](../process/evaluation.md) records live Review facts and that Generic Evaluation is gone.
 - [Identity-and-load role contracts](../process/identity-and-load-role-contracts.md) records domain
   discovery and matching-child loads.

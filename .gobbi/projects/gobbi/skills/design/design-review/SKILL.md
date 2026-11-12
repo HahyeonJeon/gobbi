@@ -73,7 +73,8 @@ sizes and in the states a viewer will meet.
 - For each screen, region, and component the change adds or changes, state its role in one sentence, the
   content, state, and interaction it owns, where it ends, and what it contains, triggers, or depends on.
 - A component that does two jobs, regions whose responsibilities overlap, or a dependency on another
-  component's internals fails this check.
+  component's internals fails this check. The fields of a [unit definition](../../ontology/SKILL.md) are
+  the bar.
 
 #### Shared parts are reused and variants are deliberate
 
@@ -99,3 +100,4 @@ sizes and in the states a viewer will meet.
 | Name | Description |
 |---|---|
 | [Review](../../review/SKILL.md) | Owns the review procedure, stage bars, blocking rule, report, and verdict. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of a unit definition that the Structure checks test. |

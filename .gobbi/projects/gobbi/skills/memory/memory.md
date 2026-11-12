@@ -19,7 +19,7 @@ report in place except to correct a factual error. Session files under `sessions
 
 | Path | Definition | Naming | Writing |
 |---|---|---|---|
-| `learnings/` | Reusable tips and repeatable mistakes. | `learnings/<domain>/tips.md` and `learnings/<domain>/mistakes.md` | Record a tip when it will change a future decision. Record a mistake when the failure can recur. Skip trivia and one-off incidents. Update or merge instead of copying across domains. |
+| `learnings/` | Reusable tips and repeatable mistakes. | `learnings/<domain>/tips.md` and `learnings/<domain>/mistakes.md` | Record a tip when it will change a future decision. Record a mistake when the failure can recur. Skip trivia and one-off incidents. Update or merge instead of copying across domains. Title each entry with the situation a future task would match, because briefs select entries by heading alone. Remove a mistake once a check, tool limit, structural change, or skill Rule holds its lesson. |
 | `learnings/design/` | Shaping architecture, features, interfaces, and experiences. | `tips.md`, `mistakes.md` | One second-level heading per learning. |
 | `learnings/authoring/` | Durable prose: docs, skills, changelog, structure, claims, and voice. | `tips.md`, `mistakes.md` | One second-level heading per learning. |
 | `learnings/work/` | Planning, collaboration, execution, study, review, release, and maintenance. | `tips.md`, `mistakes.md` | One second-level heading per learning. |
@@ -27,7 +27,7 @@ report in place except to correct a factual error. Session files under `sessions
 | `learnings/dev/` | Technology-independent implementation, testing, debugging, security, performance, and tooling. | `tips.md`, `mistakes.md` | One second-level heading per learning. |
 | `learnings/<domain>/` | Knowledge that depends on one other stable subject, such as Python, TypeScript, web, CLI, or Git. | Directory name is the subject. | Add a domain only when future work will search it directly. Do not add `general/`, `misc/`, or `other/`. |
 | `learnings/<domain>/tips.md` | Reusable facts, techniques, constraints, patterns, and counter-cases. | `tips.md` | Use `Context` and `Tip`. Add `Application` when future use is not already clear. |
-| `learnings/<domain>/mistakes.md` | Repeatable failure patterns. | `mistakes.md` | Use `Context`, `Mistake`, and `Correction`. |
+| `learnings/<domain>/mistakes.md` | Repeatable failure patterns. | `mistakes.md` | Use `Context`, `Mistake`, `Correction`, and **`Seen`**: one date and the commit or report that shows each occurrence. A second occurrence goes to [Review](../review/SKILL.md#32-turn-a-repeated-mistake-into-a-check). |
 
 ## reports/
 

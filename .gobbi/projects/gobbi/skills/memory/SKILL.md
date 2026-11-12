@@ -67,6 +67,9 @@ the note links to the homes it changed, and the `reports/` and `history/` indexe
   standing preferences into their homes under `design/`, `learnings/`, and `backlogs/`.
 - Exclude talk, transcripts, rejected options, one-session instructions, Git action states, recovery commands,
   and secrets.
+- Add a `Seen` occurrence to an existing mistake instead of a second entry, and remove each mistake that an
+  accepted Review Step 3.2 check now holds. Closure records these; it does not build a check or reopen accepted
+  work.
 
 #### 2.2 Write the closure accounts
 

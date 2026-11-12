@@ -78,8 +78,8 @@ The user locked these layout decisions in the 2026-08-01 fix and the later stand
   `.claude/.env`. `tmp/` was dropped entirely rather than ignored, because `scripts/check-codex-plugin-smoke.sh`
   was found to actively create it — one dual-system proposer called the path dead and the other showed it
   live; the smoke script now uses an OS temp directory instead.
-- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/ontology/` and
-  `memory/ontology/README.md`, `memory/design/roadmap`, and `memory/materials/{references,assets,docs,data}`
+- **This Gobbi authoring repository is expected to FAIL the checker** on `memory/design/roadmap` and
+  `memory/materials/{references,assets,docs,data}`
   until the user runs setup scripts here. Do not create those paths.
 
 ## Bootstrap ordering

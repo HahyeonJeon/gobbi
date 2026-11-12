@@ -22,11 +22,12 @@
 
 ## Units
 
-| Unit | Definition | Responsibility | Boundary | Uses | Used by | Data owned | Mark |
-|---|---|---|---|---|---|---|---|
-| {path or name} | {one sentence, no "and"} | {what only it changes} | {what it hides} | {units} | {units} | {data, or none} | {each mark from Step 2.1, or none} |
+| Unit | Definition | Responsibility | Boundary | Relations | Dependencies | Properties | Caller contract | Mark |
+|---|---|---|---|---|---|---|---|---|
+| {path or name} | {the kind of thing it is and what sets it apart from its siblings, in one sentence with no "and"} | {its secret: what only it decides or does} | {what it includes and hides, and what it leaves to other units} | {the units it uses and the units that use it} | {what it needs, and what breaks if that fails, changes, or goes away} | {the data it owns, or none} | {for a public class or function, what a caller must know; otherwise none} | {each mark from Step 2.1, or none} |
 
-{Map every public unit within the chosen depths, and a private unit only when a tool or a read marks it.}
+{Map every public unit within the chosen depths, and a private unit only when a tool or a read marks it. The
+first six fields are the unit definition the Ontology skill defines; the caller contract is code's own field.}
 
 ## Copies and Abstractions
 

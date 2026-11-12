@@ -104,8 +104,9 @@ fidelity the decision needs.
   form it replaces, as
   [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) asks.
 - Remove each unit that fails the [Simplicity](../principles.md#simplicity) tests and each parameter or option
-  with no current caller. Give a unit its [Modularization](../principles.md#modularization) lines when the
-  decision turns on its boundary or contract.
+  with no current caller. Give each unit the design creates or changes its
+  [unit definition](../../ontology/SKILL.md), as [Modularization](../principles.md#modularization) reads it for
+  code.
 
 ### Phase 4 — Confirm and Record
 
@@ -143,4 +144,5 @@ and its locator is returned.
 | [Discussion part](templates/discussion-NN.md) | Template for topics, options, and study. |
 | [`coding-object-oriented-programming`](../coding-object-oriented-programming/SKILL.md) | OOP defaults and entries, loaded when a design choice turns on classes, interfaces, or patterns. |
 | [Coding Principles](../principles.md) | Simplicity, modularization, reusability, readability, naming, and intuitive public API, loaded when a choice turns on them. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of the unit definition each designed unit gets. |
 | [Coding](../SKILL.md) | Routes unresolved material code-design work to this operation. |

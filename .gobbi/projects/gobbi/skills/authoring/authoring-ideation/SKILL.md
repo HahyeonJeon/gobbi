@@ -74,8 +74,9 @@ Done when a cold reader can plan and execute from the result without asking, and
 
 #### 3.1 Write and return the result
 
-- Write the Design headings that apply and omit the rest. Link a decision inherited from earlier work instead
-  of restating it.
+- Write the Design headings that apply and omit the rest, and link a decision inherited from earlier work
+  instead of restating it. Give each document or section the design creates or changes its
+  [unit definition](../../ontology/SKILL.md).
 - Write `ideation-index.md` from the [index template](templates/ideation-index.md). Keep the whole result in it
   unless its size demands parts, and then list every part from it.
 - Read the result once as a cold reader, fix what fails, and return the `ideation-index.md` locator and a short
@@ -89,4 +90,5 @@ Done when a cold reader can plan and execute from the result without asking, and
 | [Authoring Ideation part](templates/ideation-NN.md) | Template for the requirements and the four writing-design headings. |
 | [Discussion index](templates/discussion-index.md) | Template for listing discussion parts when the Discussion is split. |
 | [Discussion part](templates/discussion-NN.md) | Template for topics, options, and study. |
+| [Ontology](../../ontology/SKILL.md) | The six fields of the unit definition each designed unit gets. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |
