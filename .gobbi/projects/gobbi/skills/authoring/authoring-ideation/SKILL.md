@@ -65,6 +65,9 @@ Done when every material choice has a user decision, a deferral, or a scope excl
 - For each user-owned choice, return the question, the options recommended first with Pros and Cons, and what
   would change the recommendation, then stop work that depends on it. The option order is the user's standing
   preference.
+- Offer the medium as a structure choice when a figure could do a reader's job better than prose: prose, or
+  a figure-led document. Record each figure with the claim it carries, and leave its visual design and
+  making to the [Design](../../design/SKILL.md) skills.
 - Record each decision under its Design heading, and reopen the earliest affected decision when new evidence
   changes it.
 
@@ -92,3 +95,4 @@ Done when a cold reader can plan and execute from the result without asking, and
 | [Discussion part](templates/discussion-NN.md) | Template for topics, options, and study. |
 | [Ontology](../../ontology/SKILL.md) | The six fields of the Ontology unit definition each designed Ontology unit gets. |
 | [Authoring](../SKILL.md) | Routes unresolved material writing-design work to this operation. |
+| [Design](../../design/SKILL.md) | Routes the visual design and making of each figure a figure-led document names. |

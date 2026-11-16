@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `skills/gobbi/scripts/entry.py` does the entry checks in one read-only call. It validates the root pair and
   prints it with the project key, the repository instructions, the project rules, and every session.
 - The Cowork and Workflow configuration templates record the user's `Language`.
+- Design Review checks that every element has a job and that motion keeps the viewer oriented.
+- Design Ideation studies reference works and how practitioners make that kind of work when the direction is
+  open.
+- Authoring Ideation offers a figure-led document as a medium, with its figures designed and made by Design.
 
 ### Changed
 
