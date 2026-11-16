@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.4.1 - 2026-11-16
+
+**Upgrade:** Version 1.4.1 has breaking changes and keeps a patch version. By the user's explicit decision this is
+an exception to Semantic Versioning, as 1.3.3 and 1.4.0 were. The breaking changes are review at the plan's review
+points instead of after every task, and the entry script. A plan written before 1.4.1 has no `## Review Points`
+section, and Workflow returns it to Planning; before you continue a session that is in progress, add the section
+to its plan, with one point for small work, two or three for large work, and every task under exactly one point.
+Cowork now commits accepted work locally when a review point passes, without waiting for `commit`. Gobbi entry
+runs `skills/gobbi/scripts/entry.py`, which only reads; it needs Python 3.9 or later and Git 2.31 or later on
+the path, and your runtime may ask once for permission to run it.
+
 ### Added
 
 - The Gobbi entry skill now gives the main agent the manager's duties: it answers to the user for the outcome,

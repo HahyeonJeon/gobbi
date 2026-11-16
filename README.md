@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.0-blue" alt="Version 1.4.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.1-blue" alt="Version 1.4.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -136,7 +136,23 @@ Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does n
 - Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
 - Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
 
-## Upgrade to 1.4.0
+## Upgrade to 1.4.1
+
+Version 1.4.1 has breaking changes and keeps a patch version. By the user's explicit decision this is an
+exception to Semantic Versioning, as 1.3.3 and 1.4.0 were. The breaking changes are review at the plan's review
+points instead of after every task, and the entry script.
+
+- A plan written before 1.4.1 has no `## Review Points` section, and Workflow returns it to Planning. Before you
+  continue a session that is in progress, add the section to its plan: one point for small work and two or three
+  for large work, with every task under exactly one point.
+- Workflow no longer reviews each Execution task. A task between points is accepted on its own passed checks,
+  and the record of each review point lives in `3-execution/review-NN/`.
+- Cowork commits accepted work locally when a review point passes, without waiting for `commit`. Merge, push,
+  and closure still need your call.
+- Gobbi entry now runs `skills/gobbi/scripts/entry.py`, which only reads. It needs Python 3.9 or later and Git
+  2.31 or later on the path, and your runtime may ask once for permission to run it.
+
+### From 1.3.3 or earlier
 
 Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is an
 exception to Semantic Versioning, as 1.3.3 was. The breaking changes are the removed skills, the five phase
