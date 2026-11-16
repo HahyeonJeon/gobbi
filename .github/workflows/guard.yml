@@ -41,3 +41,5 @@ jobs:
         run: python3 .gobbi/projects/gobbi/skills/gobbi-skill/scripts/check_skills.py
       - name: Skill check tests
         run: python3 -m unittest discover -s tests/skill_checks -t .
+      - name: Entry script tests
+        run: python3 -m unittest discover -s tests/entry -t .

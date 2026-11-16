@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.4.1 - 2026-11-16
+
+**Upgrade:** Version 1.4.1 has breaking changes and keeps a patch version. By the user's explicit decision this is
+an exception to Semantic Versioning, as 1.3.3 and 1.4.0 were. The breaking changes are review at the plan's review
+points instead of after every task, and the entry script. A plan written before 1.4.1 has no `## Review Points`
+section, and Workflow returns it to Planning; before you continue a session that is in progress, add the section
+to its plan, with one point for small work, two or three for large work, and every task under exactly one point.
+Cowork now commits accepted work locally when a review point passes, without waiting for `commit`. Gobbi entry
+runs `skills/gobbi/scripts/entry.py`, which only reads; it needs Python 3.9 or later and Git 2.31 or later on
+the path, and your runtime may ask once for permission to run it.
+
+### Added
+
+- The Gobbi entry skill now gives the main agent the manager's duties: it answers to the user for the outcome,
+  spends agents and reviews in proportion to risk, keeps the user's standing instructions in the session
+  `README.md`, and reports at every review point.
+- `skills/gobbi/scripts/entry.py` does the entry checks in one read-only call. It validates the root pair and
+  prints it with the project key, the repository instructions, the project rules, and every session.
+- The Cowork and Workflow configuration templates record the user's `Language`.
+- Design Review checks that every element has a job and that motion keeps the viewer oriented.
+- Design Ideation studies reference works and how practitioners make that kind of work when the direction is
+  open.
+- Authoring Ideation offers a figure-led document as a medium, with its figures designed and made by Design.
+
+### Changed
+
+- A specialist no longer re-checks the root pair it receives; it reports an unreadable path as Blocked.
+- Review now runs at review points that the plan names, instead of after every Execution task: one point for
+  small work and two or three for large work. Coding, Design, and Authoring Planning place the points and the
+  plan template lists them under `## Review Points`.
+- Workflow accepts a task between points on its own passed checks and completes Phase 2 when every review
+  point has passed. Review-point records live in `3-execution/review-NN/`.
+- Cowork reviews at the plan's review points and commits accepted work locally when a point passes, without
+  waiting for `commit`. The user's `review` and `commit` calls still work, and closure still needs `wrap up`.
+- A point's blocking findings go to their writers as one fix pass, and the reviewer confirms each fix against
+  its finding. The finding gate no longer asks for a fresh review after every correction.
+
 ## 1.4.0 - 2026-11-12
 
 **Upgrade:** Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is

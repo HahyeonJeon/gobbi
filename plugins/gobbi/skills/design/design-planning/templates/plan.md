@@ -18,6 +18,15 @@ flowchart LR
 {One edge `A --> B` for each task B that uses task A's result. Show every task in this plan as a node, and
 keep a task from another plan document under its own ID. Tasks with no path between them may run in parallel.}
 
+## Review Points
+
+| Point | Covers | Why here |
+|---|---|---|
+| `review-NN` | {the task IDs delivered since the previous point} | {the later tasks that build on these, or the end of the work} |
+
+{List the points that follow this plan's tasks. Write `None` and name the covering point when a point in
+another plan document covers these tasks.}
+
 ## Tasks
 
 ### `task-NN-slug` — {Task title}

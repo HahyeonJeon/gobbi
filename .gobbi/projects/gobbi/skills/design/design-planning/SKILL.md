@@ -38,6 +38,8 @@ adds the Role, Materials, and Return when it builds the brief.
   source next to the number, because quality beyond the Goal is judged in Review.
 - **Leave implementation steps, file-by-file edits, and test lists out of the plan.** The designer chooses the
   method, and an open design choice goes back to the caller instead of being decided in the plan.
+- **Name one review point for small work and two or three for large work.** Independent review after every
+  task costs more than it finds, so a task between points is accepted on its own passed checks.
 
 ## Procedure
 
@@ -55,7 +57,7 @@ or evidence against the accepted design has gone back to the caller.
 
 ### Phase 2 — Write the Plan
 
-Turn the work into goal-based tasks. Done when every plan document passes the Step 2.3 checks and their paths
+Turn the work into goal-based tasks. Done when every plan document passes the Step 2.4 checks and their paths
 and task IDs are returned.
 
 #### 2.1 Choose the plan documents
@@ -71,12 +73,23 @@ and task IDs are returned.
 - Write each task from the template, then draw the Task Graph: an edge `A --> B` for each task B that uses task
   A's result, with every task as a node, so the manager can tell what may run in parallel.
 
-#### 2.3 Check and return the plan
+#### 2.3 Place the review points
+
+- Give the work one review point at its end, where a reviewer judges the integrated result. Small work, with
+  one major goal and no task that two or more tasks build on, has only this one.
+- Give large work two or three. Add a point after the tasks that two or more later tasks build on, so a
+  defect there is found before it spreads, then one at the end of each earlier major goal until there are
+  three; the last point covers the rest.
+- Number each point `review-NN` once across all plan documents, and list it in the document whose tasks it
+  follows with the task IDs it covers, so every task falls under exactly one point.
+
+#### 2.4 Check and return the plan
 
 - Reread every plan document. Check that the tasks cover the whole work without overlap, that each Goal can be
-  judged without asking the planner, that the Task Graph shows every task and has no cycle, and that every
-  constraint, taste, and number has its source.
-- Fix what fails, then return the path of every plan document and its task IDs.
+  judged without asking the planner, that the Task Graph shows every task and has no cycle, that every
+  constraint, taste, and number has its source, that every task falls under exactly one review point, and
+  that small work has one point and large work two or three.
+- Fix what fails, then return the path of every plan document, its task IDs, and the review points.
 
 ## References
 

@@ -21,26 +21,26 @@ Four steps, run once at the Gobbi entry:
 1. **Acquire.** Take the base directory the active entrypoint reports when it loads the skill. No environment
    variable, config file, or filesystem search is needed, and **none exists to supply one** — confirmed on
    both runtimes, see Measured facts below.
-2. **Derive two candidates, not one.** The reported path may name the skill's own directory (Claude Code) or
-   the skills root directly (Codex CLI and Grok) — the runtimes disagree on shape. Build one candidate for
-   each shape and let the sentinels decide which is real: "never decide which from its spelling."
-3. **Validate.** All three sentinels must exist and be readable, in order:
-   `{gobbi-skills-root}/gobbi/SKILL.md`, `{gobbi-skills-root}/principles/SKILL.md`,
-   `{gobbi-agents-root}/manager.md` — `{gobbi-agents-root}` is the `agents/` sibling of `{gobbi-skills-root}`.
-   Exactly one candidate passes in every real topology (see the trace table below); the ambiguity stop never
-   fires spuriously.
-4. **Fail loudly on five conditions**, not silently: sentinel failure, an ambiguous pair (both candidates
-   pass), a partial pair (a supplied root without its counterpart), a re-derived pair diverging from the one
-   already recorded this session, and a not-absolute or unreadable root. The entry writes nothing, so it
-   cannot propagate a corrected root once one is wrong — a diverged pair must stop and report both.
+2. **Run the entry script.** The reported path may name the skill's own directory (Claude Code) or the skills
+   root directly (Codex CLI and Grok), so the script is `scripts/entry.py` under the first or
+   `gobbi/scripts/entry.py` under the second. The script takes the pair from its own location, so no candidate
+   has to be chosen.
+3. **Validate.** The script requires all three sentinels: `{gobbi-skills-root}/gobbi/SKILL.md`,
+   `{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md` or
+   `{gobbi-agents-root}/claude/manager.md` — `{gobbi-agents-root}` is the `agents/` sibling of
+   `{gobbi-skills-root}`.
+4. **Fail loudly, not silently.** The script exits 2 with a `blocked:` reason on a sentinel failure, a missing
+   manager role, or an invalid project key, and the manager stops when the printed pair diverges from the one
+   already recorded this session. The entry writes nothing, so it cannot propagate a corrected root once one is
+   wrong — a diverged pair must stop and report both.
 
 **Divergence rule.** The resolved pair is fixed for the whole session — "one session runs against exactly one
 pair" — re-derived at every entry and compared against the recorded pair.
 
 **Root-pair invariant:** the two roots are one pair, never one value. Gobbi owns both manager entry resolution
 (Step 1.1) and the specialist protocol (Step 1.2): a brief supplies both roots as absolute expanded paths or
-neither, a specialist checks the pair it holds against the three sentinels before resolving any path from it,
-and a missing, relative, or unresolvable root is reported as Blocked with the observed value. The earlier
+neither, a specialist does not validate the pair again, and a root or Materials path it cannot read is
+reported as Blocked with the observed value. The earlier
 Delegation-owned tokens (`partial-pair`, `not-an-absolute-path`, `absent-or-unreadable`, `location-underivable`)
 and `NO_GOBBI_ROOT` are removed with Delegation's Metadata section. Role contracts are
 [identity-and-load maps](../process/identity-and-load-role-contracts.md) and do not restate the protocol. A

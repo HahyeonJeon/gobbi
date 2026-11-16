@@ -68,6 +68,9 @@ and, for structure and direction, by the images the user compared.
 - Study the closest internal surfaces and design system first, and external prior art only when it can change
   an in-scope choice. Cite reference images by link, and copy one into the result only when the project may
   keep it.
+- When no internal surface or accepted design settles the direction, collect reference works of the same kind
+  and study how practitioners make that kind of work, including its structure and craft rules, before drawing
+  options. Options drawn without references repeat the agent's own defaults.
 - Record each study once from the [discussion part template](templates/discussion-NN.md), and cite its ID from
   the topics it informs.
 

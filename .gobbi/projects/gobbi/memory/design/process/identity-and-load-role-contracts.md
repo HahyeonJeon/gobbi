@@ -43,7 +43,7 @@ role owns); `## In scope` (CRUD and the role's subjects); `## Out of scope` (the
 backstory or method lines, no status-token vocabulary, and no `NO_GOBBI_ROOT` protocol.
 
 The manager reads the manager contract through [Gobbi](../../../skills/gobbi/SKILL.md). A specialist receives
-the root pair in its brief and checks it against the sentinels that Gobbi Step 1.2 names. The manager spawns each
+the root pair in its brief and, as Gobbi Step 1.2 says, does not validate it again. The manager spawns each
 specialist as its role by [Gobbi Step 2.5](../../../skills/gobbi/SKILL.md#25-spawn-each-specialist-as-its-role).
 
 ## Domain loads

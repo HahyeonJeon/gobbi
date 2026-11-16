@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.0-blue" alt="Version 1.4.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.1-blue" alt="Version 1.4.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -136,7 +136,23 @@ Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does n
 - Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
 - Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
 
-## Upgrade to 1.4.0
+## Upgrade to 1.4.1
+
+Version 1.4.1 has breaking changes and keeps a patch version. By the user's explicit decision this is an
+exception to Semantic Versioning, as 1.3.3 and 1.4.0 were. The breaking changes are review at the plan's review
+points instead of after every task, and the entry script.
+
+- A plan written before 1.4.1 has no `## Review Points` section, and Workflow returns it to Planning. Before you
+  continue a session that is in progress, add the section to its plan: one point for small work and two or three
+  for large work, with every task under exactly one point.
+- Workflow no longer reviews each Execution task. A task between points is accepted on its own passed checks,
+  and the record of each review point lives in `3-execution/review-NN/`.
+- Cowork commits accepted work locally when a review point passes, without waiting for `commit`. Merge, push,
+  and closure still need your call.
+- Gobbi entry now runs `skills/gobbi/scripts/entry.py`, which only reads. It needs Python 3.9 or later and Git
+  2.31 or later on the path, and your runtime may ask once for permission to run it.
+
+### From 1.3.3 or earlier
 
 Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is an
 exception to Semantic Versioning, as 1.3.3 was. The breaking changes are the removed skills, the five phase
@@ -196,8 +212,10 @@ Cowork is the fast path for implementation work that you direct request by reque
 one topic; a new topic starts only when you ask for one or approve the manager's proposal. It uses the same
 Ideation and Planning as Workflow, and runs each only when a request needs it before verified Execution.
 
-Independent review and closure run only when you explicitly request them. One isolated branch and linked
-worktree hold the session, keeping your main checkout separate from the ordered local commits.
+Independent review runs at each plan's review points: one for small work and two or three for large work. The
+manager commits accepted work locally when a point passes, and you can still call `review` or `commit` at any
+time. Closure runs only when you request it. One isolated branch and linked worktree hold the session, keeping
+your main checkout separate from the ordered local commits.
 
 ## Workflow
 
@@ -213,14 +231,16 @@ Every productive step uses:
 DISCUSSION → WORK → RECORD
 ```
 
-Execution tasks and Wrap-up also run `REVIEW` between WORK and RECORD. Ideation and Planning skip it.
+Each review point the plan names and Wrap-up also run `REVIEW` before RECORD. Ideation, Planning, and single
+Execution tasks skip it; a task between points is accepted on its own passed checks.
 
 After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
 develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
-Recorded evidence can rebuild the active route after a context boundary. Execution and Wrap-up gates must
-accept the frozen result before those work items advance. Workflow uses one isolated branch and linked worktree
+Recorded evidence can rebuild the active route after a context boundary. A task advances on its
+passed checks until the review point that covers it; a review point and Wrap-up must accept the frozen result
+before work that builds on them advances. Workflow uses one isolated branch and linked worktree
 for the full session.
 
 ## Partner
@@ -273,6 +293,7 @@ the repository guard from the repository root (Python 3.11 or later):
 python3 scripts/guard/guard.py sync    # write the package mirror and the generated Principles blocks
 python3 scripts/guard/guard.py check   # report every finding; exit 0 means clean
 python3 -m unittest discover -s tests/guard -t .
+python3 -m unittest discover -s tests/entry -t .   # the Gobbi entry script
 ```
 
 Sync also adapts the mirror to each runtime: for a skill with `disable-model-invocation: true`, it writes the
@@ -286,7 +307,8 @@ python3 .gobbi/projects/gobbi/skills/gobbi-skill/scripts/check_skills.py
 python3 -m unittest discover -s tests/skill_checks -t .
 ```
 
-CI runs the guard and both test suites on every push, the skill checks on Python 3.9 and 3.13. To run the guard
+CI runs the guard and the three test suites on every push, the skill checks and the entry script on Python 3.9
+and 3.13. To run the guard
 before each commit, enable the hook once per clone with `git config core.hooksPath .githooks`.
 
 ## License

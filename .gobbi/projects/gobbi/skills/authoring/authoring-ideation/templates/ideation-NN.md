@@ -20,9 +20,9 @@ restating it. For each decision, state the chosen option, why it won, its trade-
 
 ### Structure and Claims
 
-{Documents, sections, and their order, navigation, the claims each section carries, and what stays out. Give each
-document or section the design creates or changes its Ontology unit definition: the six fields the Ontology skill
-defines.}
+{Documents, sections, and their order, navigation, the claims each section carries, and what stays out. State the
+medium, prose or figure-led, and list each figure with the claim it carries. Give each document or section the
+design creates or changes its Ontology unit definition: the six fields the Ontology skill defines.}
 
 ### Naming and Vocabulary
 

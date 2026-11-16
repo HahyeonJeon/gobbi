@@ -46,6 +46,14 @@ sizes and in the states a viewer will meet.
   each variant the Goal names, such as print, dark mode, or a thumbnail, exists.
 - Each action gives visible feedback, and each error says what happened and how to recover.
 
+#### Motion keeps the viewer oriented
+
+- In work that moves, the viewer can follow how each element enters, changes, and leaves. An element that pops
+  in or out, or that stays on screen while its position, size, or state jumps between scenes, fails this
+  check; a cut to new content does not.
+- Judge motion from the played result or its frame sequence, and list motion that was not played under Not
+  checked.
+
 ### Legibility and Access
 
 #### Text and controls are legible
@@ -89,6 +97,11 @@ sizes and in the states a viewer will meet.
 - Component, variant, and token names follow the design system's naming.
 
 ### Fit and Content
+
+#### Every element has a job
+
+- Each text line, label, mark, and accent tells the viewer something or helps them act. Filler copy, a tag or
+  caption added only to fill space, and a color accent, icon, or ornament that signals nothing fail this check.
 
 #### Content is true and complete
 

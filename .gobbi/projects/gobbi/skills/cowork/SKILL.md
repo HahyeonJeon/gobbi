@@ -8,16 +8,16 @@ skill-type: operation
 # Cowork
 
 Cowork takes the user's requests through Ideation, Planning, and Execution in one isolated worktree. Related
-requests stay in one topic, and review, commit, and closure happen only when the user calls for them. Use it
-after Gobbi selects Cowork.
+requests stay in one topic, review and local commits happen at each plan's review points, and closure happens
+only when the user calls for it. Use it after Gobbi selects Cowork.
 
 ## Principles
 
 ### Keep the user in control
 
-The user owns every scope, design, risk, destructive-action, and external-service decision, and calls review,
-commit, and closure. The manager makes each request concrete, delivers verified results, and waits for the next
-request.
+The user owns every scope, design, risk, destructive-action, and external-service decision, and calls closure.
+The manager makes each request concrete, delivers verified and reviewed results, commits them locally, and
+waits for the next request.
 
 ### Keep related work in one topic
 
@@ -26,8 +26,8 @@ so related work, its decisions, and its records stay together. Changing the topi
 
 ### Separate stage quality from review
 
-Every stage verifies its own result before acceptance. Independent review is a separate user-called judgment
-and never replaces stage quality.
+Every stage verifies its own result before acceptance. Independent review is a separate judgment at the
+planned review points and never replaces stage quality.
 
 ## Rules
 
@@ -37,8 +37,7 @@ and never replaces stage quality.
 - **MUST keep related work in the current topic, and open a new one only on the user's call.** The topic keeps
   related decisions and records together; when work looks truly unrelated, ask with the reason and stay in the
   current topic until the user answers.
-- **MUST start work only on delivered work, and review, commit implementation, or close only on the user's
-  explicit `review`, `commit`, or `wrap up`.** These calls are the user's control in Cowork; delivered work
+- **MUST start work only on delivered work, and close only on the user's explicit `wrap up`.** Delivered work
   states an outcome or request, and mode, slug, partner policy, "continue", "ok", "looks good", or repository
   state does not.
 - **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending a
@@ -100,7 +99,7 @@ in the topic contract and its report has gone to the user.
   user to narrow it or start Workflow through Gobbi.
 - Build every assignment through [Delegation](../delegation/SKILL.md), naming the topic, worktree and session
   root, the paths it may change and the ones it must not, exact output and `tmp/` paths, and commit authority.
-  Execution commit authority stays none until the user calls `commit`.
+  Execution commit authority stays none until a review point passes or the user calls `commit`.
 
 #### 2.2 Ideation
 
@@ -115,8 +114,8 @@ in the topic contract and its report has gone to the user.
 - The `leader` applies the matching Planning skill: [Coding Planning](../coding/coding-planning/SKILL.md),
   [Authoring Planning](../authoring/authoring-planning/SKILL.md), or
   [Design Planning](../design/design-planning/SKILL.md).
-- Give it the goal, the accepted Ideation result or the topic contract, and `topic-NN-slug/2-planning/`; plan
-  and task numbers continue across the topic.
+- Give it the goal, the accepted Ideation result or the topic contract, and `topic-NN-slug/2-planning/`; plan,
+  task, and review-point numbers continue across the topic.
 - Accept it after rereading the plan documents and confirming Planning's checks.
 
 #### 2.4 Execution
@@ -128,46 +127,59 @@ in the topic contract and its report has gone to the user.
   `task-NN-slug`; with Planning, build each brief from the task's Goal, Context, Constraints, and Taste and
   Preference.
 - Run ready tasks in parallel when the Task Graph allows it and they change different files.
-- Reread each result and reproduce its verification before work that needs it. Return a failure, scope drift, or
-  changed decision to the stage that owns it.
+- Reread each result and reproduce its verification before work that needs it, and start a task only after the
+  PASS of any review point that covers a task it needs but not the task itself. Return a failure, scope drift,
+  or changed decision to the stage that owns it.
 
-#### 2.5 Accept the request
+#### 2.5 Review at the review points
 
-- When every selected result is accepted and verified, append the request's outcome and evidence paths to the
-  topic contract. On the topic's first PASS, add the topic and its contract path to `Accepted topics`.
+- A planned request reviews at each point its plan names, once every task the point covers is accepted. A
+  request without Planning is small work with one point at its end, numbered as the topic's next `review-NN`,
+  with the request's acceptance in the topic contract as its Goal.
+- Freeze the point's subject, as [Review](../review/SKILL.md) Step 1.2 defines it, with no writer running. Apply
+  Review with the bar of each stage the subject covers, and save one report per reviewer at
+  `tmp/review-NN/iteration-N/<reviewer>.md` in the topic.
+- Send the blocking findings that Gobbi's
+  [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) allows to their writers as one fix
+  pass, and record the verdict Review Step 3.3 reaches, with its dropped and follow-up items, in the topic
+  contract. Take a FAIL, or two fix rounds that still fail, to the user.
+
+#### 2.6 Commit the passed point
+
+- On PASS, the `developer`, `designer`, or `author` that matches the work commits the accepted tracked
+  changes: one focused commit in the normal case, split into independent changes when needed.
+- Verify that each commit holds only accepted changes.
+
+#### 2.7 Accept the request
+
+- When every selected result is accepted and verified and its review points have passed, append the request's
+  outcome and evidence paths to the topic contract. On the topic's first PASS, add the topic and its contract
+  path to `Accepted topics`.
 - Report the outcome, results, checks, exclusions, concerns, and partner evidence, then wait for the next
   request.
 
 ### Phase 3 — Commit on User Call
 
-Commit the accepted work the user called for. Done when no accepted tracked change is left uncommitted and
-each commit holds only accepted changes.
+Commit accepted work before its review point when the user calls for it. Done when no accepted tracked change
+is left uncommitted and each commit holds only accepted changes.
 
 #### 3.1 Commit the accepted changes
 
-- On `commit`, the `developer`, `designer`, or `author` that matches the work commits the accepted uncommitted
-  tracked changes: one focused commit in the normal case, split into independent changes when needed. The call
-  is the confirmation; do not show the diff first.
+- On `commit`, commit the accepted uncommitted tracked changes as Step 2.6 does. The call is the
+  confirmation; do not show the diff first.
 - Verify that each commit holds only accepted changes.
 
 ### Phase 4 — Review on User Call
 
-Judge the named subject independently. Done when the verdict and its dropped and follow-up items are in the
-topic contract and reported to the user.
+Judge the subject the user names, outside the planned points. Done when the verdict and its dropped and
+follow-up items are in the topic contract and reported to the user.
 
 #### 4.1 Run the review
 
-- On `review`, freeze the subject the user names, or the whole branch from the base when none is named. If
-  uncommitted tracked changes exist and no subject is named, ask for `commit` or a subject.
-- Apply [Review](../review/SKILL.md) with the topic contract's acceptance for the subject as its Goal and the
-  bar of each stage the subject covers. Save one report per reviewer at `tmp/review-NN/<reviewer>.md` in the
-  topic.
-
-#### 4.2 Record the verdict
-
-- Record the verdict and its dropped and follow-up items in the topic contract, and report them to the user.
-- A correction that Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) allows goes
-  back to its writer, waits for `commit`, and needs another `review` of the fixes.
+- On `review`, take the topic's next `review-NN` and freeze the subject the user names, or the whole branch
+  from the base when none is named. Review it, fix, and commit as Steps 2.5 and 2.6 do for a planned point,
+  with that subject and the topic contract's acceptance for it as the Goal.
+- Report the verdict and its dropped and follow-up items to the user.
 
 ### Phase 5 — Close on User Call
 
