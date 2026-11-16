@@ -19,8 +19,8 @@ The user settles the design in Phase 1; later the manager and its participants d
 
 ### Apply one frame to every work item
 
-Every productive work item runs `DISCUSSION → WORK → RECORD`. Execution tasks and Wrap-up add `REVIEW` before
-RECORD, so independent judgment stays separate from the work.
+Every productive work item runs `DISCUSSION → WORK → RECORD`. Each review point the plan names and Wrap-up
+add `REVIEW` before RECORD, so independent judgment stays separate from the work.
 
 ### Make every phase recoverable
 
@@ -77,6 +77,7 @@ Settle the design with the user in a recoverable session. Done when a verified `
 | Ideation | `1-ideation/` |
 | Planning | `2-planning/` |
 | Execution, per task | `3-execution/task-NN-slug/` |
+| Execution, per review point | `3-execution/review-NN/` |
 | Wrap-up | `wrap-up/` |
 | Temporary work | `tmp/` |
 
@@ -88,9 +89,12 @@ Settle the design with the user in a recoverable session. Done when a verified `
 
 #### 1.3 Review
 
-- Apply [Review](../review/SKILL.md) to the work item's frozen subject, with the task Goal or the closure plan as
-  its Goal. Record the verdict and its dropped and follow-up items in the work item's receipt.
-- A finding does not reopen the accepted design, and a correction needs a re-review of the fixes.
+- Apply [Review](../review/SKILL.md) to the frozen subject: at a review point, the subject and Goal that Review
+  Step 1.2 defines; at Wrap-up, the closure tree with the closure plan. Record the verdict and its dropped and
+  follow-up items in the work item's receipt.
+- A finding does not reopen the accepted design. A point's blocking findings go to their writers as one fix
+  pass; each writer commits its fix under its task's commit authority, and the reviewer confirms each fix as
+  Review Step 3.3 says, which the point's next receipt records.
 
 #### 1.4 Ideation
 
@@ -107,8 +111,8 @@ Settle the design with the user in a recoverable session. Done when a verified `
 
 ### Phase 2 — Plan and Execute
 
-Deliver the accepted design as reviewed task commits. Done when a verified `3-execution/handoff.md` is the
-`Latest handoff`, Complete only after every task has passed review.
+Deliver the accepted design as task commits reviewed at the plan's review points. Done when a verified
+`3-execution/handoff.md` is the `Latest handoff`, Complete only after every review point has passed.
 
 #### 2.1 Planning
 
@@ -119,8 +123,9 @@ Deliver the accepted design as reviewed task commits. Done when a verified `3-ex
   [Authoring Planning](../authoring/authoring-planning/SKILL.md), or
   [Design Planning](../design/design-planning/SKILL.md), with output directory `2-planning/`.
 - **RECORD:** Reread every plan document, record their paths and hashes, and write the receipt. Return to WORK
-  when tasks miss or overlap part of the work, a Goal cannot be judged, an item lacks a source, or the Task Graph
-  has a cycle.
+  when tasks miss or overlap part of the work, a Goal cannot be judged, an item lacks a source, the Task Graph
+  has a cycle, a task falls under no review point or under two, or small work lacks its one point or large work
+  its two or three.
 
 #### 2.2 Task discussion and work
 
@@ -134,13 +139,16 @@ Deliver the accepted design as reviewed task commits. Done when a verified `3-ex
   [Design Execution](../design/design-execution/SKILL.md). Each task ends with one focused local commit, and
   commits are made one at a time.
 
-#### 2.3 Task review and record
+#### 2.3 Task record and review points
 
-- **REVIEW:** Apply Review with the Execution stage bar and the task's domain bar.
-- **RECORD:** Write the receipt with the verdict; REVISE returns to WORK as the next iteration, and FAIL stops
-  the phase. After PASS, reread the commit and checks before starting a task that needs it, and amend only
-  pending plan work when a plan defect inside the accepted design appears.
-- When every task has passed, end Phase 2 at `3-execution/handoff.md` and wait at `P2 · User Review`.
+- **RECORD:** Reread the task's commit and rerun its checks, then write the receipt; a failed check returns to
+  WORK as the next iteration. Start a task only after the receipt of each task it needs and the PASS of any review
+  point that covers such a task but not the task itself, and amend only pending plan work when a plan defect
+  inside the accepted design appears.
+- **REVIEW:** When every task a review point covers has its receipt, apply Review with the Execution stage bar
+  and each covered task's domain bar, then write the point's receipt with the verdict. REVISE returns the
+  blocking findings to WORK as one fix pass, and FAIL stops the phase.
+- When every review point has passed, end Phase 2 at `3-execution/handoff.md` and wait at `P2 · User Review`.
 
 ### Phase 3 — Wrap Up
 

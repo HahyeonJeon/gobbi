@@ -39,8 +39,8 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   accept, so a recommendation cannot select one.
 - **Validate one Gobbi root pair and load the entry foundation before routing.** Every specialist path
   resolves from that pair, so a wrong pair sends every later read to the wrong files.
-- **MUST apply the session-wide finding gate in Step 2.3.** A correction can break what it fixed, so each one
-  gets fresh review and only a verified PASS continues automatically.
+- **MUST apply the session-wide finding gate in Step 2.3.** A correction can break what it fixed, so the
+  reviewer confirms each one against its finding and only a verified PASS continues automatically.
 - **MUST keep the manager as the only authority for assignment, scope, user decisions, acceptance, and
   external or destructive action.** One authority keeps writes in one ordered chain and every user decision
   with the agent that talks to the user.
@@ -103,7 +103,7 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 
   | Mode | Use when | Commitment |
   |---|---|---|
-  | **Cowork** | The user leads the work request by request, and related requests stay in one topic. | The user controls new topics, decisions, review calls, and closure. |
+  | **Cowork** | The user leads the work request by request, and related requests stay in one topic. | The user controls new topics, decisions, and closure. Review runs at each plan's review points, where accepted work is committed locally. |
   | **Workflow** | Work needs durable phase checkpoints and autonomous delivery. | After Configuration, wait for delivered work; Phase 1 Ideation still includes user design decisions; later phases run until each User Review, then wait for explicit continue. |
 
 - Across a boundary, preserve a validated selection. Ask again only when mode evidence is missing, ambiguous,
@@ -127,7 +127,8 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
   [Review](../review/SKILL.md) Step 3.1 says. After completed
   `P1 · User Review`, the manager decides from the accepted design, authority, available subagents or
   teammates, and remaining Partner runtimes, or writes a stopped `handoff.md` without asking the user.
-- Run fresh review after every correction. Continue automatically only from a verified PASS.
+- Have the reviewer confirm every correction against its finding, as Review Step 3.3 says. Continue
+  automatically only from a verified PASS.
 
 #### 2.4 Hand off the selected route
 
@@ -181,7 +182,7 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 | [Discussion](../discussion/SKILL.md) | Owns the SOP for understanding the task, studying options with participants, and deciding with the user. |
 | [Delegation](../delegation/SKILL.md) | Defines the brief template and the final Handoff for work handed to another agent. |
 | [Manager role](../../agents/manager.md) | Defines session authority, routing, assignment, and acceptance. Runtime copies: [Grok](../../runtimes/grok/manager.md), [Codex](../../runtimes/codex/manager.toml), [Cursor](../../runtimes/cursor/manager.md). |
-| [Cowork](../cowork/SKILL.md) | Owns user-led topics, explicit review, and explicit closure. |
+| [Cowork](../cowork/SKILL.md) | Owns user-led topics, review at the plan's review points, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
 | [Claude Code setup](setup/claude.md) | How to install Gobbi and create missing layout for Claude Code. |

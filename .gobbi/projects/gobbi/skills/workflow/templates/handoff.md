@@ -29,7 +29,7 @@
 | Review | {each reviewer report path, the receipt and its verdict, dropped and follow-up items, and fix rounds, or None when the work item skipped REVIEW} |
 | Decisions | {material decisions, rulings, and authority, or None} |
 | Decision boundary | {Phase 1 user decisions; later frames have no design question; User Review is continue-only} |
-| Findings | {dispositions and fresh-review evidence, or None} |
+| Findings | {dispositions and the reviewer's confirmation of each fix, or None} |
 | Preserved state | {unrelated work, retained objects, exclusions, and risks, or None} |
 
 ## Continuation

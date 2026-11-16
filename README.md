@@ -196,8 +196,10 @@ Cowork is the fast path for implementation work that you direct request by reque
 one topic; a new topic starts only when you ask for one or approve the manager's proposal. It uses the same
 Ideation and Planning as Workflow, and runs each only when a request needs it before verified Execution.
 
-Independent review and closure run only when you explicitly request them. One isolated branch and linked
-worktree hold the session, keeping your main checkout separate from the ordered local commits.
+Independent review runs at each plan's review points: one for small work and two or three for large work. The
+manager commits accepted work locally when a point passes, and you can still call `review` or `commit` at any
+time. Closure runs only when you request it. One isolated branch and linked worktree hold the session, keeping
+your main checkout separate from the ordered local commits.
 
 ## Workflow
 
@@ -213,14 +215,16 @@ Every productive step uses:
 DISCUSSION → WORK → RECORD
 ```
 
-Execution tasks and Wrap-up also run `REVIEW` between WORK and RECORD. Ideation and Planning skip it.
+Each review point the plan names and Wrap-up also run `REVIEW` before RECORD. Ideation, Planning, and single
+Execution tasks skip it; a task between points is accepted on its own passed checks.
 
 After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
 develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
-Recorded evidence can rebuild the active route after a context boundary. Execution and Wrap-up gates must
-accept the frozen result before those work items advance. Workflow uses one isolated branch and linked worktree
+Recorded evidence can rebuild the active route after a context boundary. A task advances on its
+passed checks until the review point that covers it; a review point and Wrap-up must accept the frozen result
+before work that builds on them advances. Workflow uses one isolated branch and linked worktree
 for the full session.
 
 ## Partner

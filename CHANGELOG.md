@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Review now runs at review points that the plan names, instead of after every Execution task: one point for
+  small work and two or three for large work. Coding, Design, and Authoring Planning place the points and the
+  plan template lists them under `## Review Points`.
+- Workflow accepts a task between points on its own passed checks and completes Phase 2 when every review
+  point has passed. Review-point records live in `3-execution/review-NN/`.
+- Cowork reviews at the plan's review points and commits accepted work locally when a point passes, without
+  waiting for `commit`. The user's `review` and `commit` calls still work, and closure still needs `wrap up`.
+- A point's blocking findings go to their writers as one fix pass, and the reviewer confirms each fix against
+  its finding. The finding gate no longer asks for a fresh review after every correction.
+
 ## 1.4.0 - 2026-11-12
 
 **Upgrade:** Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is

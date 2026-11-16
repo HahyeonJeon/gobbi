@@ -8,7 +8,8 @@ skill-type: operation
 # Review
 
 Review checks one finished result against its Goal with a reviewer who did not make it, and turns the findings
-into one verdict the caller acts on. Use it in Workflow REVIEW and on a Cowork `review` call.
+into one verdict the caller acts on. Use it at a plan's review point, at Workflow Wrap-up, and on a user's
+`review` call.
 
 ## Principles
 
@@ -53,13 +54,17 @@ The caller decides who reviews and what they get. Done when every reviewer has a
   user-facing behavior, changes a public interface or a skill's Rules or Principles, touches security or data, or
   closes a session. Brief it to find what breaks and prove it; when the Partner policy allows no such runtime,
   note the missing second review under Not checked.
-- Skip review for a change that only rewords or reformats and passes its checks.
+- Skip review for a change that only rewords or reformats and passes its checks. A skipped review point
+  counts as passed on those checks.
 
 #### 1.2 Brief each reviewer
 
 - Write each brief through [Delegation](../delegation/SKILL.md): the Goal and its evidence of done, the exact
   subject (a commit, diff, or paths), the checks to rerun, the stage bar below, the matching domain bar, and the
   report path.
+- At a review point, the subject is every change since the previous point passed, or since the work began at
+  the first point, read in the tree as it stands. The Goal is the Goals of the tasks the point covers, and at
+  the last point also the goal of the whole work, so the integrated result is judged, never one review per task.
 - Leave out the producer's reasoning and other reviewers' reports, so each reviewer judges the result alone.
 
 ### Phase 2 — Review the Result
@@ -103,8 +108,9 @@ results.
 
 #### 3.3 Run a fix round
 
-- Send the blocking findings to the writer the caller names for the fix. Re-review only the fixes and the lines
-  they touched, with one reviewer who confirms each blocking finding is resolved.
+- Send every blocking finding to the writers the caller names as one fix pass. One reviewer then confirms each
+  blocking finding is resolved, reading only the fixes and the lines they touched; this is not a new full review.
+- Record PASS for the tree that holds the fixes when every blocking finding is confirmed resolved.
 - After two rounds that still fail, stop and rethink the premise, or ask the user.
 
 ## Stage Bars
@@ -112,7 +118,7 @@ results.
 | Stage | A strong result shows |
 |---|---|
 | Ideation | The goal, decisions, boundaries, and constraints are clear, and every user-owned choice was asked and recorded. Not implementation detail or polish. |
-| Planning | The tasks cover the whole work without overlap, each Goal can be judged, every constraint has a source, and the Task Graph has no cycle. Not implementation steps. |
+| Planning | The tasks cover the whole work without overlap, each Goal can be judged, every constraint has a source, the Task Graph has no cycle, and the review points cover every task once. Not implementation steps. |
 | Execution | The Goal is met and shown by checks that **passed**, nothing the change reaches is left stale, and the change adds nothing unasked. |
 
 ## References

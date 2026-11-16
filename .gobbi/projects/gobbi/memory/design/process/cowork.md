@@ -2,16 +2,17 @@
 
 ## Intent
 
-Cowork writes implementation commits only after an explicit user `commit` call. The user inspects the diff in
-their IDE. The manager does not render the diff. The call is the confirmation.
+Cowork writes implementation commits when a review point passes, and earlier on the user's `commit` call. The
+user inspects the diff in their IDE. The manager does not render the diff.
 
 ## Commit gate
 
-- `commit` is a user-called action, parallel to `review` and `wrap up`.
-- Execution assignments have commit authority none until that call.
+- A passed review point commits the accepted work locally without asking; `commit` stays a user call for an
+  earlier commit, parallel to `review` and `wrap up`.
+- Execution assignments have commit authority none until a point passes or the user calls `commit`.
 - PASS accepts verified implementation without a clean tracked tree or an implementation commit, and does not
   close the topic.
-- On `commit`, the developer, designer, or author that matches the work creates focused commits of the accepted
+- On a passed point or `commit`, the developer, designer, or author that matches the work creates focused commits of the accepted
   uncommitted tracked changes: one commit in the normal case, split into independent changes when needed.
 - Wrap-up Memory commits stay on `wrap up`.
 - Cowork wrap-up applies [Memory](../../../skills/memory/SKILL.md) Closure through one assistant, extracting

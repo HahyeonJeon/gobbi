@@ -4,8 +4,8 @@
 
 The independent agent pass is [Review](../../../skills/review/SKILL.md): one shared operation skill that checks
 a finished result against its Goal with a reviewer that did not make it, and turns the findings into one
-verdict. Workflow runs it as REVIEW on Execution tasks and Wrap-up. Cowork runs it only on the user's `review`
-call. The Generic Evaluation skill, `skills/evaluation/`, and the Checklist skill with every reusable checklist
+verdict. Workflow and Cowork run it at the review points the plan names, one for small work and two or three for large
+work; Workflow also runs it at Wrap-up, and Cowork also on the user's `review` call. The Generic Evaluation skill, `skills/evaluation/`, and the Checklist skill with every reusable checklist
 are gone. Do not restore them.
 
 This file records live Review facts for Memory readers. Do not copy a live SOP here.
