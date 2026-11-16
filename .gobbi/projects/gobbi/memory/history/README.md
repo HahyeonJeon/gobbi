@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-11-16 — Gobbi v1.4.1 published](2026-11-16-gobbi-v1-4-1-published.md)
 - [2026-11-12 — Gobbi v1.4.0 published](2026-11-12-gobbi-v1-4-0-published.md)
 - [2026-11-12 — Gobbi skills refactor](2026-11-12-gobbi-skills-refactor.md)
 - [2026-10-18 — Recursive exploration and the six-kind ontology](2026-10-18-recursive-exploration-and-ontology.md)
