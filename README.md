@@ -277,6 +277,7 @@ the repository guard from the repository root (Python 3.11 or later):
 python3 scripts/guard/guard.py sync    # write the package mirror and the generated Principles blocks
 python3 scripts/guard/guard.py check   # report every finding; exit 0 means clean
 python3 -m unittest discover -s tests/guard -t .
+python3 -m unittest discover -s tests/entry -t .   # the Gobbi entry script
 ```
 
 Sync also adapts the mirror to each runtime: for a skill with `disable-model-invocation: true`, it writes the
@@ -290,7 +291,8 @@ python3 .gobbi/projects/gobbi/skills/gobbi-skill/scripts/check_skills.py
 python3 -m unittest discover -s tests/skill_checks -t .
 ```
 
-CI runs the guard and both test suites on every push, the skill checks on Python 3.9 and 3.13. To run the guard
+CI runs the guard and the three test suites on every push, the skill checks and the entry script on Python 3.9
+and 3.13. To run the guard
 before each commit, enable the hook once per clone with `git config core.hooksPath .githooks`.
 
 ## License

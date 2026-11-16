@@ -39,6 +39,7 @@
 
 | Field | Value |
 |---|---|
+| Language | {the conversation, term, and work languages the user stated, or Not stated} |
 | Publication intent | Local retention |
 | Merge authority | Not authorized; requires a separate explicit request |
 | Cleanup authority | Not authorized; requires a separate explicit request |
@@ -49,7 +50,7 @@
 |---|---|
 | Entry contract | {mode, slug, partner policy, and source} |
 | Mode settings | {accepted settings and authority} |
-| Gobbi root pair | {validation observations} |
+| Gobbi root pair | {the entry script's output} |
 | Repository and immutable base | {repository and revision observations} |
 | Worktree registration | {command and observed registration} |
 | Session identity and containment | {path and identity checks} |

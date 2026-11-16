@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- The Gobbi entry skill now gives the main agent the manager's duties: it answers to the user for the outcome,
+  spends agents and reviews in proportion to risk, keeps the user's standing instructions in the session
+  `README.md`, and reports at every review point.
+- `skills/gobbi/scripts/entry.py` does the entry checks in one read-only call. It validates the root pair and
+  prints it with the project key, the repository instructions, the project rules, and every session.
+- The Cowork and Workflow configuration templates record the user's `Language`.
+
 ### Changed
 
+- A specialist no longer re-checks the root pair it receives; it reports an unreadable path as Blocked.
 - Review now runs at review points that the plan names, instead of after every Execution task: one point for
   small work and two or three for large work. Coding, Design, and Authoring Planning place the points and the
   plan template lists them under `## Review Points`.

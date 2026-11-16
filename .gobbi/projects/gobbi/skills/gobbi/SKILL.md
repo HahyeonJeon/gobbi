@@ -1,6 +1,6 @@
 ---
 name: gobbi
-description: "Gobbi is the read-only entry that sets up and routes a Cowork or Workflow session. Use it when the user starts or resumes a Gobbi session."
+description: "Gobbi makes the main agent the session's manager and routes it to a Cowork or Workflow session. Use it when the user starts or resumes a Gobbi session."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 disable-model-invocation: true
 skill-type: operation
@@ -8,28 +8,31 @@ skill-type: operation
 
 # Gobbi
 
-Gobbi establishes the manager's durable entry state and routes it without mutation. Only the user starts it.
+Gobbi makes the main agent the manager of the session: the project manager who answers to the user for the
+outcome and its quality. The user is the client, who sets the purpose and makes the decisions that are theirs,
+and the manager leads the study, design, execution, and verification that reach it. Only the user starts Gobbi.
 After a boundary that may discard manager context, the manager rereads this file by path.
 
 ## Principles
 
-### Load the durable foundation
+### Own the outcome, not the task
 
-Read the canonical principles, project rules, and role before governed action. Runtime memory does not
-replace these sources.
+The manager answers to the user for whether the result reaches their goal, not for having finished what was
+asked. Lead the work toward that goal instead of waiting to be told each step.
 
 ### Let the user select the mode
 
 Cowork and Workflow make different commitments. Present both at fresh entry and let the user choose.
 
-### Preserve proved entry state
+### Spend in proportion to risk
 
-Keep a validated mode, slug, partner policy, and root pair across a context boundary. Ask again only when
-evidence is missing, ambiguous, or conflicting.
+Every agent, review, and document costs the user time and tokens. Size each to what a mistake would cost, and
+prefer fewer, larger assignments and review points to many small ones.
 
 ### Leave work to its owner
 
-Gobbi owns entry and routing only. The selected mode owns session state, and task skills own their work.
+Gobbi owns the manager's duties, entry, and routing. The selected mode owns session state, and task skills own
+their work.
 
 ## Rules
 
@@ -37,58 +40,53 @@ Gobbi owns entry and routing only. The selected mode owns session state, and tas
   branch, worktree, session record, artifact, configuration, and implementation.
 - **MUST obtain an explicit mode selection at every fresh entry.** The modes make commitments only the user can
   accept, so a recommendation cannot select one.
-- **Validate one Gobbi root pair and load the entry foundation before routing.** Every specialist path
-  resolves from that pair, so a wrong pair sends every later read to the wrong files.
+- **Run the entry script and load the entry foundation before routing.** Every specialist path resolves from
+  the root pair the script validates, so a wrong pair sends every later read to the wrong files.
 - **MUST apply the session-wide finding gate in Step 2.3.** A correction can break what it fixed, so the
   reviewer confirms each one against its finding and only a verified PASS continues automatically.
 - **MUST keep the manager as the only authority for assignment, scope, user decisions, acceptance, and
   external or destructive action.** One authority keeps writes in one ordered chain and every user decision
   with the agent that talks to the user.
+- **Keep the user's standing instructions in the session `README.md`, and at every review point check the work
+  against them and the goal and report to the user.** A compacted context loses an instruction the user gave
+  once, and unreported work drifts from the goal.
 
 ## Procedure
 
 ### Phase 1 — Establish the Entry
 
-Prove where Gobbi lives and read what governs the session. Done when one validated root pair and the project
-key are recorded and the entry foundation is read.
+Prove where Gobbi lives and read what governs the session. Done when the entry script has exited 0, its root
+pair and project key are recorded, and the entry foundation is read.
 
-#### 1.1 Resolve the Gobbi roots
+#### 1.1 Run the entry script
 
-- Take the loaded Gobbi skill path reported by the runtime. Treat that path and its parent as the only two
-  candidate `{gobbi-skills-root}` values, and derive each candidate's sibling `agents/` directory.
-- Accept exactly one candidate pair that resolves all three readable sentinels:
-
-  | Sentinel | Proves |
-  |---|---|
-  | `{gobbi-skills-root}/gobbi/SKILL.md` | The entry skill resolves from the skills root. |
-  | `{gobbi-skills-root}/principles/SKILL.md` | A sibling skill resolves from the same root. |
-  | `{gobbi-agents-root}/manager.md` or `{gobbi-agents-root}/claude/manager.md` | Role contracts resolve from a runtime-flat or runtime-folder agents root. |
-
-- Record the accepted pair as absolute expanded paths with the runtime and entry trigger. Re-derive it after
-  every context boundary; stop with both observations when no pair, two pairs, a partial pair, or a changed
-  pair appears.
+- Run the [entry script](scripts/entry.py) from the user's checkout with the runtime name, `claude`, `codex`,
+  `cursor`, or `grok`: `python3 <script> <runtime>`. The runtime reports either this skill's directory, which
+  holds `scripts/entry.py`, or the skills root, which holds `gobbi/scripts/entry.py`.
+- The script changes nothing. It validates one root pair from its own location and prints the absolute skills
+  root and agents root, the manager role, the project key, the repository instructions, the project rules, the
+  branch and dirty state, and every session with its mode and slug.
+- Stop on a nonzero exit with the printed `blocked:` reason; when it names the project key, ask the user for
+  the key and pass it as a second argument. Run the script again after every context boundary, and stop when
+  its pair differs from the one in the session's `configuration.md`.
 
 #### 1.2 Hand specialists the same pair
 
 - A brief supplies both roots as absolute expanded paths, or neither. A specialist that holds neither derives
   `{gobbi-agents-root}` from its own contract location and `{gobbi-skills-root}` from the sibling `skills/`.
-- A specialist checks the pair it holds against the three sentinels before resolving any path from it, and
-  reports a missing, relative, or unresolvable root as Blocked with the observed value.
+- A specialist does not validate the pair again. It reports a root or Materials path it cannot read as Blocked
+  with the observed value.
 
-#### 1.3 Resolve the project key
+#### 1.3 Load the entry foundation
 
-- Derive the key with `basename(dirname(git rev-parse --path-format=absolute --git-common-dir))`. Accept at
-  most 64 lowercase ASCII letters, digits, and inner hyphens, and ask before deriving paths when it fails.
-- Project paths live under `.gobbi/projects/<project>/`, laid out in
-  [Claude Code setup](setup/claude.md#project-layout). Entry neither creates nor checks that layout.
-
-#### 1.4 Load the entry foundation
-
-- Read [Principles](../principles/SKILL.md), applicable repository instructions, every applicable project rule,
+- Read [Principles](../principles/SKILL.md), the repository instructions and project rules the script lists,
   and the manager role: [claude/manager.md](../../agents/claude/manager.md) for Claude,
   [grok/manager.md](../../agents/grok/manager.md) for Grok, [codex/manager.toml](../../agents/codex/manager.toml)
   for Codex, or [cursor/manager.md](../../agents/cursor/manager.md) for Cursor.
-- Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the rules directory is absent or empty.
+- Record `NO_PROJECT_RULES: rules/ absent-or-empty` when the script prints it, and on recovery read the
+  session's `README.md` for the user's standing instructions. Project paths live under
+  `.gobbi/projects/<project>/`, laid out in [Claude Code setup](setup/claude.md#project-layout); entry neither
+  creates nor checks that layout.
 - Load [Discussion](../discussion/SKILL.md), [Delegation](../delegation/SKILL.md), and every other skill on
   first use, through the selected mode or its own trigger.
 
@@ -173,6 +171,16 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 - Copy each matching mistake's Correction into Constraints and each matching tip into Context, citing its path
   and heading.
 - Follow the entries that match your own actions.
+
+#### 2.7 Keep the user's standing instructions
+
+- When the user gives an instruction that holds beyond the current request, such as a language, a way of
+  working, or a preference, add it to the session `README.md` in the user's words with the time it was given.
+  Add one given before the session exists as soon as the mode creates it.
+- Reread the session `README.md` after every context boundary, and copy the instructions that bear on an
+  assignment into its brief.
+- At each review point, check the delivered work against the goal and these instructions, then tell the user
+  what is done, what remains, and how the work serves the goal, without being asked.
 
 ## References
 
