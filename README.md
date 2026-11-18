@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.1-blue" alt="Version 1.4.1"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.2-blue" alt="Version 1.4.2"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -138,6 +138,7 @@ Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does n
 
 ## Migrate a checkout with the separate manager role
 
+Version 1.4.2 removes the separate manager role. This breaking change ships as a patch in the 1.4 series.
 Start the main agent through Gobbi entry. Remove the old `Agent(gobbi:manager)` permission and any
 Gobbi-installed `.codex/agents/manager.toml` or `.cursor/agents/manager.md` copy or link. Update the six
 specialists from the same plugin revision. Entry now reports `runtime_agents_root` for the active runtime.
