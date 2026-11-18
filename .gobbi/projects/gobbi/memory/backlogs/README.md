@@ -34,7 +34,7 @@ each group. Order implies no priority, readiness, or sequence.
 - `Generate the four role copies from one source` → `project.md#generate-the-four-role-copies-from-one-source`
 - `Grok probe side effects in the user's home` → `project.md#grok-probe-side-effects-in-the-users-home`
 - `Grok silent fallback for an unknown agent name` → `project.md#grok-silent-fallback-for-an-unknown-agent-name`
-- `Guardrail gaps in two .toml role wrappers` → `project.md#guardrail-gaps-in-two-toml-role-wrappers`
+- `Guardrails for the Codex assistant` → `project.md#guardrails-for-the-codex-assistant`
 - `Inert nested Skill(...) entries in .claude/settings.json` → `project.md#inert-nested-skill-entries-in-claudesettingsjson`
 - `Locator no-brief fallback unverified for a spawned specialist` → `project.md#locator-no-brief-fallback-unverified-for-a-spawned-specialist`
 - `Manifest descriptions omit Cursor plugin agents` → `project.md#manifest-descriptions-omit-cursor-plugin-agents`

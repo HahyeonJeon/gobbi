@@ -8,10 +8,10 @@ phase and subject, not by domain.
 
 ## File set
 
-- Canonical source: 28 contracts, seven roles in each of four runtimes, under
+- Canonical source: 24 contracts, six specialists in each of four runtimes, under
   `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`. [`agents/README.md`](../../../agents/README.md)
   holds the role table and the per-runtime load paths.
-- Plugin package: seven Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
+- Plugin package: six Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
   `agents/claude/`, plus the other runtimes at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`. The
   package cannot nest Claude agents under subfolders of `agents/`, because a plugin's `agents/` directory is
   scanned recursively and each subfolder becomes part of the agent's scoped identifier.
@@ -21,9 +21,10 @@ phase and subject, not by domain.
   does not load plugin agents. Grok uses `.grok/plugins/gobbi`. Cursor agents stay as symlinks in
   `.cursor/agents` until a Cursor plugin load is proven.
 
-## The seven roles
+## Main agent and specialists
 
-The roles are manager, assistant, leader, developer, designer, author, and reviewer. The twelve domain phase
+Gobbi entry is the manager contract for the main agent. The specialists are assistant, leader, developer, designer,
+author, and reviewer. The twelve domain phase
 roles, `{coding,authoring,design}-{leader,planner,executor,reviewer}`, and the planner are removed. Leader owns
 Ideation and Planning in every domain. Execution is split by subject: the developer changes code with no
 visual surface, the designer changes work with a visual element (including HTML and web UI and UX) and may use
@@ -42,7 +43,7 @@ abilities, and character the role needs, shown as working habits); `## Responsib
 role owns); `## In scope` (CRUD and the role's subjects); `## Out of scope` (the Nevers). Role files carry no
 backstory or method lines, no status-token vocabulary, and no `NO_GOBBI_ROOT` protocol.
 
-The manager reads the manager contract through [Gobbi](../../../skills/gobbi/SKILL.md). A specialist receives
+The main agent takes its session authority from [Gobbi](../../../skills/gobbi/SKILL.md). A specialist receives
 the root pair in its brief and, as Gobbi Step 1.2 says, does not validate it again. The manager spawns each
 specialist as its role by [Gobbi Step 2.5](../../../skills/gobbi/SKILL.md#25-spawn-each-specialist-as-its-role).
 
@@ -56,7 +57,7 @@ specialist as its role by [Gobbi Step 2.5](../../../skills/gobbi/SKILL.md#25-spa
 | Designer | [Design Execution](../../../skills/design/design-execution/SKILL.md), and coding skills for the code behind it. | Changes work with a visual element. |
 | Author | [Authoring Execution](../../../skills/authoring/authoring-execution/SKILL.md) | Changes durable docs, skills, and the changelog. |
 | Reviewer | [Review](../../../skills/review/SKILL.md) and the domain bar the brief names. | Reads another agent's work and writes one report; never edits it. |
-| Assistant | None. | Lookup and Memory or record work a brief names. |
+| Assistant | None. | Prepares task Materials and handles named lookup and record work. |
 
 The developer, designer, and author self-check but never formally review their own work. See the
 [Coding](../feature/coding-skill-family.md), [Authoring](../feature/authoring-skill-family.md), and

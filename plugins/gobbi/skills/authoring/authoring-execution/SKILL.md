@@ -1,14 +1,14 @@
 ---
 name: authoring-execution
-description: "Authoring Execution writes and verifies one accepted writing task. Use it when a task with a settled writing design changes durable prose."
+description: "Authoring Execution writes and verifies one accepted writing task. Use it for an agreed Goal with authority to change durable prose."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Authoring Execution
 
-Authoring Execution writes, verifies, and hands off one accepted writing task under a settled writing design.
-Use it when one accepted task has a settled writing design and a writer frontier that includes durable prose.
+Authoring Execution gives the author responsibility for reaching an agreed reader outcome within the assigned
+documents. The author chooses the wording, organization, and working order within the accepted direction.
 
 ## Principles
 
@@ -37,9 +37,8 @@ lives in its owner or links to it, and every file the change makes stale agrees 
 - Read the task's Goal, accepted design, scope, writer frontier, commit authority, and handoff, and load the
   standard for each document type the task changes, such as [Gobbi Skill](../../gobbi-skill/SKILL.md) for a
   skill.
-- Stop and return to the caller when the design leaves a material writing choice open, or when the change
-  reaches a file outside the writer frontier. Design belongs to Ideation and the user, and another owner holds
-  that file.
+- Return a change to the agreed audience, outcome, editorial direction, risk, or authorized paths to the
+  caller. Use judgment on writing choices inside those boundaries.
 
 ### Phase 2 — Verify and Hand Off
 

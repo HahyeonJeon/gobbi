@@ -14,12 +14,12 @@ WRITABLE = ("plugins/gobbi/skills", "plugins/gobbi/agents", "plugins/gobbi/runti
 class RewriteLinksTest(unittest.TestCase):
     def test_longest_prefix_first_and_only_relative_agent_links(self):
         text = (
-            "[a](../../agents/claude/manager.md) [b](../../agents/codex/manager.toml) "
+            "[a](../../agents/claude/assistant.md) [b](../../agents/codex/assistant.toml) "
             "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md)"
         )
         self.assertEqual(
             mirror.rewrite_links(text),
-            "[a](../../agents/manager.md) [b](../../runtimes/codex/manager.toml) "
+            "[a](../../agents/assistant.md) [b](../../runtimes/codex/assistant.toml) "
             "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md)",
         )
 
@@ -52,12 +52,12 @@ class DriftTest(GuardCase):
         )
 
     def test_rewritten_file_differs_only_by_its_links(self):
-        source = "Role: [manager](../../agents/claude/manager.md)\n"
+        source = "Role: [assistant](../../agents/claude/assistant.md)\n"
         root = self.gobbi({f"{SKILLS}/gobbi/SKILL.md": source, f"{PACKAGE_SKILLS}/gobbi/SKILL.md": source})
         self.assertEqual(self.kinds(root), [f"content-differs {PACKAGE_SKILLS}/gobbi/SKILL.md"])
         Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
         self.assertEqual(
-            (root / f"{PACKAGE_SKILLS}/gobbi/SKILL.md").read_text(), "Role: [manager](../../agents/manager.md)\n"
+            (root / f"{PACKAGE_SKILLS}/gobbi/SKILL.md").read_text(), "Role: [assistant](../../agents/assistant.md)\n"
         )
         self.assertEqual(self.kinds(root), [])
 

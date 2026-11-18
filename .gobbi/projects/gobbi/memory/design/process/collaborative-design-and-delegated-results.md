@@ -7,7 +7,7 @@ vocabulary, functions, classes, interfaces, data shapes, and small local choices
 consequential choice among options that independent participants studied and critiqued (Principle 3).
 [Discussion](../../../skills/discussion/SKILL.md) owns that procedure, and Cowork and Workflow apply it in their
 Ideation and Planning stages. Cowork has no Fast or Light depth; it runs Ideation when a request has an open
-design choice and Planning when the work is too large for one task.
+user-owned design choice and Planning when the work is too large for one task.
 
 ## Design participation
 
@@ -30,8 +30,8 @@ design choice and Planning when the work is too large for one task.
 - The Handoff carries the evidence the caller needs. The caller accepts it only after reading the named result
   and rerunning the checks it relies on. Delegation defines the check outcomes passed, failed, and inconclusive,
   the measured-difference rule, and the Finding, Sources, and Limits return of a study result.
-- Callers add their own required fields. Gobbi entry, Cowork, Workflow, the review skills, and the manager role
-  hold role and phase choice, the skills and docs indexes in Materials, review independence, and report paths.
+- Callers supply relevant sources and the authority, recovery details, or return format the assignment needs.
+  Specialists choose the approach and tool sequence within those boundaries.
 - Do not rely on conversation history or inherited skill loads.
 
 ## Ownership

@@ -19,20 +19,20 @@ The setup scripts are removed and planned to return in a later release. The layo
 [Claude Code setup](claude.md#project-layout); every runtime uses the same tree. Create it with the shell
 block in [Create the project layout by hand](claude.md#create-the-project-layout-by-hand).
 
-Then copy the seven Codex role files from the installed plugin. `<path-to-plugin>` is the plugin root that holds
+Then copy the six Codex specialist files from the installed plugin. `<path-to-plugin>` is the root that holds
 `runtimes/codex/`; in a Gobbi checkout it is `plugins/gobbi`.
 
 ```bash
 mkdir -p .codex/agents
-for role in manager assistant leader developer designer author reviewer; do
+for role in assistant leader developer designer author reviewer; do
   [ -e ".codex/agents/$role.toml" ] || cp "<path-to-plugin>/runtimes/codex/$role.toml" ".codex/agents/$role.toml"
 done
 ```
 
 Copy the files byte for byte and never edit them. Do not create `.codex/skills` or `.codex/config.toml`;
 Codex reads `$CODEX_HOME/config.toml`. To pick up a plugin update, delete the old `.codex/agents/<role>.toml`
-files and copy again; an upgrade from 1.3.3 replaces all seven, including `manager.toml` and
-`assistant.toml`.
+files and copy again; remove any Gobbi-installed `.codex/agents/manager.toml` from a previous version.
+Gobbi entry gives the main agent its manager responsibilities.
 
 ## After setup
 

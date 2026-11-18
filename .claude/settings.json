@@ -2,7 +2,6 @@
   "teammateMode": "in-process",
   "permissions": {
     "allow": [
-      "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:leader)",
       "Agent(gobbi:developer)",

@@ -70,7 +70,7 @@ class EntryTest(unittest.TestCase):
             fields["session"], ["Cowork | demo | .gobbi/projects/demo/sessions/2026-01-01-demo-0000/configuration.md"]
         )
         self.assertEqual(fields["runtime"], ["claude"])
-        self.assertTrue(fields["manager_role"][0].endswith("manager.md"))
+        self.assertEqual(fields["runtime_agents_root"], [str(ENTRY.parents[3] / "agents" / "claude")])
 
     def test_blocks_on_an_invalid_project_key_until_one_is_given(self):
         root = self.repo("Bad_Name")
@@ -107,7 +107,7 @@ class EntryTest(unittest.TestCase):
         self.assertEqual(run(root)[0], 0)
         self.assertEqual((index.read_bytes(), index.stat().st_mtime_ns), before)
 
-    def test_finds_the_manager_role_for_every_runtime_in_both_trees(self):
+    def test_finds_the_specialist_directory_for_every_runtime_in_both_trees(self):
         root = self.repo("demo")
         plugin = ENTRY.parents[6] / "plugins" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
         for script in (ENTRY, plugin):
@@ -116,8 +116,13 @@ class EntryTest(unittest.TestCase):
                     [sys.executable, str(script), runtime], capture_output=True, text=True, cwd=root
                 )
                 self.assertEqual(completed.returncode, 0, completed.stdout)
-                role = next(line for line in completed.stdout.splitlines() if line.startswith("manager_role: "))
-                self.assertTrue(Path(role.partition(": ")[2]).is_file(), role)
+                fields = dict(line.split(": ", 1) for line in completed.stdout.splitlines())
+                roles = Path(fields["runtime_agents_root"])
+                suffix = ".toml" if runtime == "codex" else ".md"
+                self.assertEqual(
+                    {p.stem for p in roles.glob(f"*{suffix}")},
+                    {"assistant", "leader", "author", "developer", "designer", "reviewer"},
+                )
 
     def test_blocks_outside_a_repository_and_on_an_unknown_runtime(self):
         outside = Path(tempfile.mkdtemp())

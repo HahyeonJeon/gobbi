@@ -23,6 +23,18 @@ on, because an author checks what it meant to build, not what it built.
 One fresh reviewer covers most work. A second reviewer from another model family pays off only where a missed
 defect is expensive, so add it by risk, not by habit.
 
+### Place review where feedback can change the work
+
+Keep a final review of the integrated Goal. One point often suffices for small work and two or three for
+larger work. Add or move a pending point when a user flow first works, a dependency is about to be used, or
+new evidence makes a wrong assumption costly. The manager records the revised coverage and reason in the
+plan or topic contract before dependent work proceeds. Preserve passed points and their evidence. An open
+blocking finding stays with its review point until resolved.
+
+At an intermediate point, freeze a coherent result and judge its declared outcome and critical assumptions.
+Identify the remaining work and its next point. PASS applies to that outcome alone. At the final point,
+require evidence for the entire agreed Goal, including all required checks and resolved blocking findings.
+
 ### Block only what this change broke or left unshown
 
 A reviewer asked to find problems always finds some, and fixing all of them adds loops and abstraction. Only a
