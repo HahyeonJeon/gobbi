@@ -27,7 +27,8 @@ jobs:
 
   skill_checks:
     name: Skill checks (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    # setup-python provides Python 3.9 builds through Ubuntu 24.04.
+    runs-on: ${{ matrix.python == '3.9' && 'ubuntu-24.04' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
