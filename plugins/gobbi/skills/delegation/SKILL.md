@@ -42,8 +42,8 @@ handoff must carry the evidence you need to accept the result.
   cases the rule did not foresee, and a fixed method removes choices it could make better.
 - **Take each taste or preference from a named source.** An invented leaning steers the work toward a guess,
   so label one you inferred.
-- **Add every field, table, or status word the caller requires.** The caller is the skill, process, or project
-  rule that asked for the brief, and its requirement wins over this template.
+- **Include the authority, recovery details, and return format the caller needs.** These let the agent act
+  within scope and let the recipient use the result.
 - **Accept a handoff only after reading the named result and rerunning the checks you rely on.** A run status
   or activity summary can report success that the work does not show.
 
@@ -59,12 +59,23 @@ handoff must carry the evidence you need to accept the result.
 - Give new work to a fresh agent with one consolidated brief rather than resuming an interrupted agent, whose
   context still holds the old task.
 
+#### Use tool results to reach the next decision
+
+- Start from the supplied Materials. Group independent reads or searches needed for the same decision in one
+  turn. Keep calls separate when the next one depends on the result or needs its own approval.
+- Have an edit or check report the measurement its caller needs. For a long-running job, use the host’s
+  completion notification or a blocking wait with a timeout. Return to the model when there is a result,
+  failure, or timeout to act on.
+
 ### Brief Construction
 
 #### Start from the template
 
-- Copy this template, replace every placeholder with facts about the task, and drop the sections you have no
-  content for:
+- Open with the intended outcome, who needs it, and what would demonstrate success. Give the expected
+  Return and any binding conditions. Add context, sources, or preferences when they change the work.
+- Share a known entry point, reproducer, or active job ID when it saves rediscovery. Leave tool choice,
+  implementation order, and grouping of calls to the recipient.
+- Use the relevant parts of this template for a longer assignment:
 
   ```markdown
   ## Role
@@ -132,10 +143,10 @@ handoff must carry the evidence you need to accept the result.
 - A named exemplar beats an adjective. Write only leanings that change which acceptable result the agent
   picks.
 
-#### Write Materials as one table
+#### Supply usable Materials
 
-- List each source in one table with the columns `Name | Path | Description`. Path is an absolute path, URL,
-  or other exact location.
+- A single source can be a path and its relevance in one line. For several sources, a table with
+  `Name | Path | Description` makes them easy to scan.
 - In Description, say what the source gives the agent and whether it rules the work or only shows an example.
   When two sources can disagree, say which one wins.
 

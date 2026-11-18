@@ -4,7 +4,7 @@
 Usage: python3 entry.py [runtime [project-key]]
 
 Read-only. Prints `key: value` lines and exits 0, or prints `blocked: <reason>` and exits 2.
-The optional runtime (claude, codex, cursor, or grok) adds the manager role path for that runtime.
+The optional runtime (claude, codex, cursor, or grok) identifies its specialist directory.
 The optional project key replaces the one derived from the repository folder name.
 """
 
@@ -43,17 +43,21 @@ def root_pair() -> tuple[Path, Path]:
     for sentinel in (skills / "gobbi" / "SKILL.md", skills / "principles" / "SKILL.md"):
         if not sentinel.is_file():
             raise Blocked(f"root pair: {sentinel} is missing")
-    if not any((agents / name).is_file() for name in ("manager.md", "claude/manager.md")):
-        raise Blocked(f"root pair: neither {agents / 'manager.md'} nor {agents / 'claude/manager.md'} exists")
+    if not any((agents / name).is_file() for name in ("assistant.md", "claude/assistant.md")):
+        raise Blocked(f"root pair: neither {agents / 'assistant.md'} nor {agents / 'claude/assistant.md'} exists")
     return skills, agents
 
 
-def manager_role(agents: Path, runtime: str) -> Path | None:
-    """Return the manager role file for one runtime, in a runtime-flat or runtime-folder layout."""
-    roots = (agents, agents / runtime, agents.parent / "runtimes" / runtime)
-    names = ("manager.toml",) if runtime == "codex" else ("manager.md",)
-    candidates = [root / name for root in (roots if runtime == "claude" else roots[1:]) for name in names]
-    return next((path for path in candidates if path.is_file()), None)
+def runtime_agents_root(agents: Path, runtime: str) -> Path:
+    """Locate the runtime's specialist contracts in a checkout or installed package."""
+    roots = [agents / runtime, agents.parent / "runtimes" / runtime]
+    if runtime == "claude":
+        roots.insert(0, agents)
+    sentinel = "assistant.toml" if runtime == "codex" else "assistant.md"
+    for root in roots:
+        if (root / sentinel).is_file():
+            return root
+    raise Blocked(f"no {runtime} specialist directory containing {sentinel} under {agents.parent}")
 
 
 def project_key(common_dir: Path, given: str | None) -> str:
@@ -99,10 +103,7 @@ def entry(cwd: Path, runtime: str | None, given_key: str | None) -> list[str]:
     key = project_key(common_dir, given_key)
     lines = [f"skills_root: {skills}", f"agents_root: {agents}", f"principles: {skills / 'principles' / 'SKILL.md'}"]
     if runtime:
-        role = manager_role(agents, runtime)
-        if role is None:
-            raise Blocked(f"no manager role for {runtime} under {agents} or {agents.parent / 'runtimes'}")
-        lines += [f"runtime: {runtime}", f"manager_role: {role}"]
+        lines += [f"runtime: {runtime}", f"runtime_agents_root: {runtime_agents_root(agents, runtime)}"]
     lines += [f"project_key: {key}", f"checkout: {checkout}", f"main_checkout: {common_dir.parent}"]
     lines.append(f"branch: {git(cwd, 'branch', '--show-current') or 'detached'}")
     lines.append(f"dirty: {'yes' if git(cwd, 'status', '--porcelain') else 'no'}")

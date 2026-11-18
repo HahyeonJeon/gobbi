@@ -26,11 +26,11 @@ Four steps, run once at the Gobbi entry:
    `gobbi/scripts/entry.py` under the second. The script takes the pair from its own location, so no candidate
    has to be chosen.
 3. **Validate.** The script requires all three sentinels: `{gobbi-skills-root}/gobbi/SKILL.md`,
-   `{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md` or
-   `{gobbi-agents-root}/claude/manager.md` — `{gobbi-agents-root}` is the `agents/` sibling of
+   `{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/assistant.md` or
+   `{gobbi-agents-root}/claude/assistant.md` — `{gobbi-agents-root}` is the `agents/` sibling of
    `{gobbi-skills-root}`.
 4. **Fail loudly, not silently.** The script exits 2 with a `blocked:` reason on a sentinel failure, a missing
-   manager role, or an invalid project key, and the manager stops when the printed pair diverges from the one
+   runtime specialist directory, or an invalid project key, and the manager stops when the printed pair diverges from the one
    already recorded this session. The entry writes nothing, so it cannot propagate a corrected root once one is
    wrong — a diverged pair must stop and report both.
 
@@ -46,7 +46,7 @@ and `NO_GOBBI_ROOT` are removed with Delegation's Metadata section. Role contrac
 [identity-and-load maps](../process/identity-and-load-role-contracts.md) and do not restate the protocol. A
 supplied root is never trusted unvalidated.
 
-### Verified topology trace
+### Topology trace measured before the manager role was retired
 
 | Reported shape | Rejected candidate | Selected | `{gobbi-agents-root}/manager.md` |
 |---|---|---|---|

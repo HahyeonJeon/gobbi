@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.4.2 - 2026-11-18
+
+**Upgrade from 1.4.1.** This patch includes a breaking change. Start the main agent through Gobbi entry,
+remove the previous manager permission or installed role file, and refresh the six specialist roles. Consumers
+of the entry script should read `runtime_agents_root` for the runtime directory in place of the old
+`manager_role` file path.
+
+### Changed
+
+- Execution specialists choose implementation details within the agreed Goal and authority. Visual checks
+  follow the changed surfaces and risk. Managers can adjust pending reviews as evidence emerges, with a final
+  review of the integrated Goal. Briefs carry the outcome, return, and necessary context.
+
+- Gobbi entry gives the main agent the manager role. The six callable specialists share the assistant’s
+  task-specific source locations across Cowork requests and Workflow phases. Entry reports
+  `runtime_agents_root` in place of `manager_role`. See the [upgrade instructions](README.md#migrate-a-checkout-with-the-separate-manager-role).
+
 ## 1.4.1 - 2026-11-16
 
 **Upgrade:** Version 1.4.1 has breaking changes and keeps a patch version. By the user's explicit decision this is

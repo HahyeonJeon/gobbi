@@ -42,8 +42,8 @@ sizes and in the states a viewer will meet.
 
 #### Every state is shown, with feedback and recovery
 
-- Empty, loading, error, success, disabled, first-use, and long-content states each exist. For static work,
-  each variant the Goal names, such as print, dark mode, or a thumbnail, exists.
+- Exercise the states the change affects, such as loading, error, success, and long content. For static work,
+  check each variant the Goal names, such as print, dark mode, or a thumbnail.
 - Each action gives visible feedback, and each error says what happened and how to recover.
 
 #### Motion keeps the viewer oriented

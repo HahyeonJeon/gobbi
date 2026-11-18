@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.1-blue" alt="Version 1.4.1"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.2-blue" alt="Version 1.4.2"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -32,9 +32,10 @@ This checkout enables `gobbi@gobbi` in `.claude/settings.json`. It does not keep
 `.claude/skills`, or a settings `hooks` object. Claude loads agents and skills from `plugins/gobbi`. The
 package has no hooks and no settings check in this release.
 
-Allow the seven Gobbi roles in your project `.claude/settings.json`.
-The roles are manager, assistant, leader, developer, designer, author, and reviewer.
-Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
+Allow the six Gobbi specialists in your project `.claude/settings.json`.
+The roles are assistant, leader, developer, designer, author, and reviewer.
+Gobbi entry makes your main agent the manager. The assistant prepares sources for specialist briefs and handles
+named record work.
 The other five are phase roles, and the named role must match the assignment phase.
 Leader owns Ideation and Planning in every domain, and reviewer owns Review.
 Developer, designer, and author own Execution: the developer changes code with no visual surface, the
@@ -48,7 +49,6 @@ designer changes work with a visual element, including HTML and web UI, and the 
       "Skill(gobbi:principles)",
       "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)",
-      "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:leader)",
       "Agent(gobbi:developer)",
@@ -129,12 +129,19 @@ is safe to run again. Commit `.gobbi/` before your first session.
 
 Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does not run it.
 
-- Claude Code: allow the seven roles in `.claude/settings.json` as shown above. See
+- Claude Code: allow the six specialists in `.claude/settings.json` as shown above. See
   [claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md).
-- Codex: copy the seven role files from the plugin's `runtimes/codex/` into `.codex/agents/` byte for byte. See
+- Codex: copy the six specialist files from the plugin's `runtimes/codex/` into `.codex/agents/` byte for byte. See
   [codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md).
 - Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
 - Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
+
+## Migrate a checkout with the separate manager role
+
+Version 1.4.2 removes the separate manager role. This breaking change ships as a patch in the 1.4 series.
+Start the main agent through Gobbi entry. Remove the old `Agent(gobbi:manager)` permission and any
+Gobbi-installed `.codex/agents/manager.toml` or `.cursor/agents/manager.md` copy or link. Update the six
+specialists from the same plugin revision. Entry now reports `runtime_agents_root` for the active runtime.
 
 ## Upgrade to 1.4.1
 
@@ -143,8 +150,7 @@ exception to Semantic Versioning, as 1.3.3 and 1.4.0 were. The breaking changes 
 points instead of after every task, and the entry script.
 
 - A plan written before 1.4.1 has no `## Review Points` section, and Workflow returns it to Planning. Before you
-  continue a session that is in progress, add the section to its plan: one point for small work and two or three
-  for large work, with every task under exactly one point.
+  continue a session that is in progress, add the section to its plan, covering every task and the final integrated Goal.
 - Workflow no longer reviews each Execution task. A task between points is accepted on its own passed checks,
   and the record of each review point lives in `3-execution/review-NN/`.
 - Cowork commits accepted work locally when a review point passes, without waiting for `commit`. Merge, push,
@@ -156,10 +162,10 @@ points instead of after every task, and the entry script.
 
 Version 1.4.0 has breaking changes and keeps a minor version. By the user's explicit decision this is an
 exception to Semantic Versioning, as 1.3.3 was. The breaking changes are the removed skills, the five phase
-roles that replace the twelve domain phase roles (manager and assistant stay), the removed setup scripts and hooks,
+roles that replace the twelve domain phase roles (that release retained manager and assistant), the removed setup scripts and hooks,
 and the renamed terms.
 
-Gobbi now has seven roles: manager, assistant, leader, developer, designer, author, and reviewer. Replace each
+The five phase roles replace the previous phase roles. Replace each
 old role call by its phase:
 
 | Old role | New role |
@@ -178,8 +184,7 @@ Then update each runtime by hand, because the setup scripts no longer exist:
 - Claude Code: in `.claude/settings.json`, replace the twelve old `Agent(gobbi:...)` phase-role entries with
   `Agent(gobbi:leader)`, `Agent(gobbi:developer)`, `Agent(gobbi:designer)`, `Agent(gobbi:author)`, and
   `Agent(gobbi:reviewer)`. The plugin supplies the roles.
-- Codex: replace all seven role files in `.codex/agents/` with the plugin's `runtimes/codex/` copies, including
-  `manager.toml` and `assistant.toml`, whose 1.3.3 copies still route to the removed roles. Delete the twelve old
+- Codex: refresh the six specialist files in `.codex/agents/` from the plugin's `runtimes/codex/` copies. Delete the twelve old
   role files after you migrate their callers.
 - Cursor: update projects that use `.cursor/agents` from the [Cursor role contracts](plugins/gobbi/runtimes/cursor/).
 - Grok: the plugin supplies the roles. If you installed a Gobbi Grok hook earlier, remove its copy from
@@ -212,7 +217,8 @@ Cowork is the fast path for implementation work that you direct request by reque
 one topic; a new topic starts only when you ask for one or approve the manager's proposal. It uses the same
 Ideation and Planning as Workflow, and runs each only when a request needs it before verified Execution.
 
-Independent review runs at each plan's review points: one for small work and two or three for large work. The
+The manager can move a pending review point when a user flow becomes testable, a dependency is about to
+be used, or new risk warrants earlier feedback. The final point verifies the integrated Goal. The
 manager commits accepted work locally when a point passes, and you can still call `review` or `commit` at any
 time. Closure runs only when you request it. One isolated branch and linked worktree hold the session, keeping
 your main checkout separate from the ordered local commits.

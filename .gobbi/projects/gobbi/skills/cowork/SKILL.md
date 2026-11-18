@@ -15,7 +15,7 @@ only when the user calls for it. Use it after Gobbi selects Cowork.
 
 ### Keep the user in control
 
-The user owns every scope, design, risk, destructive-action, and external-service decision, and calls closure.
+The user owns scope, design direction, accepted risk, destructive and external actions, and closure.
 The manager makes each request concrete, delivers verified and reviewed results, commits them locally, and
 waits for the next request.
 
@@ -43,10 +43,9 @@ planned review points and never replaces stage quality.
 - **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending a
   consequential option or asking the user for a decision.** Principle 3 of [Principles](../principles/SKILL.md)
   has the user choose among options that participants studied and critiqued.
-- **Rule a minor choice yourself, and take a material one to the user.** A minor choice changes no scope,
-  design, risk, or destructive or external action, so asking costs the user a turn without giving control;
-  record it in the topic contract as `Ruling: <what> — <why> — <cost if wrong>`, and check, rather than ask, a
-  question that running something can answer.
+- **Leave implementation choices to the specialist and take changes of scope, direction, or risk to the
+  user.** Record a manager decision that later work relies on in the topic contract as
+  `Ruling: <what> — <why> — <cost if wrong>` so the next assignment can use it.
 - **Accept a result only after rereading it or its commit and reproducing its verification.** A report or
   summary is a claim, not evidence.
 
@@ -94,12 +93,18 @@ in the topic contract and its report has gone to the user.
 - The first delivered work, including a `review`, opens `topic-01-slug`; a later request is added, with its
   decisions, to the current topic contract, and a new topic opens only as the topic Rule allows. Apply
   Discussion to settle the request's outcome, scope, acceptance, exclusions, and required user decisions.
-- Run Ideation when the request has an open design choice and Planning when the work needs more than one task;
+- Run Ideation when a user-owned design choice is open and Planning when the work needs more than one task;
   otherwise go straight to Execution. If the request is too large, risky, or irreversible for Cowork, ask the
   user to narrow it or start Workflow through Gobbi.
-- Build every assignment through [Delegation](../delegation/SKILL.md), naming the topic, worktree and session
-  root, the paths it may change and the ones it must not, exact output and `tmp/` paths, and commit authority.
-  Execution commit authority stays none until a review point passes or the user calls `commit`.
+- Brief through [Delegation](../delegation/SKILL.md) with the Goal, Return, and active worktree or source.
+  For writes, name the topic, permitted and protected paths, and output location, granting commit authority
+  only after a review point passes or when the user calls `commit`.
+
+Prepare the first brief through
+[Gobbi's Materials step](../gobbi/SKILL.md#28-prepare-materials-for-the-assignment).
+For a follow-up, recover relevant locations from the current topic's contract and accepted results. Have the
+assistant locate changed or missing sources, callers, or tests when the next assignment needs them. Keep
+reusable locations with the existing evidence paths in the topic contract.
 
 #### 2.2 Ideation
 
@@ -133,9 +138,9 @@ in the topic contract and its report has gone to the user.
 
 #### 2.5 Review at the review points
 
-- A planned request reviews at each point its plan names, once every task the point covers is accepted. A
-  request without Planning is small work with one point at its end, numbered as the topic's next `review-NN`,
-  with the request's acceptance in the topic contract as its Goal.
+- Use the plan's points or, without Planning, the topic contract and its next `review-NN`. The manager may
+  adjust pending points under [Review](../review/SKILL.md#place-review-where-feedback-can-change-the-work),
+  keeping the final point tied to the request's acceptance and reviewing each point once its tasks are ready.
 - Freeze the point's subject, as [Review](../review/SKILL.md) Step 1.2 defines it, with no writer running. Apply
   Review with the bar of each stage the subject covers, and save one report per reviewer at
   `tmp/review-NN/iteration-N/<reviewer>.md` in the topic.

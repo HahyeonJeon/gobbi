@@ -38,9 +38,10 @@ adds the Role, Materials, and Return when it builds the brief.
 - **Set a numeric target only when the user, an accepted decision, or a project rule requires it.** Name the
   source next to the number, because quality beyond the Goal is judged in Review.
 - **Leave implementation steps, file-by-file edits, and test lists to the developer.** The developer knows the
-  code better once it is in it; return an open design choice to the caller instead of deciding it in the plan.
-- **Name one review point for small work and two or three for large work.** Independent review after every
-  task costs more than it finds, so a task between points is accepted on its own passed checks.
+  code better once it is in it; return a user-owned design choice to the caller instead of deciding it in the plan.
+- **Place review points at outcomes worth examining together.** Follow
+  [Review](../../review/SKILL.md#place-review-where-feedback-can-change-the-work) so feedback can inform later
+  work.
 
 ## Procedure
 
@@ -76,11 +77,8 @@ and task IDs are returned.
 
 #### 2.3 Place the review points
 
-- Give the work one review point at its end, where a reviewer judges the integrated result. Small work, with
-  one major goal and no task that two or more tasks build on, has only this one.
-- Give large work two or three. Add a point after the tasks that two or more later tasks build on, so a
-  defect there is found before it spreads, then one at the end of each earlier major goal until there are
-  three; the last point covers the rest.
+- Identify the first useful integrated outcome, downstream dependencies, and costly assumptions. Place a
+  point where feedback can change the next decision and a final point for the whole Goal.
 - Number each point `review-NN` once across all plan documents, and list it in the document whose tasks it
   follows with the task IDs it covers, so every task falls under exactly one point.
 
@@ -89,7 +87,7 @@ and task IDs are returned.
 - Reread every plan document. Check that the tasks cover the whole work without overlap, that each Goal can be
   judged without asking the planner, that the Task Graph shows every task and has no cycle, that every
   constraint, taste, and number has its source, that every task falls under exactly one review point, and
-  that small work has one point and large work two or three.
+  that the final point judges the integrated Goal.
 - Fix what fails, then return the path of every plan document, its task IDs, and the review points.
 
 ## References

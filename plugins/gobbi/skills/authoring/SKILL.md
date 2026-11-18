@@ -15,7 +15,7 @@ applicability sentence matches the current work.
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`authoring-execution`](authoring-execution/SKILL.md) | operation | Use it when one accepted task has a settled writing design and a writer frontier that includes durable prose. |
+| [`authoring-execution`](authoring-execution/SKILL.md) | operation | Use it when the task has an agreed Goal and authority to change durable prose. |
 | [`authoring-ideation`](authoring-ideation/SKILL.md) | operation | Use it when a bounded topic has an unresolved material writing-design choice. |
 | [`authoring-planning`](authoring-planning/SKILL.md) | operation | Use it when the goal and design of writing work are settled but the work is too large for one task. |
 | [`authoring-review`](authoring-review/SKILL.md) | preference | Use it when reviewing docs, skills, a changelog, or other durable prose. |

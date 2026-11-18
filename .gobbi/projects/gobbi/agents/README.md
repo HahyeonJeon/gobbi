@@ -1,7 +1,7 @@
 # Gobbi role contracts
 
-Gobbi has seven roles. Manager and assistant are session roles. Leader, developer, designer, author, and
-reviewer are phase roles. Manager is session authority. Assistant is support. Neither is a phase role.
+Gobbi entry gives the main agent its manager responsibilities. The six callable specialists include one
+assistant for preparation and record work and five phase roles.
 
 The named phase role matches the assignment phase. Ideate is leader. Plan is leader. Implement is developer,
 designer, or author, by the subject of the result. Review is reviewer.
@@ -23,8 +23,7 @@ owns. In scope is CRUD and the role's subjects. Out of scope is Never.
 
 | Role | Phase | Result |
 |---|---|---|
-| manager | session authority | User, mode, routing, acceptance |
-| assistant | support | Lookup and authorized Memory or record work |
+| assistant | support | Task Materials, lookup and authorized Memory or record work |
 | leader | ideation and planning | The ideation result and the plan result |
 | developer | execution | Changes to code with no visual surface |
 | designer | execution | Changes to work with a visual element, including HTML and web UI |
@@ -44,12 +43,11 @@ Claude and Grok use `model` and `effort`. Codex uses `model` and `model_reasonin
 Cursor uses `model: <id>[effort=<effort>]` and no separate effort key.
 
 Claude and Codex pins differ by role. Read that role's file for the id and effort. Do not treat one
-Claude id, or one Codex id, as the pin for every role. Grok is `grok-4.7` at `xhigh` for every role,
-including manager and assistant.
+Claude id, or one Codex id, as the pin for every role. Grok is `grok-4.7` at `xhigh` for every specialist.
 
 Codex uses only `{role}.toml`. The role body lives in that file's `developer_instructions`.
 
-Cursor role pins differ by role. Read that role's file. On Cursor, manager and assistant are
+Cursor role pins differ by role. Read that role's file. On Cursor, the assistant uses
 `grok-4.7[effort=xhigh]`. Every other Cursor role uses that role's Claude model and effort in the same
 bracket. The Cursor parent starts as `grok-4.7[effort=high]`.
 
@@ -74,8 +72,8 @@ It does not read both.
 unlimited depth, and a subfolder becomes part of the agent's scoped identifier — a file at
 `agents/review/security.md` in plugin `p` registers as `p:review:security`. Documented for Claude Code at
 `docs/en/sub-agents`, and measured: same-basename files in different subdirectories do **not** collide, so
-shipping `agents/claude/manager.md` would register `gobbi:claude:manager` instead of `gobbi:manager`, and the
-cursor and grok copies would add fourteen more live agents with identical leaf names. `claude plugin validate
+shipping `agents/claude/assistant.md` would register `gobbi:claude:assistant` instead of `gobbi:assistant`, and the
+cursor and grok copies would add twelve more live agents with identical leaf names. `claude plugin validate
 --strict` reports no warning about any of it.
 
 So the package flattens Claude's contracts into `agents/` and ships the other three in a `runtimes/` sibling,

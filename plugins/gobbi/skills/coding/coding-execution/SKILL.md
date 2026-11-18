@@ -1,22 +1,21 @@
 ---
 name: coding-execution
-description: "Coding Execution implements and verifies one accepted code task. Use it when a task with a settled code design changes code."
+description: "Coding Execution implements and verifies one accepted code task. Use it for an agreed Goal with authority to change code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Coding Execution
 
-Coding Execution implements, verifies, and hands off one accepted code task. Use it when the task leaves no
-material code-design choice open and its writer frontier includes code, whether or not `coding-ideation` ran.
-It grants no Review authority.
+Coding Execution gives the developer responsibility for reaching an agreed Goal within the authorized code
+surface. The developer chooses the internal implementation and hands the verified result to the caller.
 
 ## Principles
 
 ### Deliver proven code, not a plan
 
 The result is code that reaches the task Goal, with the evidence that it does. Grow it in small working
-increments from the foundation up, so each failure points at the last change.
+increments that expose the behavior or assumption a reviewer can test next.
 
 ### Apply the principles to real code
 
@@ -33,8 +32,8 @@ it. The code's real dependencies decide that set, not the repository type or fil
 - **MUST commit only when the caller grants commit authority.** Commits are the caller's to grant; without
   that authority, the exact verified uncommitted tree, kept under the caller's retained-state policy and
   neither staged nor committed, is the completed result.
-- **Stop and return to the caller when the task or design leaves a material design choice open.** Design
-  belongs to Ideation and the user, and a developer's guess becomes design no one accepted.
+- **Return a choice that changes the Goal, a client decision, a public contract, or agreed cost or risk.**
+  Internal structure, patterns, and implementation order belong to the developer within those boundaries.
 - **Stop before changing a surface outside the scope or writer frontier.** Another owner holds it, so return
   its effect, its owner, and the next action it needs; do the same for out-of-scope findings.
 - **NEVER run Coding Review, write a review report, claim reviewer independence, issue a verdict, accept the work,
@@ -72,12 +71,12 @@ added fails the Simplicity tests, and no affected surface is stale.
 
 #### 2.1 Build and prove each increment
 
-- Build each increment from its lowest dependency to its caller-visible result, and prove it before starting
-  the next. For a testable defect, add a regression check that fails before the fix and passes after it.
-- With an Ideation design, build each Ontology unit to its design and caller contract and add no pattern it does
-  not name. Without one, record in the handoff the Ontology unit definition and caller contract of each new public
-  Ontology unit, per [Modularization](../principles.md#modularization), and the force behind each added
-  abstraction.
+- Choose the order that exposes a useful outcome or tests the riskiest assumption early. For a testable
+  defect, add a regression check that fails before the fix and passes after it.
+- Preserve accepted contracts and explain consequential implementation choices in the handoff. For a new
+  public unit, make its responsibility and caller contract clear as
+  [Modularization](../principles.md#modularization)
+  describes.
 - Regenerate generated output from its canonical source instead of editing it, because the next generation
   overwrites a hand edit.
 
@@ -88,8 +87,8 @@ added fails the Simplicity tests, and no affected surface is stale.
   When mechanism the accepted design requires fails them, keep it and record a concern.
 - Account for every affected surface as changed or unchanged for a stated reason.
 - Replace each Ontology unit the task added that repeats knowledge an existing Ontology unit holds with a call to
-  that Ontology unit. When the change breaks an existing Ontology unit's definition, stop and return the
-  restructure as a design choice instead of working around it.
+  that unit. Restructure internal units when their responsibilities change, and escalate changes to an agreed
+  contract before depending on them.
 
 ### Phase 3 — Verify and Deliver
 
@@ -109,8 +108,8 @@ returned.
 - Commit the verified tree when the caller grants commit authority; otherwise retain it under the caller's
   retained-state policy.
 - Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with the commit or retained-tree
-  identity, the verification record, the reach account, and, without Ideation, the design record from Step
-  2.1. Put accepted-design concerns and out-of-scope findings in its concerns.
+  identity, the verification record, affected surfaces, and consequential design choices. Put accepted-design
+  concerns and out-of-scope findings in its concerns.
 - On a stop, keep the worktree as it is and return the owner, the failed obligation and its evidence, the safe
   retained state, what not to do next, and the condition to resume.
 

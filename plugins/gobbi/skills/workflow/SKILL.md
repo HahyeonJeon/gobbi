@@ -37,7 +37,7 @@ from that file in the same worktree and session root.
 - **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before presenting
   options or asking for a Phase 1 decision.** Principle 3 of [Principles](../principles/SKILL.md) has the user
   choose among options that participants studied and critiqued.
-- **After `P1 · User Review`, rule each choice inside the accepted design yourself and ask the user nothing but
+- **After `P1 · User Review`, delegate implementation choices and ask the user nothing but
   Continue or Stop.** The user settled the design in Phase 1, so record each ruling in the work item's receipt as
   `Ruling: <what> — <why> — <cost if wrong>`, check rather than ask a question that running something can
   answer, and stop at a Stopped `handoff.md` only for an unauthorized irreversible, security-sensitive, or
@@ -99,7 +99,8 @@ Settle the design with the user in a recoverable session. Done when a verified `
 #### 1.4 Ideation
 
 - **DISCUSSION:** Apply Discussion to settle the design with the user and participants, and record every user
-  decision.
+  decision. Use Gobbi’s [Materials step](../gobbi/SKILL.md#28-prepare-materials-for-the-assignment) to brief an
+  assistant on missing sources for the design and pass its findings to the leader.
 - **WORK:** The `leader` applies the matching Ideation skill:
   [Coding Ideation](../coding/coding-ideation/SKILL.md),
   [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), or
@@ -116,18 +117,21 @@ Deliver the accepted design as task commits reviewed at the plan's review points
 
 #### 2.1 Planning
 
-- **DISCUSSION:** Give the `leader` the accepted goal, the Ideation result, and participant input. The leader
-  chooses the major goals and the task split.
+- **DISCUSSION:** Give the leader the accepted goal, Ideation result, and participant input to choose the
+  major goals and task split. Give tasks the relevant sources from Ideation and use one assistant lookup for
+  discovery shared by several tasks.
 - **WORK:** The `leader` applies the matching Planning skill:
   [Coding Planning](../coding/coding-planning/SKILL.md),
   [Authoring Planning](../authoring/authoring-planning/SKILL.md), or
   [Design Planning](../design/design-planning/SKILL.md), with output directory `2-planning/`.
 - **RECORD:** Reread every plan document, record their paths and hashes, and write the receipt. Return to WORK
   when tasks miss or overlap part of the work, a Goal cannot be judged, an item lacks a source, the Task Graph
-  has a cycle, a task falls under no review point or under two, or small work lacks its one point or large work
-  its two or three.
+  has a cycle, task coverage has gaps or overlaps, or the final point omits the integrated Goal.
 
 #### 2.2 Task discussion and work
+
+Use task Materials in each brief. On recovery or after an upstream change, refresh affected locations from the
+accepted commit and receipt.
 
 - **DISCUSSION:** Pick the next ready task, or several to run in parallel when the Task Graph allows it and they
   change different files. Consult participants when the approach needs it, and build each Execution brief
@@ -140,6 +144,10 @@ Deliver the accepted design as task commits reviewed at the plan's review points
   commits are made one at a time.
 
 #### 2.3 Task record and review points
+
+When new evidence warrants earlier feedback, the manager can split pending work at a demonstrable outcome and
+update pending points and dependencies in the plan. Keep the original Goal, passed receipts, and unresolved
+findings intact under [Review](../review/SKILL.md#place-review-where-feedback-can-change-the-work).
 
 - **RECORD:** Reread the task's commit and rerun its checks, then write the receipt; a failed check returns to
   WORK as the next iteration. Start a task only after the receipt of each task it needs and the PASS of any review

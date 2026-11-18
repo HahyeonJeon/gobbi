@@ -15,7 +15,7 @@ applicability sentence matches the current work.
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`design-execution`](design-execution/SKILL.md) | operation | Use it when one accepted task has a settled visual design and a writer frontier that includes visual work. |
+| [`design-execution`](design-execution/SKILL.md) | operation | Use it when the task has an agreed Goal and authority to change visual work. |
 | [`design-ideation`](design-ideation/SKILL.md) | operation | Use it when a bounded topic has an unresolved material visual-design choice. |
 | [`design-planning`](design-planning/SKILL.md) | operation | Use it when the goal and design of visual work are settled but the work is too large for one task. |
 | [`design-review`](design-review/SKILL.md) | preference | Use it when reviewing UI, images, video, slides, reports, or other visual work. |

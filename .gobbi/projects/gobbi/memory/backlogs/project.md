@@ -73,18 +73,14 @@ outcome.
 **Context:** The current nested layout and the rejection are recorded in
 [`design/architecture/consumer-project-bootstrap.md`](../design/architecture/consumer-project-bootstrap.md).
 
-## Guardrail gaps in two `.toml` role wrappers
+## Guardrails for the Codex assistant
 
 **Backlogged at:** 2026-08-02T12:16:00Z
 
-**What:** Decide whether `assistant.toml` needs a git/scope guardrail clause and whether `manager.toml` needs
-the conflict-precedence clause the other four role wrappers carry.
+**What:** Decide whether `assistant.toml` needs a Git or scope guardrail for its authorized record writes.
 
-**Why backlogged:** Direct comparison of the five live role contracts and wrappers shows that
-`assistant.toml` has no git/scope guardrail clause, though the assistant role writes to the worktree during
-RECORD and Wrap-up WORK. `manager.toml` lacks the conflict-precedence clause the other four wrappers carry,
-which reads as a pre-existing asymmetry rather than a clear defect. Both need a user decision on whether the
-omission is intentional.
+**Why backlogged:** The assistant can change records during Workflow and Wrap-up. The original comparison
+also covered a Codex manager wrapper, which has since been retired.
 
 **Context:** Raised during the 2026-08-02 locator session while converting the five role-contract wrappers;
 pre-existing, not introduced by that conversion.
@@ -264,7 +260,7 @@ ended run but not a silent hang inside the timeout.
 **What:** Generate the four runtime copies of each role from one source, so the shared body is written once.
 
 **Why backlogged:** The guard only checks that the role bodies are identical across runtimes; it does not generate
-them, and seven roles in four runtimes is 28 files to keep in step.
+them, and six specialists in four runtimes means 24 files to keep in step.
 
 **Context:** The `roles` check in [Repository guard](../design/architecture/repository-guard.md) reports drift.
 Generation would extend `guard.py sync`.

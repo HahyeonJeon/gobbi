@@ -13,9 +13,10 @@ In a Claude Code session:
 /reload-plugins
 ```
 
-Allow the seven Gobbi roles in project `.claude/settings.json`.
-The roles are manager, assistant, leader, developer, designer, author, and reviewer.
-Manager owns the user, the mode, and acceptance. Assistant owns lookup and named Memory work.
+Allow the six Gobbi specialists in project `.claude/settings.json`.
+The roles are assistant, leader, developer, designer, author, and reviewer.
+Gobbi entry makes your main agent the manager. The assistant prepares sources for specialist briefs and handles
+named record work.
 The other five are phase roles, and the named role must match the assignment phase.
 Leader owns Ideation and Planning in every domain, and reviewer owns Review.
 Developer, designer, and author own Execution: the developer changes code with no visual surface, the
@@ -29,7 +30,6 @@ designer changes work with a visual element, including HTML and web UI, and the 
       "Skill(gobbi:principles)",
       "Skill(gobbi:discussion)",
       "Skill(gobbi:delegation)",
-      "Agent(gobbi:manager)",
       "Agent(gobbi:assistant)",
       "Agent(gobbi:leader)",
       "Agent(gobbi:developer)",
