@@ -5,7 +5,7 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterator
 
-from repo import PACKAGE, Repo
+from repo import ANTIGRAVITY_PACKAGE, PACKAGE, Repo
 from skill_checks.finding import Finding
 
 __all__ = ["LOCATORS", "mismatches"]
@@ -38,6 +38,7 @@ LOCATORS: tuple[tuple[str, Extractor], ...] = (
     (f"{PACKAGE}/.codex-plugin/plugin.json", _plugin_version),
     (f"{PACKAGE}/.cursor-plugin/plugin.json", _plugin_version),
     (f"{PACKAGE}/.grok-plugin/plugin.json", _plugin_version),
+    (f"{ANTIGRAVITY_PACKAGE}/.antigravity-plugin/plugin.json", _plugin_version),
     (".claude-plugin/marketplace.json", _marketplace_version),
     ("README.md", _pattern(r"badge/version-(\d+\.\d+\.\d+)-")),
     ("README.md", _pattern(r'alt="Version (\d+\.\d+\.\d+)"')),

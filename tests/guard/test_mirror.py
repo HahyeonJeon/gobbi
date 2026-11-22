@@ -8,19 +8,22 @@ from ..skill_checks.fixtures import skill
 from .fixtures import HAS_GIT, SKILLS, GuardCase
 
 PACKAGE_SKILLS = "plugins/gobbi/skills"
-WRITABLE = ("plugins/gobbi/skills", "plugins/gobbi/agents", "plugins/gobbi/runtimes")
+ANTIGRAVITY_SKILLS = "plugins/antigravity/gobbi/skills"
+WRITABLE = mirror.OWNED_PATHS
 
 
 class RewriteLinksTest(unittest.TestCase):
     def test_longest_prefix_first_and_only_relative_agent_links(self):
         text = (
             "[a](../../agents/claude/assistant.md) [b](../../agents/codex/assistant.toml) "
-            "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md)"
+            "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md) "
+            "[f](../../agents/antigravity/assistant.md)"
         )
         self.assertEqual(
             mirror.rewrite_links(text),
             "[a](../../agents/assistant.md) [b](../../runtimes/codex/assistant.toml) "
-            "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md)",
+            "[c](../../skills/git/SKILL.md) [d](agents/claude/x.md) [e](../../agents/README.md) "
+            "[f](../../agents/assistant.md)",
         )
 
 
@@ -44,6 +47,7 @@ class DriftTest(GuardCase):
         self.assertEqual(
             self.kinds(root),
             [
+                f"missing-in-package {ANTIGRAVITY_SKILLS}/alpha/new.md",
                 f"mode-differs {PACKAGE_SKILLS}/alpha/SKILL.md",
                 f"missing-in-package {PACKAGE_SKILLS}/alpha/new.md",
                 f"content-differs {PACKAGE_SKILLS}/beta/SKILL.md",
@@ -53,12 +57,23 @@ class DriftTest(GuardCase):
 
     def test_rewritten_file_differs_only_by_its_links(self):
         source = "Role: [assistant](../../agents/claude/assistant.md)\n"
-        root = self.gobbi({f"{SKILLS}/gobbi/SKILL.md": source, f"{PACKAGE_SKILLS}/gobbi/SKILL.md": source})
-        self.assertEqual(self.kinds(root), [f"content-differs {PACKAGE_SKILLS}/gobbi/SKILL.md"])
-        Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
-        self.assertEqual(
-            (root / f"{PACKAGE_SKILLS}/gobbi/SKILL.md").read_text(), "Role: [assistant](../../agents/assistant.md)\n"
+        root = self.gobbi(
+            {
+                f"{SKILLS}/gobbi/SKILL.md": source,
+                f"{PACKAGE_SKILLS}/gobbi/SKILL.md": source,
+                f"{ANTIGRAVITY_SKILLS}/gobbi/SKILL.md": source,
+            }
         )
+        self.assertEqual(
+            self.kinds(root),
+            [
+                f"content-differs {ANTIGRAVITY_SKILLS}/gobbi/SKILL.md",
+                f"content-differs {PACKAGE_SKILLS}/gobbi/SKILL.md",
+            ],
+        )
+        Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
+        for path in (f"{PACKAGE_SKILLS}/gobbi/SKILL.md", f"{ANTIGRAVITY_SKILLS}/gobbi/SKILL.md"):
+            self.assertEqual((root / path).read_text(), "Role: [assistant](../../agents/assistant.md)\n")
         self.assertEqual(self.kinds(root), [])
 
 
@@ -75,6 +90,7 @@ class CodexPolicyTest(GuardCase):
         self.assertIn(f"missing-in-package {policy}", self.kinds(root))
         Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
         self.assertEqual((root / policy).read_bytes(), mirror.CODEX_USER_ONLY)
+        self.assertFalse((root / f"{ANTIGRAVITY_SKILLS}/alpha/{mirror.CODEX_POLICY}").exists())
         self.assertEqual(self.kinds(root), [])
 
     def test_policy_goes_when_the_skill_is_no_longer_user_only(self):
@@ -89,6 +105,7 @@ class CodexPolicyTest(GuardCase):
                 canonical: mirror.CODEX_USER_ONLY,
                 f"{PACKAGE_SKILLS}/alpha/SKILL.md": self.USER_ONLY,
                 f"{PACKAGE_SKILLS}/alpha/{mirror.CODEX_POLICY}": mirror.CODEX_USER_ONLY,
+                f"{ANTIGRAVITY_SKILLS}/alpha/SKILL.md": self.USER_ONLY,
             }
         )
         self.assertEqual(
@@ -105,13 +122,16 @@ class SyncRoundTripTest(GuardCase):
         os.symlink("../alpha/SKILL.md", root / f"{PACKAGE_SKILLS}/beta/SKILL.md")
         os.symlink("../alpha", root / f"{PACKAGE_SKILLS}/planted")
         manifest = root / "plugins/gobbi/.claude-plugin/plugin.json"
-        before = manifest.read_bytes()
+        agy_manifest = root / "plugins/antigravity/gobbi/.antigravity-plugin/plugin.json"
+        before, agy_before = manifest.read_bytes(), agy_manifest.read_bytes()
 
         Repo(root).apply(mirror.plan(Repo(root)), WRITABLE)
 
         self.assertEqual(self.messages(mirror.drift, root), [])
         self.assertEqual(manifest.read_bytes(), before)
+        self.assertEqual(agy_manifest.read_bytes(), agy_before)
         self.assertTrue(os.access(root / f"{PACKAGE_SKILLS}/alpha/run.sh", os.X_OK))
+        self.assertTrue(os.access(root / f"{ANTIGRAVITY_SKILLS}/alpha/run.sh", os.X_OK))
         self.assertFalse((root / f"{PACKAGE_SKILLS}/beta/SKILL.md").is_symlink())
         self.assertFalse(os.path.lexists(root / f"{PACKAGE_SKILLS}/planted"))
         self.assertFalse((root / f"{PACKAGE_SKILLS}/stray").exists())

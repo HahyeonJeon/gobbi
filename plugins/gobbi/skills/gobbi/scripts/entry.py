@@ -4,7 +4,7 @@
 Usage: python3 entry.py [runtime [project-key]]
 
 Read-only. Prints `key: value` lines and exits 0, or prints `blocked: <reason>` and exits 2.
-The optional runtime (claude, codex, cursor, or grok) identifies its specialist directory.
+The optional runtime (antigravity, claude, codex, cursor, or grok) identifies its specialist directory.
 The optional project key replaces the one derived from the repository folder name.
 """
 
@@ -16,8 +16,8 @@ import sys
 from pathlib import Path
 
 PROJECT_KEY = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?")
-RUNTIMES = ("claude", "codex", "cursor", "grok")
-INSTRUCTION_FILES = ("AGENTS.md", "CLAUDE.md", ".claude/CLAUDE.md")
+RUNTIMES = ("antigravity", "claude", "codex", "cursor", "grok")
+INSTRUCTION_FILES = ("AGENTS.md", "CLAUDE.md", ".claude/CLAUDE.md", "GEMINI.md")
 FIELD = re.compile(r"^\|\s*(Mode|Normalized slug|Latest handoff)\s*\|\s*(.*?)\s*\|\s*$", re.MULTILINE)
 
 
@@ -50,14 +50,18 @@ def root_pair() -> tuple[Path, Path]:
 
 def runtime_agents_root(agents: Path, runtime: str) -> Path:
     """Locate the runtime's specialist contracts in a checkout or installed package."""
-    roots = [agents / runtime, agents.parent / "runtimes" / runtime]
-    if runtime == "claude":
+    package = agents.parent
+    is_antigravity_pkg = (package / ".antigravity-plugin").is_dir() or (package / "plugin.json").is_file()
+    roots = [agents / runtime, package / "runtimes" / runtime]
+    if runtime == "claude" and not is_antigravity_pkg:
+        roots.insert(0, agents)
+    elif runtime == "antigravity" and is_antigravity_pkg:
         roots.insert(0, agents)
     sentinel = "assistant.toml" if runtime == "codex" else "assistant.md"
     for root in roots:
         if (root / sentinel).is_file():
             return root
-    raise Blocked(f"no {runtime} specialist directory containing {sentinel} under {agents.parent}")
+    raise Blocked(f"no {runtime} specialist directory containing {sentinel} under {package}")
 
 
 def project_key(common_dir: Path, given: str | None) -> str:

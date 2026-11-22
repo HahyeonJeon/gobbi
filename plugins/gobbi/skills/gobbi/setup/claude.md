@@ -135,4 +135,4 @@ The per-runtime setup scripts and the SessionStart settings check are not in thi
 return in a later release. Until then, no hook checks your settings, and the manual steps above replace the
 scripts.
 
-Other runtimes: [Codex](codex.md), [Cursor](cursor.md), [Grok](grok.md).
+Other runtimes: [Antigravity](antigravity.md), [Codex](codex.md), [Cursor](cursor.md), [Grok](grok.md).

@@ -1,0 +1,149 @@
+---
+name: review
+description: "Review is an independent check of one finished result against its Goal. Use it when a caller needs a verdict on code, docs, skills, or visual work before accepting it."
+allowed-tools: Read, Grep, Glob, Bash, Write
+skill-type: operation
+---
+
+# Review
+
+Review checks one finished result against its Goal with a reviewer who did not make it, and turns the findings
+into one verdict the caller acts on. Use it at a plan's review point, at Workflow Wrap-up, and on a user's
+`review` call.
+
+## Principles
+
+### Check, do not trust
+
+The producer's handoff is a list of claims. The reviewer reads the result itself and reruns the checks it relies
+on, because an author checks what it meant to build, not what it built.
+
+### Use the fewest reviewers that cover the risk
+
+One fresh reviewer covers most work. A second reviewer from another model family pays off only where a missed
+defect is expensive, so add it by risk, not by habit.
+
+### Place review where feedback can change the work
+
+Keep a final review of the integrated Goal. One point often suffices for small work and two or three for
+larger work. Add or move a pending point when a user flow first works, a dependency is about to be used, or
+new evidence makes a wrong assumption costly. The manager decides the revised coverage and reason, and the
+assigned record owner updates the plan or topic contract before dependent work proceeds. Preserve passed points
+and their evidence. An open blocking finding stays with its review point until resolved.
+
+At an intermediate point, freeze a coherent result and judge its declared outcome and critical assumptions.
+Identify the remaining work and its next point. PASS applies to that outcome alone. At the final point,
+require evidence for the entire agreed Goal, including all required checks and resolved blocking findings.
+
+### Block only what this change broke or left unshown
+
+A reviewer asked to find problems always finds some, and fixing all of them adds loops and abstraction. Judge each
+finding against the accepted Goal. Step 3.3 distinguishes blockers, Low corrections, and follow-ups.
+
+## Rules
+
+- **NEVER review your own work or change the subject.** A review that the producer runs, or that edits what it
+  judges, can no longer tell the caller what was delivered.
+- **Give every finding its evidence.** Use a `path:line` quote, a step-by-step scenario that reaches a wrong
+  outcome, or a command and its output; a finding with none of these is an opinion and never blocks.
+- **Block only a defect this change introduced that breaks the Goal or the contract, or a part of the Goal that
+  no passed check shows, because an inconclusive or unrun check is no evidence.** Taste, pre-existing problems,
+  and improvements outside the Goal go to follow-ups, so review does not grow the scope.
+- **Stop after two fix rounds that still fail.** The premise is likely wrong, so rethink it or ask the user
+  instead of a third round.
+
+## Procedure
+
+### Phase 1 — Set Up the Review
+
+The caller decides who reviews and what they get. Done when every reviewer has a brief and nothing more.
+
+#### 1.1 Choose the reviewers
+
+- Assign one fresh `reviewer` that did not produce the work.
+- Add one read-only [Partner](../partner/SKILL.md) from another model family when an identified risk merits
+  another independent perspective and the recorded policy permits it. State the risk in its brief and ask
+  for evidence of failures.
+- Skip review for a change that only rewords or reformats and passes its checks. A skipped review point
+  counts as passed on those checks.
+
+#### 1.2 Brief each reviewer
+
+- Write each brief through [Delegation](../delegation/SKILL.md): the Goal and its evidence of done, the exact
+  subject (a commit, diff, or paths), the checks to rerun, the stage bar below, the matching domain bar, and the
+  report path.
+- At a review point, the subject is every change since the previous point passed, or since the work began at
+  the first point, read in the tree as it stands. The Goal is the Goals of the tasks the point covers, and at
+  the last point also the goal of the whole work, so the integrated result is judged, never one review per task.
+- For the initial review, leave out the producer's reasoning and other reviewers' reports. For fix
+  confirmation, give the reviewer the findings, reproducers, and correction diff needed to check closure.
+
+### Phase 2 — Review the Result
+
+The reviewer judges the result against the Goal and the bars. Done when the report exists at its path.
+
+#### 2.1 Check and read
+
+- Rerun the checks the verdict relies on, then read the result itself before any handoff claim.
+- Apply the stage bar and the domain bar. Ask also what is missing, where the result meets the form of the Goal
+  but not its purpose, and how a strong version would differ.
+
+#### 2.2 Write the report
+
+- Write the report from the [report template](report.md): a verdict, the findings, and what was and was not
+  checked. Keep each finding to its place, problem, evidence, whether it blocks and why, and a suggested fix.
+- A read-only Partner returns its report as its final message, and the assigned record owner saves it at the
+  report path.
+
+### Phase 3 — Decide and Fix
+
+The caller acts on the reviewer's verdict and resolves conflicting findings or authority questions. Done when
+the assigned record owner has saved the decision and its evidence paths where the caller keeps results.
+
+#### 3.1 Decide the verdict
+
+- Use the reviewer's reproduced findings to decide the next action. If findings conflict or evidence is
+  missing, ask the responsible reviewer or specialist to resolve that question and return the result.
+- Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) to corrections. Record
+  REVISE for fixable blockers, FAIL for a blocker without a safe fix, and PASS when Step 3.3 is satisfied.
+- When a finding repeats a recorded mistake or an earlier finding, apply Step 3.2.
+
+#### 3.2 Turn a repeated mistake into a check
+
+- Cite two distinct occurrences of the same failure, then choose the smallest change that prevents or detects
+  both: remove the failure path first, otherwise a tool limit, type, lint, or test. A lesson that needs
+  judgment and cannot be enforced stays in its entry, with the reason.
+- When the change fits the accepted Goal and authority, apply the finding gate and send it to the caller's
+  writer with the past failing case and the corrected case. Otherwise add it to the project backlog.
+- At the next planned review, confirm the check rejects the past mistake, accepts the correction, and runs
+  on the path future work takes before removing the mistake entry.
+
+#### 3.3 Run a fix round
+
+- Mark a minor, local correction within the agreed Goal as Low when a focused check can establish the fix.
+  A material failure or missing required evidence still blocks, and out-of-scope suggestions stay follow-ups.
+- When only Lows remain, the writer fixes them together and runs the affected checks. On passing evidence the
+  caller records PASS for the corrected tree without another independent review.
+- Batch any blockers with the other corrections and have one reviewer confirm the blockers and affected behavior.
+  Record PASS once all corrections are verified, or apply the two-round stop rule if blockers persist.
+
+## Stage Bars
+
+| Stage | A strong result shows |
+|---|---|
+| Ideation | The goal, decisions, boundaries, and constraints are clear, and every user-owned choice was asked and recorded. Not implementation detail or polish. |
+| Planning | The tasks cover the whole work without overlap, each Goal can be judged, every constraint has a source, the Task Graph has no cycle, and the review points cover every task once. Not implementation steps. |
+| Execution | The Goal is met and shown by checks that **passed**, nothing the change reaches is left stale, and the change adds nothing unasked. |
+
+## References
+
+| Name | Description |
+|---|---|
+| [Report template](report.md) | The short report every reviewer writes. |
+| [Coding Review](../coding/coding-review/SKILL.md) | The domain bar for code and code design. |
+| [Authoring Review](../authoring/authoring-review/SKILL.md) | The domain bar for docs, skills, and other durable prose. |
+| [Design Review](../design/design-review/SKILL.md) | The domain bar for visual work. |
+| [Delegation](../delegation/SKILL.md) | Defines each reviewer's brief and handoff, and the check outcomes passed, failed, and inconclusive. |
+| [Memory](../memory/SKILL.md) | Holds the recorded mistakes that Step 3.2 turns into checks. |
+| [Partner](../partner/SKILL.md) | Runs the second reviewer from another model family. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns the finding gate that decides which fixes run without the user. |

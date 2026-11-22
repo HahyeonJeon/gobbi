@@ -1,15 +1,15 @@
 ---
 name: partner
-description: "Partner runs a Codex, Claude Code, or Grok CLI as a background partner agent. Use it when the manager or the user wants another runtime's independent work or opinion."
+description: "Partner runs an Antigravity, Codex, Claude Code, or Grok CLI as a background partner agent. Use it when the manager or the user wants another runtime's independent work or opinion."
 allowed-tools: Read, Bash
 skill-type: tool
 ---
 
 # Partner
 
-Partner is a manual for a manager agent that runs another runtime's CLI as a partner: Codex, Claude Code, or
-Grok. Use it to launch a partner in the background, know when the run ends, read its output, and follow up.
-When a user invokes it directly, run the runtime the user names, or ask which one when none is named.
+Partner is a manual for a manager agent that runs another runtime's CLI as a partner: Antigravity, Codex, Claude
+Code, or Grok. Use it to launch a partner in the background, know when the run ends, read its output, and follow
+up. When a user invokes it directly, run the runtime the user names, or ask which one when none is named.
 
 ## Principles
 
@@ -66,10 +66,11 @@ removes every safeguard.
 
 #### Check availability
 
-- Run `command -v timeout codex claude grok`; a missing name means that partner is unavailable on this host.
+- Run `command -v timeout agy codex claude grok`; a missing name means that partner is unavailable on this host.
 - Authentication shows only at launch, as a login error on stderr with a nonzero status (see Failures).
-- Measured means a manager canary on 2026-11-06 with codex-cli 0.167.0, Claude Code 2.1.319, and grok 1.0.70;
-  help-backed means installed `--help` only. After an upgrade, recheck help before relying on a flag.
+- Measured means a manager canary on 2026-11-06 with codex-cli 0.167.0, Claude Code 2.1.319, and grok 1.0.70, and
+  on 2026-11-22 with agy 1.5.14; help-backed means installed `--help` only. After an upgrade, recheck help before
+  relying on a flag.
 
 ### Access levels
 
@@ -77,12 +78,12 @@ removes every safeguard.
 
 - Pick one row; each runtime section gives the full command for each level.
 
-  | Level | Partner may | Codex | Claude Code | Grok |
-  |---|---|---|---|---|
-  | read-only | Read and report; no file changes | `--sandbox read-only` | `--permission-prompts none --tools "Read,Grep,Glob"` | `--sandbox read-only --permission-mode dontAsk` |
-  | workspace-write | Edit files in the working directory | `--sandbox workspace-write` | `--permission-mode acceptEdits --permission-prompts none --tools "Read,Grep,Glob,Write,Edit"` | `--sandbox workspace --permission-mode acceptEdits` |
-  | full-access | Run anything; no sandbox or approvals | `--sandbox danger-full-access` | `--dangerously-skip-permissions` | `--sandbox off --permission-mode bypassPermissions` |
-  | One-shot (no resume) | Keep no session on disk | `--ephemeral` | `--no-session-persistence` | none |
+  | Level | Partner may | Antigravity | Codex | Claude Code | Grok |
+  |---|---|---|---|---|---|
+  | read-only | Read and report; no file changes | `--sandbox --disable-slash-commands --settings '{"agentMode":"","permissions":{"deny":["write_file(*)","command(*)","mcp(*)","execute_url(*)"]}}'` | `--sandbox read-only` | `--permission-prompts none --tools "Read,Grep,Glob"` | `--sandbox read-only --permission-mode dontAsk` |
+  | workspace-write | Edit files in the working directory | `--sandbox --mode accept-edits --disable-slash-commands --settings '{"permissions":{"deny":["command(*)","mcp(*)","execute_url(*)"]}}'` | `--sandbox workspace-write` | `--permission-mode acceptEdits --permission-prompts none --tools "Read,Grep,Glob,Write,Edit"` | `--sandbox workspace --permission-mode acceptEdits` |
+  | full-access | Run anything; no sandbox or approvals | `--dangerously-skip-permissions --disable-slash-commands` | `--sandbox danger-full-access` | `--dangerously-skip-permissions` | `--sandbox off --permission-mode bypassPermissions` |
+  | One-shot (no resume) | Keep no session on disk | none | `--ephemeral` | `--no-session-persistence` | none |
 
 - The read-only and workspace-write flags are measured; full-access is help-backed and was not run. Grok's
   profile name `off` comes from the [xAI Sandbox page](https://docs.x.ai/build/features/sandbox), not help.
@@ -90,11 +91,78 @@ removes every safeguard.
 
 #### Flags to leave out
 
-- Leave out `--worktree` (all three create a new Git worktree), `--continue`, `--fork-session`, and Codex
-  `resume --last` or `fork`; a follow-up must name the captured session id.
-- Leave out Codex `--add-dir` (help: adds a writable directory) and Claude `--add-dir` (grants tool access,
-  including edits under `acceptEdits`, to that directory).
+- Leave out `--worktree` (Codex, Claude Code, and Grok create a new Git worktree), `--continue`, `-c`,
+  `--fork-session`, and Codex `resume --last` or `fork`; a follow-up must name the captured session id.
+- Leave out Antigravity `--add-dir`, Codex `--add-dir`, and Claude `--add-dir` (each grants access outside the
+  working directory).
 - Leave out Claude `--bg`; it starts a session that Claude manages, not a process you can wait on.
+
+### Antigravity
+
+#### Launch
+
+- Antigravity has no working-directory flag, so each command changes directory in a subshell and passes the
+  prompt file text to `-p`. Default partner model is `gemini-4-neon-high`.
+
+  ```bash
+  # read-only
+  ( cd "$repo" && timeout -k 10 3600 agy -p "$(cat "$cap/prompt.md")" --model gemini-4-neon-high --sandbox \
+    --disable-slash-commands \
+    --settings '{"agentMode":"","permissions":{"deny":["write_file(*)","command(*)","mcp(*)","execute_url(*)"]}}' \
+    --output-format json < /dev/null > "$cap/out.json" 2> "$cap/err.txt" ); echo $? > "$cap/status"
+  # workspace-write
+  ( cd "$repo" && timeout -k 10 3600 agy -p "$(cat "$cap/prompt.md")" --model gemini-4-neon-high --sandbox \
+    --mode accept-edits --disable-slash-commands \
+    --settings '{"permissions":{"deny":["command(*)","mcp(*)","execute_url(*)"]}}' \
+    --output-format json < /dev/null > "$cap/out.json" 2> "$cap/err.txt" ); echo $? > "$cap/status"
+  # full-access: only with user authorization (help-backed, not run)
+  ( cd "$repo" && timeout -k 10 3600 agy -p "$(cat "$cap/prompt.md")" --model gemini-4-neon-high \
+    --dangerously-skip-permissions --disable-slash-commands \
+    --output-format json < /dev/null > "$cap/out.json" 2> "$cap/err.txt" ); echo $? > "$cap/status"
+  ```
+
+#### Options
+
+- Every option is backed by installed help; read-only, write denial, workspace-write, and resume are measured.
+
+  | Option | Meaning |
+  |---|---|
+  | `-p PROMPT` | Run one prompt non-interactively and exit. |
+  | `--model SLUG` | Pin the session model slug (such as `gemini-4-neon-high`); unknown slugs exit nonzero. |
+  | `--sandbox` | Run with terminal sandbox restrictions enabled. |
+  | `--mode MODE` | Execution mode (`accept-edits`, `auto`, or `plan`); omit `--mode` for default mode. |
+  | `--disable-slash-commands` | Treat prompts starting with `/` as plain text instead of expanding skills. |
+  | `--settings JSON` | Apply session-only settings without saving to `~/.gemini/antigravity-cli/settings.json`. |
+  | `--dangerously-skip-permissions` | Auto-approve all tool permission requests without prompting. |
+  | `--output-format json` | Print one JSON object containing `conversation_id`, `status`, `response`, and `usage`. |
+  | `--conversation ID` | Resume a prior conversation by its captured `conversation_id`. |
+
+#### Output and session id
+
+- Read the final message with `jq -r .response "$cap/out.json"` and the session id with
+  `jq -r .conversation_id "$cap/out.json"`.
+- Check `jq -r '.status, .error // empty' "$cap/out.json"`; a clean run reports `status` `` `SUCCESS` `` and no
+  `error`.
+
+#### Follow up
+
+- Repeat the first run's access flags with `--conversation "$sid"` and pass the follow-up prompt to `-p`.
+
+  ```bash
+  ( cd "$repo" && timeout -k 10 3600 agy -p "$followup" --conversation "$sid" --model gemini-4-neon-high --sandbox \
+    --disable-slash-commands \
+    --settings '{"agentMode":"","permissions":{"deny":["write_file(*)","command(*)","mcp(*)","execute_url(*)"]}}' \
+    --output-format json < /dev/null > "$cap/out-2.json" 2> "$cap/err-2.txt" ); echo $? > "$cap/status-2"
+  ```
+
+#### Limits
+
+- workspace-write denies `command(*)` so it stays non-interactive across hosts even when the terminal sandbox is
+  unavailable; assign required verification to a specialist with shell access.
+- Antigravity writes state under `~/.gemini/antigravity-cli/`, so launching `agy` from inside another sandboxed
+  runtime requires host access to that directory and network.
+- Antigravity has no no-persistence flag, and `--mode default` prints a warning; set `"agentMode":""` inside
+  `--settings` instead.
 
 ### Codex
 
@@ -261,6 +329,13 @@ removes every safeguard.
 - Grok has no no-persistence flag, and each measured run took about 100 to 120 seconds.
 
 ### Manager runtimes
+
+#### Antigravity manager
+
+- Start the command with `run_command` and `WaitMsBeforeAsync: 500` (with `BypassSandbox: true` when the partner
+  CLI needs network or home-directory access); a background task notification arrives when the command exits, so
+  do not poll or sleep (measured).
+- Read `$cap/status` and route the captured result under the run lifecycle above.
 
 #### Claude Code manager
 

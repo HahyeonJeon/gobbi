@@ -30,7 +30,12 @@ class PathsTest(GuardCase):
 
     def test_links_read_the_roles_the_package_and_the_root_guides(self):
         broken = "[x](missing.md)\n"
-        read = (f"{AGENTS}/notes.md", "plugins/gobbi/agents/notes.md", "plugins/gobbi/runtimes/codex/notes.md")
+        read = (
+            f"{AGENTS}/notes.md",
+            "plugins/gobbi/agents/notes.md",
+            "plugins/gobbi/runtimes/codex/notes.md",
+            "plugins/antigravity/gobbi/agents/notes.md",
+        )
         changes = {**dict.fromkeys(read, broken), "README.md": broken, "docs/notes.md": broken}
         self.assertEqual(self.found("links", changes), sorted(["README.md", *read]))
 

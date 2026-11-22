@@ -18,11 +18,16 @@ per runtime, and each runtime pins its own model and effort per role. Read the r
 
 Codex effort is `high` for every role. Grok is `grok-4.7` at `xhigh` for every specialist.
 
+Antigravity custom subagent frontmatter accepts only model tiers (`inherit`, `flash_lite`, `flash`, `pro`) and
+rejects concrete model slugs such as `gemini-4-neon-high` or `gemini-4-hydrogen-high`. All six Antigravity
+specialists set `model: inherit` (no effort key), and the Antigravity parent session and Partner CLI default to
+`gemini-4-neon-high`.
+
 The Cursor assistant uses `grok-4.7[effort=xhigh]`. Every other Cursor role uses that role's Claude model
 and effort in `model: <id>[effort=<effort>]`. The Cursor parent session starts as `grok-4.7[effort=high]`.
 
-Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`. Cursor has no
-separate effort key.
+Claude and Grok files use `model` and `effort`. Codex uses `model` and `model_reasoning_effort`. Cursor and
+Antigravity have no separate effort key.
 
 Claude contracts use the full model id, not an alias, because the alias moves to newer models.
 
@@ -32,6 +37,6 @@ files are removed by the project after it migrates their callers.
 
 ## References
 
-- Canonical contracts under `.gobbi/projects/gobbi/agents/{grok,cursor,codex,claude}/`
+- Canonical contracts under `.gobbi/projects/gobbi/agents/{antigravity,grok,cursor,codex,claude}/`
 - [Identity-and-load role contracts](identity-and-load-role-contracts.md)
 - [Full model id in Claude agent frontmatter](../../learnings/claude/tips.md#a-full-model-id-works-in-claude-agent-frontmatter)

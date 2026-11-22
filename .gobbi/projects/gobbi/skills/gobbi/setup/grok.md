@@ -51,4 +51,4 @@ Do not create `.grok/skills`, `.grok/agents`, or a Grok hook registration by han
 The Grok setup script and the SessionStart settings check are not in this release. Both are planned to return
 in a later release. Until then, the manual steps above replace the script.
 
-Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Cursor](cursor.md).
+Other runtimes: [Antigravity](antigravity.md), [Claude Code](claude.md), [Codex](codex.md), [Cursor](cursor.md).

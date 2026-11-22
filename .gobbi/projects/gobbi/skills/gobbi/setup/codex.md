@@ -48,4 +48,4 @@ Gobbi entry gives the main agent its manager responsibilities.
 The Codex setup script and the SessionStart settings check are not in this release. Both are planned to return
 in a later release. Until then, the manual steps above replace the script.
 
-Other runtimes: [Claude Code](claude.md), [Cursor](cursor.md), [Grok](grok.md).
+Other runtimes: [Antigravity](antigravity.md), [Claude Code](claude.md), [Cursor](cursor.md), [Grok](grok.md).

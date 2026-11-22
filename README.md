@@ -2,11 +2,11 @@
 
 # Gobbi
 
-Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
+Open-source orchestration for Antigravity, Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.3-blue" alt="Version 1.4.3"></a>
-  <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.4-blue" alt="Version 1.4.4"></a>
+  <img src="https://img.shields.io/badge/runtimes-Antigravity%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Antigravity, Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
 
@@ -121,6 +121,26 @@ names it `agent`.
 
 Cursor participants in this checkout are the `.cursor/agents` roles plus official Cursor subagents.
 
+### Antigravity
+
+Antigravity ships as its own synced package at `plugins/antigravity/gobbi`, because Antigravity always loads
+`<plugin>/agents/*.md` using its own frontmatter schema and rejects Claude Code's `plugins/gobbi/agents/`. From
+a local clone of Gobbi:
+
+```bash
+agy plugin validate --strict ./plugins/antigravity/gobbi
+agy plugin install ./plugins/antigravity/gobbi
+agy plugin list --json
+```
+
+Start the parent session on `gemini-4-neon-high` (`agy --model gemini-4-neon-high`). All six Antigravity
+specialist contracts set `model: inherit`, because Antigravity custom subagent frontmatter accepts only model
+tiers (`inherit`, `flash_lite`, `flash`, `pro`) rather than concrete model slugs.
+
+A Gobbi repository checkout already exposes the package through `.agents/plugins.json` pointing to
+`plugins/antigravity`. It does not keep `.agents/agents` or `.agents/skills` links, and the package declares no
+hooks in this release.
+
 ### Create the project layout
 
 The setup scripts and the settings check are removed from 1.4.0 and are planned to return in a later release.
@@ -131,12 +151,20 @@ is safe to run again. Commit `.gobbi/` before your first session.
 
 Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does not run it.
 
+- Antigravity: nothing further to write. See
+  [antigravity.md](.gobbi/projects/gobbi/skills/gobbi/setup/antigravity.md).
 - Claude Code: allow the six specialists in `.claude/settings.json` as shown above. See
   [claude.md](.gobbi/projects/gobbi/skills/gobbi/setup/claude.md).
 - Codex: copy the six specialist files from the plugin's `runtimes/codex/` into `.codex/agents/` byte for byte. See
   [codex.md](.gobbi/projects/gobbi/skills/gobbi/setup/codex.md).
 - Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
 - Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
+
+## Update to 1.4.4
+
+Install the new Antigravity plugin from `plugins/antigravity/gobbi` (`agy plugin install ./plugins/antigravity/gobbi`)
+and start sessions on `gemini-4-neon-high`. Existing Claude Code, Codex, Cursor, and Grok installations can
+refresh `plugins/gobbi` normally to pick up Antigravity Partner support and the updated entry script.
 
 ## Update to 1.4.3
 
@@ -208,6 +236,7 @@ your settings, and nothing edits an existing `.claude/settings.json` or deletes 
 Give Gobbi a concrete objective:
 
 ```text
+Antigravity: /gobbi prepare the next release
 Claude Code: /gobbi prepare the next release
 Codex:       $gobbi prepare the next release
 Grok:        /gobbi:gobbi prepare the next release
@@ -218,8 +247,8 @@ That name belonged to `.grok/skills/gobbi`, which this checkout does not registe
 alias for Grok.
 
 Gobbi uses the mode, privacy-safe session slug, and Partner policy you supply, and asks for missing choices.
-Choose Cowork or Workflow and a Partner policy of `disabled` or one or two of `claude-code`, `codex`, and
-`grok`. When setup is complete, a request you already supplied can proceed.
+Choose Cowork or Workflow and a Partner policy of `disabled` or one or two of `antigravity`, `claude-code`,
+`codex`, and `grok`. When setup is complete, a request you already supplied can proceed.
 
 ## Cowork
 
@@ -263,8 +292,8 @@ for the full session.
 ## Partner
 
 Partner is an optional session-wide policy selected after the mode and applicable slug. The policy is
-`disabled` or one or two of `{claude-code,codex,grok}`. The launch set is the selected names minus the active
-runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
+`disabled` or one or two of `{antigravity,claude-code,codex,grok}`. The launch set is the selected names minus
+the active runtime. An empty launch set after that skip is valid and is not rewritten to `disabled`.
 
 With `disabled`, Gobbi makes no external runtime calls. With a named set, Discussion and Review start a
 partner run from the launch set when the work calls for one. The manager launches each partner CLI itself as a
@@ -304,8 +333,8 @@ Each domain adds its own fields in its own skill.
 
 ## Develop Gobbi
 
-Edit skills and roles in the canonical tree under `.gobbi/projects/gobbi/`, never in `plugins/gobbi/`. Then run
-the repository guard from the repository root (Python 3.11 or later):
+Edit skills and roles in the canonical tree under `.gobbi/projects/gobbi/`, never in `plugins/gobbi/` or
+`plugins/antigravity/gobbi/`. Then run the repository guard from the repository root (Python 3.11 or later):
 
 ```text
 python3 scripts/guard/guard.py sync    # write the package mirror and the generated Principles blocks

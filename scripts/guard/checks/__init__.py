@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 import generated
 import mirror
-from repo import CANONICAL, PACKAGE, Repo
+from repo import ANTIGRAVITY_PACKAGE, CANONICAL, PACKAGE, Repo
 from skill_checks.checks import CHECKS as SKILL_CHECKS
 from skill_checks.checks import Options
 from skill_checks.finding import Finding
@@ -20,13 +20,15 @@ from . import roles, versions
 __all__ = ["CHECKS", "Check", "select"]
 
 SKILLS = (f"{CANONICAL}/skills",)
-# Links must also resolve in the roles, the package, and the root guides.
+# Links must also resolve in the roles, the packages, and the root guides.
 LINKS = (
     f"{CANONICAL}/skills",
     f"{CANONICAL}/agents",
     f"{PACKAGE}/skills",
     f"{PACKAGE}/agents",
     f"{PACKAGE}/runtimes",
+    f"{ANTIGRAVITY_PACKAGE}/skills",
+    f"{ANTIGRAVITY_PACKAGE}/agents",
     "README.md",
     "AGENTS.md",
 )

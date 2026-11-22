@@ -109,9 +109,18 @@ class EntryTest(unittest.TestCase):
 
     def test_finds_the_specialist_directory_for_every_runtime_in_both_trees(self):
         root = self.repo("demo")
-        plugin = ENTRY.parents[6] / "plugins" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
-        for script in (ENTRY, plugin):
-            for runtime in ("claude", "codex", "cursor", "grok"):
+        gobbi_root = ENTRY.parents[6]
+        plugin = gobbi_root / "plugins" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
+        antigravity_plugin = (
+            gobbi_root / "plugins" / "antigravity" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
+        )
+        cases = (
+            (ENTRY, ("antigravity", "claude", "codex", "cursor", "grok")),
+            (plugin, ("claude", "codex", "cursor", "grok")),
+            (antigravity_plugin, ("antigravity",)),
+        )
+        for script, runtimes in cases:
+            for runtime in runtimes:
                 completed = subprocess.run(
                     [sys.executable, str(script), runtime], capture_output=True, text=True, cwd=root
                 )
@@ -123,6 +132,24 @@ class EntryTest(unittest.TestCase):
                     {p.stem for p in roles.glob(f"*{suffix}")},
                     {"assistant", "leader", "author", "developer", "designer", "reviewer"},
                 )
+
+    def test_blocks_mismatched_package_runtime_and_lists_gemini_instructions(self):
+        root = self.repo("demo")
+        (root / "GEMINI.md").write_text("# Gemini\n", encoding="utf-8")
+        code, fields = run(root, "antigravity")
+        self.assertEqual(code, 0)
+        self.assertEqual(fields["instructions"], [str(root / "GEMINI.md")])
+        gobbi_root = ENTRY.parents[6]
+        plugin = gobbi_root / "plugins" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
+        antigravity_plugin = (
+            gobbi_root / "plugins" / "antigravity" / "gobbi" / "skills" / "gobbi" / "scripts" / "entry.py"
+        )
+        for script, wrong_runtime in ((plugin, "antigravity"), (antigravity_plugin, "claude")):
+            completed = subprocess.run(
+                [sys.executable, str(script), wrong_runtime], capture_output=True, text=True, cwd=root
+            )
+            self.assertEqual(completed.returncode, 2, completed.stdout)
+            self.assertIn(f"blocked: no {wrong_runtime} specialist directory", completed.stdout)
 
     def test_blocks_outside_a_repository_and_on_an_unknown_runtime(self):
         outside = Path(tempfile.mkdtemp())

@@ -11,10 +11,11 @@ scripts for syncing and proving the package (see [Session hooks](../feature/stop
 - `scripts/guard/guard.py` has three commands: `check`, `sync`, and `list`. It needs Python 3.11 or later and the
   standard library only. stdout carries one JSON envelope and stderr one summary line per finding. Exit codes are
   0 clean, 1 findings, 2 usage error, and 3 internal error.
-- `sync` writes the package mirror under `plugins/gobbi/` (skills, agents, runtimes) and the generated Principles
-  blocks. It also generates the Codex user-only policy file `agents/openai.yaml` inside each user-only skill, with
+- `sync` writes the package mirrors under `plugins/gobbi/` (skills, agents, runtimes) and
+  `plugins/antigravity/gobbi/` (skills, agents) and the generated Principles blocks. It also generates the Codex
+  user-only policy file `agents/openai.yaml` inside each user-only skill in `plugins/gobbi/` only, with
   `allow_implicit_invocation: false` for every user-only skill, and `check` reports a hand-written one in the
-  canonical tree. Canonical sources stay under `.gobbi/projects/gobbi/`; the package is a projection.
+  canonical tree. Canonical sources stay under `.gobbi/projects/gobbi/`; the packages are projections.
 - `check` runs 12 checks: frontmatter, phases (numbered, with `Done when` and Step size), references, sentences
   (a Rule or Step bullet has at most two sentences), links and anchors, mirror, generated blocks, roles
   (identical bodies across runtimes), versions, line length, ALL-CAPS words, and an advisory list of `MUST` and

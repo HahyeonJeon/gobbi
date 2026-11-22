@@ -10,7 +10,7 @@ from skill_checks.finding import Finding
 __all__ = ["drift"]
 
 SCOPE = f"{CANONICAL}/agents"
-RUNTIMES = ("claude", "codex", "cursor", "grok")  # the first runtime holding a role is the reference body
+RUNTIMES = ("claude", "codex", "cursor", "grok", "antigravity")  # the first runtime holding a role is the reference body
 
 
 def _markdown_body(repo: Repo, path: str) -> str | None:
