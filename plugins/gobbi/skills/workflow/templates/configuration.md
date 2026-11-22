@@ -39,7 +39,7 @@
 
 | Field | Value |
 |---|---|
-| User decision boundary | Design questions close at completed `P1 · User Review`; later User Review is continue-only; after Configuration the route idle-waits until delivered work |
+| User decision boundary | Design questions close at completed `P1 · User Review`; later User Review is continue-only; after Configuration start any delivered work or wait for it |
 | Language | {the conversation, term, and work languages the user stated, or Not stated} |
 | Publication intent | {local, push, or pull request} |
 | Merge authority | {exact current authority} |

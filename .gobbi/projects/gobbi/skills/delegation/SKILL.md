@@ -30,7 +30,7 @@ example steers the work without binding it.
 ### Write for an agent that knows nothing
 
 The agent has not seen your conversation, so the brief must carry every fact it needs or the path to it. The
-handoff must carry the evidence you need to accept the result.
+handoff gives the next consumer a usable result and the evidence behind it.
 
 ## Rules
 
@@ -44,8 +44,8 @@ handoff must carry the evidence you need to accept the result.
   so label one you inferred.
 - **Include the authority, recovery details, and return format the caller needs.** These let the agent act
   within scope and let the recipient use the result.
-- **Accept a handoff only after reading the named result and rerunning the checks you rely on.** A run status
-  or activity summary can report success that the work does not show.
+- **Rely on the assigned agent's result and reported checks for the named revision.** Missing evidence,
+  conflicting reports, or a required independent check goes to the agent responsible for resolving it.
 
 ## Preferences
 
@@ -55,14 +55,17 @@ handoff must carry the evidence you need to accept the result.
 
 - Give each brief one task the agent can finish from the brief and its Materials alone. Point to paths instead
   of pasting conversation history; the agent treats anything missing as unknown.
-- Do the work yourself when you can finish it in a few tool calls, because a brief and its handoff cost more.
+- Group related support questions for one consumer or shared source when separate assignments would repeat
+  the same preparation and handoff.
 - Give new work to a fresh agent with one consolidated brief rather than resuming an interrupted agent, whose
   context still holds the old task.
 
 #### Use tool results to reach the next decision
 
-- Start from the supplied Materials. Group independent reads or searches needed for the same decision in one
-  turn. Keep calls separate when the next one depends on the result or needs its own approval.
+- Use confirmed inputs that apply to your revision and environment. Open the cited source for interpretation,
+  conflicting evidence, or required independent verification.
+- Group independent reads or searches for the same decision in one turn. Keep dependent calls and approvals
+  separate.
 - Have an edit or check report the measurement its caller needs. For a long-running job, use the host’s
   completion notification or a blocking wait with a timeout. Return to the model when there is a result,
   failure, or timeout to act on.
@@ -86,7 +89,8 @@ handoff must carry the evidence you need to accept the result.
   and what a strong result looks like.>
 
   ## Context
-  <Why the work exists, its current state, and decisions already made.>
+  <Why the work exists, confirmed inputs with their sources and applicable revision or run,
+  and the question the recipient still owns.>
 
   ## Constraints
   - <a rule that must hold>: <short reason>
@@ -100,7 +104,7 @@ handoff must carry the evidence you need to accept the result.
   | <name> | <absolute path or URL> | <what it gives the agent> |
 
   ## Return
-  <Where the result goes, then the handoff items the agent must return.>
+  <Who uses the result next and for what, where they can access it, and what the caller needs to know.>
   ```
 
 - Write Role only when naming the expertise or standard changes how the work is done, for example "a release
@@ -145,15 +149,18 @@ handoff must carry the evidence you need to accept the result.
 
 #### Supply usable Materials
 
-- A single source can be a path and its relevance in one line. For several sources, a table with
+- For a long source, identify the relevant heading, symbol, or log location and what the recipient will
+  learn there. For several sources, a table with
   `Name | Path | Description` makes them easy to scan.
 - In Description, say what the source gives the agent and whether it rules the work or only shows an example.
   When two sources can disagree, say which one wins.
 
 #### Write the Return
 
-- Say where the result goes: an exact path, or this message when the reply is the result. Then list the
-  handoff items below, plus any the caller adds.
+- Name the next consumer and the action the result supports. Choose a direct answer, an existing source
+  location, or a shared artifact according to what that consumer needs.
+- Give the consumer access to the result once it is ready. When the caller coordinates the work, return its
+  location and readiness, plus exceptions or decisions that need the caller's attention.
 
 ### Handoff Content
 
@@ -164,11 +171,12 @@ handoff must carry the evidence you need to accept the result.
 
 #### Give the result and its evidence
 
-- Give the result itself, or its exact path or revision. Do not copy a saved result into the handoff.
-- List each check that was run with its outcome, **passed**, **failed**, or **inconclusive**, and each check
-  that was not run and why.
-- List the choices and assumptions made, including any departure from Taste and Preference, then the concerns
-  and any extras noticed but not done.
+- Give a short answer directly. For a saved result, point the consumer to its exact revision or location and
+  the evidence they can use, with the relevant section when the result is long.
+- Group **passed** checks. Identify **failed**, **inconclusive**, and required but unrun checks individually,
+  with their evidence or the reason it is missing; keep detailed output at its source.
+- Surface decisions the caller must make, assumptions or departures that affect acceptance, and unresolved
+  concerns. Reference the saved details once instead of copying the report into the reply.
 
 #### Mark what a check could not show
 
@@ -184,8 +192,8 @@ handoff must carry the evidence you need to accept the result.
   can judge how far each claim holds.
 - In Finding, mark each claim **stated**, with the source that states it, or **inferred**, with the reasoning.
   What a thing does is not evidence of why it was made.
-- In Sources, list what was read and each search run. In Limits, list searches that found nothing, sources that
-  could not be reached, and contradictions.
+- In Sources, cite the passages supporting the answer. In Limits, give any unsuccessful search, missing
+  source, or contradiction that changes what the caller can conclude.
 
 #### Say what is needed to resume
 

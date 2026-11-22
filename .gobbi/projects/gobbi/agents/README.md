@@ -1,7 +1,7 @@
 # Gobbi role contracts
 
 Gobbi entry gives the main agent its manager responsibilities. The six callable specialists include one
-assistant for preparation and record work and five phase roles.
+assistant for evidence gathering and authorized session or Memory records and five phase roles.
 
 The named phase role matches the assignment phase. Ideate is leader. Plan is leader. Implement is developer,
 designer, or author, by the subject of the result. Review is reviewer.
@@ -23,7 +23,7 @@ owns. In scope is CRUD and the role's subjects. Out of scope is Never.
 
 | Role | Phase | Result |
 |---|---|---|
-| assistant | support | Task Materials, lookup and authorized Memory or record work |
+| assistant | support | Source locations, revision comparisons, run evidence, and authorized session or Memory records |
 | leader | ideation and planning | The ideation result and the plan result |
 | developer | execution | Changes to code with no visual surface |
 | designer | execution | Changes to work with a visual element, including HTML and web UI |

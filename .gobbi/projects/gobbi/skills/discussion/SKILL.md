@@ -43,14 +43,16 @@ difference easier to see than text alone.
 
 ### Phase 1 — Understand the task
 
-Know the result the user is after. Done when the task is concrete enough to form options, with accepted
-decisions, assumptions, and open points kept apart.
+Know the result the user is after. Done when the task and its open choices are clear, with accepted
+decisions and assumptions recorded.
 
 #### 1.1 Make the task concrete
 
 - Restate the intended result, as distinct from the literal request, with its scope, constraints, and
   completion evidence.
 - Ask only about gaps where a wrong guess is costly to undo, and state the assumption for the rest.
+- When the request and existing decisions settle the direction, return them to the caller and proceed.
+  Study options and ask the user only for a remaining consequential choice.
 
 ### Phase 2 — Study and form options
 
@@ -71,8 +73,8 @@ recommendation that names what would change it, or the evidence shows no real ch
 - Compare reasoning, send one focused follow-up when a disagreement could change the recommendation, then
   synthesize without forcing consensus. Keep each claim's stated or inferred mark and every participant's
   Limits, because participants that agree can share one inference.
-- Report an Unavailable Partner attempt as evidence, and state the evidence limit when no participant was
-  available.
+- Use the recorded participant policy and existing relevant studies, reporting unavailable perspectives as
+  limits on the recommendation.
 
 #### 2.3 Prepare the options and a recommendation
 
@@ -82,7 +84,7 @@ recommendation that names what would change it, or the evidence shows no real ch
 
 ### Phase 3 — Decide with the user
 
-Get the user's decision. Done when the user's choice is recorded as the accepted direction.
+Resolve the remaining user-owned choice. Done when the user's choice is recorded as the accepted direction.
 
 #### 3.1 Show the choice
 
@@ -94,7 +96,7 @@ Get the user's decision. Done when the user's choice is recorded as the accepted
 
 - Ask one question with the recommended option first and `(Recommended)` after its label, and give each
   option what it means plus explicit `Pros:` and `Cons:`. This is the card format the user set.
-- Ask a direct question when no real options exist.
+- Ask a direct question when a required user-owned answer remains and options would misrepresent it.
 
 #### 3.3 Record the decision
 

@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.4.3 - 2026-11-22
+
+Refresh the plugin and copied specialist roles together. Existing sessions keep their accepted decisions
+and passed review points while applying the updated guidance to pending work. See the
+[upgrade guidance](README.md#update-to-143).
+
+### Changed
+
+- Managers coordinate dependencies and advance work on verified owner handoffs and scheduled reviewer
+  verdicts. Assistants maintain assigned records and gather shared evidence, while specialists receive
+  original results directly. Managers resolve exceptions and bring user-owned decisions to the user.
+- Coding, Design, and Authoring Planning identify the result each dependent task needs and schedule focused
+  checks, integration tests, and independent reviews. Remaining in-scope refinement is grouped at checkpoints.
+- Low-only findings are corrected and verified by the writer, then accepted without another independent
+  review. Blocking corrections retain targeted confirmation and the two-round limit before reconsidering
+  the premise.
+- Handoffs identify the next consumer and use a short answer, existing source, or shared artifact according to
+  that consumer's needs. Reports group passed checks and identify failures, gaps, and decisions separately.
+- Memory writers and authorized Git owners perform closure verification and integration, with the manager
+  relying on their reported results and review verdicts.
+- Entry and recovery reuse supplied choices and recorded decisions. Small settled requests proceed directly,
+  existing independent input is reused, and additional participants or a second review runtime are selected
+  for an identified decision or risk.
+- Dependent work can start from a verified handoff and any required review PASS while its receipt is recorded.
+- Closure review covers closure changes and any evidence invalidated by them, preserving passed review
+  points for the accepted product work.
+
+### Fixed
+
+- Python 3.9 CI checks use Ubuntu 24.04, which provides that interpreter through setup-python.
+
 ## 1.4.2 - 2026-11-18
 
 **Upgrade from 1.4.1.** This patch includes a breaking change. Start the main agent through Gobbi entry,
