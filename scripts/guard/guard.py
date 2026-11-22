@@ -23,12 +23,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".gobbi/projects/go
 import checks  # noqa: E402
 import generated  # noqa: E402
 import mirror  # noqa: E402
-from repo import PACKAGE, Repo, find_root  # noqa: E402
+from repo import Repo, find_root  # noqa: E402
 from skill_checks.finding import Finding  # noqa: E402
 
 _TOOL = "guard"
 _MAX_ACTION_LINES = 10
-_WRITABLE = (*(f"{PACKAGE}/{subtree}" for subtree in mirror.OWNED), *generated.TARGETS)
+_WRITABLE = (*mirror.OWNED_PATHS, *generated.TARGETS)
 
 
 class UsageError(Exception):

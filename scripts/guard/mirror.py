@@ -3,10 +3,22 @@
 import re
 from collections.abc import Iterator
 
-from repo import CANONICAL, PACKAGE, Action, Repo
+from repo import ANTIGRAVITY_PACKAGE, CANONICAL, PACKAGE, Action, Repo
 from skill_checks.finding import Finding
 
-__all__ = ["CODEX_POLICY", "CODEX_USER_ONLY", "MAPPING", "OWNED", "REWRITTEN", "drift", "plan", "rewrite_links"]
+__all__ = [
+    "ANTIGRAVITY_MAPPING",
+    "ANTIGRAVITY_OWNED",
+    "CODEX_POLICY",
+    "CODEX_USER_ONLY",
+    "MAPPING",
+    "OWNED",
+    "OWNED_PATHS",
+    "REWRITTEN",
+    "drift",
+    "plan",
+    "rewrite_links",
+]
 
 # Canonical prefix -> package prefix. Claude's roles flatten into agents/, because a plugin's agents/ directory
 # is scanned recursively and a subfolder would join the agent's identifier; the other runtimes ship in runtimes/.
@@ -17,22 +29,34 @@ MAPPING = (
     ("agents/cursor", "runtimes/cursor"),
     ("agents/grok", "runtimes/grok"),
 )
+# Antigravity unconditionally loads <plugin>/agents/*.md with its own YAML frontmatter schema, so it ships as a
+# separate synced package beside plugins/gobbi/ rather than sharing agents/ with Claude Code.
+ANTIGRAVITY_MAPPING = (
+    ("skills", "skills"),
+    ("agents/antigravity", "agents"),
+)
 # Package subtrees the projection owns; any other file in them is unexpected.
-# The .*-plugin/ manifests beside them are hand-kept, so the projection never touches them.
+# The .*-plugin/ manifests and bundled assets beside them are hand-kept, so the projection never touches them.
 OWNED = ("skills", "agents", "runtimes")
+ANTIGRAVITY_OWNED = ("skills", "agents")
+OWNED_PATHS = (
+    *(f"{PACKAGE}/{subtree}" for subtree in OWNED),
+    *(f"{ANTIGRAVITY_PACKAGE}/{subtree}" for subtree in ANTIGRAVITY_OWNED),
+)
 # Canonical files whose ../../ links point into a mapped prefix, so the package copy gets the package paths.
 REWRITTEN = frozenset({"skills/gobbi/SKILL.md"})
-# Codex ignores the `disable-model-invocation` frontmatter that Claude Code, Cursor, and Grok read, and takes the
-# same policy from this file beside SKILL.md. The package copy is generated from the frontmatter, so the
-# canonical skill states it once.
+# Codex ignores the `disable-model-invocation` frontmatter that Claude Code, Cursor, Grok, and Antigravity read,
+# and takes the same policy from this file beside SKILL.md. The package copy is generated from the frontmatter in
+# plugins/gobbi/ only, so the canonical skill states it once.
 CODEX_POLICY = "agents/openai.yaml"
 CODEX_USER_ONLY = b"policy:\n  allow_implicit_invocation: false\n"
 
-_LONGEST_FIRST = sorted(MAPPING, key=lambda pair: len(pair[0]), reverse=True)
+_REWRITE_PAIRS = (*MAPPING, ("agents/antigravity", "agents"))
+_LONGEST_FIRST = sorted(_REWRITE_PAIRS, key=lambda pair: len(pair[0]), reverse=True)
 _RELATIVE_PREFIX = re.compile(
     r"\.\./\.\./(" + "|".join(re.escape(canonical) for canonical, _ in _LONGEST_FIRST) + r")/"
 )
-_PACKAGE_PREFIX = dict(MAPPING)
+_PACKAGE_PREFIX = dict(_REWRITE_PAIRS)
 
 
 def rewrite_links(text: str) -> str:
@@ -56,7 +80,7 @@ def drift(repo: Repo) -> Iterator[Finding]:
 
 def _differences(repo: Repo) -> list[tuple[str, Action]]:
     expected = _projection(repo)
-    present = set(repo.files(*(f"{PACKAGE}/{subtree}" for subtree in OWNED)))
+    present = set(repo.files(*OWNED_PATHS))
     differences: list[tuple[str, Action]] = []
     for path, (source, content) in sorted(expected.items()):
         executable = repo.executable(source)
@@ -75,14 +99,17 @@ def _differences(repo: Repo) -> list[tuple[str, Action]]:
 def _projection(repo: Repo) -> dict[str, tuple[str, bytes]]:
     """Package path -> (canonical source path, expected bytes)."""
     projection: dict[str, tuple[str, bytes]] = {}
-    for canonical, package in MAPPING:
-        base = f"{CANONICAL}/{canonical}/"
-        for source in repo.files(base):
-            relative = source.removeprefix(base)
-            content = repo.data(source)
-            if f"{canonical}/{relative}" in REWRITTEN:
-                content = rewrite_links(content.decode("utf-8")).encode("utf-8")
-            projection[f"{PACKAGE}/{package}/{relative}"] = (source, content)
+    for root, mapping in ((PACKAGE, MAPPING), (ANTIGRAVITY_PACKAGE, ANTIGRAVITY_MAPPING)):
+        for canonical, package in mapping:
+            base = f"{CANONICAL}/{canonical}/"
+            for source in repo.files(base):
+                relative = source.removeprefix(base)
+                if canonical == "skills" and relative.endswith(f"/{CODEX_POLICY}"):
+                    continue
+                content = repo.data(source)
+                if f"{canonical}/{relative}" in REWRITTEN:
+                    content = rewrite_links(content.decode("utf-8")).encode("utf-8")
+                projection[f"{root}/{package}/{relative}"] = (source, content)
     for source in repo.files(f"{CANONICAL}/skills/"):
         if source.endswith("/SKILL.md") and _user_only(repo, source):
             skill = source.removeprefix(f"{CANONICAL}/skills/").removesuffix("SKILL.md")

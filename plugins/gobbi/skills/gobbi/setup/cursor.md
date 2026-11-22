@@ -35,4 +35,4 @@ adapter, symlinks to the canonical Cursor contracts, and Cursor plugin load is n
 The Cursor setup script and the SessionStart settings check are not in this release. Both are planned to return
 in a later release. Until then, the manual steps above replace the script.
 
-Other runtimes: [Claude Code](claude.md), [Codex](codex.md), [Grok](grok.md).
+Other runtimes: [Antigravity](antigravity.md), [Claude Code](claude.md), [Codex](codex.md), [Grok](grok.md).

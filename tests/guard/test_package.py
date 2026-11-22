@@ -21,6 +21,10 @@ class RolesTest(GuardCase):
     def test_missing_role_and_differing_bodies(self):
         cases = {
             "missing": ({f"{AGENTS}/cursor/leader.md": None}, [f"{AGENTS}/cursor role leader is missing"]),
+            "missing antigravity": (
+                {f"{AGENTS}/antigravity/leader.md": None},
+                [f"{AGENTS}/antigravity role leader is missing"],
+            ),
             "markdown body": (
                 {f"{AGENTS}/grok/leader.md": "---\nname: leader\n---\n\n# Leader\n\nYou follow.\n"},
                 [f"{AGENTS}/grok/leader.md role leader body differs from {AGENTS}/claude/leader.md"],
@@ -49,7 +53,7 @@ class VersionsTest(GuardCase):
 
     def test_the_odd_one_out_is_named(self):
         root = self.gobbi({"plugins/gobbi/.grok-plugin/plugin.json": '{"version": "1.0.1"}'})
-        expected = ["plugins/gobbi/.grok-plugin/plugin.json version 1.0.1 differs from 1.0.0 (6 places)"]
+        expected = ["plugins/gobbi/.grok-plugin/plugin.json version 1.0.1 differs from 1.0.0 (7 places)"]
         self.assertEqual(self.messages(versions.mismatches, root), expected)
 
     def test_each_readme_locator_counts(self):
@@ -57,15 +61,18 @@ class VersionsTest(GuardCase):
         readme = root / "README.md"
         readme.write_text(readme.read_text().replace('alt="Version 1.0.0"', 'alt="Version 2.0.0"'))
         self.assertEqual(
-            self.messages(versions.mismatches, root), ["README.md version 2.0.0 differs from 1.0.0 (6 places)"]
+            self.messages(versions.mismatches, root), ["README.md version 2.0.0 differs from 1.0.0 (7 places)"]
         )
 
     def test_unreadable_or_missing_versions(self):
-        marketplace, codex = ".claude-plugin/marketplace.json", "plugins/gobbi/.codex-plugin/plugin.json"
+        marketplace = ".claude-plugin/marketplace.json"
+        codex = "plugins/gobbi/.codex-plugin/plugin.json"
+        antigravity = "plugins/antigravity/gobbi/.antigravity-plugin/plugin.json"
         cases = {
             "bad json": ({marketplace: "{"}, f"{marketplace} cannot read the version"),
             "no gobbi plugin": ({marketplace: '{"plugins": []}'}, f"{marketplace} no version found"),
             "missing file": ({codex: None}, f"{codex} version file is missing"),
+            "missing antigravity": ({antigravity: None}, f"{antigravity} version file is missing"),
         }
         for label, (changes, expected) in cases.items():
             with self.subTest(label):

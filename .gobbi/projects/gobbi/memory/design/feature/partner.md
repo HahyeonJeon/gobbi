@@ -3,17 +3,16 @@
 ## Intent
 
 [Partner](../../../skills/partner/SKILL.md) is a tool manual for a manager agent that runs another runtime's CLI
-as a background partner: Codex, Claude Code, or Grok. The manager launches the process itself, learns that it
-ended from the runtime's exit report and a captured status file, reads the final message and any changed files,
-and follows up by resuming the captured session. A user can also invoke Partner directly, naming the runtime or
-being asked which one.
+as a background partner: Antigravity, Codex, Claude Code, or Grok. The manager launches the process itself,
+learns that it ended from the runtime's exit report and a captured status file, reads the final message and any
+changed files, and follows up by resuming the captured session. A user can also invoke Partner directly, naming
+the runtime or being asked which one.
 
 ## Policy and runtimes
 
-- The session Partner policy is `disabled` or one or two of `{claude-code, codex, grok}`. Valid values are
-  `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`, `claude-code,grok`, and `codex,grok`. A
-  recovered value outside that set, including one naming `cursor`, stops entry. A named set authorizes launching
-  those runtimes except the active one, and `disabled` authorizes none.
+- The session Partner policy is `disabled` or one or two of `{antigravity, claude-code, codex, grok}` (sorted and
+  joined by a comma when two). A recovered value outside that set, including one naming `cursor`, stops entry. A
+  named set authorizes launching those runtimes except the active one, and `disabled` authorizes none.
 - Cursor stays a supported runtime but is not a partner: `cursor-agent -p` failed with
   `Error: Authentication required` while `cursor-agent status` reported logged in. See the
   [Cursor tips](../../learnings/cursor/tips.md).

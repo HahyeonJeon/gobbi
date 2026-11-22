@@ -1,0 +1,231 @@
+---
+name: cowork
+description: "Cowork is a user-led Gobbi work mode in one worktree, where related requests stay in one topic. Use it after the user selects Cowork in Gobbi."
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
+skill-type: operation
+---
+
+# Cowork
+
+Cowork takes the user's requests through Ideation, Planning, and Execution in one isolated worktree. Related
+requests stay in one topic, review and local commits happen at each plan's review points, and closure happens
+only when the user calls for it. Use it after Gobbi selects Cowork.
+
+## Principles
+
+### Keep the user in control
+
+The user owns scope, design direction, accepted risk, destructive and external actions, and closure.
+The manager makes each request concrete, coordinates its owners, and reports their verified results and
+review verdicts. The assigned specialists deliver and commit the work.
+
+### Keep related work in one topic
+
+A topic is the line of work the user is pursuing, not one request or one task. Most new requests continue it,
+so related work, its decisions, and its records stay together. Changing the topic is the user's call.
+
+### Separate stage quality from review
+
+Each owner verifies the result needed for the next dependent task. Plan integrated testing, review, and
+scoped refinement at checkpoints, and proceed when the current task meets its agreed bar.
+Keep later refinement attached to its checkpoint while resolving failures that block current dependencies.
+
+## Rules
+
+- **MUST work only in the session's registered worktree and session root.** The main checkout holds work this
+  session does not own, so create the worktree before the first tracked edit, never create a replacement, and
+  change the main checkout only for a user-approved commit of Gobbi's required layout.
+- **MUST keep related work in the current topic, and open a new one only on the user's call.** The topic keeps
+  related decisions and records together; when work looks truly unrelated, ask with the reason and stay in the
+  current topic until the user answers.
+- **MUST start a new request only on delivered work, and close only on the user's explicit `wrap up`.**
+  An existing request can resume on "continue" or approval, while mode and setup choices alone supply no task.
+- **Apply [Discussion](../discussion/SKILL.md) through the recorded participant policy before recommending a
+  consequential option or asking the user for a decision.** Principle 3 of [Principles](../principles/SKILL.md)
+  has the user choose among options that participants studied and critiqued.
+- **Leave implementation choices to the specialist and take changes of scope, direction, or risk to the
+  user.** Record a manager decision that later work relies on in the topic contract as
+  `Ruling: <what> — <why> — <cost if wrong>` so the next assignment can use it.
+- **Accept routine results from their owners' verification and the planned reviewer verdicts.** Resolve
+  conflicting reports or missing evidence with the responsible agents so the manager can decide the exception.
+
+## Procedure
+
+The manager assigns work and decides exceptions. Specialists perform and verify their work, and an assigned
+[assistant](../gobbi/SKILL.md#25-spawn-each-specialist-as-its-role) maintains the named session records
+from their handoffs and the
+manager's decisions, keeping source references for detailed evidence.
+
+### Phase 1 — Configure the Session
+
+Give the session one recorded home. Done when the session records match the registered worktree and session
+root, and the session is ready to act on a supplied request or resume its current topic.
+
+#### 1.1 Create or recover the session
+
+- Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md), [Git](../git/SKILL.md), and
+  [Memory](../memory/SKILL.md). For a fresh session, record the start checkout's current branch as
+  `Base branch` without asking which branch is the base, and stop if it is empty or the checkout is dirty.
+- Assign the developer to create the branch and worktree with Git under one lowercase UUID, with worktree
+  and session leaves `<YYYY-MM-DD>-<slug>-<uuid>`. Assign the assistant to create the ignored
+  `configuration.md` from the [configuration template](templates/configuration.md) and `README.md` at
+  `{worktree}/.gobbi/projects/{project}/sessions/<session-leaf>/`, updating `configuration.md` later only
+  for `Accepted topics`, then proceed with any request already supplied or wait for one.
+- On recovery, require the recorded identity, branch, worktree, and session root to match, and stop if they do
+  not. Resume the current topic from its contract, its latest request, and any unfinished work.
+
+#### 1.2 Session layout
+
+| Content | Path below the session root |
+|---|---|
+| Topic contract | `topic-NN-slug/topic.md` |
+| Ideation, one directory per result | `topic-NN-slug/1-ideation/NN-slug/` |
+| Planning | `topic-NN-slug/2-planning/` |
+| Execution records | `topic-NN-slug/3-execution/` |
+| Temporary work | `topic-NN-slug/tmp/` |
+| Closure input | `wrap-up/` |
+
+- Drafts, participant and Partner output, and review reports go in the current topic's `tmp/`; accepted
+  records go in their stage directory.
+
+### Phase 2 — Deliver Requests
+
+Deliver each request as verified results in its topic. Done when the request's outcome and evidence paths are
+in the topic contract and its report has gone to the user.
+
+#### 2.1 Settle the request
+
+- The first delivered work, including a `review`, opens `topic-01-slug`; a later request is added, with its
+  decisions, to the current topic contract, and a new topic opens only as the topic Rule allows. Apply
+  Discussion when an unresolved gap or user-owned choice needs it, using the request's existing decisions.
+- Run Ideation when a user-owned design choice is open and Planning when the work needs more than one task;
+  otherwise go straight to Execution. If the request is too large, risky, or irreversible for Cowork, ask the
+  user to narrow it or start Workflow through Gobbi.
+- Brief through [Delegation](../delegation/SKILL.md) with the Goal, Return, and active worktree or source.
+  For writes, name the topic, permitted and protected paths, and output location, granting commit authority
+  only after a review point passes or when the user calls `commit`.
+
+Prepare the first brief through
+[Gobbi's Materials step](../gobbi/SKILL.md#28-prepare-materials-for-the-assignment).
+For a follow-up, recover relevant locations from the current topic's contract and accepted results. Have the
+assistant locate changed or missing sources, callers, or tests when the next assignment needs them. Keep
+reusable locations with the existing evidence paths in the topic contract.
+
+#### 2.2 Ideation
+
+- The `leader` applies the matching Ideation skill: [Coding Ideation](../coding/coding-ideation/SKILL.md),
+  [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), or
+  [Design Ideation](../design/design-ideation/SKILL.md).
+- Give it the request, the participant discussion, and the output root `topic-NN-slug/1-ideation/NN-slug/`,
+  reused when resuming that result. Take any returned decision to the user through Discussion.
+
+#### 2.3 Planning
+
+- The `leader` applies the matching Planning skill: [Coding Planning](../coding/coding-planning/SKILL.md),
+  [Authoring Planning](../authoring/authoring-planning/SKILL.md), or
+  [Design Planning](../design/design-planning/SKILL.md).
+- Give it the goal, the accepted Ideation result or the topic contract, and `topic-NN-slug/2-planning/`; plan,
+  task, and review-point numbers continue across the topic.
+- Use the leader's checked Task Graph and checkpoint schedule to coordinate work, resolving reported gaps
+  with the leader. For work small enough to skip Planning, settle those points in the topic contract first.
+
+#### 2.4 Execution
+
+- The role for the task's subject applies its Execution skill: the `developer` with
+  [Coding Execution](../coding/coding-execution/SKILL.md), the `author` with
+  [Authoring Execution](../authoring/authoring-execution/SKILL.md), or the `designer` with
+  [Design Execution](../design/design-execution/SKILL.md). Without Planning, assign the topic's next
+  `task-NN-slug`; with Planning, build each brief from the task's Goal, Context, Constraints, and Taste and
+  Preference.
+- Run ready tasks in parallel when the Task Graph allows it and they change different files.
+- Start dependent work from the prerequisite owner's verified handoff and the PASS of any review point
+  covering that prerequisite but not the task itself. Return a reported failure, scope drift, or changed
+  decision to the stage that owns it.
+
+#### 2.5 Review at the review points
+
+- Use the plan's points or, without Planning, the topic contract and its next `review-NN`. The manager may
+  adjust pending points under [Review](../review/SKILL.md#place-review-where-feedback-can-change-the-work),
+  keeping the final point tied to the request's acceptance and reviewing each point once its tasks are ready.
+- Freeze the point's subject, as [Review](../review/SKILL.md) Step 1.2 defines it, so no writer can invalidate the
+  subject or its evidence during review. Apply
+  Review with the bar of each stage the subject covers, and save one report per reviewer at
+  `tmp/review-NN/iteration-N/<reviewer>.md` in the topic.
+- Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) and Review Step 3.3,
+  including its Low-only fix path. Record the corrected subject, evidence, verdict, and follow-ups in the topic
+  contract; take a FAIL or two unsuccessful blocking fix rounds to the user.
+
+#### 2.6 Commit the passed point
+
+- On PASS, the `developer`, `designer`, or `author` that matches the work commits the accepted tracked
+  changes: one focused commit in the normal case, split into independent changes when needed.
+- Have the committing specialist report the commit and confirm its scope against the accepted changes.
+
+#### 2.7 Accept the request
+
+- When every selected result is accepted and verified and its review points have passed, append the request's
+  outcome and evidence paths to the topic contract. On the topic's first PASS, add the topic and its contract
+  path to `Accepted topics`.
+- Report the outcome, results, checks, exclusions, concerns, and partner evidence, then wait for the next
+  request.
+
+### Phase 3 — Commit on User Call
+
+Commit accepted work before its review point when the user calls for it. Done when no accepted tracked change
+is left uncommitted and each commit holds only accepted changes.
+
+#### 3.1 Commit the accepted changes
+
+- On `commit`, commit the accepted uncommitted tracked changes as Step 2.6 does. The call is the
+  confirmation; do not show the diff first.
+- Have the committing specialist report the commit and confirm its scope against the accepted changes.
+
+### Phase 4 — Review on User Call
+
+Judge the subject the user names, outside the planned points. Done when the verdict and its dropped and
+follow-up items are in the topic contract and reported to the user.
+
+#### 4.1 Run the review
+
+- On `review`, take the topic's next `review-NN` and freeze the subject the user names, or the whole branch
+  from the base when none is named. Review it, fix, and commit as Steps 2.5 and 2.6 do for a planned point,
+  with that subject and the topic contract's acceptance for it as the Goal.
+- Report the verdict and its dropped and follow-up items to the user.
+
+### Phase 5 — Close on User Call
+
+Record the session in Memory and hand it back. Done when Memory is committed or reported unchanged and the
+closure handoff is returned.
+
+#### 5.1 Prepare the closure
+
+- On `wrap up`, stop and ask for `commit` first when uncommitted tracked changes remain. When no review covers
+  the current head, ask whether to review first or close with self-verification only.
+- Assign the assistant to gather references to the accepted topics, decisions, results, commits, checks,
+  review coverage, and risks under `wrap-up/`.
+
+#### 5.2 Write Memory and return the handoff
+
+- Assign one assistant to apply [Memory](../memory/SKILL.md), including Closure, to the session root: update
+  existing Memory, write one `reports/note/` work account, write `history/` only on durable change, and make one
+  Memory commit or report no change. The user's `wrap up` grants that commit authority for Memory paths only.
+- Do not load Wrap-up and do not merge; publication, merge, and cleanup need another request.
+- Return one handoff with the outcome, topics, commits, Memory result, note path, checks, review coverage,
+  risks, UUID, branch, worktree, head, and first recovery command.
+
+## References
+
+| Name | Description |
+|---|---|
+| [Configuration template](templates/configuration.md) | Defines the ignored Cowork configuration and recovery record. |
+| [Gobbi](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) | Owns mode entry and the session-wide finding gate. |
+| [Principles](../principles/SKILL.md) | Defines the behavioral disciplines; Principle 3 has the user choose among studied options. |
+| [Discussion](../discussion/SKILL.md) | Owns understanding the task, studying options with participants, and deciding with the user. |
+| [Delegation](../delegation/SKILL.md) | Defines the brief for work handed to another agent. |
+| [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI and reads its output. |
+| [Git](../git/SKILL.md) | Supplies branch and commit conventions and the shared Git safety rules. |
+| [Memory](../memory/SKILL.md) | Decides when a file is project memory or a session record, and how to write it. |
+| [Coding Ideation](../coding/coding-ideation/SKILL.md), [Authoring Ideation](../authoring/authoring-ideation/SKILL.md), [Design Ideation](../design/design-ideation/SKILL.md) | Own code, writing, and visual design. |
+| [Coding Planning](../coding/coding-planning/SKILL.md), [Authoring Planning](../authoring/authoring-planning/SKILL.md), [Design Planning](../design/design-planning/SKILL.md) | Own code, writing, and visual planning. |
+| [Coding Execution](../coding/coding-execution/SKILL.md), [Authoring Execution](../authoring/authoring-execution/SKILL.md), [Design Execution](../design/design-execution/SKILL.md) | Own code, writing, and visual implementation and verification. |
+| [Review](../review/SKILL.md) | Owns independent review: the reviewers, the report, the verdict, and fix rounds. |

@@ -33,9 +33,10 @@ difference easier to see than text alone.
 - **Resolve a gap in intent or context before dependent work only when a wrong guess is costly to undo.**
   Otherwise state the assumption and continue, because review and the user catch what is wrong.
 - **Route every user-owned decision that could change the result, scope, risk, cost, or acceptance through the
-  runtime structured-input tool.** Use `AskUserQuestion` in Claude Code, `request_user_input` in Codex, the
-  official Ask questions tool in Cursor (identifier pending), or `ask_user_question` in Grok, and a delegated
-  agent, which has no user channel, sends the question and options to the user-facing manager.
+  runtime structured-input tool.** Use `ask_question` in Antigravity, `AskUserQuestion` in Claude Code,
+  `request_user_input` in Codex, the official Ask questions tool in Cursor (identifier pending), or
+  `ask_user_question` in Grok, and a delegated agent, which has no user channel, sends the question and options
+  to the user-facing manager.
 - **Keep the user's accepted direction until the user explicitly changes it.** The direction is the user's;
   contrary evidence may reopen the decision but does not change the task by itself.
 

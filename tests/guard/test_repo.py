@@ -68,18 +68,34 @@ class ApplyTest(GuardCase):
         self.assertEqual((root / "outside.md").read_text(), "keep")
 
     def test_refuses_any_path_outside_the_owned_paths_before_writing(self):
-        root = self.tree({"plugins/gobbi/.claude-plugin/plugin.json": "{}"})
-        cases = ["README.md", "plugins/gobbi/.claude-plugin/plugin.json", "plugins/gobbi/skills/../x", "/etc/x"]
+        root = self.tree(
+            {
+                "plugins/gobbi/.claude-plugin/plugin.json": "{}",
+                "plugins/antigravity/gobbi/.antigravity-plugin/plugin.json": "{}",
+            }
+        )
+        cases = [
+            "README.md",
+            "plugins/gobbi/.claude-plugin/plugin.json",
+            "plugins/antigravity/gobbi/.antigravity-plugin/plugin.json",
+            "plugins/gobbi/skills/../x",
+            "/etc/x",
+        ]
         for path in cases:
             with self.subTest(path):
                 good = Action("write", "plugins/gobbi/skills/ok.md", b"ok")
                 with self.assertRaises(ValueError):
                     Repo(root).apply([good, Action("write", path, b"x")], self.WRITABLE)
                 self.assertFalse((root / "plugins/gobbi/skills/ok.md").exists())
-        writable = ("plugins/gobbi",)
-        with self.assertRaises(ValueError):
-            Repo(root).apply([Action("write", "plugins/gobbi/.claude-plugin/plugin.json", b"x")], writable)
-        self.assertEqual((root / "plugins/gobbi/.claude-plugin/plugin.json").read_text(), "{}")
+        writable = ("plugins/gobbi", "plugins/antigravity/gobbi")
+        for manifest in (
+            "plugins/gobbi/.claude-plugin/plugin.json",
+            "plugins/antigravity/gobbi/.antigravity-plugin/plugin.json",
+        ):
+            with self.subTest(manifest):
+                with self.assertRaises(ValueError):
+                    Repo(root).apply([Action("write", manifest, b"x")], writable)
+                self.assertEqual((root / manifest).read_text(), "{}")
 
 
 class FindRootTest(GuardCase):

@@ -6,7 +6,7 @@ import subprocess
 import unittest
 from pathlib import Path
 
-from repo import CANONICAL, PACKAGE, Repo
+from repo import ANTIGRAVITY_PACKAGE, CANONICAL, PACKAGE, Repo
 
 from ..skill_checks.fixtures import skill, write_tree
 from . import GUARD_DIR
@@ -39,6 +39,7 @@ BLOCK = "<!-- BEGIN GENERATED PRINCIPLES: .gobbi/projects/gobbi/skills/principle
 BLOCK_END = "<!-- END GENERATED PRINCIPLES -->"
 MAPPING = (("skills", "skills"), ("agents/claude", "agents"), ("agents/codex", "runtimes/codex"),
            ("agents/cursor", "runtimes/cursor"), ("agents/grok", "runtimes/grok"))  # fmt: skip
+ANTIGRAVITY_MAPPING = (("skills", "skills"), ("agents/antigravity", "agents"))
 
 
 def generated_file(source: str = PRINCIPLES_SOURCE) -> str:
@@ -47,12 +48,13 @@ def generated_file(source: str = PRINCIPLES_SOURCE) -> str:
 
 
 def gobbi_files(version: str = "1.0.0") -> dict[str, str | bytes]:
-    """A minimal Gobbi checkout: canonical skills and roles, their package projection, manifests, and blocks."""
+    """A minimal Gobbi checkout: canonical skills and roles, their package projections, manifests, and blocks."""
     canonical: dict[str, str] = {
         f"{SKILLS}/alpha/SKILL.md": skill("alpha"),
         f"{SKILLS}/beta/SKILL.md": skill("beta", "domain"),
         f"{SKILLS}/principles/SKILL.md": PRINCIPLES_SOURCE,
         f"{AGENTS}/README.md": "# Roles\n",
+        f"{AGENTS}/antigravity/leader.md": f"---\nname: leader\nmodel: inherit\n---\n\n{ROLE_BODY}",
         f"{AGENTS}/claude/leader.md": f"---\nname: leader\nmodel: a\n---\n\n{ROLE_BODY}",
         f"{AGENTS}/cursor/leader.md": f"---\nname: leader\nmodel: b\n---\n\n{ROLE_BODY}",
         f"{AGENTS}/grok/leader.md": f"---\nname: leader\nmodel: c\n---\n\n{ROLE_BODY}",
@@ -61,12 +63,14 @@ def gobbi_files(version: str = "1.0.0") -> dict[str, str | bytes]:
     files: dict[str, str | bytes] = dict(canonical)
     for path, content in canonical.items():
         relative = path.removeprefix(f"{CANONICAL}/")
-        for source, target in MAPPING:
-            if relative.startswith(source + "/"):
-                files[f"{PACKAGE}/{target}/{relative.removeprefix(source + '/')}"] = content
+        for root, mapping in ((PACKAGE, MAPPING), (ANTIGRAVITY_PACKAGE, ANTIGRAVITY_MAPPING)):
+            for source, target in mapping:
+                if relative.startswith(source + "/"):
+                    files[f"{root}/{target}/{relative.removeprefix(source + '/')}"] = content
     plugin = json.dumps({"name": "gobbi", "version": version}) + "\n"
     for runtime in ("claude", "codex", "cursor", "grok"):
         files[f"{PACKAGE}/.{runtime}-plugin/plugin.json"] = plugin
+    files[f"{ANTIGRAVITY_PACKAGE}/.antigravity-plugin/plugin.json"] = plugin
     files[".claude-plugin/marketplace.json"] = (
         json.dumps({"plugins": [{"name": "gobbi", "version": version}]}) + "\n"
     )

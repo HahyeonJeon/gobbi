@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.4.4 - 2026-11-22
+
+Install the Antigravity plugin from `plugins/antigravity/gobbi` and refresh `plugins/gobbi` on other runtimes to
+pick up Antigravity Partner support. See the [upgrade guidance](README.md#update-to-144).
+
+### Added
+
+- Native Antigravity plugin package at `plugins/antigravity/gobbi/` (`.antigravity-plugin/plugin.json`, bundled
+  logo, 18 skills, and 6 specialist subagent contracts), synced and verified by `scripts/guard/guard.py` and
+  exposed in this checkout through `.agents/plugins.json`.
+- Six canonical Antigravity specialist contracts under `.gobbi/projects/gobbi/agents/antigravity/` with
+  `model: inherit`, `subagent: true`, `mainAgent: false`, and `commandExecutionPolicy: sandbox` (parent sessions
+  documented on `gemini-4-neon-high`).
+- Antigravity runtime support in `skills/gobbi/scripts/entry.py` (`antigravity` runtime, `GEMINI.md` instruction
+  discovery, and package-specific agent resolution), `skills/gobbi/SKILL.md` (`invoke_subagent`),
+  `skills/discussion/SKILL.md` (`ask_question`), and `skills/gobbi/setup/antigravity.md`.
+- Antigravity Partner CLI support (`agy -p`, defaulting to `--model gemini-4-neon-high`) and `Antigravity manager`
+  background execution guidance in `skills/partner/SKILL.md`, expanding Partner policies to
+  `{antigravity, claude-code, codex, grok}`.
+
+### Changed
+
+- Repository guard (`mirror`, `roles`, `versions`, `links`) and unit tests (`tests/guard`, `tests/entry`) now
+  cover `plugins/antigravity/gobbi/` alongside `plugins/gobbi/`, keeping Codex `agents/openai.yaml` out of the
+  Antigravity package.
+
 ## 1.4.3 - 2026-11-22
 
 Refresh the plugin and copied specialist roles together. Existing sessions keep their accepted decisions

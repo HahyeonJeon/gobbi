@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Gobbi workflow skills and plugin agents for Cursor.",
   "author": { "name": "HahyeonJeon", "email": "jeonhh0061@gmail.com" },
   "keywords": ["gobbi", "workflow", "cursor"],

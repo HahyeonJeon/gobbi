@@ -8,17 +8,20 @@ phase and subject, not by domain.
 
 ## File set
 
-- Canonical source: 24 contracts, six specialists in each of four runtimes, under
-  `.gobbi/projects/gobbi/agents/{claude,grok,codex,cursor}/`. [`agents/README.md`](../../../agents/README.md)
+- Canonical source: 30 contracts, six specialists in each of five runtimes, under
+  `.gobbi/projects/gobbi/agents/{antigravity,claude,grok,codex,cursor}/`. [`agents/README.md`](../../../agents/README.md)
   holds the role table and the per-runtime load paths.
-- Plugin package: six Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
-  `agents/claude/`, plus the other runtimes at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`. The
-  package cannot nest Claude agents under subfolders of `agents/`, because a plugin's `agents/` directory is
-  scanned recursively and each subfolder becomes part of the agent's scoped identifier.
+- Plugin packages: six Claude-fronted Markdown files at `plugins/gobbi/agents/{role}.md`, flattened from
+  `agents/claude/`, plus Codex, Cursor, and Grok at `plugins/gobbi/runtimes/{codex,cursor,grok}/{role}.*`, and
+  six Antigravity-fronted Markdown files at `plugins/antigravity/gobbi/agents/{role}.md`. `plugins/gobbi/` cannot
+  nest Claude agents under subfolders of `agents/`, because a plugin's `agents/` directory is scanned recursively
+  and each subfolder becomes part of the agent's scoped identifier; Antigravity ships in its own package because
+  its loader always reads `<plugin>/agents/*.md` and rejects Claude's frontmatter.
 - `scripts/guard/guard.py sync` writes the package copies and `guard.py check` reports drift; the role bodies
-  must stay identical across the four runtimes. See [Repository guard](../architecture/repository-guard.md).
-- Claude has no `.claude/agents` or `.claude/skills`. Codex role files stay in `.codex/agents`, because Codex
-  does not load plugin agents. Grok uses `.grok/plugins/gobbi`. Cursor agents stay as symlinks in
+  must stay identical across all five runtimes. See [Repository guard](../architecture/repository-guard.md).
+- Antigravity uses `.agents/plugins.json` pointing to `plugins/antigravity` and has no `.agents/agents` or
+  `.agents/skills`. Claude has no `.claude/agents` or `.claude/skills`. Codex role files stay in `.codex/agents`,
+  because Codex does not load plugin agents. Grok uses `.grok/plugins/gobbi`. Cursor agents stay as symlinks in
   `.cursor/agents` until a Cursor plugin load is proven.
 
 ## Main agent and specialists

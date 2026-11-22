@@ -1,0 +1,28 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "gobbi",
+  "displayName": "Gobbi",
+  "version": "1.4.4",
+  "description": "Structured orchestration, planning, execution, review, and durable handoffs for Antigravity.",
+  "logo": "assets/logo.png",
+  "suggestedPrompts": [
+    "Start a Gobbi session for this task",
+    "Plan this task with Gobbi workflow skills",
+    "Review this work with Gobbi criteria"
+  ],
+  "author": {
+    "name": "HahyeonJeon",
+    "email": "jeonhh0061@gmail.com"
+  },
+  "homepage": "https://github.com/HahyeonJeon/gobbi",
+  "repository": "https://github.com/HahyeonJeon/gobbi",
+  "license": "MIT",
+  "keywords": [
+    "gobbi",
+    "workflow",
+    "orchestration",
+    "review",
+    "planning",
+    "antigravity"
+  ]
+}

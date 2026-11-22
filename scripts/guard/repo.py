@@ -10,10 +10,12 @@ from pathlib import Path, PurePosixPath
 
 from skill_checks.markdown import Document, parse
 
-__all__ = ["CANONICAL", "PACKAGE", "Action", "Repo", "find_root"]
+__all__ = ["ANTIGRAVITY_PACKAGE", "CANONICAL", "PACKAGE", "PACKAGES", "Action", "Repo", "find_root"]
 
 CANONICAL = ".gobbi/projects/gobbi"
 PACKAGE = "plugins/gobbi"
+ANTIGRAVITY_PACKAGE = "plugins/antigravity/gobbi"
+PACKAGES = (PACKAGE, ANTIGRAVITY_PACKAGE)
 
 _FILE_MODE = 0o644
 _EXECUTABLE_MODE = 0o755
@@ -152,7 +154,8 @@ def _allowed(path: str, writable: Sequence[str]) -> bool:
     pure = PurePosixPath(path)
     if pure.is_absolute() or ".." in pure.parts:
         return False
-    depth = len(PurePosixPath(PACKAGE).parts)
-    if _under(path, PACKAGE) and len(pure.parts) > depth and pure.parts[depth].startswith("."):
-        return False  # plugins/gobbi/.*-plugin/ holds the hand-kept manifests
+    for package in PACKAGES:
+        depth = len(PurePosixPath(package).parts)
+        if _under(path, package) and len(pure.parts) > depth and pure.parts[depth].startswith("."):
+            return False  # <package>/.*-plugin/ holds the hand-kept manifests
     return any(_under(path, entry) for entry in writable)

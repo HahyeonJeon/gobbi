@@ -88,9 +88,9 @@ pair and project key are recorded, and the entry foundation is read.
 
 #### 1.1 Run the entry script
 
-- Run the [entry script](scripts/entry.py) from the user's checkout with the runtime name, `claude`, `codex`,
-  `cursor`, or `grok`: `python3 <script> <runtime>`. The runtime reports either this skill's directory, which
-  holds `scripts/entry.py`, or the skills root, which holds `gobbi/scripts/entry.py`.
+- Run the [entry script](scripts/entry.py) from the user's checkout with the runtime name, `antigravity`,
+  `claude`, `codex`, `cursor`, or `grok`: `python3 <script> <runtime>`. The runtime reports either this skill's
+  directory, which holds `scripts/entry.py`, or the skills root, which holds `gobbi/scripts/entry.py`.
 - The script changes nothing. It validates one root pair from its own location and prints the absolute skills
   and agents roots, the runtime's specialist directory, project key, instructions and rules, branch and dirty
   state, and each session's mode and slug.
@@ -139,9 +139,9 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
   the slug enters paths and branch names.
 - Normalize the slug to 1–20 lowercase ASCII letters, digits, and single inner hyphens, without
   transliterating, truncating, or appending a suffix, because it becomes part of every session path.
-- Record the Partner policy as one of `disabled`, `claude-code`, `codex`, `grok`, `claude-code,codex`,
-  `claude-code,grok`, or `codex,grok`; any other recovered value, including `enabled`, is a stop. A named set
-  authorizes launching those runtimes except the active one, and `disabled` authorizes none.
+- Record the Partner policy as `disabled` or one or two sorted names from `{antigravity, claude-code, codex,
+  grok}` joined by a comma; any other recovered value, including `enabled`, is a stop. A named set authorizes
+  launching those runtimes except the active one, and `disabled` authorizes none.
 
 #### 2.3 Apply the session-wide finding gate
 
@@ -182,9 +182,10 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
   | Execution that changes durable docs, skills, or the changelog | `author` |
   | Review of a result another agent produced | `reviewer` |
 
-- Use the runtime's own subagent mechanism with that role: the Agent tool with `subagent_type` `gobbi:<role>` in
-  Claude Code, the custom agent `<role>` from `.codex/agents/` in Codex, and the subagent `<role>` that the
-  Gobbi plugin or adapter provides in Cursor and Grok.
+- Use the runtime's own subagent mechanism with that role: `invoke_subagent` with `TypeName` `<role>` in
+  Antigravity, the Agent tool with `subagent_type` `gobbi:<role>` in Claude Code, the custom agent `<role>` from
+  `.codex/agents/` in Codex, and the subagent `<role>` that the Gobbi plugin or adapter provides in Cursor and
+  Grok.
 - Give a task that spans domains to the role of its main result, which also updates what the change makes
   stale, and split it when each domain needs its own result. When the role's agent is unavailable, stop and
   tell the user instead of substituting another agent.
@@ -235,6 +236,7 @@ runtime, and validated root pair are handed to one owner, or entry stops with th
 | [Cowork](../cowork/SKILL.md) | Owns user-led topics, review at the plan's review points, and explicit closure. |
 | [Workflow](../workflow/SKILL.md) | Owns checkpointed phases and User Review waits. |
 | [Partner](../partner/SKILL.md) | Defines how the manager launches a partner CLI in the background, reads its output, and follows up. |
+| [Antigravity setup](setup/antigravity.md) | How to install Gobbi and create missing layout for Antigravity. |
 | [Claude Code setup](setup/claude.md) | How to install Gobbi and create missing layout for Claude Code. |
 | [Codex setup](setup/codex.md) | How to install Gobbi and create missing layout for Codex. |
 | [Cursor setup](setup/cursor.md) | How to load Gobbi and create missing layout for Cursor. |
