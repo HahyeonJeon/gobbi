@@ -27,9 +27,9 @@ defect is expensive, so add it by risk, not by habit.
 
 Keep a final review of the integrated Goal. One point often suffices for small work and two or three for
 larger work. Add or move a pending point when a user flow first works, a dependency is about to be used, or
-new evidence makes a wrong assumption costly. The manager records the revised coverage and reason in the
-plan or topic contract before dependent work proceeds. Preserve passed points and their evidence. An open
-blocking finding stays with its review point until resolved.
+new evidence makes a wrong assumption costly. The manager decides the revised coverage and reason, and the
+assigned record owner updates the plan or topic contract before dependent work proceeds. Preserve passed points
+and their evidence. An open blocking finding stays with its review point until resolved.
 
 At an intermediate point, freeze a coherent result and judge its declared outcome and critical assumptions.
 Identify the remaining work and its next point. PASS applies to that outcome alone. At the final point,
@@ -37,9 +37,8 @@ require evidence for the entire agreed Goal, including all required checks and r
 
 ### Block only what this change broke or left unshown
 
-A reviewer asked to find problems always finds some, and fixing all of them adds loops and abstraction. Only a
-shown defect this change introduced, or missing evidence that the Goal is met, holds the work back; everything
-else is a follow-up.
+A reviewer asked to find problems always finds some, and fixing all of them adds loops and abstraction. Judge each
+finding against the accepted Goal. Step 3.3 distinguishes blockers, Low corrections, and follow-ups.
 
 ## Rules
 
@@ -49,7 +48,7 @@ else is a follow-up.
   outcome, or a command and its output; a finding with none of these is an opinion and never blocks.
 - **Block only a defect this change introduced that breaks the Goal or the contract, or a part of the Goal that
   no passed check shows, because an inconclusive or unrun check is no evidence.** Taste, pre-existing problems,
-  and improvements go to follow-ups, so review does not grow the scope.
+  and improvements outside the Goal go to follow-ups, so review does not grow the scope.
 - **Stop after two fix rounds that still fail.** The premise is likely wrong, so rethink it or ask the user
   instead of a third round.
 
@@ -62,10 +61,9 @@ The caller decides who reviews and what they get. Done when every reviewer has a
 #### 1.1 Choose the reviewers
 
 - Assign one fresh `reviewer` that did not produce the work.
-- Add one read-only [Partner](../partner/SKILL.md) run from another model family when the change adds
-  user-facing behavior, changes a public interface or a skill's Rules or Principles, touches security or data, or
-  closes a session. Brief it to find what breaks and prove it; when the Partner policy allows no such runtime,
-  note the missing second review under Not checked.
+- Add one read-only [Partner](../partner/SKILL.md) from another model family when an identified risk merits
+  another independent perspective and the recorded policy permits it. State the risk in its brief and ask
+  for evidence of failures.
 - Skip review for a change that only rewords or reformats and passes its checks. A skipped review point
   counts as passed on those checks.
 
@@ -77,7 +75,8 @@ The caller decides who reviews and what they get. Done when every reviewer has a
 - At a review point, the subject is every change since the previous point passed, or since the work began at
   the first point, read in the tree as it stands. The Goal is the Goals of the tasks the point covers, and at
   the last point also the goal of the whole work, so the integrated result is judged, never one review per task.
-- Leave out the producer's reasoning and other reviewers' reports, so each reviewer judges the result alone.
+- For the initial review, leave out the producer's reasoning and other reviewers' reports. For fix
+  confirmation, give the reviewer the findings, reproducers, and correction diff needed to check closure.
 
 ### Phase 2 — Review the Result
 
@@ -93,19 +92,20 @@ The reviewer judges the result against the Goal and the bars. Done when the repo
 
 - Write the report from the [report template](report.md): a verdict, the findings, and what was and was not
   checked. Keep each finding to its place, problem, evidence, whether it blocks and why, and a suggested fix.
-- A read-only Partner returns its report as its final message, and the caller saves it at the report path.
+- A read-only Partner returns its report as its final message, and the assigned record owner saves it at the
+  report path.
 
 ### Phase 3 — Decide and Fix
 
-The caller turns the reports into one verdict. Done when the verdict is recorded where the caller keeps its
-results.
+The caller acts on the reviewer's verdict and resolves conflicting findings or authority questions. Done when
+the assigned record owner has saved the decision and its evidence paths where the caller keeps results.
 
 #### 3.1 Decide the verdict
 
-- Reproduce each blocking finding by rereading its quote or rerunning its command. Drop what does not reproduce,
-  and record each dropped or follow-up item with a one-line reason.
-- Record PASS when nothing blocks, REVISE with the blocking findings when a safe fix exists, or FAIL when none
-  does. Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) to each fix.
+- Use the reviewer's reproduced findings to decide the next action. If findings conflict or evidence is
+  missing, ask the responsible reviewer or specialist to resolve that question and return the result.
+- Apply Gobbi's [finding gate](../gobbi/SKILL.md#23-apply-the-session-wide-finding-gate) to corrections. Record
+  REVISE for fixable blockers, FAIL for a blocker without a safe fix, and PASS when Step 3.3 is satisfied.
 - When a finding repeats a recorded mistake or an earlier finding, apply Step 3.2.
 
 #### 3.2 Turn a repeated mistake into a check
@@ -115,15 +115,17 @@ results.
   judgment and cannot be enforced stays in its entry, with the reason.
 - When the change fits the accepted Goal and authority, apply the finding gate and send it to the caller's
   writer with the past failing case and the corrected case. Otherwise add it to the project backlog.
-- Accept the check only after fresh review shows it rejects the past mistake, accepts the correction, and runs
-  on the path future work takes. Closure then removes the mistake entry.
+- At the next planned review, confirm the check rejects the past mistake, accepts the correction, and runs
+  on the path future work takes before removing the mistake entry.
 
 #### 3.3 Run a fix round
 
-- Send every blocking finding to the writers the caller names as one fix pass. One reviewer then confirms each
-  blocking finding is resolved, reading only the fixes and the lines they touched; this is not a new full review.
-- Record PASS for the tree that holds the fixes when every blocking finding is confirmed resolved.
-- After two rounds that still fail, stop and rethink the premise, or ask the user.
+- Mark a minor, local correction within the agreed Goal as Low when a focused check can establish the fix.
+  A material failure or missing required evidence still blocks, and out-of-scope suggestions stay follow-ups.
+- When only Lows remain, the writer fixes them together and runs the affected checks. On passing evidence the
+  caller records PASS for the corrected tree without another independent review.
+- Batch any blockers with the other corrections and have one reviewer confirm the blockers and affected behavior.
+  Record PASS once all corrections are verified, or apply the two-round stop rule if blockers persist.
 
 ## Stage Bars
 

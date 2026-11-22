@@ -22,10 +22,10 @@ The manager starts the partner process, so it alone controls the brief, the acce
 The manager runtime reports when the command exits, and `$cap/status` records how it ended. Never judge
 completion from elapsed time or partial output.
 
-### Read the output before deciding
+### Deliver the result to its consumer
 
-The final message is the partner's opinion or report, and changed files are its work. Neither counts until
-the manager has read it.
+The final message identifies the result, its evidence, and exceptions. Its consumer reads the relevant source,
+and the manager acts on the reported outcome or assigns an unresolved question to its owner.
 
 ### Grant only the access the work needs
 
@@ -40,10 +40,10 @@ removes every safeguard.
   approval, so otherwise pick the lowest level the work needs, read-only when it only reads.
 - **Give the partner one complete brief written with [Delegation](../delegation/SKILL.md).** No one answers
   its questions, so the brief says it runs non-interactively and must name any denied tool or path at the end.
-- **Capture each run's final message, session id, exit status, and stderr in a private directory, and keep it
-  until you have read the run.** The captures are the only record of the run and the only way to resume it.
-- **Read the final message, and for a write run the changed files, before acting on a run.** Exit status 0
-  alone does not show that the work is right.
+- **Keep each run's final message, session id, exit status, and stderr in its private capture directory.**
+  Give the consumer access to the result, retaining the captures for follow-up and recovery.
+- **Use the reported result and verification to decide the next step.** Exit status 0 establishes completion,
+  while missing verification or a disputed claim goes to the responsible specialist or reviewer.
 - **Do not edit, relabel, or automatically retry a partner result.** An edited result no longer shows the
   partner's view and a retry is a new decision, so follow up by resuming the session or report the failure.
 
@@ -57,11 +57,11 @@ removes every safeguard.
 
   | Step | Action |
   |---|---|
-  | Brief | Write one complete Delegation brief. Say that no one answers questions or approves tools, that a denied tool or path must be named in the final message, and what that message must hold: the full opinion or report, or the changed files and their verification. Callers add the work, paths, and result shape. |
+  | Brief | Write one complete Delegation brief. Name the consumer, result location, and verification needed, with a short final message giving the result, evidence location, and exceptions. Say that no one answers questions or approves tools and that denied tools or paths must be reported. |
   | Capture directory | `cap=$(mktemp -d)`, save the brief as `$cap/prompt.md`, and set `repo` to the absolute working directory. |
   | Launch | Start the runtime's command for the chosen access level in the background (see Manager runtimes). |
   | Completion | Wait for the manager runtime's exit report, then read `$cap/status`. |
-  | Read | Read the final message and stderr; after a write run, also read `git -C "$repo" status --porcelain` and the diff. |
+  | Read | Read completion status and exceptions, and direct the consumer to the result. Assign any required change inspection or missing verification to the appropriate owner. |
   | Follow up | Resume the captured session id with one more prompt, or report the result. |
 
 #### Check availability
@@ -204,7 +204,7 @@ removes every safeguard.
 #### Limits
 
 - workspace-write has no Bash: on Linux, Claude's Bash sandbox needs `socat`, which the measured host lacks,
-  so the manager runs verification commands itself.
+  so assign required verification to a specialist with the necessary tool access.
 - `-p` skips the trust dialog; run it only in a directory you trust.
 
 ### Grok
@@ -265,8 +265,8 @@ removes every safeguard.
 #### Claude Code manager
 
 - Start the command with the Bash tool and `run_in_background: true` (measured).
-- A task notification arrives when the command exits; do not poll or sleep. Then read `$cap/status` and the
-  captures.
+- A task notification arrives when the command exits; do not poll or sleep. Then read `$cap/status` and
+  route the captured result under the run lifecycle above.
 
 #### Codex manager
 

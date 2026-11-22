@@ -72,13 +72,13 @@ and task IDs are returned.
 
 - Split the goal into the fewest tasks that each reach one goal one developer can finish and a reviewer can
   judge on its own. Give each task a `task-NN-slug` ID that is unique across all plan documents.
-- Write each task from the template, then draw the Task Graph: an edge `A --> B` for each task B that uses task
-  A's result, with every task as a node, so the manager can tell what may run in parallel.
+- Draw an edge for each result, interface, or verified behavior a later task relies on. Name what must be
+  ready before the consumer starts and which independent tasks can proceed together.
 
 #### 2.3 Place the review points
 
-- Identify the first useful integrated outcome, downstream dependencies, and costly assumptions. Place a
-  point where feedback can change the next decision and a final point for the whole Goal.
+- Schedule focused checks when their task can demonstrate its result, and shared integration checks when
+  their inputs come together. Place review before work that needs its verdict and at the final integrated Goal.
 - Number each point `review-NN` once across all plan documents, and list it in the document whose tasks it
   follows with the task IDs it covers, so every task falls under exactly one point.
 

@@ -15,8 +15,14 @@ flowchart LR
   task-NN-slug --> task-NN-slug
 ```
 
-{One edge `A --> B` for each task B that uses task A's result. Show every task in this plan as a node, and
-keep a task from another plan document under its own ID. Tasks with no path between them may run in parallel.}
+{Show every task and label each dependency with the result or verified behavior the consumer needs.
+Include dependencies across plan documents and identify the tasks that can run in parallel.}
+
+## Verification
+
+| When | Evidence needed | Work that depends on it |
+|---|---|---|
+| {task, integration, or final state} | {focused or shared check and the outcome it must show} | {dependent task, review point, or final acceptance} |
 
 ## Review Points
 

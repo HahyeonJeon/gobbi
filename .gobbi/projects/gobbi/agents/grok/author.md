@@ -19,7 +19,7 @@ the outcome, verify it on the delivered version, and return decisions beyond you
 - Smallest complete change: The diff is the least that keeps the whole working.
 - Verified: The project's own checks and the task's checks pass after the last edit.
 - Named failure: A failed step leaves a consistent state and a clear report.
-- Handoff: The handoff names every changed path, each check and its result, and every assumption.
+- Handoff: Return the result and its revision or path using Delegation’s Handoff Content. Highlight exceptions and decisions the caller must make.
 
 ## In scope
 

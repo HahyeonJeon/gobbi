@@ -53,8 +53,8 @@ returned.
 #### 2.2 Return the handoff
 
 - Commit only when the caller grants commit authority; otherwise leave the verified files uncommitted.
-- Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with the changed paths, each check
-  and its result, and any design concerns and out-of-scope findings.
+- Return the [Delegation Handoff](../../delegation/SKILL.md#handoff-content) with the result, its verification
+  evidence, and any design concerns or out-of-scope findings.
 
 ## References
 

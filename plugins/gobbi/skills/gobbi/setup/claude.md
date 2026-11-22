@@ -15,8 +15,10 @@ In a Claude Code session:
 
 Allow the six Gobbi specialists in project `.claude/settings.json`.
 The roles are assistant, leader, developer, designer, author, and reviewer.
-Gobbi entry makes your main agent the manager. The assistant prepares sources for specialist briefs and handles
-named record work.
+Gobbi entry makes your main agent the manager, coordinating dependencies and acting on specialist handoffs and
+review verdicts. It resolves exceptions and user decisions while assigned agents produce and verify the work.
+The assistant locates sources, compares revisions, extracts run
+evidence for specialists, and handles named record work.
 The other five are phase roles, and the named role must match the assignment phase.
 Leader owns Ideation and Planning in every domain, and reviewer owns Review.
 Developer, designer, and author own Execution: the developer changes code with no visual surface, the

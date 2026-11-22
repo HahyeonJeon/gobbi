@@ -20,8 +20,8 @@ question about goal, scope, risk, or a load-bearing assumption, and state smalle
 
 ### Study, then get independent input
 
-One agent misses alternatives. Study the evidence first, then compare separate suggestions and critique from
-independent subagents before you recommend a design.
+One agent misses alternatives. Compare the evidence with the caller's independent suggestions and critique,
+and seek further input when an important choice remains uncovered or the evidence changes.
 
 ### Keep the design simple
 
@@ -85,9 +85,8 @@ recommendation.
 
 #### 2.2 Get independent suggestions and critique
 
-- Get separate design suggestions and critique from independent subagents through the caller's participant
-  policy, giving each the draft requirements and study. When you cannot launch subagents, send the prompts to
-  the caller and continue from the answers.
+- Use the caller's independent suggestions and critique when they cover the current requirements and evidence.
+  Send the caller a bounded question for any uncovered consequential choice under its participant policy.
 - Compare the reasoning and record each material choice as a draft Discussion topic with two or three options
   and a recommendation. Do not ask the user yet; Step 4.1 shows the choices with the design.
 

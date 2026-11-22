@@ -29,20 +29,16 @@
 | Review | {each reviewer report path, the receipt and its verdict, dropped and follow-up items, and fix rounds, or None when the work item skipped REVIEW} |
 | Decisions | {material decisions, rulings, and authority, or None} |
 | Decision boundary | {Phase 1 user decisions; later frames have no design question; User Review is continue-only} |
-| Findings | {dispositions and the reviewer's confirmation of each fix, or None} |
+| Findings | {dispositions and verification evidence for the corrected tree under Review Step 3.3, or None} |
 | Preserved state | {unrelated work, retained objects, exclusions, and risks, or None} |
 
 ## Continuation
 
-| Item | Value |
-|---|---|
-| First unproved action | {exact action, or None} |
-| Recovery worktree | {same Absolute worktree recorded above} |
-| Recovery session root | {same Session root recorded above} |
-| First safe command | {exact command, or None} |
-| Recovery limits | {exact blocker or ambiguity, or None} |
+{For Complete, state the next phase or completed closure and whether the user's Continue is pending or recorded.
+For Stopped, name the first unproved action, its blocker, and the first safe recovery command. Use the worktree
+and session root in Identity.}
 
-Keep every section and fixed table row. Use `Complete` only when every phase claim is directly verified; use
-`Stopped` for an incomplete or failed phase. This file does not start the next phase. Never recover into a
-different worktree or session directory, and never treat this handoff as proof without rereading its named
-evidence.
+Keep Identity complete and link existing records for evidence. Use `Complete` when owners have verified the
+phase claims and all required review points have passed, and `Stopped` for an incomplete or failed phase.
+Recover in the recorded worktree and session directory from these results, consulting the named owner for
+missing or conflicting evidence. The next phase starts on the user's recorded Continue for this phase.

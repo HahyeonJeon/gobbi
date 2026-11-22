@@ -52,9 +52,10 @@ properties are bound and confirmed against Git, or closure has gone to Step 3.4.
 
 #### 1.1 Accept the completed work
 
-- Enter only when the calling manager identifies accepted work as ready for closure. The caller owns
-  acceptance, required review, and the evidence gate.
-- Read the accepted scope, results, commits, checks, review coverage, user decisions, risks, and open items.
+- Enter when the manager accepts the work for closure and assigns its Memory and Git operations to authorized
+  owners. The manager advances closure from their handoffs and the required review verdict.
+- The assigned owners read the accepted scope, results, commits, checks, review coverage, decisions, and open
+  items relevant to their work.
 - When a completion claim lacks evidence or a material decision is unresolved, stop and go to Step 3.4 with no
   Memory write.
 
@@ -70,8 +71,8 @@ properties are bound and confirmed against Git, or closure has gone to Step 3.4.
   | Git state | Exact repository, base, branch, worktree, accepted heads, and current status from the caller contract. |
   | Git authority | Current authority to commit closure-owned changes and merge the work head into the base branch. |
 
-- Confirm from Git that the worktree belongs to the work branch, is not the main checkout, and has no
-  unrelated change, and that the base branch has a clean checkout with no Git operation in progress.
+- Have the assigned Git owner confirm the worktree belongs to the work branch, is separate from the main
+  checkout, has no unrelated change, and the base checkout is clean with no Git operation in progress.
 - Record the UTC completion time and outcome title. On a missing, ambiguous, or wrong value, or missing commit
   or merge authority, stop before Memory and go to Step 3.4.
 
@@ -88,8 +89,8 @@ closure tree, its changed paths, passing checks, and work head are frozen.
 
 #### 2.2 Accept memory and freeze the closure tree
 
-- Reread every changed path and run the applicable memory, link, and accepted-work checks. Confirm the changes
-  stay inside the project memory root, keep one home per item, and match the accepted work.
+- The Memory writer reads the changed paths and runs the checks affected by the closure changes, including
+  memory and links. Its handoff confirms the write boundary, one home per item, and agreement with accepted work.
 - Freeze the closure tree, its changed paths, the checks that passed, and the work head. When memory or its
   checks fail, stop before Git and go to Step 3.4 with the retained worktree.
 
@@ -97,6 +98,8 @@ closure tree, its changed paths, passing checks, and work head are frozen.
 
 Integrate the frozen closure and report it. Done when the Note is returned and every action it reports as
 completed is proven by current Git evidence.
+
+The authorized Git owner performs this phase and returns its Note to the manager.
 
 #### 3.1 Revalidate the closure
 

@@ -5,7 +5,7 @@
 Open-source orchestration for Claude Code, Codex, Cursor, and Grok.
 
 <p>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.2-blue" alt="Version 1.4.2"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.4.3-blue" alt="Version 1.4.3"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Grok-black" alt="Runtimes: Claude Code, Codex, Cursor, and Grok">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
 </p>
@@ -34,8 +34,10 @@ package has no hooks and no settings check in this release.
 
 Allow the six Gobbi specialists in your project `.claude/settings.json`.
 The roles are assistant, leader, developer, designer, author, and reviewer.
-Gobbi entry makes your main agent the manager. The assistant prepares sources for specialist briefs and handles
-named record work.
+Gobbi entry makes your main agent the manager, coordinating dependencies and acting on specialist handoffs and
+review verdicts. It resolves exceptions and user decisions while assigned agents produce and verify the work.
+The assistant locates sources, compares revisions, extracts run
+evidence for specialists, and handles named record work.
 The other five are phase roles, and the named role must match the assignment phase.
 Leader owns Ideation and Planning in every domain, and reviewer owns Review.
 Developer, designer, and author own Execution: the developer changes code with no visual surface, the
@@ -136,6 +138,14 @@ Then follow the steps for your runtime. Setup is not a skill. Gobbi entry does n
 - Cursor: nothing further to write. See [cursor.md](.gobbi/projects/gobbi/skills/gobbi/setup/cursor.md).
 - Grok: nothing further to write. See [grok.md](.gobbi/projects/gobbi/skills/gobbi/setup/grok.md).
 
+## Update to 1.4.3
+
+Refresh the plugin and any copied specialist role files together. For a session already in progress, keep
+its accepted decisions and passed review points, then use the current Planning guidance for pending tasks.
+The plan now records when verification is needed and which work depends on it. Managers advance from the
+owners' verified handoffs and planned review verdicts, with remaining in-scope refinement at checkpoints.
+When only Low corrections remain, the writer fixes them and passes the affected checks before acceptance.
+
 ## Migrate a checkout with the separate manager role
 
 Version 1.4.2 removes the separate manager role. This breaking change ships as a patch in the 1.4 series.
@@ -207,9 +217,9 @@ This checkout's Grok load is `.grok/plugins/gobbi`, so the entry is `/gobbi:gobb
 That name belonged to `.grok/skills/gobbi`, which this checkout does not register. Do not invent a `$gobbi`
 alias for Grok.
 
-Gobbi presents Cowork and Workflow and waits for your selection. It next asks for a privacy-safe session
-slug. It then asks for the session-wide Partner policy: `disabled`, or one or two of `claude-code`, `codex`,
-and `grok`.
+Gobbi uses the mode, privacy-safe session slug, and Partner policy you supply, and asks for missing choices.
+Choose Cowork or Workflow and a Partner policy of `disabled` or one or two of `claude-code`, `codex`, and
+`grok`. When setup is complete, a request you already supplied can proceed.
 
 ## Cowork
 
@@ -219,8 +229,8 @@ Ideation and Planning as Workflow, and runs each only when a request needs it be
 
 The manager can move a pending review point when a user flow becomes testable, a dependency is about to
 be used, or new risk warrants earlier feedback. The final point verifies the integrated Goal. The
-manager commits accepted work locally when a point passes, and you can still call `review` or `commit` at any
-time. Closure runs only when you request it. One isolated branch and linked worktree hold the session, keeping
+manager assigns local commits of accepted work when a point passes, and you can still call `review` or `commit`
+at any time. Closure runs only when you request it. One isolated branch and linked worktree hold the session, keeping
 your main checkout separate from the ordered local commits.
 
 ## Workflow
@@ -231,17 +241,18 @@ Workflow is the durable path for work that needs recorded decisions and quality 
 Configuration → Ideation → Planning → Execution → Wrap-up
 ```
 
-Every productive step uses:
+For each task, the manager selects ready work and settles any open decision, the specialist produces and
+verifies the result, and the assistant records the outcome. New consultation is needed when a decision is
+unsettled. Records link the original evidence, and their writing can overlap the next task once its inputs
+are verified and any required review has passed.
 
-```text
-DISCUSSION → WORK → RECORD
-```
+The plan places independent reviews where their verdicts inform dependent work and at the final integrated
+Goal. When only Low corrections remain, the writer fixes them and passes the affected checks before the
+manager accepts the result.
 
-Each review point the plan names and Wrap-up also run `REVIEW` before RECORD. Ideation, Planning, and single
-Execution tasks skip it; a task between points is accepted on its own passed checks.
-
-After Configuration, Workflow waits until the user delivers the work. Phase 1 studies the project and
-develops the design with the user, available subagents or teammates, and the remaining Partner launch set.
+After Configuration, Workflow proceeds with delivered work and waits only when the request is missing.
+Phase 1 studies the project and develops the design with the user, available subagents or teammates, and
+the remaining Partner launch set.
 After each Complete phase handoff, Workflow waits at that phase's User Review for Continue or Stop.
 Continue is not a new design question. Inside later phases, work stays autonomous until the next User Review.
 Recorded evidence can rebuild the active route after a context boundary. A task advances on its
@@ -258,9 +269,10 @@ runtime. An empty launch set after that skip is valid and is not rewritten to `d
 With `disabled`, Gobbi makes no external runtime calls. With a named set, Discussion and Review start a
 partner run from the launch set when the work calls for one. The manager launches each partner CLI itself as a
 background process, with no wrapper agent, and gives it a Delegation brief and the access level the work
-needs: read-only, workspace-write, or full-access only when you authorize it. The manager learns when each run
-ends, reads its final message and any changed files, and may send a follow-up by resuming the run's session. A
-failed launch is recorded as Unavailable evidence, not a partner result.
+needs: read-only, workspace-write, or full-access only when you authorize it. On completion, the manager reads
+the status and exceptions and directs the consumer to the result. The appropriate authorized owner inspects
+changes and performs required verification, while the manager resolves exceptions and may resume the partner
+session for a follow-up. A failed launch is recorded as Unavailable evidence.
 
 Cursor remains a supported runtime but is not a partner, because its print mode failed authentication when
 measured. The active runtime decides what to accept and remains the session authority.
